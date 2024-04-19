@@ -1,1 +1,1 @@
-{\rtf1}
+// frontend\prueba\inicio.js

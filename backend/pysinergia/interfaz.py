@@ -1,0 +1,1 @@
+# backend\pysinergia\interfaz.py
