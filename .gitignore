@@ -166,10 +166,11 @@ frontend/static/app_*/
 .*.env
 *.env
 .vscode/
-_*.*
 *.zip
-main.py
-app.py
 cert.pem
 key.pem
+_limpiar.py
+_subir.py
+_prueba.*
+app.py
 
