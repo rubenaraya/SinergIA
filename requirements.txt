@@ -1,0 +1,4 @@
+PyJWT
+pytz
+python-dotenv
+Pillow
