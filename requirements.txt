@@ -2,3 +2,6 @@ PyJWT
 pytz
 python-dotenv
 Pillow
+fastapi
+uvicorn
+jinja2
