@@ -58,3 +58,52 @@ class ServidorApi():
         import uvicorn
         if modo == 'LOCAL' or modo == 'DESARROLLO':
             uvicorn.run(api, host=host, port=puerto, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")
+
+
+# --------------------------------------------------
+# Clase: Enrutador
+# --------------------------------------------------
+class Enrutador():
+    ...
+
+
+# --------------------------------------------------
+# Clase: ReceptorPeticion
+# --------------------------------------------------
+class ReceptorPeticion():
+    ...
+
+# --------------------------------------------------
+# Clase: EmisorRespuesta
+# --------------------------------------------------
+class EmisorRespuesta():
+    ...
+
+
+# --------------------------------------------------
+# Clase: ComunicadorWeb
+# --------------------------------------------------
+class ComunicadorWeb():
+    ...
+
+
+# --------------------------------------------------
+# Clase: TraductorIdiomas
+# --------------------------------------------------
+class TraductorIdiomas():
+    ...
+
+
+# --------------------------------------------------
+# Clase: PresentadorContenidos
+# --------------------------------------------------
+class PresentadorContenidos():
+    ...
+
+
+# --------------------------------------------------
+# Clase: Exportador
+# --------------------------------------------------
+class Exportador():
+    ...
+
