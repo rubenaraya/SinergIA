@@ -1,41 +1,23 @@
 # backend\pysinergia\interfaz.py
 
 from fastapi import FastAPI
+import os
 
-class Aplicacion():
+class ServidorApi():
 
-    def __init__(mi, modo:str):
+    def __init__(mi, modo:str='PRODUCCION', registro:str='ERROR'):
         mi.modo = modo
+        mi.registro = registro
+        mi.prefijo = ''
 
-    def crear(mi, directorio:str) -> FastAPI:
-        app = FastAPI()
-        mi._configurar_entorno(app)
-        mi._configurar_cors(app)
-        mi._configurar_endpoints(app)
-        mi._configurar_ruteadores(app)
-        mi._configurar_directorio(app, directorio)
-        mi._configurar_excepciones(app)
-        mi._configurar_registrador(app)
-        return app
-    
-    def lanzar(mi, app:FastAPI, host:str, port:int):
-        import uvicorn
-        if mi.modo == 'LOCAL' or mi.modo == 'DESARROLLO':
-            uvicorn.run(app, 
-                host = host,
-                port = port, 
-                ssl_keyfile = "./key.pem", 
-                ssl_certfile = "./cert.pem"
-            )
-
-    def _configurar_endpoints(mi, app:FastAPI):
-        @app.get('/')
+    def _configurar_endpoints(mi, api:FastAPI):
+        @api.get('/')
         def home():
-            return {'inicio-app': 'funcionando'}
+            return {'entrypoint-api': 'SinergIA'}
 
-    def _configurar_cors(mi, app:FastAPI):
+    def _configurar_cors(mi, api:FastAPI):
         from fastapi.middleware.cors import CORSMiddleware
-        app.add_middleware(
+        api.add_middleware(
             CORSMiddleware,
             allow_origins = ['*'],
             allow_credentials = True,
@@ -43,23 +25,55 @@ class Aplicacion():
             allow_headers = ["*"],
         )
 
-    def _configurar_directorio(mi, app:FastAPI, directorio:str):
+    def _configurar_directorio(mi, api:FastAPI, directorio:str):
         from fastapi.staticfiles import StaticFiles
-        app.mount(
+        api.mount(
             f"/{directorio}",
-            StaticFiles(directory = "./frontend"),
+            StaticFiles(directory = f"./{directorio}"),
             name = "static"
         )
 
+    def _configurar_entorno(mi, api:FastAPI):
+        from dotenv import dotenv_values
+        archivos = {
+            'DESARROLLO': ".desarrollo.env",
+            'PRUEBAS': ".pruebas.env",
+            'PRODUCCION': ".produccion.env",
+            'LOCAL': ".local.env"
+        }
+        ruta_archivo = os.path.join(os.path.abspath("."), archivos.get(mi.modo))
+        if os.path.isfile(ruta_archivo):
+            claves = dotenv_values(ruta_archivo)
+            for clave, valor in claves.items():
+                # print(f"{clave}={valor}")
+                ...
 
-    def _configurar_entorno(mi, app:FastAPI):
-        ...
+    def crear_api(mi, directorio:str, prefijo:str='') -> FastAPI:
+        mi.prefijo = prefijo
+        api = FastAPI()
+        mi._configurar_directorio(api, directorio)
+        mi._configurar_endpoints(api)
+        mi._configurar_cors(api)
+        return api
 
-    def _configurar_excepciones(mi, app:FastAPI):
-        ...
+    def mapear_servicios(mi, api:FastAPI, ubicacion:str):
+        import importlib
+        directorios = os.listdir(ubicacion)
+        for directorio in directorios:
+            if directorio != 'pysinergia':
+                subdirectorios = os.listdir(f"{ubicacion}/{directorio}")
+                for subdirectorio in subdirectorios:
+                    ruta_archivo = os.path.join(ubicacion, directorio, subdirectorio, 'enrutador.py')
+                    if os.path.isfile(ruta_archivo):
+                        componente = importlib.import_module(f"{ubicacion}.{directorio}.{subdirectorio}.enrutador")
+                        api.include_router(getattr(componente, 'enrutador'))
 
-    def _configurar_ruteadores(mi, app:FastAPI):
-        ...
-
-    def _configurar_registrador(mi, app:FastAPI):
-        ...
+    def lanzar(mi, api:FastAPI, host:str, puerto:int):
+        import uvicorn
+        if mi.modo == 'LOCAL' or mi.modo == 'DESARROLLO':
+            uvicorn.run(api, 
+                host = host,
+                port = puerto, 
+                ssl_keyfile = "./key.pem", 
+                ssl_certfile = "./cert.pem"
+            )
