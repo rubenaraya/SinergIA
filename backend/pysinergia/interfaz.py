@@ -25,11 +25,11 @@ class ServidorApi():
             allow_headers = ["*"],
         )
 
-    def _configurar_directorio(mi, api:FastAPI, directorio:str):
+    def _configurar_directorio(mi, api:FastAPI, directorio:str, alias:str):
         from fastapi.staticfiles import StaticFiles
         api.mount(
-            f"/{directorio}",
-            StaticFiles(directory = f"./{directorio}"),
+            f"/{alias}",
+            StaticFiles(directory = f"{directorio}"),
             name = "static"
         )
 
@@ -48,10 +48,10 @@ class ServidorApi():
                 # print(f"{clave}={valor}")
                 ...
 
-    def crear_api(mi, directorio:str, prefijo:str='') -> FastAPI:
+    def crear_api(mi, directorio:str, alias:str, prefijo:str='') -> FastAPI:
         mi.prefijo = prefijo
         api = FastAPI()
-        mi._configurar_directorio(api, directorio)
+        mi._configurar_directorio(api, directorio, alias)
         mi._configurar_endpoints(api)
         mi._configurar_cors(api)
         return api
