@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 import os
-from backend.pysinergia.infra_interfaz import ( I_EmisorRespuesta, I_ReceptorPeticion )
+from backend.pysinergia.infraestructura import ( I_EmisorRespuesta, I_ReceptorPeticion )
 
 # --------------------------------------------------
 # Clase: ServidorApi

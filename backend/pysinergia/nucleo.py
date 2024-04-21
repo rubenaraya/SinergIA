@@ -1,7 +1,7 @@
 # backend\pysinergia\nucleo.py
 
-from backend.pysinergia.infra_interfaz import ( I_ReceptorPeticion, I_EmisorRespuesta )
-from backend.pysinergia.infra_datos import ( I_ConectorAlmacen, I_ConectorBasedatos, I_ConectorDisco, I_ConectorLlm, I_ConectorSpi )
+from backend.pysinergia.infraestructura import ( I_ReceptorPeticion, I_EmisorRespuesta )
+from backend.pysinergia.infraestructura import ( I_ConectorAlmacen, I_ConectorBasedatos, I_ConectorDisco, I_ConectorLlm, I_ConectorSpi )
 
 # --------------------------------------------------
 # Clase: Coordinador

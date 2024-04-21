@@ -1,6 +1,6 @@
 # backend\pysinergia\conectores\almacen_chroma.py
 
-from backend.pysinergia.infra_datos import I_ConectorAlmacen
+from backend.pysinergia.infraestructura import I_ConectorAlmacen
 
 # --------------------------------------------------
 # Clase: AlmacenChroma
