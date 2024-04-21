@@ -2,7 +2,7 @@
 
 export class AdaptadorApi {
     constructor() {
-        this.gestorEstados = null;
+        this.gestorEstado = null;
         this.urlApi = null;
         this.keyApi = null;
         this.token = null;

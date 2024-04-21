@@ -52,7 +52,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
     constructor(operadorDatos, interfazUsuario) {
         this.interfazUsuario = interfazUsuario;
         this.operadorDatos = operadorDatos;
-        this.gestorEstados = null;
+        this.gestorEstado = null;
         this.configuradorServicios = null;
         this.controladorAcceso = null;
         this.procesadorEsquemas = null;
@@ -79,23 +79,23 @@ class CoordinadorGeneral { //(PRESENTADOR)
             }
         }
     }
-    async coordinarInicio(rutaManifiesto, rutaErrores, gestorEstados, configuradorServicios=null, controladorAcceso=null, procesadorEsquemas=null) {
+    async coordinarInicio(rutaManifiesto, rutaErrores, gestorEstado, configuradorServicios=null, controladorAcceso=null, procesadorEsquemas=null) {
         Base.trazarFlujo(this.constructor.name, 'coordinarInicio', 1);
         try {
-            if (gestorEstados && typeof gestorEstados === 'object') {
-                this.gestorEstados = gestorEstados;
+            if (gestorEstado && typeof gestorEstado === 'object') {
+                this.gestorEstado = gestorEstado;
                 this.rutaErrores = rutaErrores;
                 this.manejadorErrores = new ManejadorErrores(this.interfazUsuario.traductorIdiomas, this.rutaErrores);
                 this.configuradorServicios = configuradorServicios || new ConfiguradorServicios();
                 this.procesadorEsquemas = procesadorEsquemas || new ProcesadorEsquemas();
-                this.controladorAcceso = controladorAcceso || new ControladorAcceso(this.gestorEstados);
-                this.interfazUsuario.coordinarInicio(this.gestorEstados, this.manejadorErrores);
-                this.operadorDatos.coordinarInicio(this.gestorEstados, this.manejadorErrores);
-                this.configuradorServicios.coordinarInicio(this.gestorEstados, this.interfazUsuario.traductorIdiomas);
-                let uuid = this.gestorEstados.obtenerValor(Base.Estados.sesion, 'uuid');
+                this.controladorAcceso = controladorAcceso || new ControladorAcceso(this.gestorEstado);
+                this.interfazUsuario.coordinarInicio(this.gestorEstado, this.manejadorErrores);
+                this.operadorDatos.coordinarInicio(this.gestorEstado, this.manejadorErrores);
+                this.configuradorServicios.coordinarInicio(this.gestorEstado, this.interfazUsuario.traductorIdiomas);
+                let uuid = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'uuid');
                 if (!uuid) {
                     uuid = Base.generarUUID();
-                    this.gestorEstados.asignarValor(Base.Estados.sesion, 'uuid', uuid);
+                    this.gestorEstado.asignarValor(Base.Estados.sesion, 'uuid', uuid);
                 }
                 await this.operadorDatos.comunicadorApis.consultarManifiestoApp(rutaManifiesto);
                 return true;
@@ -111,8 +111,8 @@ class CoordinadorGeneral { //(PRESENTADOR)
             await this.configuradorServicios.importarServicio(rutaModuloServicio);
             const resultado = this.configuradorServicios.aplicarConfiguracion(this);
             if (resultado) {
-                const rutaDominio = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'rutaDominio');
-                const rolesUsuario = this.gestorEstados.obtenerValor(Base.Estados.sesion, 'roles');
+                const rutaDominio = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'rutaDominio');
+                const rolesUsuario = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'roles');
                 this.procesadorEsquemas.asignarParametros(rolesUsuario, rutaDominio);
             }
             return resultado;
@@ -124,8 +124,8 @@ class CoordinadorGeneral { //(PRESENTADOR)
         Base.trazarFlujo(this.constructor.name, 'procesarEsquemas', 1);
         try {
             this.procesadorEsquemas.asignarParametros(
-                this.gestorEstados.obtenerValor(Base.Estados.sesion, 'roles'), 
-                this.gestorEstados.obtenerValor(Base.Estados.modelo, 'rutaDominio')
+                this.gestorEstado.obtenerValor(Base.Estados.sesion, 'roles'), 
+                this.gestorEstado.obtenerValor(Base.Estados.modelo, 'rutaDominio')
             );
             await this.procesadorEsquemas.importarEsquemas(portadorInformacion);
             const funcionFiltro = this.controladorAcceso.filtrarPorRoles;
@@ -164,7 +164,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 throw new ErrorPersonalizado('ERROR_INTERACCION_NO_PROCESABLE', '', {}, Base.Errores.NO_PROCESABLE);
             }
             const permisosAcceso = detalleInteraccion.permisos;
-            const rolesCredenciales = this.gestorEstados.obtenerValor(Base.Estados.sesion, 'roles');
+            const rolesCredenciales = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'roles');
             const verificacion = this.controladorAcceso.autorizarPorRoles(permisosAcceso, rolesCredenciales);
             if (verificacion === true) {
                 return detalleInteraccion;
@@ -225,7 +225,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             this.interfazUsuario.quitarErroresValidacion('form_login');
             if (elemento && valores) {
                 const contexto = this.interfazUsuario.receptorUI.capturarDatosContexto(elemento);
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(contexto.operacion, {
                     valores: valores,
                     recurso: contexto.recurso,
@@ -289,7 +289,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
         Base.trazarFlujo(this.constructor.name, 'informarErrorServicio', 1);
         try {
             this.interfazUsuario.mostrarInformacion(errorProcesado.mensaje, errorProcesado.tipo);
-            this.gestorEstados.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
+            this.gestorEstado.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
         } catch (error) {
             console.error(error);
         }
@@ -299,7 +299,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
         Base.trazarFlujo(this.constructor.name, 'instalarAplicacion', 1, rutaTrabajadorServicio);
         try {
             const urlTrabajadorServicio = Base.construirUrlAbsoluta(rutaTrabajadorServicio);
-            const instaladorAplicacion = new InstaladorAplicacion(this.gestorEstados, this.interfazUsuario, this.rutaErrores);
+            const instaladorAplicacion = new InstaladorAplicacion(this.gestorEstado, this.interfazUsuario, this.rutaErrores);
             await instaladorAplicacion.inicializarTrabajadorServicio(urlTrabajadorServicio);
             instaladorAplicacion.inicializarInstalacion();
         } catch (error) {
@@ -309,7 +309,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
     async activarNotificaciones() {
         Base.trazarFlujo(this.constructor.name, 'activarNotificaciones', 1);
         try {
-            const instaladorAplicacion = new InstaladorAplicacion(this.gestorEstados, this.interfazUsuario, this.rutaErrores);
+            const instaladorAplicacion = new InstaladorAplicacion(this.gestorEstado, this.interfazUsuario, this.rutaErrores);
             instaladorAplicacion.inicializarSuscripcion();
         } catch (error) {
             this.informarErrorServicio(this.manejadorErrores.procesarError(error));
@@ -336,7 +336,7 @@ class OperadorDatos { //(MODELO)
     constructor(validadorDatos=null) {
         this.validadorDatos = validadorDatos || new ValidadorDatos();
         this.comunicadorApis = null;
-        this.gestorEstados = null;
+        this.gestorEstado = null;
         this.manejadorErrores = null;
         this.OPERACIONES = {};
     }
@@ -368,12 +368,12 @@ class OperadorDatos { //(MODELO)
             }
         }
     }
-    coordinarInicio(gestorEstados, manejadorErrores) {
+    coordinarInicio(gestorEstado, manejadorErrores) {
         Base.trazarFlujo(this.constructor.name, 'coordinarInicio', 1);
-        if (typeof gestorEstados === 'object' && typeof manejadorErrores === 'object') {
-            this.gestorEstados = gestorEstados;
+        if (typeof gestorEstado === 'object' && typeof manejadorErrores === 'object') {
+            this.gestorEstado = gestorEstado;
             this.manejadorErrores = manejadorErrores;
-            this.comunicadorApis = new ComunicadorApis(this.gestorEstados);
+            this.comunicadorApis = new ComunicadorApis(this.gestorEstado);
         }
     }
     configurarOperaciones(declaracionesOperaciones) {
@@ -399,7 +399,7 @@ class OperadorDatos { //(MODELO)
     async seleccionarServicioApi(uidApi) {
         Base.trazarFlujo(this.constructor.name, 'seleccionarServicioApi', 1, `uidApi=${uidApi}`);
         try {
-            const estadosModelo = this.gestorEstados.obtenerEstado(Base.Estados.modelo);
+            const estadosModelo = this.gestorEstado.obtenerEstado(Base.Estados.modelo);
             const serviciosApi = estadosModelo.get('serviciosApi');
             if (serviciosApi && serviciosApi[uidApi]) {
                 const { urlApi, keyApi } = serviciosApi[uidApi];
@@ -424,10 +424,10 @@ class OperadorDatos { //(MODELO)
             const respuesta = await this.comunicadorApis.realizarPeticionApi(recurso, metodo, valores, parametros, limiteTiempo);
             let entrega = this.comunicadorApis.adaptarRespuestaApi(respuesta);
             portadorInformacion.almacenarInformacion(entrega);
-            this.gestorEstados.emitirEventoInformacion(eventoExito, portadorInformacion.recuperarInformacion());
+            this.gestorEstado.emitirEventoInformacion(eventoExito, portadorInformacion.recuperarInformacion());
         } catch (error) {
             const errorProcesado = this.manejadorErrores.procesarError(error, contextoOperacion);
-            this.gestorEstados.emitirEventoInformacion(eventoErrorOperacion, errorProcesado);
+            this.gestorEstado.emitirEventoInformacion(eventoErrorOperacion, errorProcesado);
         }
     }
     comprobarDatosEnviados(portadorInformacion) {
@@ -439,7 +439,7 @@ class OperadorDatos { //(MODELO)
             );
             if (!estado && errores) {
                 portadorInformacion.asignarErrores(errores);
-                this.gestorEstados.emitirEventoInformacion('ERROR_COMPROBACION_DATOS', portadorInformacion.recuperarInformacion());
+                this.gestorEstado.emitirEventoInformacion('ERROR_COMPROBACION_DATOS', portadorInformacion.recuperarInformacion());
                 return false;
             }
             return true;
@@ -477,7 +477,7 @@ class InterfazUsuario { //(VISTA)
         this.manipuladorUI = manipuladorUI || new ManipuladorUI();
         this.traductorIdiomas = traductorIdiomas || new TraductorIdiomas();
         this.procesadorPlantillas = procesadorPlantillas || new ProcesadorPlantillas();
-        this.gestorEstados = null;
+        this.gestorEstado = null;
         this.manejadorErrores = null;
         this.timeoutVisor = null;
     }
@@ -521,10 +521,10 @@ class InterfazUsuario { //(VISTA)
             }
         }
     }
-    coordinarInicio(gestorEstados, manejadorErrores) {
+    coordinarInicio(gestorEstado, manejadorErrores) {
         Base.trazarFlujo(this.constructor.name, 'coordinarInicio', 1);
-        if (typeof gestorEstados === 'object' && typeof manejadorErrores === 'object') {
-            this.gestorEstados = gestorEstados;
+        if (typeof gestorEstado === 'object' && typeof manejadorErrores === 'object') {
+            this.gestorEstado = gestorEstado;
             this.manejadorErrores = manejadorErrores;
             this.procesadorPlantillas.asignarMapaPlantillas(this.PLANTILLAS);
             this.ELEMENTOS.set('visorMensajes', this.manipuladorUI.seleccionar('#visorMensajes'));
@@ -579,7 +579,7 @@ class InterfazUsuario { //(VISTA)
             contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
             this.manipuladorUI.actualizarContenido(elemento, contenido);
             this.manipuladorUI.cambiarVisibilidad(elemento, true, true);
-            const tiempoVisor = this.gestorEstados.leerPreferenciaUsuario('tiempoVisor', 10);
+            const tiempoVisor = this.gestorEstado.leerPreferenciaUsuario('tiempoVisor', 10);
             if (this.timeoutVisor) {
                 clearTimeout(this.timeoutVisor);
             }
@@ -1460,8 +1460,8 @@ NOTAS:
 Esta clase depende de los adaptadores de API específicos (subclases de "AdaptadorApi") para manejar las particularidades de cada servicio API con el que se comunica.
 */
 class ComunicadorApis {
-    constructor(gestorEstados) {
-        this.gestorEstados = gestorEstados;
+    constructor(gestorEstado) {
+        this.gestorEstado = gestorEstado;
         this.adaptadorApi = null;
     }
     // Funciones privadas
@@ -1513,7 +1513,7 @@ class ComunicadorApis {
                 const manifiesto = await respuesta.json();
                 const { name, short_name, description, start_url, scope } = manifiesto;
                 const datosManifiesto = {"nombre": name, "nombre_corto": short_name, "descripcion": description, "alcance": scope, "url_inicio": start_url};
-                this.gestorEstados.actualizarEstado('', Base.Estados.aplicacion, datosManifiesto);
+                this.gestorEstado.actualizarEstado('', Base.Estados.aplicacion, datosManifiesto);
                 document.title = short_name;
             }
         } catch (error) {
@@ -1551,13 +1551,13 @@ class ComunicadorApis {
     async configurarApi(uidApi, urlApi, keyApi) {
         Base.trazarFlujo(this.constructor.name, 'configurarApi', 2, `uidApi=${uidApi}`, `urlApi=${urlApi}`);
         try {
-            this.adaptadorApi = await CreadorAdaptadoresApi.crearAdaptador(this.gestorEstados, uidApi);
+            this.adaptadorApi = await CreadorAdaptadoresApi.crearAdaptador(this.gestorEstado, uidApi);
             if (this.adaptadorApi) {
                 this.adaptadorApi.urlApi = urlApi;
                 this.adaptadorApi.keyApi = keyApi;
-                this.adaptadorApi.gestorEstados = this.gestorEstados;
-                this.adaptadorApi.uuid = this.gestorEstados.obtenerValor(Base.Estados.sesion, 'uuid');
-                this.adaptadorApi.token = this.gestorEstados.obtenerValor(Base.Estados.sesion, 'token');
+                this.adaptadorApi.gestorEstado = this.gestorEstado;
+                this.adaptadorApi.uuid = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'uuid');
+                this.adaptadorApi.token = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'token');
             }
         } catch (error) {
             throw error;
@@ -1605,11 +1605,11 @@ NOTAS:
 Depende de la clase "AdaptadorApi" y sus subclases, las cuales definen la estructura y comportamiento de los adaptadores de API específicos.
 */
 class CreadorAdaptadoresApi {
-    static async crearAdaptador(gestorEstados, uidApi) {
+    static async crearAdaptador(gestorEstado, uidApi) {
         Base.trazarFlujo('CreadorAdaptadoresApi', 'crearAdaptador', 3, `uidApi=${uidApi}`);
         let adaptador = null;
         try {
-            const estadosModelo = gestorEstados.obtenerEstado(Base.Estados.modelo);
+            const estadosModelo = gestorEstado.obtenerEstado(Base.Estados.modelo);
             const serviciosApi = estadosModelo.get('serviciosApi');
             if (serviciosApi && serviciosApi[uidApi]) {
                 const { rutaAdaptador } = serviciosApi[uidApi];
@@ -1626,6 +1626,7 @@ class CreadorAdaptadoresApi {
     }
 }
 
+
 /* **************************************************************************** */
 /* CLASES COMPLEMENTARIAS DEL AMBITO DEL "PRESENTADOR" */
 
@@ -1639,8 +1640,8 @@ NOTAS:
 A través de esta clase, en combinación con el uso de esquemas de dominio y de interacciones, se implementa un robusto sistema de control de acceso basado en roles (RBAC), esencial para aplicaciones multiusuario y para garantizar la seguridad y el acceso apropiado a las funcionalidades en las aplicaciones de mayor complejidad.
 */
 class ControladorAcceso {
-    constructor(gestorEstados) {
-        this.gestorEstados = gestorEstados;
+    constructor(gestorEstado) {
+        this.gestorEstado = gestorEstado;
     }
     // Funciones privadas para validaciones
     _validarCadenaNoVacia(valor, nombre) {
@@ -1729,7 +1730,7 @@ class ControladorAcceso {
         Base.trazarFlujo(this.constructor.name, 'registrarDatosSesion', 3);
         if (datos && datos.sesion) {
             const datosSesion = this._recuperarDatosAutenticados(datos.sesion);
-            this.gestorEstados.actualizarEstado('', Base.Estados.sesion, datosSesion, true);
+            this.gestorEstado.actualizarEstado('', Base.Estados.sesion, datosSesion, true);
             return true;
         }
         return false;
@@ -1737,7 +1738,7 @@ class ControladorAcceso {
     vaciarDatosSesion() {
         Base.trazarFlujo(this.constructor.name, 'vaciarDatosSesion', 3);
         try {
-            this.gestorEstados.actualizarEstado('', Base.Estados.sesion, null, true);
+            this.gestorEstado.actualizarEstado('', Base.Estados.sesion, null, true);
             return this.borrarTokenAutenticacion();
         } catch (error) {
             throw error;
@@ -1911,7 +1912,7 @@ class ProcesadorEsquemas {
                     "diccionario": servicio, 
                     "navegacion": servicio
                 };
-                const idiomaElegido = portadorInformacion.gestorEstados.obtenerValor(Base.Estados.preferencias, 'idioma');
+                const idiomaElegido = portadorInformacion.gestorEstado.obtenerValor(Base.Estados.preferencias, 'idioma');
                 const esquemasCompletos = await this._cargarEsquemas(seleccion);
                 const esquemasReducidos = await this._cargarEsquemas(seleccion, idiomaElegido);
                 let esquemasFusionados = esquemasCompletos;
@@ -1960,8 +1961,8 @@ Es esencial para mantener la coherencia del flujo de datos en operaciones comple
 Juega un rol clave en el traspaso y sincronización de información entre la Interfaz de Usuario (Vista) y el Administrador de Datos (Modelo), potenciando la comunicación y colaboración entre estas capas.
 */
 class PortadorInformacion {
-    constructor(gestorEstados=null) {
-        this.gestorEstados = gestorEstados;
+    constructor(gestorEstado=null) {
+        this.gestorEstado = gestorEstado;
         this.FORMULARIO = null;
         this.INFORME = null;
         this.DICCIONARIO = null;
@@ -2099,8 +2100,8 @@ class PortadorInformacion {
                         caso: this.caso,
                         lista: this.lista,
                         respuesta: this.respuesta,
-                        sesion: Object.fromEntries(this.gestorEstados.obtenerEstado(Base.Estados.sesion)),
-                        aplicacion: Object.fromEntries(this.gestorEstados.obtenerEstado(Base.Estados.aplicacion))
+                        sesion: Object.fromEntries(this.gestorEstado.obtenerEstado(Base.Estados.sesion)),
+                        aplicacion: Object.fromEntries(this.gestorEstado.obtenerEstado(Base.Estados.aplicacion))
                     },
                     plantilla: this.peticion['plantilla'] || '',
                     informe: this.peticion['informe'] || ''
@@ -2284,7 +2285,7 @@ Interactúa con "CoordinadorGeneral" para disparar la configuración de servicio
 */
 class ConfiguradorServicios {
     constructor() {
-        this.gestorEstados = null;
+        this.gestorEstado = null;
         this.traductorIdiomas = null;
         this.definicionServicio = null;
         this.configuraciones = null;
@@ -2428,7 +2429,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosModelo[identificador] || indiceEventosVista[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstados.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador[reaccionCoordinador].bind(coordinador)
                     );
@@ -2452,7 +2453,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosModelo[identificador] || indiceEventosVista[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstados.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador.operadorDatos[reaccionModelo].bind(coordinador.operadorDatos)
                     );
@@ -2476,7 +2477,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosVista[identificador] || indiceEventosModelo[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstados.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador.interfazUsuario[reaccionVista].bind(coordinador.interfazUsuario)
                     );
@@ -2495,7 +2496,7 @@ class ConfiguradorServicios {
         }
     }
     _asignarElementosUI(interfaz, vaciar=false) {
-        const elementosUI = this.gestorEstados.obtenerValor(Base.Estados.vista, 'elementosUI');
+        const elementosUI = this.gestorEstado.obtenerValor(Base.Estados.vista, 'elementosUI');
         if (elementosUI) {
             if (vaciar) {interfaz.ELEMENTOS.clear();}
             for (let indice = 0; indice < elementosUI.length; indice++) {
@@ -2579,10 +2580,10 @@ class ConfiguradorServicios {
         }
     }
     // Funciones públicas
-    coordinarInicio(gestorEstados, traductorIdiomas) {
+    coordinarInicio(gestorEstado, traductorIdiomas) {
         Base.trazarFlujo(this.constructor.name, 'coordinarInicio', 2);
-        if (typeof gestorEstados === 'object') {
-            this.gestorEstados = gestorEstados;
+        if (typeof gestorEstado === 'object') {
+            this.gestorEstado = gestorEstado;
             this.traductorIdiomas = traductorIdiomas;
         }
     }
@@ -2596,18 +2597,18 @@ class ConfiguradorServicios {
             const rutaEsquema = urlModuloServicio.replace('.js','.json');
             const resultadoCarga = await this._cargarConfiguraciones(rutaEsquema);
             if (resultadoCarga) {
-                this.gestorEstados.asignarEstado(
+                this.gestorEstado.asignarEstado(
                     Base.Estados.vista, 
                     this._obtenerConfiguracion('configuracionVista')
                 );
-                this.gestorEstados.asignarEstado(
+                this.gestorEstado.asignarEstado(
                     Base.Estados.modelo, 
                     this._obtenerConfiguracion('configuracionModelo')
                 );
-                const rutaIdioma = this.gestorEstados.obtenerValor(Base.Estados.vista, 'rutaIdioma');
-                const rutaPlantillas = this.gestorEstados.obtenerValor(Base.Estados.vista, 'rutaPlantillas');
-                const idiomaElegido = this.gestorEstados.obtenerValor(Base.Estados.preferencias, 'idioma');
-                const rutaDominio = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'rutaDominio');
+                const rutaIdioma = this.gestorEstado.obtenerValor(Base.Estados.vista, 'rutaIdioma');
+                const rutaPlantillas = this.gestorEstado.obtenerValor(Base.Estados.vista, 'rutaPlantillas');
+                const idiomaElegido = this.gestorEstado.obtenerValor(Base.Estados.preferencias, 'idioma');
+                const rutaDominio = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'rutaDominio');
                 await this._cargarIdiomaUI(rutaIdioma, idiomaElegido);
                 await this._cargarPlantillasUI(rutaPlantillas);
                 await this._cargarEsquemasDominio(rutaDominio);
@@ -2619,7 +2620,7 @@ class ConfiguradorServicios {
     aplicarConfiguracion(coordinador) {
         Base.trazarFlujo(this.constructor.name, 'aplicarConfiguracion', 2);
         try {
-            const idServicio = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'idServicio');
+            const idServicio = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'idServicio');
             this._inyectarExtensiones(coordinador);
             this._extraerMapaInteracciones(coordinador, idServicio)
             this._configurarInteracciones(coordinador);
@@ -2649,8 +2650,8 @@ RESPONSABILIDADES:
 3. Verificación de Requisitos: Comprueba la existencia y la adecuación del entorno y de las dependencias necesarias para la operación de la aplicación.
 */
 class InstaladorAplicacion {
-    constructor(gestorEstados, interfazUsuario, rutaErrores) {
-        this.gestorEstados = gestorEstados;
+    constructor(gestorEstado, interfazUsuario, rutaErrores) {
+        this.gestorEstado = gestorEstado;
         this.interfazUsuario = interfazUsuario;
         this.manejadorErrores = new ManejadorErrores(this.interfazUsuario.traductorIdiomas, rutaErrores);
         this.estaInstaladaPwa = false;
@@ -2660,7 +2661,7 @@ class InstaladorAplicacion {
     // Funciones privadas
     async _enviarSuscripcionAlServidor(suscripcion) {
         const maxReintentos = 3;
-        const { urlServidorSuscribir } = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
+        const { urlServidorSuscribir } = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
         let intentos = 0;
         while (intentos < maxReintentos) {
             try {
@@ -2688,7 +2689,7 @@ class InstaladorAplicacion {
     }
     async _notificarDesuscripcionAlServidor(suscripcion) {
         try {
-            const { urlServidorDesuscribir } = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
+            const { urlServidorDesuscribir } = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
             const respuesta = await fetch(urlServidorDesuscribir, {
                 method: 'POST',
                 headers: {
@@ -2714,7 +2715,7 @@ class InstaladorAplicacion {
         return await this.trabajadorServicio.pushManager.getSubscription();
     }
     async _crearNuevaSuscripcion() {
-        const { clavePublicaServidor } = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
+        const { clavePublicaServidor } = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
         return await this.trabajadorServicio.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: Base.urlBase64Uint8Array(clavePublicaServidor)
@@ -2810,10 +2811,10 @@ class InstaladorAplicacion {
         if ('serviceWorker' in navigator) {
             try {
                 this.trabajadorServicio = await navigator.serviceWorker.register(urlTrabajadorServicio);
-                this.gestorEstados.emitirEventoMensaje('CONFIRMACION_SW_REGISTRADO');
+                this.gestorEstado.emitirEventoMensaje('CONFIRMACION_SW_REGISTRADO');
             } catch (error) {
                 const errorProcesado = this.manejadorErrores.procesarError(error);
-                this.gestorEstados.emitirEventoInformacion('ERROR_REGISTRAR_SW', errorProcesado);
+                this.gestorEstado.emitirEventoInformacion('ERROR_REGISTRAR_SW', errorProcesado);
             }
         }
     }
@@ -2826,7 +2827,7 @@ class InstaladorAplicacion {
                 }
             } catch (error) {
                 const errorProcesado = this.manejadorErrores.procesarError(error);
-                this.gestorEstados.emitirEventoInformacion('ERROR_INICIALIZAR_INSTALACION', errorProcesado);
+                this.gestorEstado.emitirEventoInformacion('ERROR_INICIALIZAR_INSTALACION', errorProcesado);
             }
         }
     }
@@ -2834,7 +2835,7 @@ class InstaladorAplicacion {
         Base.trazarFlujo(this.constructor.name, 'inicializarSuscripcion', 2);
         if ('serviceWorker' in navigator) {
             try {
-                const { urlServidorSuscribir, urlServidorDesuscribir, clavePublicaServidor } = this.gestorEstados.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
+                const { urlServidorSuscribir, urlServidorDesuscribir, clavePublicaServidor } = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'notificacionesPush');
                 const areaSuscripcion = this.interfazUsuario.ELEMENTOS.get('area_suscripcion');
                 if (areaSuscripcion) {
                     if (navigator.serviceWorker.controller) {
@@ -2846,14 +2847,14 @@ class InstaladorAplicacion {
                     }
                     navigator.serviceWorker.addEventListener('message', evento => {
                         if (evento.data && evento.data.type === 'NOTIFICATION_RECEIVED') {
-                            this.gestorEstados.emitirEventoMensaje('NOTIFICACION_PUSH_RECIBIDA', '', Base.Mensajes.AVISO, evento.data);
+                            this.gestorEstado.emitirEventoMensaje('NOTIFICACION_PUSH_RECIBIDA', '', Base.Mensajes.AVISO, evento.data);
                         }
                     });
                     this._activarBotonSuscripcion();
                 }
             } catch (error) {
                 const errorProcesado = this.manejadorErrores.procesarError(error);
-                this.gestorEstados.emitirEventoInformacion('ERROR_INICIALIZAR_SUSCRIPCION', errorProcesado);
+                this.gestorEstado.emitirEventoInformacion('ERROR_INICIALIZAR_SUSCRIPCION', errorProcesado);
             }
         }
     }
@@ -2877,13 +2878,13 @@ class InstaladorAplicacion {
             if (!suscripcionEnviada) {
                 throw new ErrorPersonalizado('ERROR_SUSCRIBIR_NOTIFICACIONES');
             }
-            this.gestorEstados.emitirEventoMensaje('CONFIRMACION_SUSCRIPCION_NOTIFICACIONES', this.interfazUsuario.traductorIdiomas._('SUSCRIPCION_EXITOSA'), Base.Mensajes.EXITO);
+            this.gestorEstado.emitirEventoMensaje('CONFIRMACION_SUSCRIPCION_NOTIFICACIONES', this.interfazUsuario.traductorIdiomas._('SUSCRIPCION_EXITOSA'), Base.Mensajes.EXITO);
             this.estaSuscritoNotificaciones = true;
             this._actualizarBotonSuscripcion();
             return suscripcionEnviada;
         } catch (error) {
             const errorProcesado = this.manejadorErrores.procesarError(error);
-            this.gestorEstados.emitirEventoInformacion('ERROR_SUSCRIBIR_NOTIFICACIONES', errorProcesado);
+            this.gestorEstado.emitirEventoInformacion('ERROR_SUSCRIBIR_NOTIFICACIONES', errorProcesado);
         }
     }
     async desuscribirNotificaciones() {
@@ -2899,12 +2900,12 @@ class InstaladorAplicacion {
             if (!notificacionEnviada) {
                 return;
             }
-            this.gestorEstados.emitirEventoMensaje('CONFIRMACION_DESUSCRIPCION_NOTIFICACIONES', this.interfazUsuario.traductorIdiomas._('DESUSCRIPCION_EXITOSA'), Base.Mensajes.EXITO);
+            this.gestorEstado.emitirEventoMensaje('CONFIRMACION_DESUSCRIPCION_NOTIFICACIONES', this.interfazUsuario.traductorIdiomas._('DESUSCRIPCION_EXITOSA'), Base.Mensajes.EXITO);
             this.estaSuscritoNotificaciones = false;
             this._actualizarBotonSuscripcion();
         } catch (error) {
             const errorProcesado = this.manejadorErrores.procesarError(error);
-            this.gestorEstados.emitirEventoInformacion('ERROR_DESUSCRIBIR_NOTIFICACIONES', errorProcesado);
+            this.gestorEstado.emitirEventoInformacion('ERROR_DESUSCRIBIR_NOTIFICACIONES', errorProcesado);
         }
     }
     // Funciones para instalación de la Aplicación (PWA)
@@ -2917,11 +2918,11 @@ class InstaladorAplicacion {
             window.promptInstalacion.prompt();
             const { outcome } = await window.promptInstalacion.userChoice;
             if (outcome === 'accepted') {
-                this.gestorEstados.emitirEventoMensaje('CONFIRMACION_PWA_INSTALADA', this.interfazUsuario.traductorIdiomas._('INSTALACION_EXITOSA'), Base.Mensajes.EXITO);
+                this.gestorEstado.emitirEventoMensaje('CONFIRMACION_PWA_INSTALADA', this.interfazUsuario.traductorIdiomas._('INSTALACION_EXITOSA'), Base.Mensajes.EXITO);
                 this.estaInstaladaPwa = true;
                 this._actualizarBotonInstalacion();
             } else {
-                this.gestorEstados.emitirEventoMensaje('INSTALACION_RECHAZADA_POR_USUARIO', this.interfazUsuario.traductorIdiomas._('INSTALACION_RECHAZADA'), Base.Mensajes.ALERTA);
+                this.gestorEstado.emitirEventoMensaje('INSTALACION_RECHAZADA_POR_USUARIO', this.interfazUsuario.traductorIdiomas._('INSTALACION_RECHAZADA'), Base.Mensajes.ALERTA);
                 this.estaInstaladaPwa = false;
                 this._actualizarBotonInstalacion();
                 const areaInstalacion = this.interfazUsuario.ELEMENTOS.get('area_instalacion');
@@ -2929,7 +2930,7 @@ class InstaladorAplicacion {
             }
         } catch (error) {
             const errorProcesado = this.manejadorErrores.procesarError(error);
-            this.gestorEstados.emitirEventoInformacion('ERROR_INSTALAR_PWA', errorProcesado);
+            this.gestorEstado.emitirEventoInformacion('ERROR_INSTALAR_PWA', errorProcesado);
         }
     }
 }
@@ -2937,7 +2938,7 @@ class InstaladorAplicacion {
 /* **************************************************************************** */
 /* CLASES DEL AMBITO "GLOBAL" */
 
-/* CLASE: GestorEstados [singleton]
+/* CLASE: GestorEstado [singleton]
 PROPOSITO: Mantener y gestionar el estado compartido en toda la aplicación, actuando como un repositorio centralizado para la información que puede ser utilizada, modificada y sincronizada por los diferentes servicios, capas y componentes del sistema, y proporcionando un punto de acceso unificado y coherente para ello.
 RESPONSABILIDADES:
 1. Centralización del Estado: Almacena el estado global de la aplicación, incluyendo configuraciones, datos de sesión, preferencias de usuario, datos temporales de las operaciones, y cualquier otro dato relevante que necesite ser compartido entre diferentes partes de la aplicación, ofreciendo además mecanismos para guardar y cargar el estado desde el almacenamiento local.
@@ -2951,7 +2952,7 @@ Interactúa con varias clases de la aplicación, ya que proporciona el estado ne
 - CoordinadorGeneral (junto con PortadorInformacion, ConfiguradorServicios e InstaladorAplicacion).
 - Todas las subclases de servicios derivadas de DefinicionServicio (que es donde realmente se programan las extensiones de los servicios desarrollados).
 */
-class GestorEstados {
+class GestorEstado {
     constructor(almacenamientoLocal='estadosApp', enrutadorEventos=null) {
         this.enrutadorEventos = enrutadorEventos || new EnrutadorEventos();
         this.nombreAlmacenamientoLocal = almacenamientoLocal;
@@ -2960,7 +2961,7 @@ class GestorEstados {
     }
     static obtenerInstancia(almacenamientoLocal='estadosApp', enrutadorEventos=null) {
         if (!this.instancia) {
-            this.instancia = new GestorEstados(almacenamientoLocal, enrutadorEventos);
+            this.instancia = new GestorEstado(almacenamientoLocal, enrutadorEventos);
         }
         return this.instancia;
     }
@@ -3354,8 +3355,8 @@ class Base {
             'interacciones': () => ({"CoordinadorGeneral.INTERACCIONES": coordinador.INTERACCIONES}),
             'historial': () => ({"CoordinadorGeneral.HISTORIAL": coordinador.HISTORIAL}),
             'operaciones': () => ({"OperadorDatos.OPERACIONES": coordinador.operadorDatos.OPERACIONES}),
-            'estados': () => ({"GestorEstados.ESTADOS": coordinador.gestorEstados.ESTADOS}),
-            'suscriptores': () => ({"EnrutadorEventos.SUSCRIPTORES": coordinador.gestorEstados.enrutadorEventos.SUSCRIPTORES}),
+            'estados': () => ({"GestorEstado.ESTADOS": coordinador.gestorEstado.ESTADOS}),
+            'suscriptores': () => ({"EnrutadorEventos.SUSCRIPTORES": coordinador.gestorEstado.enrutadorEventos.SUSCRIPTORES}),
             'registros': () => ({"RegistradorErrores.REGISTROS": coordinador.manejadorErrores.registradorErrores.REGISTROS}),
             'textos': () => ({"TraductorIdiomas.TEXTOS": coordinador.interfazUsuario.traductorIdiomas.TEXTOS}),
             'elementos': () => ({"InterfazUsuario.ELEMENTOS": coordinador.interfazUsuario.ELEMENTOS}),

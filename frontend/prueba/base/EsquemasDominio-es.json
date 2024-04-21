@@ -1,0 +1,144 @@
+{
+    "formularios": [
+        {
+            "id": "DatosIdentificacion",
+            "leyendas": {
+                "titulo": "Inicio de sesión reducido",
+                "descripcion": ""
+            },
+            "grupos": {
+                "datos_basicos": {"etiqueta": ""}
+            },
+            "campos": {
+                "username": {"etiqueta": "Correo-e-r", "ayuda": "", "error": "Debes ingresar un correo electrónico válido"},
+                "password": {"etiqueta": "Contraseña-r", "ayuda": "", "error": "(etiqueta) debe tener entre (min) y (max) caracteres"}
+            },
+            "interacciones": {
+                "enviarDatosIdentificacion": {"etiqueta": "Iniciar sesión-r", "titulo": ""}
+            }
+        },{
+            "id": "NuevoUsuario",
+            "leyendas": {
+                "titulo": "Agregar nuevo usuario",
+                "descripcion": "Complete los datos del nuevo usuario en el siguiente formulario"
+            },
+            "grupos": {
+                "datos_basicos": {"etiqueta": "Datos básicos"},
+                "perfil_usuario": {"etiqueta": "Perfil del usuario"}
+            },
+            "campos": {
+                "alias": {"etiqueta": "Alias", "ayuda": "Nombre para mostrar", "error": "(etiqueta) debe tener entre (min) y (max) caracteres, sólo letras, números y puntuación"},
+                "email": {"etiqueta": "Correo-e", "ayuda": "Debe ser único", "error": "Debes ingresar un correo electrónico válido"},
+                "clave": {"etiqueta": "Contraseña", "ayuda": "", "error": "(etiqueta) debe tener entre (min) y (max) caracteres"},
+                "roles": {"etiqueta": "Roles", "ayuda": "", "error": "Debes indicar al menos un rol para el usuario"}
+            },
+            "interacciones": {
+                "accionEnviarNuevoCaso": {"etiqueta": "Crear usuario", "titulo": ""}
+            }
+        },{
+            "id": "EdicionUsuario",
+            "leyendas": {
+                "titulo": "Editar datos del usuario",
+                "descripcion": ""
+            },
+            "grupos": {
+                "datos_basicos": {"etiqueta": "Datos básicos"},
+                "perfil_usuario": {"etiqueta": "Perfil del usuario"}
+            },
+            "campos": {
+                "id": {"etiqueta": "ID", "ayuda": "", "error": ""},
+                "alias": {"etiqueta": "Alias", "ayuda": "", "error": "(etiqueta) debe tener entre (min) y (max) caracteres, sólo letras, números y puntuación"},
+                "email": {"etiqueta": "Correo-e", "ayuda": "", "error": "Debes ingresar un correo electrónico válido"},
+                "roles": {"etiqueta": "Roles", "ayuda": "", "error": "Debes indicar al menos un rol para el usuario"},
+                "estado": {"etiqueta": "Estado", "ayuda": "", "error": ""}
+            },
+            "interacciones": {
+                "accionEnviarEdicionCaso": {"etiqueta": "Actualizar usuario", "titulo": ""}
+            }
+        }
+    ],
+    "informes": [
+        {
+            "id": "ListaUsuarios",
+            "leyendas": {
+                "etiqueta": "Buscador de usuarios",
+                "titulo": "Informe de usuarios",
+                "descripcion": "",
+                "total_datos": "{total} usuarios.",
+                "resumen_pagina": "Lista del {primero} al {ultimo}.",
+                "sin_datos": "No se encontraron usuarios."
+            },
+            "opciones": {
+                "basicas": {"etiqueta": "Filtros"},
+                "avanzadas": {"etiqueta": "Más opciones"}
+            },
+            "parametros": {
+                "alias": {"etiqueta": "Alias", "ayuda": "Buscar Alias"},
+                "email": {"etiqueta": "Correo-e", "ayuda": "Buscar Correo-e"},
+                "roles": {"etiqueta": "Rol", "ayuda": ""},
+                "estado": {"etiqueta": "Estado", "ayuda": ""},
+                "nav": {"etiqueta": "Página", "ayuda": ""},
+                "max": {"etiqueta": "Mostrar", "ayuda": ""}
+            },
+            "resultados": {
+                "id": {"etiqueta": "ID"},
+                "alias": {"etiqueta": "Alias"},
+                "email": {"etiqueta": "Correo-e"},
+                "estado": {"etiqueta": "Estado"}
+            },
+            "interacciones": {
+                "accionBuscarListaCasos": {"etiqueta": "Buscar", "titulo": ""},
+                "accionExportarListaCasos": {"etiqueta": "Exportar", "titulo": ""},
+                "accionImprimirListaCasos": {"etiqueta": "Imprimir", "titulo": ""}
+            },
+            "enlaces": {
+                "accionSolicitarDetalleCaso": {"etiqueta": "Editar usuario", "titulo": "Editar datos del usuario"},
+                "accionSolicitarEliminacionCaso": {"etiqueta": "Eliminar usuario", "titulo": "Eiminación de usuario"}
+            }
+        }
+    ],
+    "diccionarios": {
+        "base": {
+            "filtros": [
+                {"valor": "CONTIENE", "etiqueta": "Contiene el texto", "titulo": "Contiene"},
+                {"valor": "PALABRAS", "etiqueta": "Todas las palabras", "titulo": "Palabras"},
+                {"valor": "FRASE", "etiqueta": "Frase exacta", "titulo": "Frase"},
+                {"valor": "COINCIDE", "etiqueta": "Coincide todo", "titulo": "Coincide"}
+            ],
+            "max": [
+                {"valor": "10", "etiqueta": "10 resultados-r", "titulo": ""},
+                {"valor": "25", "etiqueta": "25 resultados-r", "titulo": ""},
+                {"valor": "50", "etiqueta": "50 resultados-r", "titulo": ""}
+            ],
+            "estado_usuario": [
+                {"valor": "3", "etiqueta": "Registrado", "titulo": ""},
+                {"valor": "0", "etiqueta": "Inactivo", "titulo": ""},
+                {"valor": "1", "etiqueta": "Activo", "titulo": ""},
+                {"valor": "2", "etiqueta": "Archivado", "titulo": ""}
+            ],
+            "roles_usuario": [
+                {"valor": "Usuario", "etiqueta": "Usuario", "titulo": ""},
+                {"valor": "Editor", "etiqueta": "Editor", "titulo": ""},
+                {"valor": "Admin", "etiqueta": "Administrador", "titulo": ""}
+            ]
+        }
+    },
+    "navegacion": {
+        "menus": {
+            "base": {"etiqueta": "Usuarios", "titulo": "Gestor de usuarios"},
+            "documentos": {"etiqueta": "Documentos", "titulo": "Gestor de documentos"}
+        },
+        "base": {
+            "accionSolicitarListaCasos": {"etiqueta": "Gestionar usuarios", "titulo": "Gestor de usuarios"},
+            "accionNuevoCaso": {"etiqueta": "Agregar usuario", "titulo": "Agregar nuevo usuario"}
+        },
+        "documentos": {
+            "accionSolicitarListaCasos": {"etiqueta": "Gestionar documentos", "titulo": "Gestor de documentos"},
+            "accionNuevoCaso": {"etiqueta": "Agregar documento", "titulo": "Agregar nuevo documento"}
+        },
+        "idiomas": {
+            "es": {"etiqueta": "Español", "titulo": "Cambiar a Español"},
+            "en": {"etiqueta": "Inglés", "titulo": "Cambiar a Inglés"}
+        }
+    }
+}

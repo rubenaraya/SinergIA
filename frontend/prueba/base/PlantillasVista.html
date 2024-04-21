@@ -1,0 +1,70 @@
+<div id="plantillaFormLogin">
+    <form id="((idFormLogin))" action="javascript:void(0)" class="was-validated">
+        <input type="hidden" name="interaccion" value="">
+        <div class="form-outline mb-3 area-campo campo-username">
+            <label class="form-label">((CAMPO_USERNAME))</label>
+            <input type="email" name="username" class="form-control" autocomplete="username" required="" value="">
+            <div class="invalid-feedback"></div>
+        </div>
+        <div class="form-outline mb-3 area-campo campo-password">
+            <label class="form-label">((CAMPO_PASSWORD))</label>
+            <input type="password" name="password" class="form-control" autocomplete="current-password" required="" value="">
+            <div class="invalid-feedback"></div>
+        </div>
+        <div class="col text-center">
+            <button type="submit" id="((idBotonLogin))" title="((BOTON_LOGIN))" class="btn btn-primary mx-auto" data-recurso="./login.php?r=s" data-esquema="DatosIdentificacion" data-servicio="base" data-operacion="enviarDatosIdentificacion">((BOTON_LOGIN))</button>
+        </div>
+    </form>
+</div>
+<div id="plantillaCaso">
+</div>
+<div id="plantillaLista">
+</div>
+<div id="plantillaPanel">
+    <div>Nombre: ((sesion_alias))</div>
+    <div>Correo-e: ((sesion_email))</div>
+    <div>Aplicación: ((aplicacion_nombre))</div>
+    <div>Situación caso: ((caso_situacion))</div>
+    <div>Total lista: ((lista_total))</div>
+    <div>Código: ((respuesta_codigo))</div>
+    <div>Fecha: ((fechahora_dma))</div>
+    <div>Hora: ((fechahora_hms))</div>
+</div>
+<div id="plantillaModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="((BOTON_CERRAR))"></button>
+            </div>
+            <div class="modal-body">
+                ((contenido_modal))
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="((BOTON_CANCELAR))"><i class="bi bi-x-square"></i> ((BOTON_CANCELAR))</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="plantillaCampoHidden">
+</div>
+<div id="plantillaCampoText">
+</div>
+<div id="plantillaCampoEmail">
+</div>
+<div id="plantillaCampoPassword">
+</div>
+<div id="plantillaCampoDate">
+</div>
+<div id="plantillaCampoTextarea">
+</div>
+<div id="plantillaCampoLabel">
+</div>
+<div id="plantillaCampoSwitch">
+</div>
+<div id="plantillaCampoSelect">
+</div>
+<div id="plantillaCampoTime">
+</div>
+<div id="plantillaCampoCheckbox">
+</div>

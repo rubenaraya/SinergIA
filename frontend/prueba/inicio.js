@@ -12,7 +12,7 @@ window.onload = async () => {
             const interfazUsuario = InterfazUsuario.obtenerInstancia(bootstrap);
             const operadorDatos = OperadorDatos.obtenerInstancia();
             coordinador = CoordinadorGeneral.obtenerInstancia(operadorDatos, interfazUsuario);
-            window.aplicacionIniciada = await coordinador.coordinarInicio('./manifest.json', './errores.php', GestorEstados.obtenerInstancia());
+            window.aplicacionIniciada = await coordinador.coordinarInicio('./manifest.json', './errores.php', GestorEstado.obtenerInstancia());
             if (window.aplicacionIniciada) {
                 await coordinador.ejecutarServicio('./frontend/servicios/base/servicio.js');
             }

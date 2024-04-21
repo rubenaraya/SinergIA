@@ -1,9 +1,9 @@
 # backend\pysinergia\entorno.py
 
 # --------------------------------------------------
-# Clase: GestorEstados
+# Clase: GestorEstado
 # --------------------------------------------------
-class GestorEstados():
+class GestorEstado():
     def __init__(mi):
         ...
     # --------------------------------------------------
