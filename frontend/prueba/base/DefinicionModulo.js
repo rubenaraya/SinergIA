@@ -87,7 +87,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 this.interfazUsuario.alternarEsperando(true);
                 const parametros = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     recurso: recurso,
                     servicio: servicio,
@@ -110,7 +110,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { uid, recurso, esquema, operacion, servicio } = contexto;
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
@@ -129,7 +129,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { uid, recurso, esquema, operacion, servicio, plantilla } = contexto;
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
@@ -151,7 +151,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const valores = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
@@ -175,7 +175,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const valores = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     recurso: recurso,
                     servicio: servicio,
@@ -197,8 +197,8 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { recurso, esquema, operacion, servicio, plantilla } = contexto;
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
-                this.gestorEstados.emitirEventoInformacion('ENVIANDO_PETICION', contexto);
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                this.gestorEstado.emitirEventoInformacion('ENVIANDO_PETICION', contexto);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     informe: esquema,
                     recurso: recurso,
@@ -218,7 +218,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { esquema, servicio, plantilla } = contexto;
                 const detalleInteraccion = this.controlarAcceso(accion, servicio);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
-                const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     servicio: servicio,
                     formulario: esquema,
@@ -253,7 +253,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { recurso, operacion, selector, servicio } = contexto;
                 const contenido = this.interfazUsuario.receptorUI.obtenerValorCampo(selector);
                 if (contenido) {
-                    const portadorInformacion = new PortadorInformacion(this.gestorEstados);
+                    const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                     portadorInformacion.prepararPeticion(operacion, {
                         recurso: recurso,
                         servicio: servicio,
@@ -379,7 +379,7 @@ class DefinicionModuloBase extends DefinicionModulo {
             } catch (error) {
                 this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
             } finally {
-                this.gestorEstados.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
+                this.gestorEstado.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
             }
         },
         reaccionResultadoNuevoInput: function(informacion) {
