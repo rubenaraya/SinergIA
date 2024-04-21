@@ -2,7 +2,7 @@
 
 import { AdaptadorApi } from './AdaptadorApi.js';
 
-/* CLASE: AdaptadorApiOpenAI (subclase)
+/* CLASE: ApiOpenAI (subclase)
 PROPOSITO: es una subclase específica de "AdaptadorApi" diseñada para interactuar con la API de OpenAI, particularmente con el modelo GPT-4. Se encarga de formatear las peticiones y adaptar las respuestas para su uso en la aplicación, cumpliendo con los requisitos y restricciones específicos de la API de OpenAI.
 RESPONSABILIDADES:
 1. Formatear las peticiones para cumplir con los formatos y limitaciones de la API de OpenAI, incluyendo el manejo de parámetros como prompt, temperature, max_tokens, entre otros.
@@ -13,7 +13,7 @@ NOTAS:
 Hereda de la superclase "AdaptadorApi", aprovechando sus funcionalidades generales para adaptadores de API y extendiéndolas para cumplir con las especificidades de la API de OpenAI.
 Depende de la configuración de la API de OpenAI, incluyendo URL base, claves de acceso y otros parámetros específicos.
 */
-export class AdaptadorApiOpenAI extends AdaptadorApi {
+export class ApiOpenAI extends AdaptadorApi {
     constructor() {
         super();
     }
@@ -76,4 +76,4 @@ export class AdaptadorApiOpenAI extends AdaptadorApi {
         return respuesta.choices[0].text;
     }
 }
-export const adaptador = new AdaptadorApiOpenAI();
+export const adaptador = new ApiOpenAI();

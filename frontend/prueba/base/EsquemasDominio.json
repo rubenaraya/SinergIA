@@ -14,7 +14,7 @@
                 "password": {"grupo": "datos_basicos", "vista": "password", "etiqueta": "Contraseña", "ayuda": "", "autocompletar": "current-password", "requerido": "1", "editable": "1", "tipo": "texto", "minimo": "5", "maximo": "20", "regla": "", "error": "(etiqueta) debe tener entre (min) y (max) caracteres", "diccionario": "", "inicial": "", "formato": ""}
             },
             "interacciones": {
-                "enviarDatosIdentificacion": {"etiqueta": "Iniciar sesión", "icono": "", "esquema": "DatosIdentificacion", "operacion": "enviarDatosIdentificacion", "recurso": "/login.php?r=s", "servicio": "base", "plantilla": "", "titulo": ""}
+                "enviarDatosIdentificacion": {"etiqueta": "Iniciar sesión", "icono": "", "esquema": "DatosIdentificacion", "operacion": "enviarDatosIdentificacion", "recurso": "/login.php?r=s", "modulo": "base", "plantilla": "", "titulo": ""}
             }
         },
         {
@@ -34,7 +34,7 @@
                 "roles": {"grupo": "perfil_usuario", "vista": "checkbox", "etiqueta": "Roles", "ayuda": "", "autocompletar": "", "aceptar": "", "requerido": "", "editable": "1", "tipo": "opciones", "minimo": "1", "maximo": "9", "regla": "", "excluir": "", "error": "Debes indicar al menos un rol para el usuario", "pos": "4", "diccionario": "roles_usuario", "inicial": "", "formato": "", "permisos": "*"}
             },
             "interacciones": {
-                "accionEnviarNuevoCaso": {"etiqueta": "Crear usuario", "icono": "bi-check-square", "esquema": "NuevoUsuario", "operacion": "enviarNuevoCaso", "recurso": "/usuarios", "servicio": "base", "plantilla": "", "titulo": "", "permisos": "Admin"}
+                "accionEnviarNuevoCaso": {"etiqueta": "Crear usuario", "icono": "bi-check-square", "esquema": "NuevoUsuario", "operacion": "enviarNuevoCaso", "recurso": "/usuarios", "modulo": "base", "plantilla": "", "titulo": "", "permisos": "Admin"}
             }
         },{
             "id": "EdicionUsuario",
@@ -54,7 +54,7 @@
                 "estado": {"grupo": "perfil_usuario", "vista": "select", "etiqueta": "Estado", "ayuda": "", "autocompletar": "", "aceptar": "", "requerido": "", "editable": "1", "tipo": "texto", "minimo": "1", "maximo": "20", "regla": "", "excluir": "", "error": "", "diccionario": "estado_usuario", "inicial": "e0", "formato": "", "permisos": "*"}
             },
             "interacciones": {
-                "accionEnviarEdicionCaso": {"etiqueta": "Actualizar usuario", "icono": "bi-check-square", "esquema": "EdicionUsuario", "operacion": "enviarEdicionCaso", "recurso": "/usuarios/<uid>", "servicio": "base", "plantilla": "", "titulo": "", "permisos": "*"}
+                "accionEnviarEdicionCaso": {"etiqueta": "Actualizar usuario", "icono": "bi-check-square", "esquema": "EdicionUsuario", "operacion": "enviarEdicionCaso", "recurso": "/usuarios/<uid>", "modulo": "base", "plantilla": "", "titulo": "", "permisos": "*"}
             }
         }
     ],
@@ -88,13 +88,13 @@
                 "estado": {"etiqueta": "Estado", "diccionario": "estado_usuario", "alineacion": "center", "formato": "badge", "visible": "1", "ancho": "10", "permisos": "*"}
             },
             "interacciones": {
-                "accionBuscarListaCasos": {"etiqueta": "Buscar", "icono": "bi-search", "esquema": "ListaUsuarios", "operacion": "solicitarListaCasos", "recurso": "/usuarios", "servicio": "base", "plantilla": "plantillaLista", "titulo": "", "permisos": "*"},
-                "accionExportarListaCasos": {"etiqueta": "Exportar", "icono": "bi-download", "esquema": "ListaUsuarios", "operacion": "?", "recurso": "/usuarios/exportar", "servicio": "base", "plantilla": "", "titulo": "", "permisos": "Admin,Editor"},
-                "accionImprimirListaCasos": {"etiqueta": "Imprimir", "icono": "bi-print", "esquema": "ListaUsuarios", "operacion": "?", "recurso": "/usuarios/imprimir", "servicio": "base", "plantilla": "", "titulo": "", "permisos": "Admin,Editor"}
+                "accionBuscarListaCasos": {"etiqueta": "Buscar", "icono": "bi-search", "esquema": "ListaUsuarios", "operacion": "solicitarListaCasos", "recurso": "/usuarios", "modulo": "base", "plantilla": "plantillaLista", "titulo": "", "permisos": "*"},
+                "accionExportarListaCasos": {"etiqueta": "Exportar", "icono": "bi-download", "esquema": "ListaUsuarios", "operacion": "?", "recurso": "/usuarios/exportar", "modulo": "base", "plantilla": "", "titulo": "", "permisos": "Admin,Editor"},
+                "accionImprimirListaCasos": {"etiqueta": "Imprimir", "icono": "bi-print", "esquema": "ListaUsuarios", "operacion": "?", "recurso": "/usuarios/imprimir", "modulo": "base", "plantilla": "", "titulo": "", "permisos": "Admin,Editor"}
             },
             "enlaces": {
-                "accionSolicitarDetalleCaso": {"etiqueta": "Editar usuario", "icono": "bi-pencil-square", "esquema": "EdicionUsuario", "operacion": "solicitarDetalleCaso", "recurso": "/usuarios/<uid>", "servicio": "base", "plantilla": "plantillaCaso", "titulo": "Editar datos del usuario", "permisos": "Admin,Editor"},
-                "accionSolicitarEliminacionCaso": {"etiqueta": "Eliminar usuario", "icono": "bi-trash", "esquema": "EdicionUsuario", "operacion": "solicitarEliminacionCaso", "recurso": "/usuarios/<uid>", "servicio": "base", "plantilla": "", "titulo": "Eiminación de usuario", "permisos": "Admin"}
+                "accionSolicitarDetalleCaso": {"etiqueta": "Editar usuario", "icono": "bi-pencil-square", "esquema": "EdicionUsuario", "operacion": "solicitarDetalleCaso", "recurso": "/usuarios/<uid>", "modulo": "base", "plantilla": "plantillaCaso", "titulo": "Editar datos del usuario", "permisos": "Admin,Editor"},
+                "accionSolicitarEliminacionCaso": {"etiqueta": "Eliminar usuario", "icono": "bi-trash", "esquema": "EdicionUsuario", "operacion": "solicitarEliminacionCaso", "recurso": "/usuarios/<uid>", "modulo": "base", "plantilla": "", "titulo": "Eiminación de usuario", "permisos": "Admin"}
             }
         }
     ],
@@ -126,21 +126,21 @@
     },
     "navegacion": {
         "menus": {
-            "base": {"etiqueta": "Usuarios", "icono": "", "esquema": "ListaUsuarios", "operacion": "abrirServicio", "recurso": "/pruebas.php?a=abrirServicio", "servicio": "base", "plantilla": "plantillaPanel", "titulo": "Gestor de usuarios", "permisos": "*"},
-            "documentos": {"etiqueta": "Documentos", "icono": "", "esquema": "ListaDocumentos", "operacion": "abrirServicio", "recurso": "/documentos", "servicio": "documentos", "plantilla": "plantillaPanel", "titulo": "Gestor de documentos", "permisos": "*"}
+            "base": {"etiqueta": "Usuarios", "icono": "", "esquema": "ListaUsuarios", "operacion": "abrirModulo", "recurso": "/pruebas.php?a=abrirModulo", "modulo": "base", "plantilla": "plantillaPanel", "titulo": "Gestor de usuarios", "permisos": "*"},
+            "documentos": {"etiqueta": "Documentos", "icono": "", "esquema": "ListaDocumentos", "operacion": "abrirModulo", "recurso": "/documentos", "modulo": "documentos", "plantilla": "plantillaPanel", "titulo": "Gestor de documentos", "permisos": "*"}
         },
         "base": {
-            "accionAbrirServicio": {"etiqueta": "Usuarios", "icono": "", "esquema": "ListaUsuarios", "operacion": "abrirServicio", "recurso": "/pruebas.php?a=abrirServicio", "servicio": "base", "plantilla": "plantillaPanel", "titulo": "Gestor de usuarios", "permisos": "*"},
-            "accionSolicitarListaCasos": {"etiqueta": "Gestionar usuarios", "icono": "bi-person-circle", "esquema": "ListaUsuarios", "operacion": "solicitarListaCasos", "recurso": "/usuarios", "servicio": "base", "plantilla": "plantillaLista", "titulo": "Gestor de usuarios", "permisos": "*"},
-            "accionNuevoCaso": {"etiqueta": "Agregar usuario", "icono": "bi-person-plus-fill", "esquema": "NuevoUsuario", "operacion": "", "recurso": "/usuarios", "servicio": "base", "plantilla": "plantillaCaso", "titulo": "Agregar nuevo usuario", "permisos": "Admin"}
+            "accionAbrirModulo": {"etiqueta": "Usuarios", "icono": "", "esquema": "ListaUsuarios", "operacion": "abrirModulo", "recurso": "/pruebas.php?a=abrirModulo", "modulo": "base", "plantilla": "plantillaPanel", "titulo": "Gestor de usuarios", "permisos": "*"},
+            "accionSolicitarListaCasos": {"etiqueta": "Gestionar usuarios", "icono": "bi-person-circle", "esquema": "ListaUsuarios", "operacion": "solicitarListaCasos", "recurso": "/usuarios", "modulo": "base", "plantilla": "plantillaLista", "titulo": "Gestor de usuarios", "permisos": "*"},
+            "accionNuevoCaso": {"etiqueta": "Agregar usuario", "icono": "bi-person-plus-fill", "esquema": "NuevoUsuario", "operacion": "", "recurso": "/usuarios", "modulo": "base", "plantilla": "plantillaCaso", "titulo": "Agregar nuevo usuario", "permisos": "Admin"}
         },
         "documentos": {
-            "accionSolicitarListaCasos": {"etiqueta": "Gestionar documentos", "icono": "bi-files", "esquema": "ListaDocumentos", "operacion": "solicitarListaCasos", "recurso": "/documentos", "servicio": "documentos", "plantilla": "plantillaLista", "titulo": "Gestor de documentos", "permisos": "*"},
-            "accionNuevoCaso": {"etiqueta": "Agregar documento", "icono": "bi-file", "esquema": "NuevoDocumento", "operacion": "", "recurso": "/documentos", "servicio": "documentos", "plantilla": "plantillaCaso", "titulo": "Agregar nuevo documento", "permisos": "Admin,Editor"}
+            "accionSolicitarListaCasos": {"etiqueta": "Gestionar documentos", "icono": "bi-files", "esquema": "ListaDocumentos", "operacion": "solicitarListaCasos", "recurso": "/documentos", "modulo": "documentos", "plantilla": "plantillaLista", "titulo": "Gestor de documentos", "permisos": "*"},
+            "accionNuevoCaso": {"etiqueta": "Agregar documento", "icono": "bi-file", "esquema": "NuevoDocumento", "operacion": "", "recurso": "/documentos", "modulo": "documentos", "plantilla": "plantillaCaso", "titulo": "Agregar nuevo documento", "permisos": "Admin,Editor"}
         },
         "idiomas": {
-            "es": {"etiqueta": "Español", "icono": "es", "esquema": "", "operacion": "?", "recurso": "/", "servicio": "base", "plantilla": "", "titulo": "Cambiar a Español", "permisos": "*"},
-            "en": {"etiqueta": "Inglés", "icono": "en", "esquema": "", "operacion": "?", "recurso": "/", "servicio": "base", "plantilla": "", "titulo": "Cambiar a Inglés", "permisos": "*"}
+            "es": {"etiqueta": "Español", "icono": "es", "esquema": "", "operacion": "?", "recurso": "/", "modulo": "base", "plantilla": "", "titulo": "Cambiar a Español", "permisos": "*"},
+            "en": {"etiqueta": "Inglés", "icono": "en", "esquema": "", "operacion": "?", "recurso": "/", "modulo": "base", "plantilla": "", "titulo": "Cambiar a Inglés", "permisos": "*"}
         }
     }
 }

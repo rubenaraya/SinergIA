@@ -24,9 +24,9 @@ JSinergIA adhiere a varios estándares técnicos, patrones de diseño y buenas p
 8. Estándares de Codificación: La biblioteca sigue estándares de codificación claros y consistentes, como la nomenclatura adecuada, el empleo de estilos de codificación modernos y concisos, la organización lógica del código y la documentación interna, lo que ayuda a la legibilidad y el mantenimiento. Todos los nombres de clases, funciones y variables definidos en el código están en español, para facilitar su comprensión y aprendizaje para un público no especializado.
 9. Gestión de Estado y Contexto: Manejo avanzado del estado global y contexto particular de la aplicación, crucial en SPAs y PWAs, siguiendo principios de inmutabilidad y transparencia en la transferencia de estados.
 10. Sistema integrado de Gestión de Errores: Implementa un sistema estructurado y coherente para la gestión de errores, lo que aumenta la robustez y fiabilidad de las aplicaciones.
-11. Modularidad y Extensibilidad: La estructura modular de la biblioteca y su diseño orientado a la extensibilidad hacen que sea adaptable a diferentes contextos y necesidades, facilitando la incorporación de nuevas funcionalidades y servicios según los requerimientos de cada proyecto.
+11. Modularidad y Extensibilidad: La estructura modular de la biblioteca y su diseño orientado a la extensibilidad hacen que sea adaptable a diferentes contextos y necesidades, facilitando la incorporación de nuevas funcionalidades según los requerimientos de cada proyecto.
 12. Soporte para Internacionalización y Localización: La biblioteca está diseñada para manejar múltiples idiomas y configuraciones locales en forma desacoplada del código fuente.
-13. Diseño basado en Dominios (DDD): La biblioteca adopta principios de Domain-Driven Design (DDD) para modelar la lógica del dominio, a través de la creación y gestión de sus "esquemas de dominio" que representan la esencia de la lógica del dominio de cada servicio, proporcionando una separación clara y un desacoplamiento efectivo de la capa del dominio respecto a otras capas de la arquitectura.
+13. Diseño basado en Dominios (DDD): La biblioteca adopta principios de Domain-Driven Design (DDD) para modelar la lógica del dominio, a través de la creación y gestión de sus "esquemas de dominio" que representan la esencia de la lógica del dominio de cada modulo, proporcionando una separación clara y un desacoplamiento efectivo de la capa del dominio respecto a otras capas de la arquitectura.
 
 LICENCIA DE USO
 Este software fue desarrollado por Rubén Araya Tagle (c) 2024, con la asistencia y colaboración de ChatGPT (GPT-4), un Modelo de Lenguaje de OpenAI. Este proyecto es un testimonio de la sinergia entre la creatividad humana y la inteligencia artificial, y se ofrece bajo la Licencia MIT para fomentar su uso, estudio, modificación y distribución de manera abierta y accesible.
@@ -43,10 +43,10 @@ RESPONSABILIDADES:
 3. Control de Flujo de Datos: Orquesta el flujo de datos entre la interfaz de usuario y los servicios de back-end, asegurando que los datos correctos se entreguen en el momento adecuado.
 4. Integración de Componentes: Actúa como un mediador entre diferentes componentes de la aplicación, facilitando su integración y comunicación eficiente.
 5. Manejo de Eventos: Responde a eventos generados por cambios en el estado de la aplicación o por acciones del usuario, y ejecuta las acciones y reacciones correspondientes.
-NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada servicio. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
+NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada modulo. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
 - Funciones de "acciones" (activas): manejan eventos de interacción en la UI y ejecutan "acciones".
 - Funciones de "reacciones" (reactivas): manejan eventos de cambios de estado (del Modelo o la Vista) y "reaccionan".
-Todas estas funciones se deben agregar a subclase de "DefinicionServicio" donde se implementará cada servicio específico (dentro de "accionesCoordinador" y "reaccionesCoordinador").
+Todas estas funciones se deben agregar a subclase de "DefinicionModulo" donde se implementará cada modulo específico (dentro de "accionesCoordinador" y "reaccionesCoordinador").
 */
 class CoordinadorGeneral { //(PRESENTADOR)
     constructor(operadorDatos, interfazUsuario) {
@@ -57,7 +57,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
         this.controladorAcceso = null;
         this.procesadorEsquemas = null;
         this.manejadorErrores = null;
-        this.servicio = '';
+        this.modulo = '';
         this.rutaErrores = '';
         this.INTERACCIONES = {};
         this.HISTORIAL = {};
@@ -136,30 +136,30 @@ class CoordinadorGeneral { //(PRESENTADOR)
         }
     }
     // Funciones de control
-    async lanzarInteraccion(interaccion, servicio=null) {
+    async lanzarInteraccion(interaccion, modulo=null) {
         Base.trazarFlujo(this.constructor.name, 'lanzarInteraccion', 1, interaccion);
         try {
-            const detalleInteraccion = this.controlarAcceso(interaccion, servicio);
+            const detalleInteraccion = this.controlarAcceso(interaccion, modulo);
             if (!detalleInteraccion) { return this.rechazarAcceso(interaccion, detalleInteraccion); }
             await this[interaccion]({...detalleInteraccion});
         } catch (error) {
             this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
-    controlarAcceso(interaccion, servicio=null) {
-        Base.trazarFlujo(this.constructor.name, 'controlarAcceso', 1, interaccion, servicio);
+    controlarAcceso(interaccion, modulo=null) {
+        Base.trazarFlujo(this.constructor.name, 'controlarAcceso', 1, interaccion, modulo);
         try {
-            if (!servicio) {
-                servicio = this.servicio;
+            if (!modulo) {
+                modulo = this.modulo;
             }
-            if (!servicio || !interaccion) {
+            if (!modulo || !interaccion) {
                 throw new ErrorPersonalizado('ERROR_INTERACCION_NO_VALIDA', '', {}, Base.Errores.NO_VALIDO);
             }
-            const mapaServicio = this.INTERACCIONES[servicio];
-            if (!mapaServicio) {
+            const mapaModulo = this.INTERACCIONES[modulo];
+            if (!mapaModulo) {
                 throw new ErrorPersonalizado('ERROR_INTERACCION_NO_ENCONTRADA', '', {}, Base.Errores.NO_ENCONTRADO);
             }
-            const detalleInteraccion = mapaServicio.get(interaccion);
+            const detalleInteraccion = mapaModulo.get(interaccion);
             if (!(detalleInteraccion && detalleInteraccion.permisos && typeof this[interaccion] === 'function')) {
                 throw new ErrorPersonalizado('ERROR_INTERACCION_NO_PROCESABLE', '', {}, Base.Errores.NO_PROCESABLE);
             }
@@ -229,7 +229,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 portadorInformacion.prepararPeticion(contexto.operacion, {
                     valores: valores,
                     recurso: contexto.recurso,
-                    servicio: contexto.servicio,
+                    modulo: contexto.modulo,
                     formulario: contexto.esquema
                 });
                 await this.procesarEsquemas(portadorInformacion);
@@ -328,7 +328,7 @@ RESPONSABILIDADES:
 3. Transformación de Datos: Convierte los datos recibidos de las APIs en formatos utilizables por la aplicación y viceversa.
 4. Validación de Datos: Asegura la integridad y validez de los datos antes de su procesamiento o envío a servicios externos.
 5. Manejo de Estado del Modelo: Mantiene el estado local de los datos, proporcionando un punto de acceso centralizado para su consulta y actualización, y publicando "eventos de Modelo" para notificar y/o encadenar cambios.
-NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada servicio. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
+NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada modulo. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
 - Funciones para implementar reacciones a eventos (tanto de la Vista como del propio Modelo).
 - Operaciones de Datos, similares a "efectuarOperacion".
 */
@@ -460,7 +460,7 @@ RESPONSABILIDADES:
 3. Comunicación con otros Componentes: Actúa como intermediario entre el usuario y otros componentes del sistema, a través del CoordinadorGeneral.
 4. Actualización Dinámica de UI: Actualiza la interfaz en respuesta a cambios de estado en la aplicación, asegurando que los datos mostrados estén siempre actualizados.
 5. Manejo de Estado de la Vista: Mantiene el estado de la vista, proporcionando un punto de acceso centralizado para su consulta y actualización, y publicando "eventos de Vista" para notificar y/o encadenar cambios.
-NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada servicio. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
+NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través de la configuración dinámica que se aplica al ejecutar cada modulo. Las funciones que se pueden agregar para ampliar la funcionalidad de esta clase se dividen en dos tipos principales:
 - Funciones para implementar reacciones a eventos (tanto eventos del Modelo como de la propia Vista).
 - Manejadores de interacciones de UI (manejadoresInteracciones).
 - Controladores de "objetos de datos" de la UI.
@@ -1278,7 +1278,7 @@ RESPONSABILIDADES:
 2. Generación de Reportes de Error: Produce reportes de los errores de validación encontrados para facilitar la corrección y la retroalimentación al usuario sobre los elementos que no cumplen las condiciones establecidas.
 3. Interacción con Componentes de Datos: Trabaja en conjunto con ProcesadorEsquemas y OperadorDatos para garantizar que los datos que se procesan y almacenan sean válidos.
 NOTAS: Esta clase depende de los "esquemas", donde se definen los criterios y reglas para realizar las validaciones de los datos de formularios.
-Esta clase es ampliable mediante la inyección de validadores de datos, a través de la configuración dinámica que se aplica al ejecutar cada servicio.
+Esta clase es ampliable mediante la inyección de validadores de datos, a través de la configuración dinámica que se aplica al ejecutar cada modulo.
 */
 class ValidadorDatos {
     constructor() {
@@ -1635,7 +1635,7 @@ PROPOSITO: Administrar y aplicar las políticas de seguridad para el control de 
 RESPONSABILIDADES:
 1. Gestión de Autenticación y Roles: Administra el proceso de autenticación de usuarios, incluyendo el inicio y cierre de sus sesiones.
 2. Seguridad de Sesión: Mantiene la integridad y seguridad de las sesiones de usuario, gestionando aspectos como tokens de autenticación y tiempos de expiración.
-3. Control de Acceso Basado en Roles: Verifica las autorizaciones de los usuarios a los diferentes servicios y componentes de la aplicación, en función de sus roles asignados como credenciales y de los permisos de acceso definidos en los esquemas.
+3. Control de Acceso Basado en Roles: Verifica las autorizaciones de los usuarios a los diferentes módulos y componentes de la aplicación, en función de sus roles asignados como credenciales y de los permisos de acceso definidos en los esquemas.
 NOTAS:
 A través de esta clase, en combinación con el uso de esquemas de dominio y de interacciones, se implementa un robusto sistema de control de acceso basado en roles (RBAC), esencial para aplicaciones multiusuario y para garantizar la seguridad y el acceso apropiado a las funcionalidades en las aplicaciones de mayor complejidad.
 */
@@ -1770,13 +1770,13 @@ class ControladorAcceso {
 }
 
 /* CLASE: ProcesadorEsquemas
-PROPOSITO: Manejar y proporcionar acceso a los "esquemas de dominio" de los servicios que se utilizan en las distintas capas de la aplicación. Estos esquemas definen estructural y funcionalmente la arquitectura y el comportamiento del Modelo de cada uno de los servicios de la aplicación.
+PROPOSITO: Manejar y proporcionar acceso a los "esquemas de dominio" de los módulos que se utilizan en las distintas capas de la aplicación. Estos esquemas definen estructural y funcionalmente la arquitectura y el comportamiento del Modelo de cada uno de los módulos de la aplicación.
 RESPONSABILIDADES:
 1. Carga y Actualización de Esquemas: Obtiene dinámicamente los esquemas correspondientes a cada interacción, además de procesar dichos esquemas para validarlos y aplicar en ellos las políticas de control de acceso para que garanticen su consistencia, adecuación y seguridad.
 2. Especificaciones para la Vista: Entrega esquemas que suministran "moldes para dibujar" en la Vista los componentes de datos (de entrada y salida) y de interacción, utilizando plantillas para mostrar, imprimir y exportar los datos, y adaptando dinámicamente su visualización en la interfaz de usuario según las autorizaciones de acceso.
 3. Validación y Empaquetamiento de Datos: Entrega esquemas que proporcionan "reglas de verificación" para validar y estructurar los datos que se envían al back-end en las diferentes operaciones de administración de datos, asegurando que cumplan con las especificaciones requeridas y las políticas de seguridad.
 4. Soporte a la Lógica del Presentador: Entrega esquemas que proveen "definiciones de interaccionea" para organizar la lógica de la aplicación, incluyendo el control de acceso basado en roles para segmentar todos los aspectos relevantes.
-5. Soporte a la Navegación: Entrega esquemas que contribuyen a generar "mapas de navegación funcional y contextual" dentro de la aplicación, apoyando la interconexión coherente, cohesionada y organizada entre diferentes recursos y servicios.
+5. Soporte a la Navegación: Entrega esquemas que contribuyen a generar "mapas de navegación funcional y contextual" dentro de la aplicación, apoyando la interconexión coherente, cohesionada y organizada entre diferentes recursos y módulos.
 NOTAS:
 1. Definición de esquemas: Los esquemas son estructuras de datos representadas en formato JSON que se utilizan para declarar y describir detalladamente los distintos componentes lógicos del dominio. Esto incluye aspectos como la composición, atributos, reglas y permisos de acceso para formularios (entradas), informes y listados (salidas), diccionarios de datos (metadatos), rutas de navegación (funcional y contextual), autómatas de estados, flujos de trabajo, etc., así como de todas las interacciones involucradas en ellos. Se usan en forma transversal en las diferentes capas de la aplicación.
 2. Aplicaciones de los esquemas en diferentes capas y ámbitos:
@@ -1785,7 +1785,7 @@ NOTAS:
 - Políticas de Acceso por Roles: Establecen reglas y permisos basados en roles para determinar el acceso a todos los componentes lógicos del Modelo y sus elementos, ofreciendo un alto grado de flexibilidad y granularidad para configurar múltiples escenarios y casos de uso.
 - Diccionarios de Datos y Metadatos: Proveen un conjunto organizado de valores y atributos que se usan en distintas partes de la aplicación, para garantizar la accesibilidad y consistencia de los vocabularios controlados que se aplican en los descriptores y catalogadores de información.
 - Criterios de Comprobación de Datos: Establecen reglas para realizar las comprobaciones de tipos y las validaciones del nombre y contenido de los datos de formularios, asegurando que cumplan con los criterios y condiciones específicas establecidas para todos ellos.
-- Rutas Funcionales y Contextuales: Proveen un conjunto seleccionado de rutas virtuales para acceder a las interacciones disponibles y autorizadas en cada servicio, junto con los parámetros y opciones que constituyen su contexto de ejecución (servicio, recurso, operacion, esquema, plantilla, uid, etc.).
+- Rutas Funcionales y Contextuales: Proveen un conjunto seleccionado de rutas virtuales para acceder a las interacciones disponibles y autorizadas en cada modulo, junto con los parámetros y opciones que constituyen su contexto de ejecución (modulo, recurso, operacion, esquema, plantilla, uid, etc.).
 Los esquemas han sido diseñados dentro de la arquitectura con una orientación hacia el dominio, adoptando principios de Domain-Driven Design (DDD). Esto facilita una comprensión más profunda y una modelización precisa de los problemas y sus soluciones, permitiendo así un mayor alineamiento entre los requerimientos del negocio y la aplicación implementada. Este enfoque fomenta la colaboración entre desarrolladores y expertos del dominio, promoviendo un lenguaje ubicuo que mejora la comunicación y la claridad del diseño de la aplicación. Al incorporar DDD en su arquitectura, la biblioteca no solo mejora la mantenibilidad y escalabilidad de las aplicaciones desarrolladas con ella, sino que también ofrece una base sólida para el crecimiento y la evolución futura del software, siguiendo los principios del diseño y arquitectura limpios.
 */
 class ProcesadorEsquemas {
@@ -1904,13 +1904,13 @@ class ProcesadorEsquemas {
         Base.trazarFlujo(this.constructor.name, 'importarEsquemas', 3);
         try {
             if ( !portadorInformacion.FORMULARIO && !portadorInformacion.INFORME && 
-                (portadorInformacion.peticion.formulario || portadorInformacion.peticion.informe || portadorInformacion.peticion.servicio) ) {
-                const servicio = portadorInformacion.peticion.servicio || '';
+                (portadorInformacion.peticion.formulario || portadorInformacion.peticion.informe || portadorInformacion.peticion.modulo) ) {
+                const modulo = portadorInformacion.peticion.modulo || '';
                 const seleccion = {
                     "formulario": portadorInformacion.peticion.formulario, 
                     "informe": portadorInformacion.peticion.informe, 
-                    "diccionario": servicio, 
-                    "navegacion": servicio
+                    "diccionario": modulo, 
+                    "navegacion": modulo
                 };
                 const idiomaElegido = portadorInformacion.gestorEstado.obtenerValor(Base.Estados.preferencias, 'idioma');
                 const esquemasCompletos = await this._cargarEsquemas(seleccion);
@@ -1972,7 +1972,7 @@ class PortadorInformacion {
         this.lista = {};
         this.respuesta = {"codigo": "", "tipo": "", "mensaje": ""};
         this.errores = null;
-        this.servicio = '';
+        this.modulo = '';
     }
     // Funciones privadas
     _validarDatos(datos) {
@@ -1997,9 +1997,9 @@ class PortadorInformacion {
         Base.trazarFlujo(this.constructor.name, 'prepararPeticion', 3, `operacion=${operacion}`);
         try {
             this.peticion['operacion'] = operacion || '';
-            const { recurso, uid, valores, parametros, formulario, informe, validar, selector, plantilla, servicio } = contexto;
-            this.servicio = servicio || '';
-            this.peticion['servicio'] = this.servicio;
+            const { recurso, uid, valores, parametros, formulario, informe, validar, selector, plantilla, modulo } = contexto;
+            this.modulo = modulo || '';
+            this.peticion['modulo'] = this.modulo;
             this.peticion['uid'] = uid || '';
             this.peticion['recurso'] = recurso || '';
             this.peticion['formulario'] = formulario || '';
@@ -2087,7 +2087,7 @@ class PortadorInformacion {
                     codigo: this.respuesta['codigo'] || '',
                     mensaje: this.respuesta['mensaje'] || '',
                     tipo: this.respuesta['tipo'] || '',
-                    servicio: this.servicio,
+                    modulo: this.modulo,
                     peticion: this.peticion,
                     errores: this.errores,
                     esquemas: {
@@ -2272,16 +2272,16 @@ class ErrorPersonalizado extends Error {
 }
 
 /* CLASE: ConfiguradorModulos
-PROPOSITO: Administrar la configuración dinámica de los servicios que forman parte de la aplicación, proporcionando un mecanismo centralizado y modular para la gestión de configuraciones y la importación de extensiones de dichos servicios en tiempo de ejecución.
+PROPOSITO: Administrar la configuración dinámica de los módulos que forman parte de la aplicación, proporcionando un mecanismo centralizado y modular para la gestión de configuraciones y la importación de extensiones de dichos módulos en tiempo de ejecución.
 RESPONSABILIDADES:
-1. Carga de Configuraciones: Carga y aplica la configuración específica de todos los servicios de la aplicación, basándose en los "esquema de servicio" que contiene los parámetros y datos de las configuraciones del servicio en formato JSON.
-2. Extensión de Funcionalidades: Integra y extiende las funcionalidades de los servicios, importando dinámicamente las definiciones contenidas en las subclases de "DefinicionServicio" que sean creadas para cada uno de ellos como módulos JavaScript.
-3. Gestión de Dependencias: Mapea las relaciones y dependencias entre diferentes componentes lógicos y funcionales de los servicios, para una correcta configuración y operación.
-4. Inicialización de Servicios: Inicializa los servicios con las definiciones, extensiones y componentes cargados, asegurando que estén listos para su uso conforme a los requerimientos del contexto de la aplicación.
+1. Carga de Configuraciones: Carga y aplica la configuración específica de todos los módulos de la aplicación, basándose en los "esquema de modulo" que contiene los parámetros y datos de las configuraciones del modulo en formato JSON.
+2. Extensión de Funcionalidades: Integra y extiende las funcionalidades de los módulos, importando dinámicamente las definiciones contenidas en las subclases de "DefinicionModulo" que sean creadas para cada uno de ellos como módulos JavaScript.
+3. Gestión de Dependencias: Mapea las relaciones y dependencias entre diferentes componentes lógicos y funcionales de los módulos, para una correcta configuración y operación.
+4. Inicialización de Módulos: Inicializa los módulos con las definiciones, extensiones y componentes cargados, asegurando que estén listos para su uso conforme a los requerimientos del contexto de la aplicación.
 NOTAS:
-Depende directamente de las subclases de los servicios, creadas como extensiones de "DefinicionServicio" (cuyas instancias se asignan a "definicionModulo"), las cuales proveen los contenidos específicos de las funciones y extensiones de cada servicio concreto.
-Depende directamente del "esquema de servicio" que contiene los parámetros y datos de las configuraciones del servicio en formato JSON.
-Interactúa con "CoordinadorGeneral" para disparar la configuración de servicios cuando se solicita su ejecución, y para entregarle el control del servicio una vez que se haya configurado.
+Depende directamente de las subclases de los módulos, creadas como extensiones de "DefinicionModulo" (cuyas instancias se asignan a "definicionModulo"), las cuales proveen los contenidos específicos de las funciones y extensiones de cada modulo concreto.
+Depende directamente del "esquema de modulo" que contiene los parámetros y datos de las configuraciones del modulo en formato JSON.
+Interactúa con "CoordinadorGeneral" para disparar la configuración de módulos cuando se solicita su ejecución, y para entregarle el control del modulo una vez que se haya configurado.
 */
 class ConfiguradorModulos {
     constructor() {
@@ -2305,28 +2305,28 @@ class ConfiguradorModulos {
             throw error;
         }
     }
-    _extraerMapaInteracciones(coordinador, idServicio) {
+    _extraerMapaInteracciones(coordinador, idModulo) {
         try {
             if (!this._dominioTemporal) { return; }
-            coordinador.servicio = idServicio;
-            if (!coordinador.INTERACCIONES[idServicio]) {
-                coordinador.INTERACCIONES[idServicio] = new Map();
+            coordinador.modulo = idModulo;
+            if (!coordinador.INTERACCIONES[idModulo]) {
+                coordinador.INTERACCIONES[idModulo] = new Map();
             }
             const capturarInteracciones = (conjuntoEsquemas) => {
                 conjuntoEsquemas.forEach(esquema => {
                     if (esquema.interacciones) {
                         Object.keys(esquema.interacciones).forEach(key => {
                             const interaccion = esquema.interacciones[key];
-                            if (interaccion.servicio === idServicio) {
-                                coordinador.INTERACCIONES[idServicio].set(key, interaccion);
+                            if (interaccion.modulo === idModulo) {
+                                coordinador.INTERACCIONES[idModulo].set(key, interaccion);
                             }
                         });
                     }
                     if (esquema.enlaces) {
                         Object.keys(esquema.enlaces).forEach(key => {
                             const enlace = esquema.enlaces[key];
-                            if (enlace.servicio === idServicio) {
-                                coordinador.INTERACCIONES[idServicio].set(key, enlace);
+                            if (enlace.modulo === idModulo) {
+                                coordinador.INTERACCIONES[idModulo].set(key, enlace);
                             }
                         });
                     }
@@ -2334,15 +2334,15 @@ class ConfiguradorModulos {
             };
             if (this._dominioTemporal.formularios) capturarInteracciones(this._dominioTemporal.formularios);
             if (this._dominioTemporal.informes) capturarInteracciones(this._dominioTemporal.informes);
-            if (this._dominioTemporal.navegacion && this._dominioTemporal.navegacion[idServicio]) {
-                const navegacionServicio = this._dominioTemporal.navegacion[idServicio];
-                Object.keys(navegacionServicio).forEach(key => {
-                    const interaccion = navegacionServicio[key];
-                    coordinador.INTERACCIONES[idServicio].set(key, interaccion);
+            if (this._dominioTemporal.navegacion && this._dominioTemporal.navegacion[idModulo]) {
+                const navegacionModulo = this._dominioTemporal.navegacion[idModulo];
+                Object.keys(navegacionModulo).forEach(key => {
+                    const interaccion = navegacionModulo[key];
+                    coordinador.INTERACCIONES[idModulo].set(key, interaccion);
                 });
-                if (this._dominioTemporal.navegacion.menus && this._dominioTemporal.navegacion.menus[idServicio]) {
-                    const interaccionNavegacion = this._dominioTemporal.navegacion.menus[idServicio];
-                    coordinador.INTERACCIONES[idServicio].set(idServicio, interaccionNavegacion);
+                if (this._dominioTemporal.navegacion.menus && this._dominioTemporal.navegacion.menus[idModulo]) {
+                    const interaccionNavegacion = this._dominioTemporal.navegacion.menus[idModulo];
+                    coordinador.INTERACCIONES[idModulo].set(idModulo, interaccionNavegacion);
                 }
             }
         } catch (error) {
@@ -2352,12 +2352,12 @@ class ConfiguradorModulos {
     async _cargarConfiguraciones(rutaEsquema) {
         try {
             const respuesta = await fetch(rutaEsquema);
-            const esquemaServicio = await respuesta.json();
-            if (!esquemaServicio) {
-                throw new ErrorPersonalizado('ERROR_CARGAR_SERVICIO', '', {"ruta": rutaEsquema});
+            const esquemaModulo = await respuesta.json();
+            if (!esquemaModulo) {
+                throw new ErrorPersonalizado('ERROR_CARGAR_MODULO', '', {"ruta": rutaEsquema});
             }
             this.configuraciones = new Map();
-            Object.entries(esquemaServicio).forEach(([clave, valor]) => {
+            Object.entries(esquemaModulo).forEach(([clave, valor]) => {
                 this.configuraciones.set(clave, valor);
             });
             return true;
@@ -2402,7 +2402,7 @@ class ConfiguradorModulos {
         try {
             const accionesCoordinador = this._obtenerConfiguracion('accionesCoordinador');
             if (!accionesCoordinador) {
-                throw new ErrorPersonalizado('ERROR_ACCIONES_SERVICIO');
+                throw new ErrorPersonalizado('ERROR_ACCIONES_MODULO');
             }
             for (const accion of accionesCoordinador) {
                 if (typeof coordinador[accion] === 'function') {
@@ -2593,7 +2593,7 @@ class ConfiguradorModulos {
             const noCache = new Date().getTime();
             const urlModulo = `${Base.construirUrlAbsoluta(rutaModulo)}?nocache=${noCache}`;
             const modulo = await import(urlModulo);
-            this.definicionModulo = modulo.servicio;
+            this.definicionModulo = modulo.modulo;
             const rutaEsquema = urlModulo.replace('.js','.json');
             const resultadoCarga = await this._cargarConfiguraciones(rutaEsquema);
             if (resultadoCarga) {
@@ -2620,9 +2620,9 @@ class ConfiguradorModulos {
     aplicarConfiguracion(coordinador) {
         Base.trazarFlujo(this.constructor.name, 'aplicarConfiguracion', 2);
         try {
-            const idServicio = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'idServicio');
+            const idModulo = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'idModulo');
             this._inyectarExtensiones(coordinador);
-            this._extraerMapaInteracciones(coordinador, idServicio)
+            this._extraerMapaInteracciones(coordinador, idModulo)
             this._configurarInteracciones(coordinador);
             this._asignarElementosUI(coordinador.interfazUsuario);
             this._asignarPlantillasUI(coordinador.interfazUsuario);
@@ -2939,7 +2939,7 @@ class InstaladorAplicacion {
 /* CLASES DEL AMBITO "GLOBAL" */
 
 /* CLASE: GestorEstado [singleton]
-PROPOSITO: Mantener y gestionar el estado compartido en toda la aplicación, actuando como un repositorio centralizado para la información que puede ser utilizada, modificada y sincronizada por los diferentes servicios, capas y componentes del sistema, y proporcionando un punto de acceso unificado y coherente para ello.
+PROPOSITO: Mantener y gestionar el estado compartido en toda la aplicación, actuando como un repositorio centralizado para la información que puede ser utilizada, modificada y sincronizada por los diferentes módulos, capas y componentes del sistema, y proporcionando un punto de acceso unificado y coherente para ello.
 RESPONSABILIDADES:
 1. Centralización del Estado: Almacena el estado global de la aplicación, incluyendo configuraciones, datos de sesión, preferencias de usuario, datos temporales de las operaciones, y cualquier otro dato relevante que necesite ser compartido entre diferentes partes de la aplicación, ofreciendo además mecanismos para guardar y cargar el estado desde el almacenamiento local.
 2. Gestión de Cambios de Estado: Ofrece una API interna sencilla para actualizar y consultar el mapa del estado global de la aplicación, garantizando la coherencia y actualización oportuna de la información.
@@ -2950,7 +2950,7 @@ Interactúa con varias clases de la aplicación, ya que proporciona el estado ne
 - InterfazUsuario.
 - OperadorDatos (y sus complementos ComunicadorApi, CreadorAdaptadoresApi, AdaptadorApi y todas sus subclases).
 - CoordinadorGeneral (junto con PortadorInformacion, ConfiguradorModulos e InstaladorAplicacion).
-- Todas las subclases de servicios derivadas de DefinicionServicio (que es donde realmente se programan las extensiones de los servicios desarrollados).
+- Todas las subclases de módulos derivadas de DefinicionModulo (que es donde realmente se programan las extensiones de los módulos desarrollados).
 */
 class GestorEstado {
     constructor(almacenamientoLocal='estadosApp', notificadorEventos=null) {
@@ -3152,8 +3152,8 @@ NOTAS:
 Al permitir que tanto el Presentador, la Vista y el Modelo actúen como publicadores y suscriptores ofrece una gran flexibilidad en la gestión de eventos, adaptándose a una amplia gama de necesidades y escenarios de aplicación.
 Su capacidad para manejar un esquema multi-direccional de publicación/suscripción "muchos-a-muchos" facilita la implementación de patrones arquitectónicos más complejos y dinámicos, como el MVVM.
 Es la base para implementar una arquitectura reactiva y desacoplada, donde los distintos componentes puedan reaccionar a eventos sin depender directamente unos de otros.
-El uso efectivo de esta clase depende de los "Undices de Eventos" disponibles en el "esquema de configuracion" de cada servicio de aplicación (en las definiciones de indiceEventosModelo y indiceEventosVista).
-Las personalización de las suscripciones a los eventos dentro de cada servicio se registra en su respectiva configuración en el esquema del servicio (en las definiciones de suscripcionesInterfazUsuario y suscripcionesOperadorDatos).
+El uso efectivo de esta clase depende de los "Undices de Eventos" disponibles en el "esquema de configuracion" de cada modulo de aplicación (en las definiciones de indiceEventosModelo y indiceEventosVista).
+Las personalización de las suscripciones a los eventos dentro de cada modulo se registra en su respectiva configuración en el esquema del modulo (en las definiciones de suscripcionesInterfazUsuario y suscripcionesOperadorDatos).
 */
 class NotificadorEventos {
     constructor() {
@@ -3425,14 +3425,14 @@ class Base {
     };
     static textosUI = {
         "ERROR_CARGAR_MANIFIESTO": "Error al cargar maniifiesto de la aplicación desde '((url))': ((respuesta))",
-        "ERROR_CARGAR_SERVICIO": "No se cargó el esquema del servicio en '((ruta))'",
+        "ERROR_CARGAR_MODULO": "No se cargó el esquema del modulo en '((ruta))'",
         "ERROR_CARGAR_IDIOMA": "Error al cargar esquema de idioma '((ruta))': ((respuesta))",
         "ERROR_ENVIAR_DATOS": "Error en los datos enviados: ((respuesta))",
         "ERROR_CARGAR_PLANTILLAS": "Error al cargar plantillas de vistas desde '((ruta))': ((respuesta))",
         "ERROR_ESQUEMAS_NO_CARGADOS": "Error al cargar los esquemas desde la ruta '((ruta))'",
         "ERROR_MANEJADORES_EVENTOS": "No hay manejadores de eventos para la UI",
         "ERROR_EXTENSION_NO_DEFINIDA": "Extensión '((extension))' no definida en '((componente))'",
-        "ERROR_ACCIONES_SERVICIO": "No hay acciones definidas para el servicio",
+        "ERROR_ACCIONES_MODULO": "No hay acciones definidas para el módulo",
         "ERROR_FORMULARIO_NO_VALIDO": "El formulario contiene datos no válidos"
     };
 }

@@ -2,7 +2,7 @@
 
 import { AdaptadorApi } from './AdaptadorApi.js';
 
-class AdaptadorApiLocal extends AdaptadorApi {
+class ApiLocal extends AdaptadorApi {
     constructor() {
         super();
     }
@@ -33,4 +33,4 @@ class AdaptadorApiLocal extends AdaptadorApi {
         };
     }
 }
-export const adaptador = new AdaptadorApiLocal();
+export const adaptador = new ApiLocal();

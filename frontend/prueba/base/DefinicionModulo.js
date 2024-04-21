@@ -1,29 +1,29 @@
 // frontend\prueba\base\DefinicionModulo.js
 
-import { DefinicionModulo } from './DefinicionModulo.js';
+import { DefinicionModulo } from '../jsinergia/DefinicionModulo.js';
 
 /* ************************************************************************
 MODULO: Base
 VERSION: 0.0.1 */
 
-/* Clase: DefinicionModuloBase (subclase)
-PROPOSITO: Es una subclase de "DefinicionModulo" que actúa como un contenedor de funcionalidad para el "Servicio Base" de la aplicación. Esta clase encapsula los fragmentos de código JavaScript necesarios para implementar este servicio y extender con ello las clases principales de la aplicación.
+/* Clase: ModuloBase (subclase)
+PROPOSITO: Es una subclase de "DefinicionModulo" que actúa como un contenedor de funcionalidad para el "Módulo Base" de la aplicación. Esta clase encapsula los fragmentos de código JavaScript necesarios para implementar este módulo y extender con ello las clases principales de la aplicación.
 RESPONSABILIDADES:
-1. Contención de Funciones de Extensión: Encapsula el código JavaScript de las funciones que se inyectarán en las clases principales para ampliar su funcionalidad y adaptarla a las necesidades del servicio.
-2. Facilitación de Transferencia de Funciones: Provee una estructura que facilita la recuperación y transferencia de las funciones al "ConfiguradorModulos", permitiendo una configuración dinámica del servicio, por demanda y en tiempo de ejecución.
-3. Integración con la Arquitectura de la Aplicación: Trabaja en conjunto con el "ConfiguradorModulos" y con el "esquema de servicio" para activar las configuraciones necesarias e implementar las funciones del servicio.
+1. Contención de Funciones de Extensión: Encapsula el código JavaScript de las funciones que se inyectarán en las clases principales para ampliar su funcionalidad y adaptarla a las necesidades del módulo.
+2. Facilitación de Transferencia de Funciones: Provee una estructura que facilita la recuperación y transferencia de las funciones al "ConfiguradorModulos", permitiendo una configuración dinámica del módulo, por demanda y en tiempo de ejecución.
+3. Integración con la Arquitectura de la Aplicación: Trabaja en conjunto con el "ConfiguradorModulos" y con el "esquema de módulo" para activar las configuraciones necesarias e implementar las funciones del módulo.
 NOTAS:
-Esta subclase hereda de la superclase "DefinicionModulo" para la estructura base de un servicio.
-Interactúa con la clase "ConfiguradorModulos" para la importación e inyección de las funciones y extensiones del servicio en las clases principales de la aplicación.
-Requiere la existencia de un archivo JSON de "esquema de servicio" que contenga los parámetros y datos de las configuraciones del servicio correspondiente en formato JSON.
+Esta subclase hereda de la superclase "DefinicionModulo" para la estructura base de un módulo.
+Interactúa con la clase "ConfiguradorModulos" para la importación e inyección de las funciones y extensiones del módulo en las clases principales de la aplicación.
+Requiere la existencia de un archivo JSON de "esquema de módulo" que contenga los parámetros y datos de las configuraciones del módulo correspondiente en formato JSON.
 */
-class DefinicionModuloBase extends DefinicionModulo {
+class ModuloBase extends DefinicionModulo {
     constructor() {
         super();
     }
-    // FUNCIONES PARA DEFINIR / AMPLIAR LA FUNCIONALIDAD DEL SERVICIO
+    // FUNCIONES PARA DEFINIR / AMPLIAR LA FUNCIONALIDAD DEL MODULO
     manejadoresInteracciones() {
-        // Funciones para manejar Interacciones de la UI del servicio (callbacks). Se inyectan en "InterfazUsuario".
+        // Funciones para manejar Interacciones de la UI del módulo (callbacks). Se inyectan en "InterfazUsuario".
         return {
         manejarNuevoCaso: function(evento) {
             this.enrutarInteraccion('.nuevo-caso', {'nuevo-caso': this.accionNuevoCaso}, evento);
@@ -37,8 +37,8 @@ class DefinicionModuloBase extends DefinicionModulo {
         manejarSolicitarListaCasos: function(evento) {
             this.enrutarInteraccion('.solicitar-lista-casos', {'solicitar-lista-casos': this.accionSolicitarListaCasos}, evento);
         },
-        manejarAbrirServicio: function(evento) {
-            this.enrutarInteraccion('.abrir-servicio', {'abrir-servicio': this.accionAbrirServicio}, evento);
+        manejarAbrirModulo: function(evento) {
+            this.enrutarInteraccion('.abrir-modulo', {'abrir-modulo': this.accionAbrirModulo}, evento);
         },
         manejarCambiarIdioma: function(evento) {
             this.enrutarInteraccion('.cambiar-idioma', {'cambiar-idioma': this.accionCambiarIdioma}, evento);
@@ -52,7 +52,7 @@ class DefinicionModuloBase extends DefinicionModulo {
         },
         manejarAccionesParaNavegacion: function(evento) {
             const mapeoAcciones = {
-                'abrir-servicio': this.accionAbrirServicio,
+                'abrir-modulo': this.accionAbrirModulo,
             };
             this.enrutarInteraccion('.navegacion', mapeoAcciones, evento);
         },
@@ -76,21 +76,21 @@ class DefinicionModuloBase extends DefinicionModulo {
         };
     }
     accionesCoordinador() {
-        // Funciones para "acciones" que otorgan funcionalidad al servicio. Se inyectan en "CoordinadorGeneral".
+        // Funciones para "acciones" que otorgan funcionalidad al mósulo. Se inyectan en "CoordinadorGeneral".
         return {
         accionSolicitarListaCasos: async function(contexto) {
             const accion = 'accionSolicitarListaCasos';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { recurso, esquema, operacion, servicio, plantilla } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { recurso, esquema, operacion, modulo, plantilla } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 this.interfazUsuario.alternarEsperando(true);
                 const parametros = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     informe: esquema,
                     parametros: parametros,
                     plantilla: plantilla
@@ -107,14 +107,14 @@ class DefinicionModuloBase extends DefinicionModulo {
             const accion = 'accionSolicitarEliminacionCaso';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { uid, recurso, esquema, operacion, servicio } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { uid, recurso, esquema, operacion, modulo } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     formulario: esquema
                 });
                 await this.operadorDatos.efectuarOperacion(portadorInformacion);
@@ -126,14 +126,14 @@ class DefinicionModuloBase extends DefinicionModulo {
             const accion = 'accionSolicitarDetalleCaso';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { uid, recurso, esquema, operacion, servicio, plantilla } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { uid, recurso, esquema, operacion, modulo, plantilla } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     formulario: esquema,
                     plantilla: plantilla
                 });
@@ -147,15 +147,15 @@ class DefinicionModuloBase extends DefinicionModulo {
             const accion = 'accionEnviarEdicionCaso';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { uid, recurso, esquema, operacion, servicio } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { uid, recurso, esquema, operacion, modulo } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const valores = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     uid: uid,
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     valores: valores,
                     formulario: esquema
                 });
@@ -171,14 +171,14 @@ class DefinicionModuloBase extends DefinicionModulo {
             const accion = 'accionEnviarNuevoCaso';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { recurso, esquema, operacion, servicio } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { recurso, esquema, operacion, modulo } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const valores = this.interfazUsuario.receptorUI.obtenerDatosFormulario(`form_${esquema}`);
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     valores: valores,
                     formulario: esquema
                 });
@@ -190,19 +190,19 @@ class DefinicionModuloBase extends DefinicionModulo {
                 this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
-        accionAbrirServicio: async function(contexto) {
-            const accion = 'accionAbrirServicio';
+        accionAbrirModulo: async function(contexto) {
+            const accion = 'accionAbrirModulo';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { recurso, esquema, operacion, servicio, plantilla } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { recurso, esquema, operacion, modulo, plantilla } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 this.gestorEstado.emitirEventoInformacion('ENVIANDO_PETICION', contexto);
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
                     informe: esquema,
                     recurso: recurso,
-                    servicio: servicio,
+                    modulo: modulo,
                     plantilla: plantilla
                 });
                 await this.procesarEsquemas(portadorInformacion);
@@ -215,12 +215,12 @@ class DefinicionModuloBase extends DefinicionModulo {
             const accion = 'accionNuevoCaso';
             Base.trazarFlujo(this.constructor.name, accion, 2, '[A]');
             try {
-                const { esquema, servicio, plantilla } = contexto;
-                const detalleInteraccion = this.controlarAcceso(accion, servicio);
+                const { esquema, modulo, plantilla } = contexto;
+                const detalleInteraccion = this.controlarAcceso(accion, modulo);
                 if (!detalleInteraccion) { return this.rechazarAcceso(accion, detalleInteraccion); }
                 const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                 portadorInformacion.prepararPeticion(operacion, {
-                    servicio: servicio,
+                    modulo: modulo,
                     formulario: esquema,
                 });
                 const esquemas = await this.procesarEsquemas(portadorInformacion);
@@ -250,13 +250,13 @@ class DefinicionModuloBase extends DefinicionModulo {
         accionEnviarNuevoInput: async function(contexto) {
             Base.trazarFlujo(this.constructor.name, 'accionEnviarNuevoInput', 2, '[A]');
             try {
-                const { recurso, operacion, selector, servicio } = contexto;
+                const { recurso, operacion, selector, modulo } = contexto;
                 const contenido = this.interfazUsuario.receptorUI.obtenerValorCampo(selector);
                 if (contenido) {
                     const portadorInformacion = new PortadorInformacion(this.gestorEstado);
                     portadorInformacion.prepararPeticion(operacion, {
                         recurso: recurso,
-                        servicio: servicio,
+                        modulo: modulo,
                         selector: selector,
                         valores: { 'contenido': contenido }
                     });
@@ -299,7 +299,7 @@ class DefinicionModuloBase extends DefinicionModulo {
         };
     }
     reaccionesCoordinador() {
-        // Funciones para "reacciones" que otorgan funcionalidad al servicio. Se inyectan en "CoordinadorGeneral".
+        // Funciones para "reacciones" que otorgan funcionalidad al modulo. Se inyectan en "CoordinadorGeneral".
         return {
         reaccionCasoAgregado: async function(informacion) {
             Base.trazarFlujo(this.constructor.name, 'reaccionCasoAgregado', 2, '[R]');
@@ -307,7 +307,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 if (informacion.tipo && informacion.mensaje) {
                     this.interfazUsuario.mostrarInformacion(informacion.mensaje, informacion.tipo);
                 }
-                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
+                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.modulo);
             } catch (error) {
                 this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
@@ -318,7 +318,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 if (informacion.tipo && informacion.mensaje) {
                     this.interfazUsuario.mostrarInformacion(informacion.mensaje, informacion.tipo);
                 }
-                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
+                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.modulo);
             } catch (error) {
                 this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
@@ -329,7 +329,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 if (informacion.tipo && informacion.mensaje) {
                     this.interfazUsuario.mostrarInformacion(informacion.mensaje, informacion.tipo);
                 }
-                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
+                await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.modulo);
             } catch (error) {
                 this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
@@ -365,8 +365,8 @@ class DefinicionModuloBase extends DefinicionModulo {
                 this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
-        reaccionServicioAbierto: async function(informacion) {
-            Base.trazarFlujo(this.constructor.name, 'reaccionServicioAbierto', 2, '[R]');
+        reaccionModuloAbierto: async function(informacion) {
+            Base.trazarFlujo(this.constructor.name, 'reaccionModuloAbierto', 2, '[R]');
             try {
                 if (informacion.datos && informacion.esquemas) {
                     this.interfazUsuario.actualizarPanelContenidos(informacion.datos, informacion.esquemas, informacion.plantilla);
@@ -514,4 +514,4 @@ class DefinicionModuloBase extends DefinicionModulo {
         return {};
     }
 }
-export const modulo = new DefinicionModuloBase();
+export const modulo = new ModuloBase();

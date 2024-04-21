@@ -1,16 +1,16 @@
 {
     "configuracionVista": {
-        "rutaIdioma": "./frontend/servicios/base/idioma-[idioma].json",
-        "rutaPlantillas": "./frontend/servicios/base/plantillas.html",
+        "rutaIdioma": "/frontend/prueba/base/textos-[idioma].json",
+        "rutaPlantillas": "/frontend/prueba/base/PlantillasVista.html",
         "elementosUI": ["area_menus", "area_encabezado", "area_cuerpo", "area_pie", "area_esperando", "area_instalacion", "area_suscripcion", "boton_login", "boton_suscripcion", "boton_instalacion", "lista_casos"]
     },
     "configuracionModelo": {
-        "idServicio": "base",
-        "rutaDominio": "./frontend/servicios/base/dominio.json",
+        "idModulo": "base",
+        "rutaDominio": "/frontend/prueba/base/EsquemasDominio.json",
         "rolesUsuarios": {"Admin": "Administrador", "Editor": "Editor", "Usuario": "Usuario", "Invitado": "Invitado"},
         "serviciosApi": {
-            "ApiLocal": {"urlApi": "https://localhost/JSinergIA", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "./frontend/adaptadores/ApiLocal.js"},
-            "ApiOpenAI": {"urlApi": "https://api.openai.com/v1", "keyApi": ["Oj0MIh86","0uElxaGCM5","JDM0ET4tNT","U8XDEYKDgv","JA40NQMpGA","5COiQsI1YY","HwROUBlfIz"], "rutaAdaptador": "./frontend/adaptadores/ApiOpenAI.js"}
+            "ApiLocal": {"urlApi": "https://localhost:8000/prueba", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "/frontend/jsinergia/ApiLocal.js"},
+            "ApiOpenAI": {"urlApi": "https://api.openai.com/v1", "keyApi": ["Oj0MIh86","0uElxaGCM5","JDM0ET4tNT","U8XDEYKDgv","JA40NQMpGA","5COiQsI1YY","HwROUBlfIz"], "rutaAdaptador": "/frontend/jsinergia/ApiOpenAI.js"}
         },
         "notificacionesPush": {
             "clavePublicaServidor": "",
@@ -20,7 +20,7 @@
     },
     "manejadoresInteracciones": [
         {"elemento": "accion_solicitar_lista_casos", "evento": "click", "manejador": "manejarSolicitarListaCasos"},
-        {"elemento": "accion_abrir_servicio", "evento": "click", "manejador": "manejarAbrirServicio"},
+        {"elemento": "accion_abrir_modulo", "evento": "click", "manejador": "manejarAbrirModulo"},
         {"elemento": "acciones_para_casos", "evento": "click", "manejador": "manejarAccionesParaCasos"},
         {"elemento": "accion_enviar_edicion_caso", "evento": "click", "manejador": "manejarEnviarEdicionCaso"},
         {"elemento": "accion_nuevo_caso", "evento": "click", "manejador": "manejarNuevoCaso"},
@@ -38,7 +38,7 @@
         "accionSolicitarEliminacionCaso",
         "accionNuevoCaso",
         "accionEnviarNuevoCaso",
-        "accionAbrirServicio",
+        "accionAbrirModulo",
         "accionCambiarIdioma",
         "accionEnviarNuevoInput",
         "accionCopiarTexto",
@@ -51,7 +51,7 @@
         "solicitarDetalleCaso": {"metodo": "GET", "eventoExito": "CASO_RECIBIDO", "eventoError": "ERROR_LECTURA_CASO", "uidApi": "ApiLocal", "limiteTiempo": 30},
         "enviarNuevoCaso": {"metodo": "POST", "eventoExito": "CASO_AGREGADO", "eventoError": "ERROR_INGRESO_CASO", "uidApi": "ApiLocal", "limiteTiempo": 30},
         "enviarEdicionCaso": {"metodo": "PUT", "eventoExito": "CASO_EDITADO", "eventoError": "ERROR_EDICION_CASO", "uidApi": "ApiLocal", "limiteTiempo": 30},
-        "abrirServicio": {"metodo": "GET", "eventoExito": "SERVICIO_ABIERTO", "eventoError": "ERROR_ABRIR_SERVICIO", "uidApi": "ApiLocal", "limiteTiempo": 30},
+        "abrirModulo": {"metodo": "GET", "eventoExito": "MODULO_ABIERTO", "eventoError": "ERROR_ABRIR_MODULO", "uidApi": "ApiLocal", "limiteTiempo": 30},
         "enviarNuevoInput": {"metodo": "POST", "eventoExito": "RESULTADO_NUEVO_INPUT", "eventoError": "ERROR_NUEVO_INPUT", "uidApi": "ApiOpenAI", "limiteTiempo": 180}
     },
     "indiceEventosModelo": {
@@ -60,11 +60,11 @@
         "CASO_RECIBIDO": "CASO_RECIBIDO",
         "CASO_EDITADO": "CASO_EDITADO",
         "LISTA_RECIBIDA": "LISTA_RECIBIDA",
-        "SERVICIO_ABIERTO": "SERVICIO_ABIERTO",
+        "MODULO_ABIERTO": "MODULO_ABIERTO",
         "RESULTADO_NUEVO_INPUT": "RESULTADO_NUEVO_INPUT",
         "ERROR_COMPROBACION_DATOS": "ERROR_COMPROBACION_DATOS",
         "ERROR_LISTA_CASOS": "ERROR_LISTA_CASOS",
-        "ERROR_ABRIR_SERVICIO": "ERROR_ABRIR_SERVICIO",
+        "ERROR_ABRIR_MODULO": "ERROR_ABRIR_MODULO",
         "ERROR_NUEVO_INPUT": "ERROR_NUEVO_INPUT",
         "ERROR_ELIMINACION_CASO": "ERROR_ELIMINACION_CASO",
         "ERROR_LECTURA_CASO": "ERROR_LECTURA_CASO",
@@ -94,7 +94,7 @@
         "CASO_RECIBIDO": "reaccionCasoRecibido",
         "CASO_EDITADO": "reaccionCasoEditado",
         "LISTA_RECIBIDA": "reaccionListaRecibida",
-        "SERVICIO_ABIERTO": "reaccionServicioAbierto",
+        "MODULO_ABIERTO": "reaccionModuloAbierto",
         "RESULTADO_NUEVO_INPUT": "reaccionResultadoNuevoInput",
         "ERROR_COMPROBACION_DATOS": "informarEnvioRechazado",
         "ERROR_EDICION_CASO": "informarErrorModulo",
@@ -102,7 +102,7 @@
         "ERROR_ELIMINACION_CASO": "informarErrorModulo",
         "ERROR_LECTURA_CASO": "informarErrorModulo",
         "ERROR_LISTA_CASOS": "informarErrorModulo",
-        "ERROR_ABRIR_SERVICIO": "informarErrorModulo",
+        "ERROR_ABRIR_MODULO": "informarErrorModulo",
         "ERROR_NUEVO_INPUT": "informarErrorModulo",
         "RESPUESTA_RECIBIDA": "reaccionRespuestaRecibidaCoordinador",
         "ERROR_APLICACION": "informarErrorModulo"
