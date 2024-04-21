@@ -5,6 +5,9 @@ from fastapi.responses import JSONResponse
 from starlette.templating import Jinja2Templates
 from backend.pysinergia.interfaz import Enrutador, ReceptorPeticion, EmisorRespuesta
 
+# --------------------------------------------------
+# Rutas personalizadas del Servicio Base
+# --------------------------------------------------
 enrutador = APIRouter()
 
 @enrutador.get('/prueba/base/{accion}', response_class=JSONResponse)

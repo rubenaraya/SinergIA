@@ -1,6 +1,6 @@
 # backend\pysinergia\exportadores\exportador_excel.py
 
-from backend.pysinergia.infra_interfaz import I_Exportador
+from backend.pysinergia.infraestructura import I_Exportador
 
 # --------------------------------------------------
 # Clase: ExportadorExcel

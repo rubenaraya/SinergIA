@@ -2,5 +2,8 @@
 
 from backend.pysinergia.datos import Operador
 
+# --------------------------------------------------
+# SubClase: OperadorBase
+# --------------------------------------------------
 class OperadorBase(Operador):
     ...
