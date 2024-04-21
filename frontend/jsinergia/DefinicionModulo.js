@@ -12,7 +12,7 @@ export class DefinicionModulo {
         this.definiciones.set('ReaccionesCoordinador', this.reaccionesCoordinador());
         this.definiciones.set('InterfazUsuario', this.extenderInterfazUsuario());
         this.definiciones.set('OperadorDatos', this.extenderOperadorDatos());
-        this.definiciones.set('ProcesadorPlantillas', this.extenderProcesadorPlantillas());
+        this.definiciones.set('PresentadorContenido', this.extenderPresentadorContenido());
         this.definiciones.set('ValidadoresDatos', this.validadoresDatos());
     }
     // Funciones públicas compartidas por todas las subclases
@@ -25,7 +25,7 @@ export class DefinicionModulo {
     accionesCoordinador() {return {};}
     reaccionesCoordinador() {return {};}
     validadoresDatos() {return {};}
-    extenderProcesadorPlantillas() {return {};}
+    extenderPresentadorContenido() {return {};}
     extenderInterfazUsuario() {return {};}
     extenderOperadorDatos() {return {};}
 }

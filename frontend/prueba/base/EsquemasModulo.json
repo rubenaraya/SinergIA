@@ -97,15 +97,15 @@
         "SERVICIO_ABIERTO": "reaccionServicioAbierto",
         "RESULTADO_NUEVO_INPUT": "reaccionResultadoNuevoInput",
         "ERROR_COMPROBACION_DATOS": "informarEnvioRechazado",
-        "ERROR_EDICION_CASO": "informarErrorServicio",
-        "ERROR_INGRESO_CASO": "informarErrorServicio",
-        "ERROR_ELIMINACION_CASO": "informarErrorServicio",
-        "ERROR_LECTURA_CASO": "informarErrorServicio",
-        "ERROR_LISTA_CASOS": "informarErrorServicio",
-        "ERROR_ABRIR_SERVICIO": "informarErrorServicio",
-        "ERROR_NUEVO_INPUT": "informarErrorServicio",
+        "ERROR_EDICION_CASO": "informarErrorModulo",
+        "ERROR_INGRESO_CASO": "informarErrorModulo",
+        "ERROR_ELIMINACION_CASO": "informarErrorModulo",
+        "ERROR_LECTURA_CASO": "informarErrorModulo",
+        "ERROR_LISTA_CASOS": "informarErrorModulo",
+        "ERROR_ABRIR_SERVICIO": "informarErrorModulo",
+        "ERROR_NUEVO_INPUT": "informarErrorModulo",
         "RESPUESTA_RECIBIDA": "reaccionRespuestaRecibidaCoordinador",
-        "ERROR_APLICACION": "informarErrorServicio"
+        "ERROR_APLICACION": "informarErrorModulo"
     },
     "suscripcionesInterfazUsuario": {
         "NOTIFICACION_PUSH_RECIBIDA": "noReaccionar",

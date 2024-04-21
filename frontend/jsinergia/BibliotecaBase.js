@@ -53,7 +53,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
         this.interfazUsuario = interfazUsuario;
         this.operadorDatos = operadorDatos;
         this.gestorEstado = null;
-        this.configuradorServicios = null;
+        this.configuradorModulos = null;
         this.controladorAcceso = null;
         this.procesadorEsquemas = null;
         this.manejadorErrores = null;
@@ -79,37 +79,37 @@ class CoordinadorGeneral { //(PRESENTADOR)
             }
         }
     }
-    async coordinarInicio(rutaManifiesto, rutaErrores, gestorEstado, configuradorServicios=null, controladorAcceso=null, procesadorEsquemas=null) {
+    async coordinarInicio(rutaManifiesto, rutaErrores, gestorEstado, configuradorModulos=null, controladorAcceso=null, procesadorEsquemas=null) {
         Base.trazarFlujo(this.constructor.name, 'coordinarInicio', 1);
         try {
             if (gestorEstado && typeof gestorEstado === 'object') {
                 this.gestorEstado = gestorEstado;
                 this.rutaErrores = rutaErrores;
                 this.manejadorErrores = new ManejadorErrores(this.interfazUsuario.traductorIdiomas, this.rutaErrores);
-                this.configuradorServicios = configuradorServicios || new ConfiguradorServicios();
+                this.configuradorModulos = configuradorModulos || new ConfiguradorModulos();
                 this.procesadorEsquemas = procesadorEsquemas || new ProcesadorEsquemas();
                 this.controladorAcceso = controladorAcceso || new ControladorAcceso(this.gestorEstado);
                 this.interfazUsuario.coordinarInicio(this.gestorEstado, this.manejadorErrores);
                 this.operadorDatos.coordinarInicio(this.gestorEstado, this.manejadorErrores);
-                this.configuradorServicios.coordinarInicio(this.gestorEstado, this.interfazUsuario.traductorIdiomas);
+                this.configuradorModulos.coordinarInicio(this.gestorEstado, this.interfazUsuario.traductorIdiomas);
                 let uuid = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'uuid');
                 if (!uuid) {
                     uuid = Base.generarUUID();
                     this.gestorEstado.asignarValor(Base.Estados.sesion, 'uuid', uuid);
                 }
-                await this.operadorDatos.comunicadorApis.consultarManifiestoApp(rutaManifiesto);
+                await this.operadorDatos.comunicadorApi.consultarManifiestoApp(rutaManifiesto);
                 return true;
             }
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
         return false;
     }
-    async ejecutarServicio(rutaModuloServicio) {
-        Base.trazarFlujo(this.constructor.name, 'ejecutarServicio', 1);
+    async ejecutarModulo(rutaModulo) {
+        Base.trazarFlujo(this.constructor.name, 'ejecutarModulo', 1);
         try {
-            await this.configuradorServicios.importarServicio(rutaModuloServicio);
-            const resultado = this.configuradorServicios.aplicarConfiguracion(this);
+            await this.configuradorModulos.importarModulo(rutaModulo);
+            const resultado = this.configuradorModulos.aplicarConfiguracion(this);
             if (resultado) {
                 const rutaDominio = this.gestorEstado.obtenerValor(Base.Estados.modelo, 'rutaDominio');
                 const rolesUsuario = this.gestorEstado.obtenerValor(Base.Estados.sesion, 'roles');
@@ -117,7 +117,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             }
             return resultado;
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     async procesarEsquemas(portadorInformacion) {
@@ -132,7 +132,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             this.procesadorEsquemas.filtrarEsquemas(portadorInformacion, funcionFiltro);
             return portadorInformacion.recuperarInformacion('esquemas');
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     // Funciones de control
@@ -143,7 +143,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             if (!detalleInteraccion) { return this.rechazarAcceso(interaccion, detalleInteraccion); }
             await this[interaccion]({...detalleInteraccion});
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     controlarAcceso(interaccion, servicio=null) {
@@ -199,7 +199,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
         try {
             const idFormLogin = 'form_login';
             const idBotonLogin = 'boton_login';
-            let contenido = this.interfazUsuario.procesadorPlantillas.representarContenido('plantillaFormLogin', {"idFormLogin": idFormLogin, "idBotonLogin": idBotonLogin});
+            let contenido = this.interfazUsuario.presentadorContenido.representarContenido('plantillaFormLogin', {"idFormLogin": idFormLogin, "idBotonLogin": idBotonLogin});
             const elemento = this.interfazUsuario.ELEMENTOS.get('area_cuerpo');
             if (elemento && contenido) {
                 contenido = this.interfazUsuario.traductorIdiomas.aplicarTraduccion(contenido);
@@ -236,7 +236,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 if (!this.operadorDatos.comprobarDatosEnviados(portadorInformacion)) { return false; }
                 this.interfazUsuario.alternarEsperando(true, areaContenido);
                 const urlReceptor = Base.construirUrlAbsoluta(contexto.recurso);
-                const resultado = await this.operadorDatos.comunicadorApis.enviarPeticionJson(urlReceptor, valores, 'POST');
+                const resultado = await this.operadorDatos.comunicadorApi.enviarPeticionJson(urlReceptor, valores, 'POST');
                 if (this.controladorAcceso.registrarDatosSesion(resultado)) {
                     if (resultado.mensaje) {
                         this.interfazUsuario.mostrarInformacion(resultado.mensaje, resultado.tipo);
@@ -250,7 +250,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 }
             }
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
             this.interfazUsuario.alternarEsperando(false, areaContenido);
         }
     }
@@ -267,7 +267,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 this.interfazUsuario.abrirUrl(urlSalida);
             }
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     // Funciones de gestión de errores
@@ -282,11 +282,11 @@ class CoordinadorGeneral { //(PRESENTADOR)
                 Base.Mensajes.ALERTA
             );
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
-    informarErrorServicio(errorProcesado) {
-        Base.trazarFlujo(this.constructor.name, 'informarErrorServicio', 1);
+    informarErrorModulo(errorProcesado) {
+        Base.trazarFlujo(this.constructor.name, 'informarErrorModulo', 1);
         try {
             this.interfazUsuario.mostrarInformacion(errorProcesado.mensaje, errorProcesado.tipo);
             this.gestorEstado.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
@@ -303,7 +303,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             await instaladorAplicacion.inicializarTrabajadorServicio(urlTrabajadorServicio);
             instaladorAplicacion.inicializarInstalacion();
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     async activarNotificaciones() {
@@ -312,7 +312,7 @@ class CoordinadorGeneral { //(PRESENTADOR)
             const instaladorAplicacion = new InstaladorAplicacion(this.gestorEstado, this.interfazUsuario, this.rutaErrores);
             instaladorAplicacion.inicializarSuscripcion();
         } catch (error) {
-            this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+            this.informarErrorModulo(this.manejadorErrores.procesarError(error));
         }
     }
     // Funciones para implementar "acciones" y "reacciones"
@@ -335,7 +335,7 @@ NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través 
 class OperadorDatos { //(MODELO)
     constructor(validadorDatos=null) {
         this.validadorDatos = validadorDatos || new ValidadorDatos();
-        this.comunicadorApis = null;
+        this.comunicadorApi = null;
         this.gestorEstado = null;
         this.manejadorErrores = null;
         this.OPERACIONES = {};
@@ -373,7 +373,7 @@ class OperadorDatos { //(MODELO)
         if (typeof gestorEstado === 'object' && typeof manejadorErrores === 'object') {
             this.gestorEstado = gestorEstado;
             this.manejadorErrores = manejadorErrores;
-            this.comunicadorApis = new ComunicadorApis(this.gestorEstado);
+            this.comunicadorApi = new ComunicadorApi(this.gestorEstado);
         }
     }
     configurarOperaciones(declaracionesOperaciones) {
@@ -403,7 +403,7 @@ class OperadorDatos { //(MODELO)
             const serviciosApi = estadosModelo.get('serviciosApi');
             if (serviciosApi && serviciosApi[uidApi]) {
                 const { urlApi, keyApi } = serviciosApi[uidApi];
-                await this.comunicadorApis.configurarApi(uidApi, urlApi, keyApi);
+                await this.comunicadorApi.configurarApi(uidApi, urlApi, keyApi);
             }
         } catch (error) {
             throw error;
@@ -421,8 +421,8 @@ class OperadorDatos { //(MODELO)
             eventoErrorOperacion = eventoError;
             contextoOperacion = { operacion, metodo, recurso, uid };
             await this.seleccionarServicioApi(uidApi);
-            const respuesta = await this.comunicadorApis.realizarPeticionApi(recurso, metodo, valores, parametros, limiteTiempo);
-            let entrega = this.comunicadorApis.adaptarRespuestaApi(respuesta);
+            const respuesta = await this.comunicadorApi.realizarPeticionApi(recurso, metodo, valores, parametros, limiteTiempo);
+            let entrega = this.comunicadorApi.adaptarRespuestaApi(respuesta);
             portadorInformacion.almacenarInformacion(entrega);
             this.gestorEstado.emitirEventoInformacion(eventoExito, portadorInformacion.recuperarInformacion());
         } catch (error) {
@@ -467,7 +467,7 @@ NOTAS: Esta clase es ampliable mediante la inyección de extensiones, a través 
 - Controladores de "objetos de interacción" de la UI.
 */
 class InterfazUsuario { //(VISTA)
-    constructor(frameworkFrontend, traductorIdiomas=null, receptorUI=null, manipuladorUI=null, procesadorPlantillas=null) {
+    constructor(frameworkFrontend, traductorIdiomas=null, receptorUI=null, manipuladorUI=null, presentadorContenido=null) {
         this.ELEMENTOS = new Map();
         this.EVENTOS = new Map();
         this.MANEJADORES = new Map();
@@ -476,14 +476,14 @@ class InterfazUsuario { //(VISTA)
         this.receptorUI = receptorUI || new ReceptorUI();
         this.manipuladorUI = manipuladorUI || new ManipuladorUI();
         this.traductorIdiomas = traductorIdiomas || new TraductorIdiomas();
-        this.procesadorPlantillas = procesadorPlantillas || new ProcesadorPlantillas();
+        this.presentadorContenido = presentadorContenido || new PresentadorContenido();
         this.gestorEstado = null;
         this.manejadorErrores = null;
         this.timeoutVisor = null;
     }
-    static obtenerInstancia(frameworkFrontend, traductorIdiomas=null, receptorUI=null, manipuladorUI=null, procesadorPlantillas=null) {
+    static obtenerInstancia(frameworkFrontend, traductorIdiomas=null, receptorUI=null, manipuladorUI=null, presentadorContenido=null) {
         if (!this.instancia) {
-            this.instancia = new InterfazUsuario(frameworkFrontend, traductorIdiomas, receptorUI, manipuladorUI, procesadorPlantillas);
+            this.instancia = new InterfazUsuario(frameworkFrontend, traductorIdiomas, receptorUI, manipuladorUI, presentadorContenido);
         }
         return this.instancia;
     }
@@ -526,7 +526,7 @@ class InterfazUsuario { //(VISTA)
         if (typeof gestorEstado === 'object' && typeof manejadorErrores === 'object') {
             this.gestorEstado = gestorEstado;
             this.manejadorErrores = manejadorErrores;
-            this.procesadorPlantillas.asignarMapaPlantillas(this.PLANTILLAS);
+            this.presentadorContenido.asignarMapaPlantillas(this.PLANTILLAS);
             this.ELEMENTOS.set('visorMensajes', this.manipuladorUI.seleccionar('#visorMensajes'));
             this.ELEMENTOS.set('ventanaModal', this.manipuladorUI.seleccionar('#ventanaModal'));
         }
@@ -537,7 +537,7 @@ class InterfazUsuario { //(VISTA)
         Base.trazarFlujo(this.constructor.name, 'abrirVentanaModal', 1, selector);
         const ventana = this.ELEMENTOS.get(selector);
         if (!ventana) return;
-        contenido = this.procesadorPlantillas.representarContenido(
+        contenido = this.presentadorContenido.representarContenido(
             'plantillaModal', { 'contenido_modal': contenido }
         );
         contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
@@ -574,8 +574,8 @@ class InterfazUsuario { //(VISTA)
         if (elemento) {
             this.manipuladorUI.manejarClasesElemento('quitar', 'alert-success,alert-warning,alert-danger,alert-info', elemento);
             this.manipuladorUI.manejarClasesElemento('agregar', `alert-${tipo}`, elemento);
-            const marcadores = this.procesadorPlantillas.separarTextoEnPartes(mensaje);
-            let contenido = this.procesadorPlantillas.representarMensaje(marcadores);
+            const marcadores = this.presentadorContenido.separarTextoEnPartes(mensaje);
+            let contenido = this.presentadorContenido.representarMensaje(marcadores);
             contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
             this.manipuladorUI.actualizarContenido(elemento, contenido);
             this.manipuladorUI.cambiarVisibilidad(elemento, true, true);
@@ -664,7 +664,7 @@ class InterfazUsuario { //(VISTA)
 /* **************************************************************************** */
 /* CLASES COMPLEMENTARIAS DEL AMBITO DE LA "VISTA" */
 
-/* CLASE: ProcesadorPlantillas (extensible)
+/* CLASE: PresentadorContenido (extensible)
 PROPOSITO: Proporcionar herramientas y utilidades para convertir, formatear y preparar la presentación de contenidos en la interfaz de usuario (UI), empleando plantillas para transformarlos en representaciones visuales adecuadas.
 RESPONSABILIDADES:
 1. Procesa y adapta los datos y esquemas para su presentación en la UI, asegurando que se muestren de manera comprensible y accesible para los usuarios.
@@ -674,7 +674,7 @@ NOTAS:
 Depende directamente de los esquemas proporcionados por "ProcesadorEsquemas", ya que estos definen la estructura y el formato de los datos a presentar.
 Interactúa con la clase "TraductorIdiomas" para aplicar traducciones y adaptaciones regionales en la presentación de los datos.
 */
-class ProcesadorPlantillas {
+class PresentadorContenido {
     constructor() {
         this.plantillas = null;
     }
@@ -1159,7 +1159,7 @@ RESPONSABILIDADES:
 3. Mantiene el estado del idioma actual, asegurando que todas las partes de la aplicación utilicen la misma configuración de internacionalización/localización.
 NOTAS:
 Depende de los archivos de idioma que contienen las traducciones de los textos de la UI en diferentes idiomas, en formato JSON.
-Colabora con la clase "ProcesadorPlantillas" para aplicar las traducciones y formatos regionales a los elementos de la UI.
+Colabora con la clase "PresentadorContenido" para aplicar las traducciones y formatos regionales a los elementos de la UI.
 */
 class TraductorIdiomas {
     constructor(idioma='es', textos=null) {
@@ -1448,7 +1448,7 @@ class ValidadorDatos {
     }
 }
 
-/* CLASE: ComunicadorApis
+/* CLASE: ComunicadorApi
 PROPOSITO: Gestionar y simplificar la comunicación de la aplicación con los servicios API de back-end externos, actuando como intermediario para facilitar la realización de peticiones HTTP y el manejo de las respuestas recibidas.
 RESPONSABILIDADES:
 1. Realiza peticiones HTTP a servicios API, utilizando métodos como GET, POST, PUT y DELETE.
@@ -1459,7 +1459,7 @@ RESPONSABILIDADES:
 NOTAS:
 Esta clase depende de los adaptadores de API específicos (subclases de "AdaptadorApi") para manejar las particularidades de cada servicio API con el que se comunica.
 */
-class ComunicadorApis {
+class ComunicadorApi {
     constructor(gestorEstado) {
         this.gestorEstado = gestorEstado;
         this.adaptadorApi = null;
@@ -1470,7 +1470,7 @@ class ComunicadorApis {
         if (metodo === 'GET') {
             cuerpo = null;
         }
-        Base.trazarFlujo('ComunicadorApis', '_configurarPeticionApi:CUERPO', 4, cuerpo);
+        Base.trazarFlujo('ComunicadorApi', '_configurarPeticionApi:CUERPO', 4, cuerpo);
         return {
             method: metodo,
             headers: encabezados,
@@ -2271,7 +2271,7 @@ class ErrorPersonalizado extends Error {
     }
 }
 
-/* CLASE: ConfiguradorServicios
+/* CLASE: ConfiguradorModulos
 PROPOSITO: Administrar la configuración dinámica de los servicios que forman parte de la aplicación, proporcionando un mecanismo centralizado y modular para la gestión de configuraciones y la importación de extensiones de dichos servicios en tiempo de ejecución.
 RESPONSABILIDADES:
 1. Carga de Configuraciones: Carga y aplica la configuración específica de todos los servicios de la aplicación, basándose en los "esquema de servicio" que contiene los parámetros y datos de las configuraciones del servicio en formato JSON.
@@ -2279,15 +2279,15 @@ RESPONSABILIDADES:
 3. Gestión de Dependencias: Mapea las relaciones y dependencias entre diferentes componentes lógicos y funcionales de los servicios, para una correcta configuración y operación.
 4. Inicialización de Servicios: Inicializa los servicios con las definiciones, extensiones y componentes cargados, asegurando que estén listos para su uso conforme a los requerimientos del contexto de la aplicación.
 NOTAS:
-Depende directamente de las subclases de los servicios, creadas como extensiones de "DefinicionServicio" (cuyas instancias se asignan a "definicionServicio"), las cuales proveen los contenidos específicos de las funciones y extensiones de cada servicio concreto.
+Depende directamente de las subclases de los servicios, creadas como extensiones de "DefinicionServicio" (cuyas instancias se asignan a "definicionModulo"), las cuales proveen los contenidos específicos de las funciones y extensiones de cada servicio concreto.
 Depende directamente del "esquema de servicio" que contiene los parámetros y datos de las configuraciones del servicio en formato JSON.
 Interactúa con "CoordinadorGeneral" para disparar la configuración de servicios cuando se solicita su ejecución, y para entregarle el control del servicio una vez que se haya configurado.
 */
-class ConfiguradorServicios {
+class ConfiguradorModulos {
     constructor() {
         this.gestorEstado = null;
         this.traductorIdiomas = null;
-        this.definicionServicio = null;
+        this.definicionModulo = null;
         this.configuraciones = null;
         this._dominioTemporal = null;
         this._contenidoTemporal = '';
@@ -2295,12 +2295,12 @@ class ConfiguradorServicios {
     // Funciones privadas
     _inyectarExtensiones(coordinador) {
         try {
-            coordinador.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('AccionesCoordinador'));
-            coordinador.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('ReaccionesCoordinador'));
-            coordinador.interfazUsuario.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('InterfazUsuario'));
-            coordinador.interfazUsuario.procesadorPlantillas.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('ProcesadorPlantillas'));
-            coordinador.operadorDatos.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('OperadorDatos'));
-            coordinador.operadorDatos.validadorDatos.inyectarValidadoresDatos(this.definicionServicio.traspasarDefiniciones('ValidadoresDatos'));
+            coordinador.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('AccionesCoordinador'));
+            coordinador.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('ReaccionesCoordinador'));
+            coordinador.interfazUsuario.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('InterfazUsuario'));
+            coordinador.interfazUsuario.presentadorContenido.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('PresentadorContenido'));
+            coordinador.operadorDatos.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('OperadorDatos'));
+            coordinador.operadorDatos.validadorDatos.inyectarValidadoresDatos(this.definicionModulo.traspasarDefiniciones('ValidadoresDatos'));
         } catch (error) {
             throw error;
         }
@@ -2370,7 +2370,7 @@ class ConfiguradorServicios {
     }
     _configurarInteracciones(coordinador) {
         try {
-            coordinador.interfazUsuario.inyectarExtensiones(this.definicionServicio.traspasarDefiniciones('ManejadoresInteracciones'));
+            coordinador.interfazUsuario.inyectarExtensiones(this.definicionModulo.traspasarDefiniciones('ManejadoresInteracciones'));
             let funcionesInteraccion = {};
             const manejadoresInteracciones = this._obtenerConfiguracion('manejadoresInteracciones');
             if (!manejadoresInteracciones) {
@@ -2429,7 +2429,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosModelo[identificador] || indiceEventosVista[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.notificadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador[reaccionCoordinador].bind(coordinador)
                     );
@@ -2453,7 +2453,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosModelo[identificador] || indiceEventosVista[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.notificadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador.operadorDatos[reaccionModelo].bind(coordinador.operadorDatos)
                     );
@@ -2477,7 +2477,7 @@ class ConfiguradorServicios {
                 }
                 const eventoConfigurado = indiceEventosVista[identificador] || indiceEventosModelo[identificador];
                 if (eventoConfigurado) {
-                    coordinador.gestorEstado.enrutadorEventos.suscribirEvento(
+                    coordinador.gestorEstado.notificadorEventos.suscribirEvento(
                         eventoConfigurado,
                         coordinador.interfazUsuario[reaccionVista].bind(coordinador.interfazUsuario)
                     );
@@ -2513,8 +2513,8 @@ class ConfiguradorServicios {
     _asignarPlantillasUI(interfaz, contenedor='plantillas', reemplazar=false) {
         try {
             if (this._contenidoTemporal) {
-                interfaz.procesadorPlantillas.agregarPlantillasContenedor(this._contenidoTemporal, contenedor, reemplazar);
-                interfaz.procesadorPlantillas.autoregistrarPlantillas(contenedor);
+                interfaz.presentadorContenido.agregarPlantillasContenedor(this._contenidoTemporal, contenedor, reemplazar);
+                interfaz.presentadorContenido.autoregistrarPlantillas(contenedor);
                 this._contenidoTemporal = '';
             }
         } catch (error) {
@@ -2587,14 +2587,14 @@ class ConfiguradorServicios {
             this.traductorIdiomas = traductorIdiomas;
         }
     }
-    async importarServicio(rutaModuloServicio) {
-        Base.trazarFlujo(this.constructor.name, 'importarServicio', 2, rutaModuloServicio);
+    async importarModulo(rutaModulo) {
+        Base.trazarFlujo(this.constructor.name, 'importarModulo', 2, rutaModulo);
         try {
             const noCache = new Date().getTime();
-            const urlModuloServicio = `${Base.construirUrlAbsoluta(rutaModuloServicio)}?nocache=${noCache}`;
-            const modulo = await import(urlModuloServicio);
-            this.definicionServicio = modulo.servicio;
-            const rutaEsquema = urlModuloServicio.replace('.js','.json');
+            const urlModulo = `${Base.construirUrlAbsoluta(rutaModulo)}?nocache=${noCache}`;
+            const modulo = await import(urlModulo);
+            this.definicionModulo = modulo.servicio;
+            const rutaEsquema = urlModulo.replace('.js','.json');
             const resultadoCarga = await this._cargarConfiguraciones(rutaEsquema);
             if (resultadoCarga) {
                 this.gestorEstado.asignarEstado(
@@ -2634,7 +2634,7 @@ class ConfiguradorServicios {
             this._contenidoTemporal = '';
             this._dominioTemporal = null;
             this.configuraciones = null;
-            this.definicionServicio = null;
+            this.definicionModulo = null;
             return true;
         } catch (error) {
             throw error;
@@ -2948,20 +2948,20 @@ RESPONSABILIDADES:
 NOTAS:
 Interactúa con varias clases de la aplicación, ya que proporciona el estado necesario para que éstas funcionen correctamente:
 - InterfazUsuario.
-- OperadorDatos (y sus complementos ComunicadorApis, CreadorAdaptadoresApi, AdaptadorApi y todas sus subclases).
-- CoordinadorGeneral (junto con PortadorInformacion, ConfiguradorServicios e InstaladorAplicacion).
+- OperadorDatos (y sus complementos ComunicadorApi, CreadorAdaptadoresApi, AdaptadorApi y todas sus subclases).
+- CoordinadorGeneral (junto con PortadorInformacion, ConfiguradorModulos e InstaladorAplicacion).
 - Todas las subclases de servicios derivadas de DefinicionServicio (que es donde realmente se programan las extensiones de los servicios desarrollados).
 */
 class GestorEstado {
-    constructor(almacenamientoLocal='estadosApp', enrutadorEventos=null) {
-        this.enrutadorEventos = enrutadorEventos || new EnrutadorEventos();
+    constructor(almacenamientoLocal='estadosApp', notificadorEventos=null) {
+        this.notificadorEventos = notificadorEventos || new NotificadorEventos();
         this.nombreAlmacenamientoLocal = almacenamientoLocal;
         this.ESTADOS = null;
         this._cargarEstado();
     }
-    static obtenerInstancia(almacenamientoLocal='estadosApp', enrutadorEventos=null) {
+    static obtenerInstancia(almacenamientoLocal='estadosApp', notificadorEventos=null) {
         if (!this.instancia) {
-            this.instancia = new GestorEstado(almacenamientoLocal, enrutadorEventos);
+            this.instancia = new GestorEstado(almacenamientoLocal, notificadorEventos);
         }
         return this.instancia;
     }
@@ -3027,7 +3027,7 @@ class GestorEstado {
                 this._guardarEstado();
             }
             if (nombreEvento) {
-                this.enrutadorEventos.notificarCambio(nombreEvento, datosEvento);
+                this.notificadorEventos.notificarCambio(nombreEvento, datosEvento);
             }
         }
     }
@@ -3068,7 +3068,7 @@ class GestorEstado {
                 this._guardarEstado();
             }
             if (nombreEvento) {
-                this.enrutadorEventos.notificarCambio(nombreEvento, datosEvento);
+                this.notificadorEventos.notificarCambio(nombreEvento, datosEvento);
             }
         }
     }
@@ -3086,7 +3086,7 @@ class GestorEstado {
                 this._guardarEstado();
             }
             if (nombreEvento) {
-                this.enrutadorEventos.notificarCambio(nombreEvento, datosEvento);
+                this.notificadorEventos.notificarCambio(nombreEvento, datosEvento);
             }
         }
     }
@@ -3110,18 +3110,18 @@ class GestorEstado {
         Base.trazarFlujo(this.constructor.name, 'emitirEventoMensaje', 3, nombreEvento);
         let datosEvento = {};
         if (tipoMensaje || valores) {
-            datosEvento = this.enrutadorEventos.empaquetarMensaje({
+            datosEvento = this.notificadorEventos.empaquetarMensaje({
                 'mensaje': textoMensaje,
                 'tipo': tipoMensaje,
                 'valores': valores,
                 'codigo': codigo
             });
         }
-        this.enrutadorEventos.notificarCambio(nombreEvento, datosEvento);
+        this.notificadorEventos.notificarCambio(nombreEvento, datosEvento);
     }
     emitirEventoInformacion(nombreEvento, datosEvento) {
         Base.trazarFlujo(this.constructor.name, 'emitirEventoInformacion', 3, nombreEvento);
-        this.enrutadorEventos.notificarCambio(nombreEvento, datosEvento);
+        this.notificadorEventos.notificarCambio(nombreEvento, datosEvento);
     }
     // Funciones especiales para Grupos
     leerPreferenciaUsuario(clave, predeterminado) {
@@ -3142,7 +3142,7 @@ class GestorEstado {
     }
 }
 
-/* CLASE: EnrutadorEventos
+/* CLASE: NotificadorEventos
 PROPOSITO: Gestionar la suscripción y la notificación de eventos, tanto de la capa de Modelo como de la capa de Vista, dentro de un esquema multi-direccional "muchos-a-muchos". Esta clase facilita la implementación de una comunicación más directa, dinámica y desacoplada entre las capas, permitiendo una gran variedad de interacciones y flujos de datos.
 RESPONSABILIDADES:
 1. Gestionar Suscripciones a Eventos: Permite que cualquier componente principal de la biblioteca (como CoordinadorGeneral, OperadorDatos o InterfazUsuario) se suscriba a eventos específicos, ya sean eventos de Modelo o de Vista.
@@ -3155,7 +3155,7 @@ Es la base para implementar una arquitectura reactiva y desacoplada, donde los d
 El uso efectivo de esta clase depende de los "Undices de Eventos" disponibles en el "esquema de configuracion" de cada servicio de aplicación (en las definiciones de indiceEventosModelo y indiceEventosVista).
 Las personalización de las suscripciones a los eventos dentro de cada servicio se registra en su respectiva configuración en el esquema del servicio (en las definiciones de suscripcionesInterfazUsuario y suscripcionesOperadorDatos).
 */
-class EnrutadorEventos {
+class NotificadorEventos {
     constructor() {
         this.SUSCRIPTORES = [];
     }
@@ -3356,7 +3356,7 @@ class Base {
             'historial': () => ({"CoordinadorGeneral.HISTORIAL": coordinador.HISTORIAL}),
             'operaciones': () => ({"OperadorDatos.OPERACIONES": coordinador.operadorDatos.OPERACIONES}),
             'estados': () => ({"GestorEstado.ESTADOS": coordinador.gestorEstado.ESTADOS}),
-            'suscriptores': () => ({"EnrutadorEventos.SUSCRIPTORES": coordinador.gestorEstado.enrutadorEventos.SUSCRIPTORES}),
+            'suscriptores': () => ({"NotificadorEventos.SUSCRIPTORES": coordinador.gestorEstado.notificadorEventos.SUSCRIPTORES}),
             'registros': () => ({"RegistradorErrores.REGISTROS": coordinador.manejadorErrores.registradorErrores.REGISTROS}),
             'textos': () => ({"TraductorIdiomas.TEXTOS": coordinador.interfazUsuario.traductorIdiomas.TEXTOS}),
             'elementos': () => ({"InterfazUsuario.ELEMENTOS": coordinador.interfazUsuario.ELEMENTOS}),

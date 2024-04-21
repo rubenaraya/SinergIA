@@ -10,11 +10,11 @@ VERSION: 0.0.1 */
 PROPOSITO: Es una subclase de "DefinicionModulo" que actúa como un contenedor de funcionalidad para el "Servicio Base" de la aplicación. Esta clase encapsula los fragmentos de código JavaScript necesarios para implementar este servicio y extender con ello las clases principales de la aplicación.
 RESPONSABILIDADES:
 1. Contención de Funciones de Extensión: Encapsula el código JavaScript de las funciones que se inyectarán en las clases principales para ampliar su funcionalidad y adaptarla a las necesidades del servicio.
-2. Facilitación de Transferencia de Funciones: Provee una estructura que facilita la recuperación y transferencia de las funciones al "ConfiguradorServicios", permitiendo una configuración dinámica del servicio, por demanda y en tiempo de ejecución.
-3. Integración con la Arquitectura de la Aplicación: Trabaja en conjunto con el "ConfiguradorServicios" y con el "esquema de servicio" para activar las configuraciones necesarias e implementar las funciones del servicio.
+2. Facilitación de Transferencia de Funciones: Provee una estructura que facilita la recuperación y transferencia de las funciones al "ConfiguradorModulos", permitiendo una configuración dinámica del servicio, por demanda y en tiempo de ejecución.
+3. Integración con la Arquitectura de la Aplicación: Trabaja en conjunto con el "ConfiguradorModulos" y con el "esquema de servicio" para activar las configuraciones necesarias e implementar las funciones del servicio.
 NOTAS:
 Esta subclase hereda de la superclase "DefinicionModulo" para la estructura base de un servicio.
-Interactúa con la clase "ConfiguradorServicios" para la importación e inyección de las funciones y extensiones del servicio en las clases principales de la aplicación.
+Interactúa con la clase "ConfiguradorModulos" para la importación e inyección de las funciones y extensiones del servicio en las clases principales de la aplicación.
 Requiere la existencia de un archivo JSON de "esquema de servicio" que contenga los parámetros y datos de las configuraciones del servicio correspondiente en formato JSON.
 */
 class DefinicionModuloBase extends DefinicionModulo {
@@ -98,7 +98,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 await this.procesarEsquemas(portadorInformacion);
                 await this.operadorDatos.efectuarOperacion(portadorInformacion);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             } finally {
                 this.interfazUsuario.alternarEsperando(false);
             }
@@ -119,7 +119,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 });
                 await this.operadorDatos.efectuarOperacion(portadorInformacion);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionSolicitarDetalleCaso: async function(contexto) {
@@ -140,7 +140,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 await this.procesarEsquemas(portadorInformacion);
                 await this.operadorDatos.efectuarOperacion(portadorInformacion);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionEnviarEdicionCaso: async function(contexto) {
@@ -164,7 +164,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     await this.operadorDatos.efectuarOperacion(portadorInformacion);
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionEnviarNuevoCaso: async function(contexto) {
@@ -187,7 +187,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     await this.operadorDatos.efectuarOperacion(portadorInformacion);
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionAbrirServicio: async function(contexto) {
@@ -208,7 +208,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 await this.procesarEsquemas(portadorInformacion);
                 await this.operadorDatos.efectuarOperacion(portadorInformacion);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionNuevoCaso: async function(contexto) {
@@ -235,7 +235,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     );
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {accion: accion}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {accion: accion}));
             }
         },
         accionCambiarIdioma: async function(contexto) {
@@ -244,7 +244,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { idioma } = contexto;
                 await this.interfazUsuario.traductorIdiomas.cambiarIdioma(idioma);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error));
             }
         },
         accionEnviarNuevoInput: async function(contexto) {
@@ -263,7 +263,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     await this.operadorDatos.efectuarOperacion(portadorInformacion);
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error));
             }
         },
         accionCopiarTexto: function(contexto) {
@@ -275,7 +275,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     this.interfazUsuario.manipuladorUI.copiarContenido(contenido);
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error));
             }
         },
         accionAjustarCampo: function(contexto) {
@@ -284,7 +284,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 const { selector } = contexto;
                 this.interfazUsuario.manipuladorUI.ajustarAlturaCampo(selector);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error));
             }
         },
         accionProbar: async function() {
@@ -309,7 +309,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 }
                 await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionCasoEditado: async function(informacion) {
@@ -320,7 +320,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 }
                 await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionCasoEliminado: async function(informacion) {
@@ -331,7 +331,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                 }
                 await this.lanzarInteraccion('accionSolicitarListaCasos', informacion.servicio);
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionListaRecibida: async function(informacion) {
@@ -346,7 +346,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     );
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionCasoRecibido: async function(informacion) {
@@ -362,7 +362,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     );
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionServicioAbierto: async function(informacion) {
@@ -377,7 +377,7 @@ class DefinicionModuloBase extends DefinicionModulo {
                     );
                 }
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             } finally {
                 this.gestorEstado.emitirEventoInformacion('RESPUESTA_RECIBIDA', {});
             }
@@ -387,7 +387,7 @@ class DefinicionModuloBase extends DefinicionModulo {
             //TODO: Pendiente
             try {
             } catch (error) {
-                this.informarErrorServicio(this.manejadorErrores.procesarError(error, {}));
+                this.informarErrorModulo(this.manejadorErrores.procesarError(error, {}));
             }
         },
         reaccionRespuestaRecibidaCoordinador: function() {
@@ -402,7 +402,7 @@ class DefinicionModuloBase extends DefinicionModulo {
             if (!datos.lista?.casos || !Array.isArray(datos.lista.casos)) { return; }
             const elemento = this.ELEMENTOS.get(selector);
             if (!elemento) { return; }
-            let contenido = this.procesadorPlantillas.representarListaCasos(
+            let contenido = this.presentadorContenido.representarListaCasos(
                 datos, esquemas, plantilla
             );
             contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
@@ -412,21 +412,21 @@ class DefinicionModuloBase extends DefinicionModulo {
         generarFormularioCaso: function(datos, esquemas, plantilla='plantillaCaso') {
             Base.trazarFlujo(this.constructor.name, 'generarFormularioCaso', 1);
             if (!datos.caso || !Array.isArray(datos.caso)) { return; }
-            let contenido = this.procesadorPlantillas.representarFormularioCaso(
+            let contenido = this.presentadorContenido.representarFormularioCaso(
                 datos, esquemas, plantilla
             );
-            contenido = this.procesadorPlantillas.reemplazarDatos(contenido, datos);
-            contenido = this.procesadorPlantillas.sustituirFechaHora(contenido);
+            contenido = this.presentadorContenido.reemplazarDatos(contenido, datos);
+            contenido = this.presentadorContenido.sustituirFechaHora(contenido);
             contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
             return contenido;
         },
         actualizarPanelContenidos: function(datos, esquemas, plantilla='plantillaPanel') {
             Base.trazarFlujo(this.constructor.name, 'actualizarPanelContenidos', 1);
-            let contenido = this.procesadorPlantillas.representarContenido(plantilla, {});
+            let contenido = this.presentadorContenido.representarContenido(plantilla, {});
             const elemento = this.ELEMENTOS.get('area_cuerpo');
             if (elemento && contenido) {
-                contenido = this.procesadorPlantillas.reemplazarDatos(contenido, datos);
-                contenido = this.procesadorPlantillas.sustituirFechaHora(contenido);
+                contenido = this.presentadorContenido.reemplazarDatos(contenido, datos);
+                contenido = this.presentadorContenido.sustituirFechaHora(contenido);
                 contenido = this.traductorIdiomas.aplicarTraduccion(contenido);
                 this.manipuladorUI.actualizarContenido(elemento, contenido);
                 this.manipuladorUI.cambiarVisibilidad(elemento, true);
@@ -464,7 +464,7 @@ class DefinicionModuloBase extends DefinicionModulo {
         }
         };
     }
-    extenderProcesadorPlantillas() {
+    extenderPresentadorContenido() {
         return {
         representarListaCasos: function(datos, esquemas, plantilla) {
             Base.trazarFlujo(this.constructor.name, 'representarListaCasos', 2, plantilla);

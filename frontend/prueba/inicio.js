@@ -1,6 +1,6 @@
 // frontend\prueba\inicio.js
 
-/* FUNCION PARA INICIALIZAR LA APLICACION */
+/* FUNCION PARA INICIAR LA APLICACION */
 let coordinador;
 window.onload = async () => {
     try {
@@ -14,7 +14,7 @@ window.onload = async () => {
             coordinador = CoordinadorGeneral.obtenerInstancia(operadorDatos, interfazUsuario);
             window.aplicacionIniciada = await coordinador.coordinarInicio('./manifest.json', './errores.php', GestorEstado.obtenerInstancia());
             if (window.aplicacionIniciada) {
-                await coordinador.ejecutarServicio('./frontend/servicios/base/servicio.js');
+                await coordinador.ejecutarModulo('./frontend/prueba/base/DefinicionModulo.js');
             }
         }
     } catch (error) {
