@@ -1,6 +1,6 @@
 # backend\pysinergia\conectores\basedatos_mysql.py
 
-from backend.pysinergia.infraestructura import I_ConectorBasedatos
+from backend.pysinergia.interfaces import I_ConectorBasedatos
 
 # --------------------------------------------------
 # Clase: BasedatosMysql

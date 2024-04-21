@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from starlette.templating import Jinja2Templates
-from backend.pysinergia.interfaz import Enrutador, ReceptorPeticion, EmisorRespuesta
+from backend.pysinergia.infraestructura import Enrutador, ReceptorPeticion, EmisorRespuesta
 
 # --------------------------------------------------
 # Rutas personalizadas del Servicio Base

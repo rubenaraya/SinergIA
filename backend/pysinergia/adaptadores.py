@@ -1,12 +1,9 @@
-# backend\pysinergia\nucleo.py
-
-from backend.pysinergia.interfaces import ( I_ReceptorPeticion, I_EmisorRespuesta )
-from backend.pysinergia.interfaces import ( I_ConectorAlmacen, I_ConectorBasedatos, I_ConectorDisco, I_ConectorLlm, I_ConectorSpi )
+# backend\pysinergia\adaptadores.py
 
 # --------------------------------------------------
-# Clase: Coordinador
+# Clase: ComunicadorWeb
 # --------------------------------------------------
-class Coordinador():
+class ComunicadorWeb():
     def __init__(mi):
         ...
     # --------------------------------------------------
@@ -18,9 +15,9 @@ class Coordinador():
 
 
 # --------------------------------------------------
-# Clase: ControladorAcceso
+# Clase: TraductorIdiomas
 # --------------------------------------------------
-class ControladorAcceso():
+class TraductorIdiomas():
     def __init__(mi):
         ...
     # --------------------------------------------------
@@ -32,9 +29,24 @@ class ControladorAcceso():
 
 
 # --------------------------------------------------
-# Clase: PortadorInformacion
+# Clase: PresentadorContenidos
 # --------------------------------------------------
-class PortadorInformacion():
+class PresentadorContenidos():
+    def __init__(mi):
+        ...
+    # --------------------------------------------------
+    # Métodos privados
+    # --------------------------------------------------
+    # --------------------------------------------------
+    # Métodos públicos
+    # --------------------------------------------------
+
+
+
+# --------------------------------------------------
+# Clase: Operador
+# --------------------------------------------------
+class Operador():
     def __init__(mi):
         ...
     # --------------------------------------------------
@@ -46,51 +58,9 @@ class PortadorInformacion():
 
 
 # --------------------------------------------------
-# Clase: ManejadorErrores
+# Clase: ValidadorDatos
 # --------------------------------------------------
-class ManejadorErrores():
-    def __init__(mi):
-        ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: RegistradorErrores
-# --------------------------------------------------
-class RegistradorErrores():
-    def __init__(mi):
-        ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: ErrorPersonalizado
-# --------------------------------------------------
-class ErrorPersonalizado():
-    def __init__(mi):
-        ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: ProcesadorEsquemas
-# --------------------------------------------------
-class ProcesadorEsquemas():
+class ValidadorDatos():
     def __init__(mi):
         ...
     # --------------------------------------------------

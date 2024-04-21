@@ -1,6 +1,6 @@
 # backend\pysinergia\conectores\disco_local.py
 
-from backend.pysinergia.infraestructura import I_ConectorDisco
+from backend.pysinergia.interfaces import I_ConectorDisco
 
 # --------------------------------------------------
 # Clase: AlmacenFaiss

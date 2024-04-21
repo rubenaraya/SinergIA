@@ -1,4 +1,4 @@
-# backend\pysinergia\entorno.py
+# backend\pysinergia\globales.py
 
 # --------------------------------------------------
 # Clase: GestorEstado

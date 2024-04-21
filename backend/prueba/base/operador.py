@@ -1,6 +1,6 @@
 # backend\prueba\base\operador.py
 
-from backend.pysinergia.datos import Operador
+from backend.pysinergia.adaptadores import Operador
 
 # --------------------------------------------------
 # SubClase: OperadorBase

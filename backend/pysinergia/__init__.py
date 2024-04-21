@@ -4,10 +4,11 @@
 # Componentes de PySinergIA
 # --------------------------------------------------
 
-from backend.pysinergia.datos import ( Operador, ValidadorDatos )
 from backend.pysinergia.globales import ( GestorEstado, NotificadorEventos, Constantes, Funciones )
-from backend.pysinergia.interfaz import ( ServidorApi, Enrutador, ReceptorPeticion, EmisorRespuesta, ComunicadorWeb, TraductorIdiomas, PresentadorContenidos )
+from backend.pysinergia.adaptadores import ( Operador, ValidadorDatos )
+from backend.pysinergia.adaptadores import ( ComunicadorWeb, TraductorIdiomas, PresentadorContenidos )
 from backend.pysinergia.nucleo import ( Coordinador, ControladorAcceso, PortadorInformacion, ManejadorErrores, RegistradorErrores, ErrorPersonalizado, ProcesadorEsquemas )
+from backend.pysinergia.infraestructura import ( ServidorApi, Enrutador, ReceptorPeticion, EmisorRespuesta )
 
 __all__ = [
     'Operador', 'ValidadorDatos', 
