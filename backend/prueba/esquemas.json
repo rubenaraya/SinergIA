@@ -1,0 +1,10 @@
+{
+    "secciones": "SELECT * FROM secciones WHERE estado=1 AND idioma='{idioma}' AND (SELECT COUNT(*) FROM acciones WHERE acciones.seccion=secciones.seccion AND ({} OR acciones.permisos='*' OR acciones.permisos='' OR acciones.permisos IS NULL))>0 ORDER BY orden",
+    "acciones": "SELECT * FROM acciones LEFT JOIN txt_acciones ON (acciones.id=txt_acciones._id) WHERE estado=1 AND _idioma='{idioma}' AND grupo='menu' AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY seccion, orden",
+    "formulario": "SELECT * FROM formularios LEFT JOIN txt_formularios ON (formularios.id=txt_formularios._id) WHERE estado=1 AND _idioma='{idioma}' AND formulario=? AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY grupo, pos",
+    "informe": "SELECT * FROM informes LEFT JOIN txt_informes ON (informes.id=txt_informes._id) WHERE estado=1 AND _idioma='{idioma}' AND informe=? AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY col",
+    "accion": "SELECT * FROM acciones LEFT JOIN txt_acciones ON (acciones.id=txt_acciones._id) WHERE area=? AND estado=1 AND _idioma='{idioma}' AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY orden",
+    "diccionario": "SELECT * FROM diccionarios LEFT JOIN txt_diccionarios ON (diccionarios.id=txt_diccionarios._id) WHERE estado=1 AND _idioma='{idioma}' AND (diccionario='general' OR diccionario=?) AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY diccionario, concepto, pos",
+    "automata": "SELECT * FROM automatas WHERE estado=1 AND automata=? AND ({} OR permisos='*' OR permisos='' OR permisos IS NULL) ORDER BY pos",
+    "esquema": "SELECT * FROM esquemas WHERE estado=1 AND endpoint=? ORDER BY id"
+    }

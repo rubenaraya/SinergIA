@@ -14,5 +14,5 @@ enrutador = APIRouter()
 def accion(request:Request, accion: str):
     ruta_plantillas = '/prueba/usuarios/'
     plantillas = Jinja2Templates(directory = f"./backend")
-    respuesta = plantillas.TemplateResponse(f".{ruta_plantillas}plantilla_basica.json", context={"request":request})
+    respuesta = plantillas.TemplateResponse(f".{ruta_plantillas}plantilla.json", context={"request":request})
     return respuesta
