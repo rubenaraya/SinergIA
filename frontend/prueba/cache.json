@@ -1,0 +1,37 @@
+{
+    "versionCache": "v0.1",
+    "contenidoEnCache": [
+        "/JSinergIA/cache.json",
+        "/JSinergIA/favicon.ico",
+        "/JSinergIA/inicio.js",
+        "/JSinergIA/manifest.json",
+        "/JSinergIA/img/en.png",
+        "/JSinergIA/img/es.png",
+        "/JSinergIA/img/espere.gif",
+        "/JSinergIA/img/icon-72x72.png",
+        "/JSinergIA/img/icon-96x96.png",
+        "/JSinergIA/img/icon-128x128.png",
+        "/JSinergIA/img/icon-144x144.png",
+        "/JSinergIA/img/icon-152x152.png",
+        "/JSinergIA/img/icon-192x192.png",
+        "/JSinergIA/frontend/estilos.css",
+        "/JSinergIA/frontend/servicios/base/dominio.json",
+        "/JSinergIA/frontend/servicios/base/dominio-es.json",
+        "/JSinergIA/frontend/servicios/base/idioma-en.json",
+        "/JSinergIA/frontend/servicios/base/idioma-es.json",
+        "/JSinergIA/frontend/servicios/base/plantillas.html",
+        "/JSinergIA/frontend/servicios/base/servicio.js",
+        "/JSinergIA/frontend/servicios/base/servicio.json",
+        "/JSinergIA/frontend/servicios/DefinicionServicio.js",
+        "/JSinergIA/frontend/BibliotecaFrontend.js"
+    ],
+    "reglasCache": [
+        { "url": "^https://localhost/.*\\.json", "handle": "redPrimero" },
+        { "url": "^https://localhost/.*\\.js", "handle": "redPrimero" },
+        { "url": "^https://localhost/.*\\.html", "handle": "redPrimero" },
+        { "url": "^https://localhost/.*\\.css", "handle": "redPrimero" },
+        { "url": "^https://localhost/.*\\.ico", "handle": "cachePrimero" },
+        { "url": "^https://localhost/.*\\.png", "handle": "cachePrimero" },
+        { "url": "^https://localhost/.*\\.gif", "handle": "cachePrimero" }
+    ]
+}
