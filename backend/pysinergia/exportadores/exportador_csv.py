@@ -1,6 +1,6 @@
 # backend\pysinergia\exportadores\exportador_csv.py
 
-from backend.pysinergia import I_Exportador
+from backend.pysinergia.infra_interfaz import I_Exportador
 
 # --------------------------------------------------
 # Clase: ExportadorCsv

@@ -1,6 +1,6 @@
 # backend\pysinergia\conectores\llm_openai.py
 
-from backend.pysinergia import I_ConectorLlm
+from backend.pysinergia.infra_datos import I_ConectorLlm
 
 # --------------------------------------------------
 # Clase: LlmOpenai

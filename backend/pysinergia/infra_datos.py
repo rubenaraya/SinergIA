@@ -1,4 +1,4 @@
-# backend\pysinergia\adaptadores.py
+# backend\pysinergia\infra_datos.py
 
 from abc import (ABCMeta, abstractmethod)
 
@@ -44,15 +44,6 @@ class I_ConectorLlm(metaclass=ABCMeta):
 class I_ConectorSpi(metaclass=ABCMeta):
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_Exportador
-# --------------------------------------------------
-class I_Exportador(metaclass=ABCMeta):
-    @abstractmethod
-    def generar(mi, opciones:dict) -> str:
         ...
 
 

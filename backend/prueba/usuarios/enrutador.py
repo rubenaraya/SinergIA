@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from starlette.templating import Jinja2Templates
+from backend.pysinergia.interfaz import Enrutador, ReceptorPeticion, EmisorRespuesta
 
 enrutador = APIRouter()
 

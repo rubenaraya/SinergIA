@@ -1,6 +1,6 @@
 # backend\pysinergia\conectores\basedatos_sqlite.py
 
-from backend.pysinergia import I_ConectorBasedatos
+from backend.pysinergia.infra_datos import I_ConectorBasedatos
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
