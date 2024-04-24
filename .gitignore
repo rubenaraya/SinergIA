@@ -162,6 +162,8 @@ repositorios/*/
 tmp/
 tmp/*/
 frontend/static/app_*/
+biblioteca/
+biblioteca/*/
 
 .*.env
 *.env
