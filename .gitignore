@@ -164,6 +164,8 @@ tmp/*/
 frontend/static/app_*/
 biblioteca/
 biblioteca/*/
+aplicacion/
+aplicacion/*/
 
 .*.env
 *.env
