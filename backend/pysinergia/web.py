@@ -70,9 +70,9 @@ class ServidorApi():
 
 
 # --------------------------------------------------
-# Clase: Emisor
+# Clase: EmisorWeb
 # --------------------------------------------------
-class Emisor(I_Emisor):
+class EmisorWeb(I_Emisor):
     def __init__(mi):
         ...
     def entregar_respuesta(mi, resultado:dict):

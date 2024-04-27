@@ -16,14 +16,14 @@ from backend.pysinergia.adaptadores import (
     I_ConectorSpi, 
     I_Exportador
 )
-from backend.pysinergia.web import (Emisor, ServidorApi)
+from backend.pysinergia.web import (EmisorWeb, ServidorApi)
 
 __all__ = [
     'Operador',
     'Controlador',
     'Entidad',
     'Servicio',
-    'Emisor',
+    'EmisorWeb',
     'ServidorApi',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
