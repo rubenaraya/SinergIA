@@ -1,3 +1,5 @@
+# backend\pysinergia\exportadores\exportador_word.py
+
 from backend.pysinergia import I_Exportador
 
 # --------------------------------------------------

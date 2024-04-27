@@ -1,3 +1,5 @@
+# backend\pysinergia\conectores\basedatos_mysql.py
+
 from backend.pysinergia import I_ConectorBasedatos
 
 # --------------------------------------------------
@@ -6,5 +8,5 @@ from backend.pysinergia import I_ConectorBasedatos
 class BasedatosMysql(I_ConectorBasedatos):
     def __init__(mi):
         ...
-    def conectar(mi, config:dict):
+    def conectar(mi, config:dict) -> bool:
         return True

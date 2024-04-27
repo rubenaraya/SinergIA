@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request
+# backend\prueba\participantes\web.py
+
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from backend.pysinergia import Emisor
 
@@ -10,7 +12,6 @@ enrutador = APIRouter(prefix=f"/{instancia}")
 """
 Falta validar api_key y token de sesión
 Falta recuperar petición real y valdar con pydantic (serializar)
-Falta archivo para manejar las configuraciones en infra y servicios
 """
 @enrutador.get('/participantes', response_class=JSONResponse)
 def buscar_participantes():

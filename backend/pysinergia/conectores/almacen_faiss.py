@@ -1,3 +1,5 @@
+# backend\pysinergia\conectores\almacen_faiss.py
+
 from backend.pysinergia import I_ConectorAlmacen
 
 # --------------------------------------------------
@@ -6,5 +8,5 @@ from backend.pysinergia import I_ConectorAlmacen
 class AlmacenFaiss(I_ConectorAlmacen):
     def __init__(mi):
         ...
-    def conectar(mi, config:dict):
+    def conectar(mi, config:dict) -> bool:
         return True

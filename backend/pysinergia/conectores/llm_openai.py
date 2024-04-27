@@ -1,3 +1,5 @@
+# backend\pysinergia\conectores\llm_openai.py
+
 from backend.pysinergia import I_ConectorLlm
 
 # --------------------------------------------------
@@ -6,5 +8,5 @@ from backend.pysinergia import I_ConectorLlm
 class LlmOpenai(I_ConectorLlm):
     def __init__(mi):
         ...
-    def conectar(mi, config:dict):
+    def conectar(mi, config:dict) -> bool:
         return True

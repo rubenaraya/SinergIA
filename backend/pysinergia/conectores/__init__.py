@@ -1,3 +1,5 @@
+# backend\pysinergia\conectores\__init__.py
+
 # --------------------------------------------------
 # Conectores para PySinergIA
 # --------------------------------------------------

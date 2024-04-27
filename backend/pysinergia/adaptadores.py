@@ -1,3 +1,5 @@
+# backend\pysinergia\adaptadores.py
+
 from abc import (ABCMeta, abstractmethod)
 from backend.pysinergia.servicio import I_Operador
 
@@ -58,7 +60,7 @@ class Operador(I_Operador):
 # --------------------------------------------------
 class I_Emisor(metaclass=ABCMeta):
     @abstractmethod
-    def entregar_respuesta(mi, resultado):
+    def entregar_respuesta(mi, resultado:dict):
         ...
 
 

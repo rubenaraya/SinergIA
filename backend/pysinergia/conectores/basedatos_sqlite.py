@@ -1,3 +1,5 @@
+# backend\pysinergia\conectores\basedatos_sqlite.py
+
 from backend.pysinergia import I_ConectorBasedatos
 
 # --------------------------------------------------
@@ -6,6 +8,6 @@ from backend.pysinergia import I_ConectorBasedatos
 class BasedatosSqlite(I_ConectorBasedatos):
     def __init__(mi):
         ...
-    def conectar(mi, config:dict):
+    def conectar(mi, config:dict) -> bool:
         print("BasedatosSqlite.conectar")
         return True

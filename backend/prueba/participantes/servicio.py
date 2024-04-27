@@ -1,3 +1,5 @@
+# backend\prueba\participantes\servicio.py
+
 from abc import (ABCMeta, abstractmethod)
 from backend.pysinergia import Servicio
 
@@ -19,7 +21,7 @@ class ServicioParticipantes(Servicio):
         mi.operador:I_Operador = operador
         mi.entidad = Entidad()
 
-    def solicitar_accion(mi, accion:ACCION, peticion):
+    def solicitar_accion(mi, accion:ACCION, peticion:dict):
         realizar = {
             ACCION.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
             ACCION.AGREGAR_PARTICIPANTE: mi._agregar_participante,
@@ -29,18 +31,18 @@ class ServicioParticipantes(Servicio):
         }
         return realizar.get(accion)(peticion)
 
-    def _buscar_participantes(mi, peticion):
+    def _buscar_participantes(mi, peticion:dict):
         return {"accion": "_buscar_participantes", "peticion": peticion}
 
-    def _agregar_participante(mi, peticion):
+    def _agregar_participante(mi, peticion:dict):
         return {"accion": "_agregar_participante", "peticion": peticion}
 
-    def _actualizar_participante(mi, peticion):
+    def _actualizar_participante(mi, peticion:dict):
         return {"accion": "_actualizar_participante", "peticion": peticion}
 
-    def _eliminar_participante(mi, peticion):
+    def _eliminar_participante(mi, peticion:dict):
         return {"accion": "_eliminar_participante", "peticion": peticion}
 
-    def _ver_participante(mi, peticion):
+    def _ver_participante(mi, peticion:dict):
         return {"accion": "_ver_participante", "peticion": peticion}
 

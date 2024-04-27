@@ -1,3 +1,5 @@
+# backend\pysinergia\web.py
+
 from fastapi import FastAPI
 from backend.pysinergia.adaptadores import I_Emisor
 
@@ -28,20 +30,19 @@ class ServidorApi():
             allow_headers = ["*"],
         )
 
-    def _configurar_directorio(mi, api:FastAPI, directorio:str, alias:str):
-        from fastapi.staticfiles import StaticFiles
-        api.mount(f"/{alias}", StaticFiles(directory=f"{directorio}"), name="static")
-
     # --------------------------------------------------
     # Métodos públicos
     # --------------------------------------------------
 
-    def crear_api(mi, directorio:str, alias:str) -> FastAPI:
+    def crear_api(mi) -> FastAPI:
         api = FastAPI()
-        mi._configurar_directorio(api, directorio, alias)
         mi._configurar_endpoints(api)
         mi._configurar_cors(api)
         return api
+
+    def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
+        from fastapi.staticfiles import StaticFiles
+        api.mount(f"/{alias}", StaticFiles(directory=f"{directorio}"), name="static")
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib, os
@@ -74,5 +75,6 @@ class ServidorApi():
 class Emisor(I_Emisor):
     def __init__(mi):
         ...
-    def entregar_respuesta(mi, resultado:str):
-        return resultado
+    def entregar_respuesta(mi, resultado:dict):
+        respuesta = resultado
+        return respuesta
