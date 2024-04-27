@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.pysinergia.adaptadores import I_Emisor, I_Exportador
+from backend.pysinergia.adaptadores import I_Emisor
 
 class ServidorApi():
 
@@ -63,10 +63,3 @@ class Emisor(I_Emisor):
         ...
     def entregar_respuesta(mi, resultado:str):
         return resultado
-
-# --------------------------------------------------
-# Colección de Exportadores
-# --------------------------------------------------
-
-class ExportadorExcel(I_Exportador):
-    ...

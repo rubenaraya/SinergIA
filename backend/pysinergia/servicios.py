@@ -1,7 +1,3 @@
-# --------------------------------------------------
-# Extensible: Servicio
-# --------------------------------------------------
-
 from abc import (ABCMeta, abstractmethod)
 
 class I_Operador(metaclass=ABCMeta):
