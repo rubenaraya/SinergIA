@@ -1,7 +1,6 @@
+from abc import (ABCMeta, abstractmethod)
 from backend.pysinergia import Servicio
-from backend.pysinergia import (Operador, I_ConectorBasedatos)
 from backend.prueba.participantes.dominio import EntidadParticipante
-
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -10,10 +9,13 @@ class ACCION:
     ACTUALIZAR_PARTICIPANTE = 4
     ELIMINAR_PARTICIPANTE = 5
 
+class I_OperadorParticipantes(metaclass=ABCMeta):
+    ...
+
 class ServicioParticipantes(Servicio):
 
-    def __init__(mi):
-        mi.operador = OperadorParticipantes()
+    def __init__(mi, operador:I_OperadorParticipantes):
+        mi.operador:I_OperadorParticipantes = operador
         mi.entidad = EntidadParticipante()
 
     def solicitar_accion(mi, accion:ACCION, peticion):
@@ -41,11 +43,3 @@ class ServicioParticipantes(Servicio):
     def _ver_participante(mi, peticion):
         return {"accion": "_ver_participante", "peticion": peticion}
 
-
-class OperadorParticipantes(Operador):
-    def __init__(mi):
-        # inyectar
-        from backend.pysinergia.conectores.basedatos_sqlite import BasedatosSqlite
-        mi.basedatos:I_ConectorBasedatos = BasedatosSqlite()
-        mi.basedatos.conectar(config={})
-        ...

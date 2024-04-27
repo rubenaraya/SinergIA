@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from backend.pysinergia import Emisor
-from backend.prueba.participantes.controlador import ControladorParticipantes
+from backend.prueba.participantes.adaptadores import ControladorParticipantes
 
 instancia = "prueba"
 enrutador = APIRouter(prefix=f"/{instancia}")
