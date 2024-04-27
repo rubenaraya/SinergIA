@@ -55,10 +55,17 @@ class ServidorApi():
                         enrutador = importlib.import_module(f"{ubicacion}.{aplicacion}.{servicio}.web")
                         api.include_router(getattr(enrutador, 'enrutador'))
 
-    def iniciar_servicio(mi, api:FastAPI, host:str, puerto:int, modo:str):
+    def iniciar_servicio(mi, app:str, host:str, puerto:int, modo:str):
         import uvicorn
         if modo == 'LOCAL' or modo == 'DESARROLLO':
-            uvicorn.run(api, host=host, port=puerto, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")
+            uvicorn.run(
+                app,
+                host=host,
+                port=puerto,
+                ssl_keyfile="./key.pem",
+                ssl_certfile="./cert.pem",
+                reload=True
+            )
 
 
 # --------------------------------------------------

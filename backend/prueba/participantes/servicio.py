@@ -1,6 +1,7 @@
 from abc import (ABCMeta, abstractmethod)
 from backend.pysinergia import Servicio
-from backend.prueba.participantes.dominio import EntidadParticipante
+
+from .dominio import EntidadParticipante as Entidad
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -16,7 +17,7 @@ class ServicioParticipantes(Servicio):
 
     def __init__(mi, operador:I_Operador):
         mi.operador:I_Operador = operador
-        mi.entidad = EntidadParticipante()
+        mi.entidad = Entidad()
 
     def solicitar_accion(mi, accion:ACCION, peticion):
         realizar = {

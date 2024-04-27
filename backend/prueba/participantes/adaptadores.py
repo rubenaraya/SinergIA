@@ -1,15 +1,16 @@
 from backend.pysinergia import Controlador, Operador
-from backend.prueba.participantes.servicio import (
-    ServicioParticipantes as Servicio, 
-    ACCION,
-    I_Operador
-)
 from backend.pysinergia import (
     I_ConectorBasedatos, 
     I_ConectorAlmacen, 
     I_ConectorDisco, 
     I_ConectorLlm, 
     I_ConectorSpi, 
+)
+
+from .servicio import (
+    ServicioParticipantes as Servicio, 
+    ACCION,
+    I_Operador
 )
 
 class ControladorParticipantes(Controlador):
