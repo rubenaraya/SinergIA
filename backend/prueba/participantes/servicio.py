@@ -1,6 +1,6 @@
-from backend.pysinergia.servicios import Servicio
-from backend.prueba.participantes.datos import OperadorParticipantes as Operador
-from backend.prueba.participantes.dominio import EntidadParticipante as Entidad
+from backend.pysinergia import Servicio
+from backend.prueba.participantes.dominio import EntidadParticipante
+from backend.prueba.participantes.operador import OperadorParticipantes
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -12,8 +12,8 @@ class ACCION:
 class ServicioParticipantes(Servicio):
 
     def __init__(mi):
-        mi.operador = Operador()
-        mi.entidad = Entidad()
+        mi.operador = OperadorParticipantes()
+        mi.entidad = EntidadParticipante()
 
     def solicitar_accion(mi, accion:ACCION, peticion):
         realizar = {

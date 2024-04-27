@@ -50,9 +50,9 @@ class ServidorApi():
             if aplicacion != 'pysinergia':
                 servicios = os.listdir(f"{ubicacion}/{aplicacion}")
                 for servicio in servicios:
-                    ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'enrutador.py')
+                    ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'web.py')
                     if os.path.isfile(ruta_archivo):
-                        enrutador = importlib.import_module(f"{ubicacion}.{aplicacion}.{servicio}.enrutador")
+                        enrutador = importlib.import_module(f"{ubicacion}.{aplicacion}.{servicio}.web")
                         api.include_router(getattr(enrutador, 'enrutador'))
 
     def iniciar_servicio(mi, api:FastAPI, host:str, puerto:int, modo:str):
