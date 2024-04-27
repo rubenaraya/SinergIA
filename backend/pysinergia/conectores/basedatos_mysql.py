@@ -1,4 +1,4 @@
-from backend.pysinergia.adaptadores import I_ConectorBasedatos
+from backend.pysinergia import I_ConectorBasedatos
 
 # --------------------------------------------------
 # Clase: BasedatosMysql

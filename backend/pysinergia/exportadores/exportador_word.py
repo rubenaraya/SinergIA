@@ -1,4 +1,4 @@
-from backend.pysinergia.adaptadores import I_Exportador
+from backend.pysinergia import I_Exportador
 
 # --------------------------------------------------
 # Clase: ExportadorWord

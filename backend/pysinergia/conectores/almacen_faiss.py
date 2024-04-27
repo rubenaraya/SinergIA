@@ -1,4 +1,4 @@
-from backend.pysinergia.adaptadores import I_ConectorAlmacen
+from backend.pysinergia import I_ConectorAlmacen
 
 # --------------------------------------------------
 # Clase: AlmacenFaiss

@@ -1,4 +1,4 @@
-from backend.pysinergia.adaptadores import I_ConectorLlm
+from backend.pysinergia import I_ConectorLlm
 
 # --------------------------------------------------
 # Clase: LlmOpenai

@@ -1,4 +1,4 @@
-from backend.pysinergia.adaptadores import I_ConectorDisco
+from backend.pysinergia import I_ConectorDisco
 
 # --------------------------------------------------
 # Clase: DiscoLocal

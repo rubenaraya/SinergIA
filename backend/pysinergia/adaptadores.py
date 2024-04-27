@@ -58,19 +58,32 @@ class I_ConectorSpi(metaclass=ABCMeta):
         ...
 
 
+# --------------------------------------------------
+# Clase: Operador
+# --------------------------------------------------
 class Operador(I_Operador):
     ...
 
-# --------------------------------------------------
 
+# --------------------------------------------------
+# Interface: I_Emisor
+# --------------------------------------------------
 class I_Emisor(metaclass=ABCMeta):
     @abstractmethod
     def entregar_respuesta(mi, resultado):
         ...
 
+
+# --------------------------------------------------
+# Interface: I_Exportador
+# --------------------------------------------------
 class I_Exportador(metaclass=ABCMeta):
     ...
 
+
+# --------------------------------------------------
+# Clase: Controlador
+# --------------------------------------------------
 class Controlador():
     def __init__(mi, emisor:I_Emisor):
         mi.emisor:I_Emisor = emisor

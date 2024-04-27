@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from backend.pysinergia.adaptadores import I_Emisor
 
+# --------------------------------------------------
+# Clase: ServidorApi
+# --------------------------------------------------
 class ServidorApi():
 
     # --------------------------------------------------
@@ -58,6 +61,9 @@ class ServidorApi():
             uvicorn.run(api, host=host, port=puerto, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")
 
 
+# --------------------------------------------------
+# Clase: Emisor
+# --------------------------------------------------
 class Emisor(I_Emisor):
     def __init__(mi):
         ...
