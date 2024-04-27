@@ -1,6 +1,7 @@
 from backend.pysinergia import Servicio
+from backend.pysinergia import (Operador, I_ConectorBasedatos)
 from backend.prueba.participantes.dominio import EntidadParticipante
-from backend.prueba.participantes.operador import OperadorParticipantes
+
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -40,3 +41,11 @@ class ServicioParticipantes(Servicio):
     def _ver_participante(mi, peticion):
         return {"accion": "_ver_participante", "peticion": peticion}
 
+
+class OperadorParticipantes(Operador):
+    def __init__(mi):
+        # inyectar
+        from backend.pysinergia.conectores.basedatos_sqlite import BasedatosSqlite
+        mi.basedatos:I_ConectorBasedatos = BasedatosSqlite()
+        mi.basedatos.conectar(config={})
+        ...
