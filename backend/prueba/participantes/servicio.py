@@ -1,6 +1,6 @@
 from backend.pysinergia.servicios import Servicio
-from backend.prueba.datos import OperadorParticipantes as Operador
-from backend.prueba.dominio import EntidadParticipante as Entidad
+from backend.prueba.participantes.datos import OperadorParticipantes as Operador
+from backend.prueba.participantes.dominio import EntidadParticipante as Entidad
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1

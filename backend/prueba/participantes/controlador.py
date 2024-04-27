@@ -1,5 +1,5 @@
 from backend.pysinergia.adaptadores import Controlador
-from backend.prueba.servicio import ServicioParticipantes as Servicio, ACCION
+from backend.prueba.participantes.servicio import ServicioParticipantes as Servicio, ACCION
 
 class ControladorParticipantes(Controlador):
 
