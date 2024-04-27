@@ -8,5 +8,8 @@ from backend.pysinergia.exportadores.exportador_pdf import ExportadorPdf
 from backend.pysinergia.exportadores.exportador_word import ExportadorWord
 
 __all__ = [
-    'ExportadorCsv', 'ExportadorExcel', 'ExportadorPdf', 'ExportadorWord'
+    'ExportadorCsv',
+    'ExportadorExcel',
+    'ExportadorPdf',
+    'ExportadorWord'
 ]

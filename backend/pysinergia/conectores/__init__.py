@@ -10,5 +10,10 @@ from backend.pysinergia.conectores.disco_local import DiscoLocal
 from backend.pysinergia.conectores.llm_openai import LlmOpenai
 
 __all__ = [
-    'AlmacenChroma', 'AlmacenFaiss', 'BasedatosMysql', 'BasedatosSqlite', 'DiscoLocal', 'LlmOpenai'
+    'AlmacenChroma',
+    'AlmacenFaiss',
+    'BasedatosMysql',
+    'BasedatosSqlite',
+    'DiscoLocal',
+    'LlmOpenai'
 ]
