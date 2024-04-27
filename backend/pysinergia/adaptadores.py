@@ -1,75 +1,44 @@
-# backend\pysinergia\adaptadores.py
+# --------------------------------------------------
+# Extensibles: Operador + Controlador
+# --------------------------------------------------
 
-from backend.pysinergia.interfaces import ( I_ReceptorPeticion, I_EmisorRespuesta )
-from backend.pysinergia.interfaces import ( I_ConectorAlmacen, I_ConectorBasedatos, I_ConectorDisco, I_ConectorLlm, I_ConectorSpi )
+from abc import (ABCMeta, abstractmethod)
+from backend.pysinergia.servicios import I_Operador
 
 # --------------------------------------------------
-# Clase: ComunicadorWeb
-# --------------------------------------------------
-class ComunicadorWeb():
-    def __init__(mi):
+
+class I_ConectorBasedatos(metaclass=ABCMeta):
+    @abstractmethod
+    def conectar(mi):
         ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: TraductorIdiomas
-# --------------------------------------------------
-class TraductorIdiomas():
-    def __init__(mi):
+    @abstractmethod
+    def insertar(mi):
         ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: PresentadorContenidos
-# --------------------------------------------------
-class PresentadorContenidos():
-    def __init__(mi):
+    @abstractmethod
+    def actualizar(mi):
         ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-
-# --------------------------------------------------
-# Clase: Operador
-# --------------------------------------------------
-class Operador():
-    def __init__(mi):
+    @abstractmethod
+    def eliminar(mi):
         ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
-
-
-# --------------------------------------------------
-# Clase: ValidadorDatos
-# --------------------------------------------------
-class ValidadorDatos():
-    def __init__(mi):
+    @abstractmethod
+    def recuperar(mi):
         ...
-    # --------------------------------------------------
-    # Métodos privados
-    # --------------------------------------------------
-    # --------------------------------------------------
-    # Métodos públicos
-    # --------------------------------------------------
 
+class Operador(I_Operador):
+    def __init__(mi):
+        mi.basedatos:I_ConectorBasedatos
+        ...
+
+# --------------------------------------------------
+
+class I_Emisor(metaclass=ABCMeta):
+    @abstractmethod
+    def entregar_respuesta(mi, resultado):
+        ...
+
+class I_Exportador(metaclass=ABCMeta):
+    ...
+
+class Controlador():
+    def __init__(mi, emisor:I_Emisor):
+        mi.emisor:I_Emisor = emisor
