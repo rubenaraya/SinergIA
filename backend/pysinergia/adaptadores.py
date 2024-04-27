@@ -17,18 +17,6 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
-    @abstractmethod
-    def insertar(mi):
-        ...
-    @abstractmethod
-    def actualizar(mi):
-        ...
-    @abstractmethod
-    def eliminar(mi):
-        ...
-    @abstractmethod
-    def recuperar(mi):
-        ...
 
 
 # --------------------------------------------------
