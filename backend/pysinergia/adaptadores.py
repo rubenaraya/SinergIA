@@ -25,9 +25,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
 class Operador(I_Operador):
-    def __init__(mi):
-        mi.basedatos:I_ConectorBasedatos
-        ...
+    ...
 
 # --------------------------------------------------
 

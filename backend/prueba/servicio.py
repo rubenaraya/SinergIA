@@ -1,4 +1,4 @@
-from pysinergia.servicios import Servicio
+from backend.pysinergia.servicios import Servicio
 from backend.prueba.datos import OperadorParticipantes as Operador
 from backend.prueba.dominio import EntidadParticipante as Entidad
 
