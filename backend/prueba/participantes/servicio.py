@@ -3,7 +3,7 @@
 from abc import (ABCMeta, abstractmethod)
 from backend.pysinergia import Servicio
 
-from .dominio import EntidadParticipante as Entidad
+from .dominio import EntidadParticipante
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -12,14 +12,14 @@ class ACCION:
     ACTUALIZAR_PARTICIPANTE = 4
     ELIMINAR_PARTICIPANTE = 5
 
-class I_Operador(metaclass=ABCMeta):
+class I_OperadorParticipantes(metaclass=ABCMeta):
     ...
 
 class ServicioParticipantes(Servicio):
 
-    def __init__(mi, operador:I_Operador):
-        mi.operador:I_Operador = operador
-        mi.entidad = Entidad()
+    def __init__(mi, operador:I_OperadorParticipantes):
+        mi.operador:I_OperadorParticipantes = operador
+        mi.entidad = EntidadParticipante()
 
     def solicitar_accion(mi, accion:ACCION, peticion:dict):
         realizar = {

@@ -10,9 +10,9 @@ from backend.pysinergia import (
 )
 
 from .servicio import (
-    ServicioParticipantes as Servicio, 
     ACCION,
-    I_Operador
+    ServicioParticipantes as Servicio, 
+    I_OperadorParticipantes
 )
 
 class Config():
@@ -49,7 +49,7 @@ class ControladorParticipantes(Controlador):
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
 
-class OperadorParticipantes(Operador, I_Operador):
+class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     """
     Falta usar config para inyectar dependencias
