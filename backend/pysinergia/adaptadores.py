@@ -1,5 +1,5 @@
 from abc import (ABCMeta, abstractmethod)
-from backend.pysinergia.servicios import I_Operador
+from backend.pysinergia.servicio import I_Operador
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen

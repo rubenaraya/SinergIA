@@ -3,7 +3,7 @@
 # --------------------------------------------------
 
 from backend.pysinergia.dominio import Entidad
-from backend.pysinergia.servicios import Servicio
+from backend.pysinergia.servicio import Servicio
 from backend.pysinergia.adaptadores import (
     Controlador, 
     Operador, 
