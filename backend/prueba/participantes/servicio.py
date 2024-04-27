@@ -9,13 +9,13 @@ class ACCION:
     ACTUALIZAR_PARTICIPANTE = 4
     ELIMINAR_PARTICIPANTE = 5
 
-class I_OperadorParticipantes(metaclass=ABCMeta):
+class I_Operador(metaclass=ABCMeta):
     ...
 
 class ServicioParticipantes(Servicio):
 
-    def __init__(mi, operador:I_OperadorParticipantes):
-        mi.operador:I_OperadorParticipantes = operador
+    def __init__(mi, operador:I_Operador):
+        mi.operador:I_Operador = operador
         mi.entidad = EntidadParticipante()
 
     def solicitar_accion(mi, accion:ACCION, peticion):
