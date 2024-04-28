@@ -11,7 +11,6 @@ class ServidorApi():
 
     # --------------------------------------------------
     # Métodos privados
-    # --------------------------------------------------
 
     def _configurar_endpoints(mi, api:FastAPI):
         @api.get('/')
@@ -33,7 +32,6 @@ class ServidorApi():
 
     # --------------------------------------------------
     # Métodos públicos
-    # --------------------------------------------------
 
     def crear_api(mi) -> FastAPI:
         api = FastAPI()

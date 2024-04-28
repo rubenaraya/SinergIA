@@ -1,6 +1,6 @@
 # backend\pysinergia\dominio.py
 
-from enum import Enum
+from pydantic import BaseModel
 
 # --------------------------------------------------
 # Clase: Entidad
@@ -9,7 +9,9 @@ class Entidad():
     def __init__(mi):
         ...
 
-class Rol(str, Enum):
-    Admin = "Admin"
-    Usuario = "Usuario"
-    Invitado = "Invitado"
+class ModeloPeticion(BaseModel):
+    def traspasar(mi):
+        return mi.model_dump()
+
+class ModeloRespuesta(BaseModel):
+    ...

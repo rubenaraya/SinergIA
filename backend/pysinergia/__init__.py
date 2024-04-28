@@ -4,8 +4,13 @@
 # Componentes de PySinergIA
 # --------------------------------------------------
 
-from backend.pysinergia.dominio import Entidad, Rol
+from backend.pysinergia.web import (EmisorWeb, ServidorApi)
 from backend.pysinergia.servicio import Servicio
+from backend.pysinergia.dominio import (
+    Entidad,
+    ModeloPeticion,
+    ModeloRespuesta
+)
 from backend.pysinergia.adaptadores import (
     Controlador, 
     Operador, 
@@ -16,16 +21,16 @@ from backend.pysinergia.adaptadores import (
     I_ConectorSpi, 
     I_Exportador
 )
-from backend.pysinergia.web import (EmisorWeb, ServidorApi)
 
 __all__ = [
     'Operador',
     'Controlador',
     'Entidad',
-    'Rol',
     'Servicio',
     'EmisorWeb',
     'ServidorApi',
+    'ModeloPeticion',
+    'ModeloRespuesta',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
     'I_ConectorDisco',

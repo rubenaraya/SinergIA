@@ -20,7 +20,6 @@ class ServicioParticipantes(Servicio):
 
     def __init__(mi, operador:I_OperadorParticipantes):
         mi.operador:I_OperadorParticipantes = operador
-        mi.entidad = EntidadParticipante()
 
     def solicitar_accion(mi, accion:ACCION, peticion:dict):
         realizar = {
