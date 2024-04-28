@@ -1,9 +1,9 @@
 # backend\prueba\participantes\dominio.py
 
-from typing import Optional, List, Annotated
+from typing import Optional, List
 from enum import Enum
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from backend.pysinergia import (Entidad, ModeloPeticion, ModeloRespuesta)
 
@@ -20,18 +20,18 @@ class Rol(str, Enum):
     Usuario = "Usuario"
     Invitado = "Invitado"
 
-class ModeloBuscarParticipantes(ModeloPeticion):
-    alias: str | None = ''
-    email: str | None = ''
-    estado: str | None = ''
+class PeticionBuscarParticipantes(ModeloPeticion):
+    alias: str | None = Field('')
+    email: str | None = Field('')
+    estado: str | None = Field('')
 
-class ModeloNuevoParticipante(BaseModel):
+class ModeloNuevoParticipante(ModeloPeticion):
     id: Optional[UUID] = uuid4()
     alias: str
     email: str
     rol: Rol
 
-class ModeloEditarParticipante(BaseModel):
+class ModeloEditarParticipante(ModeloPeticion):
     alias: str
     email: str
     rol: Rol

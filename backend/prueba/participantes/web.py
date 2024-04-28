@@ -6,17 +6,23 @@ from fastapi.responses import JSONResponse
 from backend.pysinergia import EmisorWeb
 
 from .adaptadores import ControladorParticipantes as Controlador
-from .dominio import (ModeloBuscarParticipantes, ModeloNuevoParticipante, ModeloEditarParticipante)
+from .dominio import (
+    PeticionBuscarParticipantes,
+    ModeloNuevoParticipante,
+    ModeloEditarParticipante
+)
 
 instancia = "prueba"
 enrutador = APIRouter(prefix=f"/{instancia}")
 
 """
 Falta validar api_key y token de sesión
+Falta manejo de excepciones y logger
+Falta personalizar respuesta de errores
 """
 @enrutador.get('/participantes', response_class=JSONResponse)
-async def buscar_participantes(filtros:ModeloBuscarParticipantes=Depends()):
-    return Controlador(EmisorWeb()).buscar_participantes(filtros.traspasar())
+async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
+    return Controlador(EmisorWeb()).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{uid}', response_class=JSONResponse)
 async def ver_participante(uid:int):

@@ -14,6 +14,7 @@ from .servicio import (
     ServicioParticipantes as Servicio, 
     I_OperadorParticipantes
 )
+from .dominio import ModeloPeticion
 
 class Config():
     ...
@@ -24,27 +25,27 @@ class ControladorParticipantes(Controlador):
     Falta autorizar_acceso según roles
     Falta convertir codigos de estado para respuesta del emisor
     """
-    def buscar_participantes(mi, peticion:dict):
+    def buscar_participantes(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
             ACCION.BUSCAR_PARTICIPANTES, peticion)
         return mi.emisor.entregar_respuesta(resultado)
     
-    def agregar_participante(mi, peticion:dict):
+    def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
 
-    def ver_participante(mi, peticion:dict):
+    def ver_participante(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
             ACCION.VER_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
 
-    def actualizar_participante(mi, peticion:dict):
+    def actualizar_participante(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
             ACCION.ACTUALIZAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
 
-    def eliminar_participante(mi, peticion:dict):
+    def eliminar_participante(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)

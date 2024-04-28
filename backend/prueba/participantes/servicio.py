@@ -4,7 +4,13 @@ from abc import (ABCMeta, abstractmethod)
 
 from backend.pysinergia import Servicio
 
-from .dominio import EntidadParticipante
+from .dominio import (
+    EntidadParticipante,
+    ModeloPeticion,
+    PeticionBuscarParticipantes,
+    ModeloNuevoParticipante,
+    ModeloEditarParticipante,
+)
 
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
@@ -21,7 +27,7 @@ class ServicioParticipantes(Servicio):
     def __init__(mi, operador:I_OperadorParticipantes):
         mi.operador:I_OperadorParticipantes = operador
 
-    def solicitar_accion(mi, accion:ACCION, peticion:dict):
+    def solicitar_accion(mi, accion:ACCION, peticion:ModeloPeticion):
         realizar = {
             ACCION.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
             ACCION.AGREGAR_PARTICIPANTE: mi._agregar_participante,
@@ -31,18 +37,18 @@ class ServicioParticipantes(Servicio):
         }
         return realizar.get(accion)(peticion)
 
-    def _buscar_participantes(mi, peticion:dict):
-        return {"accion": "_buscar_participantes", "peticion": peticion}
+    def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
+        return {"accion": "_buscar_participantes", "peticion": peticion.traspasar()}
 
-    def _agregar_participante(mi, peticion:dict):
-        return {"accion": "_agregar_participante", "peticion": peticion}
+    def _agregar_participante(mi, peticion:ModeloNuevoParticipante):
+        return {"accion": "_agregar_participante", "peticion": peticion.traspasar()}
 
-    def _actualizar_participante(mi, peticion:dict):
-        return {"accion": "_actualizar_participante", "peticion": peticion}
+    def _actualizar_participante(mi, peticion:ModeloEditarParticipante):
+        return {"accion": "_actualizar_participante", "peticion": peticion.traspasar()}
 
-    def _eliminar_participante(mi, peticion:dict):
+    def _eliminar_participante(mi, peticion):
         return {"accion": "_eliminar_participante", "peticion": peticion}
 
-    def _ver_participante(mi, peticion:dict):
+    def _ver_participante(mi, peticion):
         return {"accion": "_ver_participante", "peticion": peticion}
 
