@@ -1,5 +1,7 @@
 # backend\pysinergia\conectores\basedatos_sqlite.py
 
+import databases
+
 from backend.pysinergia import I_ConectorBasedatos
 
 # --------------------------------------------------

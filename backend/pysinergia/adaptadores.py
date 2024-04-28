@@ -1,6 +1,7 @@
 # backend\pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
+
 from backend.pysinergia.servicio import I_Operador
 
 # --------------------------------------------------

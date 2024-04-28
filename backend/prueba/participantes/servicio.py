@@ -1,6 +1,7 @@
 # backend\prueba\participantes\servicio.py
 
 from abc import (ABCMeta, abstractmethod)
+
 from backend.pysinergia import Servicio
 
 from .dominio import EntidadParticipante

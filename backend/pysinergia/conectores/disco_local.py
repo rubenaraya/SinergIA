@@ -1,5 +1,7 @@
 # backend\pysinergia\conectores\disco_local.py
 
+import os
+
 from backend.pysinergia import I_ConectorDisco
 
 # --------------------------------------------------
