@@ -20,11 +20,11 @@ class ServidorApi():
         def favicon():
             return ''
 
-    def _configurar_cors(mi, api:FastAPI):
+    def _configurar_cors(mi, api:FastAPI, origenes:list):
         from fastapi.middleware.cors import CORSMiddleware
         api.add_middleware(
             CORSMiddleware,
-            allow_origins = ['*'],
+            allow_origins = origenes,
             allow_credentials = True,
             allow_methods = ["*"],
             allow_headers = ["*"],
@@ -33,10 +33,10 @@ class ServidorApi():
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi) -> FastAPI:
+    def crear_api(mi, origenes:list) -> FastAPI:
         api = FastAPI()
         mi._configurar_endpoints(api)
-        mi._configurar_cors(api)
+        mi._configurar_cors(api, origenes)
         return api
 
     def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
@@ -77,3 +77,25 @@ class EmisorWeb(I_Emisor):
     def entregar_respuesta(mi, resultado:dict):
         respuesta = resultado
         return respuesta
+
+# --------------------------------------------------
+# Clase: RegistradorLogs
+# --------------------------------------------------
+class RegistradorLogs():
+
+    class NIVEL:
+        DEBUG = 10
+        INFO = 20
+        WARNING = 30
+        ERROR = 40
+        CRITICAL = 50
+
+    def crear(mi, nombre:str, nivel:int, archivo:str):
+        import logging
+        logging.basicConfig(
+            level=nivel,
+            filename=archivo,
+            filemode='a',
+            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s'
+        )
+        return logging.getLogger(nombre)

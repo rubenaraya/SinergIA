@@ -4,12 +4,16 @@
 # Componentes de PySinergIA
 # --------------------------------------------------
 
-from backend.pysinergia.web import (EmisorWeb, ServidorApi)
+from backend.pysinergia.web import (
+    EmisorWeb,
+    ServidorApi,
+    RegistradorLogs,
+)
 from backend.pysinergia.servicio import Servicio
 from backend.pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
-    ModeloRespuesta
+    ModeloRespuesta,
 )
 from backend.pysinergia.adaptadores import (
     Controlador, 
@@ -19,7 +23,7 @@ from backend.pysinergia.adaptadores import (
     I_ConectorDisco, 
     I_ConectorLlm, 
     I_ConectorSpi, 
-    I_Exportador
+    I_Exportador,
 )
 
 __all__ = [
@@ -31,6 +35,7 @@ __all__ = [
     'ServidorApi',
     'ModeloPeticion',
     'ModeloRespuesta',
+    'RegistradorLogs',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
     'I_ConectorDisco',

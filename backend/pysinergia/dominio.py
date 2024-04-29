@@ -10,8 +10,13 @@ class Entidad():
         ...
 
 class ModeloPeticion(BaseModel):
-    def traspasar(mi):
+    def diccionario(mi):
         return mi.model_dump()
+    def json(mi):
+        return mi.model_dump_json()
 
 class ModeloRespuesta(BaseModel):
-    ...
+    def diccionario(mi):
+        return mi.model_dump()
+    def json(mi):
+        return mi.model_dump_json()

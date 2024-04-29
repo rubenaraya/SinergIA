@@ -53,11 +53,26 @@ class ControladorParticipantes(Controlador):
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     """
-    Falta usar config para inyectar dependencias
+    Falta usar config para inyectar dependencias y configuraciones
     """
     def __init__(mi):
         # inyectar
         from backend.pysinergia.conectores import BasedatosSqlite
         mi.basedatos:I_ConectorBasedatos = BasedatosSqlite()
         mi.basedatos.conectar(config={})
+
+    def recuperar_lista_participantes_filtrados(mi):
+        ...
+
+    def recuperar_participante_por_id(mi):
+        ...
+
+    def insertar_nuevo_participante(mi):
+        ...
+
+    def actualizar_participante_por_id(mi):
+        ...
+
+    def eliminar_participante_por_id(mi):
+        ...
 

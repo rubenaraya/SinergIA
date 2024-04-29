@@ -17,8 +17,50 @@ class I_ConectorAlmacen(metaclass=ABCMeta):
 # Interface: I_ConectorBasedatos
 # --------------------------------------------------
 class I_ConectorBasedatos(metaclass=ABCMeta):
+
+    class CONTENIDO:
+        DICCIONARIO = 1
+        TUPLA = 2
+
+    class CLASE:
+        INSERT = "INSERT"
+        UPDATE = "UPDATE"
+        DELETE = "DELETE"
+        SELECT = "SELECT"
+
+    class FILTRO:
+        CONTIENE = "CONTIENE"
+        COINCIDE = "COINCIDE"
+        PALABRAS = "PALABRAS"
+        FRASE = "FRASE"
+        INCLUYE = "INCLUYE"
+        FECHA = "FECHA"
+        RANGO_FECHAS = "RANGO_FECHAS"
+        RANGO_NUMEROS = "RANGO_NUMEROS"
+        PERIODO = "PERIODO"
+        LISTA_DATOS = "LISTA_DATOS"
+        NUMERO = "NUMERO"
+
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
+        ...
+    @abstractmethod
+    def desconectar(mi):
+        ...
+    @abstractmethod
+    def insertar(mi, sql:str, parametros:list) -> int:
+        ...
+    @abstractmethod
+    def actualizar(mi, sql:str, parametros:list, uid:int) -> int:
+        ...
+    @abstractmethod
+    def eliminar(mi, sql:str, uid:int) -> int:
+        ...
+    @abstractmethod
+    def leer(mi, sql:str, uid:int, contenido:int=CONTENIDO.DICCIONARIO) -> tuple:
+        ...
+    @abstractmethod
+    def obtener(mi, sql:str, parametros:list, contenido:int=CONTENIDO.DICCIONARIO, pag:int=1, max:int=25) -> tuple:
         ...
 
 

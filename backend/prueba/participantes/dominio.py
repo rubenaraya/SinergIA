@@ -25,6 +25,9 @@ class PeticionBuscarParticipantes(ModeloPeticion):
     email: str | None = Field('')
     estado: str | None = Field('')
 
+class PeticionParticipante(ModeloPeticion):
+    id: int = Field(None)
+
 class ModeloNuevoParticipante(ModeloPeticion):
     id: Optional[UUID] = uuid4()
     alias: str
@@ -32,6 +35,7 @@ class ModeloNuevoParticipante(ModeloPeticion):
     rol: Rol
 
 class ModeloEditarParticipante(ModeloPeticion):
+    id: int
     alias: str
     email: str
     rol: Rol

@@ -8,6 +8,7 @@ from .dominio import (
     EntidadParticipante,
     ModeloPeticion,
     PeticionBuscarParticipantes,
+    PeticionParticipante,
     ModeloNuevoParticipante,
     ModeloEditarParticipante,
 )
@@ -20,7 +21,21 @@ class ACCION:
     ELIMINAR_PARTICIPANTE = 5
 
 class I_OperadorParticipantes(metaclass=ABCMeta):
-    ...
+    @abstractmethod
+    def recuperar_lista_participantes_filtrados(mi):
+        ...
+    @abstractmethod
+    def recuperar_participante_por_id(mi):
+        ...
+    @abstractmethod
+    def insertar_nuevo_participante(mi):
+        ...
+    @abstractmethod
+    def actualizar_participante_por_id(mi):
+        ...
+    @abstractmethod
+    def eliminar_participante_por_id(mi):
+        ...
 
 class ServicioParticipantes(Servicio):
 
@@ -38,17 +53,22 @@ class ServicioParticipantes(Servicio):
         return realizar.get(accion)(peticion)
 
     def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
-        return {"accion": "_buscar_participantes", "peticion": peticion.traspasar()}
+        mi.operador.recuperar_lista_participantes_filtrados()
+        return {"accion": "_buscar_participantes", "operacion": "recuperar_lista_participantes_filtrados", "modelo": "PeticionBuscarParticipantes", "peticion": peticion.diccionario()}
 
     def _agregar_participante(mi, peticion:ModeloNuevoParticipante):
-        return {"accion": "_agregar_participante", "peticion": peticion.traspasar()}
+        mi.operador.insertar_nuevo_participante()
+        return {"accion": "_agregar_participante", "operacion": "insertar_nuevo_participante", "modelo": "ModeloNuevoParticipante", "peticion": peticion.diccionario()}
 
     def _actualizar_participante(mi, peticion:ModeloEditarParticipante):
-        return {"accion": "_actualizar_participante", "peticion": peticion.traspasar()}
+        mi.operador.actualizar_participante_por_id()
+        return {"accion": "_actualizar_participante", "operacion": "actualizar_participante_por_id", "modelo": "ModeloEditarParticipante", "peticion": peticion.diccionario()}
 
-    def _eliminar_participante(mi, peticion):
-        return {"accion": "_eliminar_participante", "peticion": peticion}
+    def _eliminar_participante(mi, peticion:PeticionParticipante):
+        mi.operador.eliminar_participante_por_id()
+        return {"accion": "_eliminar_participante", "operacion": "eliminar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 
-    def _ver_participante(mi, peticion):
-        return {"accion": "_ver_participante", "peticion": peticion}
+    def _ver_participante(mi, peticion:PeticionParticipante):
+        mi.operador.recuperar_participante_por_id()
+        return {"accion": "_ver_participante", "operacion": "recuperar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 
