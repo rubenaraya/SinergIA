@@ -4,7 +4,11 @@
 # Componentes públicos de PySinergIA
 # --------------------------------------------------
 
-from backend.pysinergia.globales import Constantes
+from backend.pysinergia.globales import (
+    Constantes,
+    Funciones,
+    Json,
+)
 from backend.pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
@@ -33,6 +37,8 @@ from backend.pysinergia.web import (
 
 __all__ = [
     'Constantes',
+    'Funciones',
+    'Json',
     'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',

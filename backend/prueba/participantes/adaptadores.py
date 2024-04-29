@@ -32,13 +32,21 @@ class ControladorParticipantes(Controlador):
     """
     Falta autorizar_acceso según roles
     Falta manejar errores de la aplicación
+    Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
+    Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
     """
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes()).solicitar_accion(
-            ACCION.BUSCAR_PARTICIPANTES, peticion)
+        """
+        autorizar_acceso(permisos='?', credenciales='?')
+
+        """
+        # resultado = ServicioParticipantes(OperadorParticipantes()).solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
+        servicio = ServicioParticipantes(operador=OperadorParticipantes())
+        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
+
         return mi.emisor.entregar_respuesta(resultado)
     
     def agregar_participante(mi, peticion:ModeloPeticion):

@@ -4,7 +4,10 @@ from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.globales import Constantes
+from backend.pysinergia.globales import (
+    Constantes,
+    Funciones,
+)
 from backend.pysinergia.dominio import (
     ModeloPeticion,
     ModeloRespuesta,
