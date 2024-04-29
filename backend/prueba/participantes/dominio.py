@@ -1,9 +1,14 @@
 # backend\prueba\participantes\dominio.py
 
-from typing import Optional, List
+from typing import (Optional, List)
 from enum import Enum
+
+# --------------------------------------------------
+# Importaciones de bibliotecas (capa de Dominio)
 from pydantic import Field
 
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia import (
     Entidad,
     ModeloPeticion,

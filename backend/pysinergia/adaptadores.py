@@ -2,8 +2,10 @@
 
 from abc import (ABCMeta, abstractmethod)
 
-from backend.pysinergia.servicio import I_Operador
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia.globales import Constantes
+from backend.pysinergia.servicio import I_Operador
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen

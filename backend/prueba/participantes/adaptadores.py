@@ -1,7 +1,16 @@
 # backend\prueba\participantes\adaptadores.py
 
-from backend.pysinergia import Controlador, Operador
+from typing import Dict
 
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia import (
+    Controlador,
+    Operador,
+)
+
+# --------------------------------------------------
+# Importaciones del Servicio personalizado
 from .servicio import (
     ACCION,
     ServicioParticipantes, 
@@ -22,6 +31,7 @@ class ControladorParticipantes(Controlador):
 
     """
     Falta autorizar_acceso según roles
+    Falta manejar errores de la aplicación
     """
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
@@ -67,7 +77,7 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi) -> dict:
+    def recuperar_lista_participantes_todos(mi) -> Dict:
 
         mi.inyectar_conectores(
             basedatos={'modulo':'basedatos_sqlite', 'clase':'BasedatosSqlite'}
@@ -81,18 +91,18 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
         mi.basedatos.desconectar()
         return dict(datos)
 
-    def recuperar_lista_participantes_filtrados(mi) -> dict:
+    def recuperar_lista_participantes_filtrados(mi) -> Dict:
         ...
 
-    def recuperar_participante_por_id(mi) -> dict:
+    def recuperar_participante_por_id(mi) -> Dict:
         ...
 
-    def insertar_nuevo_participante(mi) -> dict:
+    def insertar_nuevo_participante(mi) -> Dict:
         ...
 
-    def actualizar_participante_por_id(mi) -> dict:
+    def actualizar_participante_por_id(mi) -> Dict:
         ...
 
-    def eliminar_participante_por_id(mi) -> dict:
+    def eliminar_participante_por_id(mi) -> Dict:
         ...
 

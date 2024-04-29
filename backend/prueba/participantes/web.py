@@ -1,14 +1,26 @@
 # backend\prueba\participantes\web.py
 
-from fastapi import APIRouter, status, Depends, Body
+# --------------------------------------------------
+# Importaciones de Infraestructura Web
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    status,
+    Depends,
+    Body,
+)
 from fastapi.responses import JSONResponse
 
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia import (
     EmisorWeb,
     RegistradorLogs,
     RespuestaResultado,
 )
 
+# --------------------------------------------------
+# Importaciones del Servicio personalizado
 from .adaptadores import ControladorParticipantes
 from .dominio import (
     PeticionBuscarParticipantes,
@@ -17,6 +29,8 @@ from .dominio import (
     ModeloEditarParticipante,
 )
 
+# --------------------------------------------------
+# Configuración del Servicio personalizado
 enrutador = APIRouter(prefix=f"/prueba")
 registrador = RegistradorLogs().crear(__name__, RegistradorLogs.NIVEL.DEBUG, './logs/prueba-participantes.log')
 
@@ -28,7 +42,7 @@ Falta personalizar formato de respuesta de errores
 Falta incluir códigos de estado en RespuestaResultado
 """
 # --------------------------------------------------
-# Rutas personalizadas del servicio
+# Rutas del Servicio personalizado
 # --------------------------------------------------
 
 @enrutador.get('/participantes',
@@ -42,7 +56,10 @@ async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
                status_code=status.HTTP_200_OK,
                response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    return ControladorParticipantes(EmisorWeb()).ver_participante(peticion)
+    try:
+        return ControladorParticipantes(EmisorWeb()).ver_participante(peticion)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) 
 
 @enrutador.post('/participantes',
                 status_code=status.HTTP_201_CREATED,

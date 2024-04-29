@@ -1,20 +1,19 @@
 # backend\pysinergia\__init__.py
 
 # --------------------------------------------------
-# Componentes de PySinergIA
+# Componentes públicos de PySinergIA
 # --------------------------------------------------
 
-from backend.pysinergia.web import (
-    EmisorWeb,
-    ServidorApi,
-    RegistradorLogs,
-)
 from backend.pysinergia.globales import Constantes
-from backend.pysinergia.servicio import Servicio, RespuestaResultado, I_Operador
 from backend.pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
     ModeloRespuesta,
+)
+from backend.pysinergia.servicio import (
+    Servicio,
+    RespuestaResultado,
+    I_Operador,
 )
 from backend.pysinergia.adaptadores import (
     Controlador, 
@@ -26,24 +25,29 @@ from backend.pysinergia.adaptadores import (
     I_ConectorSpi, 
     I_Exportador,
 )
+from backend.pysinergia.web import (
+    EmisorWeb,
+    RegistradorLogs,
+    ServidorApi,
+)
 
 __all__ = [
-    'EmisorWeb',
-    'ServidorApi',
-    'RegistradorLogs',
     'Constantes',
-    'Servicio',
-    'RespuestaResultado',
     'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',
+    'Servicio',
+    'RespuestaResultado',
+    'I_Operador',
     'Controlador',
     'Operador',
-    'I_Operador',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
     'I_ConectorDisco',
     'I_ConectorLlm',
     'I_ConectorSpi',
-    'I_Exportador'
+    'I_Exportador',
+    'EmisorWeb',
+    'RegistradorLogs',
+    'ServidorApi',
 ]

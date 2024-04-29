@@ -1,9 +1,16 @@
 # backend\pysinergia\web.py
 
+# --------------------------------------------------
+# Importaciones de Infraestructura Web
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import logging
 
-from backend.pysinergia.adaptadores import I_Emisor
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia.globales import Constantes
+from backend.pysinergia.adaptadores import I_Emisor
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -22,7 +29,6 @@ class ServidorApi():
             return ''
 
     def _configurar_cors(mi, api:FastAPI, origenes:list):
-        from fastapi.middleware.cors import CORSMiddleware
         api.add_middleware(
             CORSMiddleware,
             allow_origins = origenes,
@@ -41,7 +47,6 @@ class ServidorApi():
         return api
 
     def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
-        from fastapi.staticfiles import StaticFiles
         api.mount(f"/{alias}", StaticFiles(directory=f"{directorio}"), name="static")
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
@@ -57,8 +62,8 @@ class ServidorApi():
                         api.include_router(getattr(enrutador, 'enrutador'))
 
     def iniciar_servicio(mi, app:str, host:str, puerto:int, modo:str):
-        import uvicorn
         if modo == Constantes.MODO.LOCAL or modo == Constantes.MODO.DESARROLLO:
+            import uvicorn
             uvicorn.run(
                 app,
                 host=host,
@@ -102,7 +107,6 @@ class RegistradorLogs():
     # Métodos públicos
 
     def crear(mi, nombre:str, nivel:int, archivo:str):
-        import logging
         logging.basicConfig(
             level=nivel,
             filename=archivo,

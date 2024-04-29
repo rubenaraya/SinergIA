@@ -1,11 +1,13 @@
 # backend\pysinergia\conectores\almacen_chroma.py
 
-from backend.pysinergia import I_ConectorAlmacen
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia import I_ConectorAlmacen as Almacen
 
 # --------------------------------------------------
 # Clase: AlmacenChroma
 # --------------------------------------------------
-class AlmacenChroma(I_ConectorAlmacen):
+class AlmacenChroma(Almacen):
     def __init__(mi):
         ...
     def conectar(mi, config:dict) -> bool:

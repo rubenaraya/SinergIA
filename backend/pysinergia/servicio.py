@@ -2,7 +2,13 @@
 
 from abc import (ABCMeta, abstractmethod)
 
-from backend.pysinergia.dominio import ModeloPeticion, ModeloRespuesta
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia.globales import Constantes
+from backend.pysinergia.dominio import (
+    ModeloPeticion,
+    ModeloRespuesta,
+)
 
 # --------------------------------------------------
 # Interface: I_Operador

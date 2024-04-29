@@ -1,9 +1,16 @@
 # backend\pysinergia\dominio.py
 
+# --------------------------------------------------
+# Importaciones de bibliotecas (capa de Dominio)
 from pydantic import BaseModel
-from dataclasses import dataclass, asdict
+from dataclasses import (dataclass, asdict)
 
-from backend.pysinergia.globales import UUID
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia.globales import (
+    UUID,
+    Constantes
+)
 
 # --------------------------------------------------
 # Clase: Entidad

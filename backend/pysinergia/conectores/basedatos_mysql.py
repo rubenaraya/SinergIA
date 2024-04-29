@@ -1,5 +1,7 @@
 # backend\pysinergia\conectores\basedatos_mysql.py
 
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia import I_ConectorBasedatos as Basedatos
 
 # --------------------------------------------------

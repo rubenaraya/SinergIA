@@ -1,9 +1,16 @@
 # backend\pysinergia\conectores\basedatos_sqlite.py
 
+# --------------------------------------------------
+# Importaciones de Infraestructura de Datos
 import sqlite3, re
 from datetime import (datetime, timedelta)
 
-from backend.pysinergia import I_ConectorBasedatos as Basedatos, Constantes
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia import (
+    I_ConectorBasedatos as Basedatos,
+    Constantes,
+)
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite

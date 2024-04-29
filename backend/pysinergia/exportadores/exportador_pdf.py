@@ -1,5 +1,7 @@
 # backend\pysinergia\exportadores\exportador_pdf.py
 
+# --------------------------------------------------
+# Importaciones de PySinergIA
 from backend.pysinergia import I_Exportador
 
 # --------------------------------------------------

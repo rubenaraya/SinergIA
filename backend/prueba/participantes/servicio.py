@@ -1,9 +1,18 @@
 # backend\prueba\participantes\servicio.py
 
 from abc import (ABCMeta, abstractmethod)
+from typing import Dict
 
-from backend.pysinergia import Servicio, I_Operador, ModeloPeticion
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from backend.pysinergia import (
+    Servicio,
+    I_Operador,
+    ModeloPeticion,
+)
 
+# --------------------------------------------------
+# Importaciones del Servicio personalizado
 from .dominio import (
     EntidadParticipante,
     PeticionBuscarParticipantes,
@@ -28,22 +37,22 @@ class ACCION:
 class I_OperadorParticipantes(I_Operador, metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por OperadorParticipantes
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi) -> dict:
+    def recuperar_lista_participantes_todos(mi) -> Dict:
         ...
     @abstractmethod
-    def recuperar_lista_participantes_filtrados(mi) -> dict:
+    def recuperar_lista_participantes_filtrados(mi) -> Dict:
         ...
     @abstractmethod
-    def recuperar_participante_por_id(mi) -> dict:
+    def recuperar_participante_por_id(mi) -> Dict:
         ...
     @abstractmethod
-    def insertar_nuevo_participante(mi) -> dict:
+    def insertar_nuevo_participante(mi) -> Dict:
         ...
     @abstractmethod
-    def actualizar_participante_por_id(mi) -> dict:
+    def actualizar_participante_por_id(mi) -> Dict:
         ...
     @abstractmethod
-    def eliminar_participante_por_id(mi) -> dict:
+    def eliminar_participante_por_id(mi) -> Dict:
         ...
 
 # --------------------------------------------------
