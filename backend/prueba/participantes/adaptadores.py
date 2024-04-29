@@ -1,13 +1,6 @@
 # backend\prueba\participantes\adaptadores.py
 
 from backend.pysinergia import Controlador, Operador
-from backend.pysinergia import (
-    I_ConectorBasedatos, 
-    I_ConectorAlmacen, 
-    I_ConectorDisco, 
-    I_ConectorLlm, 
-    I_ConectorSpi, 
-)
 
 from .servicio import (
     ACCION,

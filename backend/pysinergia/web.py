@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 
 from backend.pysinergia.adaptadores import I_Emisor
+from backend.pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -57,7 +58,7 @@ class ServidorApi():
 
     def iniciar_servicio(mi, app:str, host:str, puerto:int, modo:str):
         import uvicorn
-        if modo == 'LOCAL' or modo == 'DESARROLLO':
+        if modo == Constantes.MODO.LOCAL or modo == Constantes.MODO.DESARROLLO:
             uvicorn.run(
                 app,
                 host=host,
