@@ -2,11 +2,10 @@
 
 from abc import (ABCMeta, abstractmethod)
 
-from backend.pysinergia import Servicio, I_Operador
+from backend.pysinergia import Servicio, I_Operador, ModeloPeticion
 
 from .dominio import (
     EntidadParticipante,
-    ModeloPeticion,
     PeticionBuscarParticipantes,
     PeticionParticipante,
     ModeloNuevoParticipante,

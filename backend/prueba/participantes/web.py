@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from backend.pysinergia import (
     EmisorWeb,
     RegistradorLogs,
+    RespuestaResultado,
 )
 
 from .adaptadores import ControladorParticipantes
@@ -31,7 +32,8 @@ Falta personalizar respuesta de errores
 
 @enrutador.get('/participantes',
                status_code=status.HTTP_200_OK,
-               response_class=JSONResponse)
+               response_class=JSONResponse,
+               response_model=RespuestaResultado)
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     return ControladorParticipantes(EmisorWeb()).buscar_participantes(peticion)
 

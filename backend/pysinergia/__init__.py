@@ -10,7 +10,7 @@ from backend.pysinergia.web import (
     RegistradorLogs,
 )
 from backend.pysinergia.globales import Constantes
-from backend.pysinergia.servicio import Servicio, I_Operador
+from backend.pysinergia.servicio import Servicio, RespuestaResultado, I_Operador
 from backend.pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
@@ -31,8 +31,10 @@ __all__ = [
     'EmisorWeb',
     'ServidorApi',
     'RegistradorLogs',
+    'RespuestaJson',
     'Constantes',
     'Servicio',
+    'RespuestaResultado',
     'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',

@@ -2,7 +2,7 @@
 
 from abc import (ABCMeta, abstractmethod)
 
-from backend.pysinergia.dominio import ModeloPeticion
+from backend.pysinergia.dominio import ModeloPeticion, ModeloRespuesta
 
 # --------------------------------------------------
 # Interface: I_Operador
@@ -34,3 +34,12 @@ class I_Servicio(metaclass=ABCMeta):
 # --------------------------------------------------
 class Servicio(I_Servicio):
     ...
+
+# --------------------------------------------------
+# Clase: RespuestaResultado
+# --------------------------------------------------
+class RespuestaResultado(ModeloRespuesta):
+    codigo: int | None = 200
+    tipo: str | None = 'EXITO'
+    mensaje: str | None = ''
+    resultado: dict | None = {}
