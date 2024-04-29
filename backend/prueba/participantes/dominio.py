@@ -2,7 +2,6 @@
 
 from typing import Optional, List
 from enum import Enum
-from uuid import UUID, uuid4
 from pydantic import Field
 
 from backend.pysinergia import (Entidad, ModeloPeticion, ModeloRespuesta)
@@ -17,7 +16,7 @@ class EntidadParticipante(Entidad):
 # --------------------------------------------------
 # Clase: EstadoParticipante
 # --------------------------------------------------
-class EstadoParticipante():
+class EstadoParticipante(str, Enum):
     Activo = "Activo"
     Inactivo = "Inactivo"
 
@@ -33,21 +32,20 @@ class Rol(str, Enum):
 # Clase: PeticionBuscarParticipantes
 # --------------------------------------------------
 class PeticionBuscarParticipantes(ModeloPeticion):
-    alias: str | None = Field('')
-    email: str | None = Field('')
-    estado: str | None = Field('')
+    alias: str | None = Field('', title='Alias', description='Nombre del participante', max_length=25)
+    email: str | None = Field('', title='E-Mail', description='Correo-e del participante', max_length=50)
+    estado: Optional[EstadoParticipante] | None = Field(None, title='Estado', description='Estado del participante', max_length=10)
 
 # --------------------------------------------------
 # Clase: PeticionParticipante
 # --------------------------------------------------
 class PeticionParticipante(ModeloPeticion):
-    id: int = Field(None)
+    id: int = Field(..., title='ID', description='ID del participante', gt=0)
 
 # --------------------------------------------------
 # Clase: ModeloNuevoParticipante
 # --------------------------------------------------
 class ModeloNuevoParticipante(ModeloPeticion):
-    id: Optional[UUID] = uuid4()
     alias: str
     email: str
     rol: Rol

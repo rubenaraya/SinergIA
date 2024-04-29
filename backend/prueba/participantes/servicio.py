@@ -28,6 +28,9 @@ class ACCION:
 # --------------------------------------------------
 class I_OperadorParticipantes(metaclass=ABCMeta):
     @abstractmethod
+    def recuperar_lista_participantes_todos(mi):
+        ...
+    @abstractmethod
     def recuperar_lista_participantes_filtrados(mi):
         ...
     @abstractmethod
@@ -62,8 +65,8 @@ class ServicioParticipantes(Servicio):
         return realizar.get(accion)(peticion)
 
     def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
-        mi.operador.recuperar_lista_participantes_filtrados()
-        return {"accion": "_buscar_participantes", "operacion": "recuperar_lista_participantes_filtrados", "modelo": "PeticionBuscarParticipantes", "peticion": peticion.diccionario()}
+        resultado = mi.operador.recuperar_lista_participantes_todos()
+        return {"accion": "_buscar_participantes", "operacion": "recuperar_lista_participantes_todos", "modelo": "PeticionBuscarParticipantes", "peticion": peticion.diccionario(), "resultado": resultado}
 
     def _agregar_participante(mi, peticion:ModeloNuevoParticipante):
         mi.operador.insertar_nuevo_participante()

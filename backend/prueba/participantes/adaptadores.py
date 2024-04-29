@@ -30,6 +30,7 @@ class ControladorParticipantes(Controlador):
     """
     Falta autorizar_acceso según roles
     Falta convertir codigos de estado para respuesta del emisor
+    Falta formatear la respuesta
     """
     def buscar_participantes(mi, peticion:ModeloPeticion):
         resultado = Servicio(OperadorParticipantes()).solicitar_accion(
@@ -62,13 +63,21 @@ class ControladorParticipantes(Controlador):
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     """
-    Falta usar config para inyectar dependencias y configuraciones
+    Falta usar config para inyectar dependencias y cargar configuraciones
     """
     def __init__(mi):
         # inyectar
         from backend.pysinergia.conectores import BasedatosSqlite
         mi.basedatos:I_ConectorBasedatos = BasedatosSqlite()
-        mi.basedatos.conectar(config={})
+        mi.basedatos.conectar(config={
+            "basedatos": "prueba",
+            "ruta": "repositorios/prueba/basedatos"
+        })
+
+    def recuperar_lista_participantes_todos(mi):
+        sql = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
+        datos, total = mi.basedatos.obtener(sql=sql, parametros=[])
+        return datos
 
     def recuperar_lista_participantes_filtrados(mi):
         ...

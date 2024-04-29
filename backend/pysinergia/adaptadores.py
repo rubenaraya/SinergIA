@@ -51,16 +51,19 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     def insertar(mi, sql:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def actualizar(mi, sql:str, parametros:list, uid:int) -> int:
+    def actualizar(mi, sql:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def eliminar(mi, sql:str, uid:int) -> int:
+    def eliminar(mi, sql:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def leer(mi, sql:str, uid:int, contenido:int=CONTENIDO.DICCIONARIO) -> tuple:
+    def leer(mi, sql:str, parametros:list, contenido:int) -> tuple:
         ...
     @abstractmethod
-    def obtener(mi, sql:str, parametros:list, contenido:int=CONTENIDO.DICCIONARIO, pag:int=1, max:int=25) -> tuple:
+    def obtener(mi, sql:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
+        ...
+    @abstractmethod
+    def crear_filtro(mi, filtro:str) -> str:
         ...
 
 
