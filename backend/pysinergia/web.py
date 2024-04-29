@@ -1,6 +1,6 @@
 # backend\pysinergia\web.py
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 from backend.pysinergia.adaptadores import I_Emisor
 
@@ -74,6 +74,10 @@ class ServidorApi():
 class EmisorWeb(I_Emisor):
     def __init__(mi):
         ...
+
+    # --------------------------------------------------
+    # Métodos públicos
+
     def entregar_respuesta(mi, resultado:dict):
         respuesta = resultado
         return respuesta
@@ -84,12 +88,17 @@ class EmisorWeb(I_Emisor):
 # --------------------------------------------------
 class RegistradorLogs():
 
+    # --------------------------------------------------
+    # Constantes
     class NIVEL:
         DEBUG = 10
         INFO = 20
         WARNING = 30
         ERROR = 40
         CRITICAL = 50
+
+    # --------------------------------------------------
+    # Métodos públicos
 
     def crear(mi, nombre:str, nivel:int, archivo:str):
         import logging

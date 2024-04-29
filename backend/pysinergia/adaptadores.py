@@ -8,6 +8,11 @@ from backend.pysinergia.servicio import I_Operador
 # Interface: I_ConectorAlmacen
 # --------------------------------------------------
 class I_ConectorAlmacen(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los conectores
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
@@ -17,12 +22,16 @@ class I_ConectorAlmacen(metaclass=ABCMeta):
 # Interface: I_ConectorBasedatos
 # --------------------------------------------------
 class I_ConectorBasedatos(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los conectores
 
-    class CONTENIDO:
+    # --------------------------------------------------
+    # Constantes
+
+    class FORMATO:
         DICCIONARIO = 1
         TUPLA = 2
 
-    class CLASE:
+    class INSTRUCCION:
         INSERT = "INSERT"
         UPDATE = "UPDATE"
         DELETE = "DELETE"
@@ -40,6 +49,9 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         PERIODO = "PERIODO"
         LISTA_DATOS = "LISTA_DATOS"
         NUMERO = "NUMERO"
+
+    # --------------------------------------------------
+    # Métodos obligatorios
 
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
@@ -71,6 +83,11 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 # Interface: I_ConectorDisco
 # --------------------------------------------------
 class I_ConectorDisco(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los conectores
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
@@ -80,6 +97,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
 # Interface: I_ConectorLlm
 # --------------------------------------------------
 class I_ConectorLlm(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los conectores
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
@@ -89,6 +111,11 @@ class I_ConectorLlm(metaclass=ABCMeta):
 # Interface: I_ConectorSpi
 # --------------------------------------------------
 class I_ConectorSpi(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los conectores
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
@@ -98,13 +125,47 @@ class I_ConectorSpi(metaclass=ABCMeta):
 # Clase: Operador
 # --------------------------------------------------
 class Operador(I_Operador):
-    ...
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def inyectar_conectores(mi, basedatos:str=None, almacen:str=None, disco:str=None, llm:str=None, spi:str=None):
+        import importlib
+        ruta_conectores = 'backend.pysinergia.conectores'
+        try:
+            if basedatos:
+                conector_basedatos = getattr(importlib.import_module(ruta_conectores), basedatos)
+                if conector_basedatos:
+                    mi.basedatos:I_ConectorBasedatos = conector_basedatos()
+            if disco:
+                conector_disco = getattr(importlib.import_module(ruta_conectores), disco)
+                if conector_disco:
+                    mi.disco:I_ConectorDisco = conector_disco()
+            if almacen:
+                conector_almacen = getattr(importlib.import_module(ruta_conectores), almacen)
+                if conector_almacen:
+                    mi.almacen:I_ConectorAlmacen = conector_almacen()
+            if llm:
+                conector_llm = getattr(importlib.import_module(ruta_conectores), llm)
+                if conector_llm:
+                    mi.llm:I_ConectorLlm = conector_llm()
+            if spi:
+                conector_spi = getattr(importlib.import_module(ruta_conectores), spi)
+                if conector_spi:
+                    mi.spi:I_ConectorSpi = conector_spi()
+        except Exception as e:
+            print(e)
 
 
 # --------------------------------------------------
 # Interface: I_Emisor
 # --------------------------------------------------
 class I_Emisor(metaclass=ABCMeta):
+    # Implementada en la capa web por EmisorWeb
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
     @abstractmethod
     def entregar_respuesta(mi, resultado:dict):
         ...
@@ -114,6 +175,7 @@ class I_Emisor(metaclass=ABCMeta):
 # Interface: I_Exportador
 # --------------------------------------------------
 class I_Exportador(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los exportadores
     ...
 
 

@@ -10,7 +10,6 @@ from backend.pysinergia import (Entidad, ModeloPeticion, ModeloRespuesta)
 # Clase: EntidadParticipante
 # --------------------------------------------------
 class EntidadParticipante(Entidad):
-    def __init__(mi):
         ...
 
 # --------------------------------------------------
@@ -21,9 +20,9 @@ class EstadoParticipante(str, Enum):
     Inactivo = "Inactivo"
 
 # --------------------------------------------------
-# Clase: Rol
+# Clase: RolParticipante
 # --------------------------------------------------
-class Rol(str, Enum):
+class RolParticipante(str, Enum):
     Admin = "Admin"
     Usuario = "Usuario"
     Invitado = "Invitado"
@@ -48,13 +47,10 @@ class PeticionParticipante(ModeloPeticion):
 class ModeloNuevoParticipante(ModeloPeticion):
     alias: str
     email: str
-    rol: Rol
+    rol: RolParticipante
 
 # --------------------------------------------------
 # Clase: ModeloEditarParticipante
 # --------------------------------------------------
-class ModeloEditarParticipante(ModeloPeticion):
+class ModeloEditarParticipante(ModeloNuevoParticipante):
     id: int
-    alias: str
-    email: str
-    rol: Rol

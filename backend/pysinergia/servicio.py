@@ -2,11 +2,22 @@
 
 from abc import (ABCMeta, abstractmethod)
 
+from backend.pysinergia.dominio import ModeloPeticion
+
 # --------------------------------------------------
 # Interface: I_Operador
 # --------------------------------------------------
 class I_Operador(metaclass=ABCMeta):
-    ...
+
+    basedatos = None
+    almacen = None
+    llm = None
+    disco = None
+    spi = None
+
+    @abstractmethod
+    def inyectar_conectores(mi, basedatos:str=None, almacen:str=None, disco:str=None, llm:str=None, spi:str=None):
+        ...
 
 
 # --------------------------------------------------
@@ -14,7 +25,7 @@ class I_Operador(metaclass=ABCMeta):
 # --------------------------------------------------
 class I_Servicio(metaclass=ABCMeta):
     @abstractmethod
-    def solicitar_accion(mi, accion:int, peticion:dict):
+    def solicitar_accion(mi, accion:int, peticion:ModeloPeticion):
         ...
 
 

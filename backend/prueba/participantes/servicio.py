@@ -2,7 +2,7 @@
 
 from abc import (ABCMeta, abstractmethod)
 
-from backend.pysinergia import Servicio
+from backend.pysinergia import Servicio, I_Operador
 
 from .dominio import (
     EntidadParticipante,
@@ -26,24 +26,25 @@ class ACCION:
 # --------------------------------------------------
 # Interface: I_OperadorParticipantes
 # --------------------------------------------------
-class I_OperadorParticipantes(metaclass=ABCMeta):
+class I_OperadorParticipantes(I_Operador, metaclass=ABCMeta):
+    # Implementada en la capa de adaptadores por OperadorParticipantes
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi):
+    def recuperar_lista_participantes_todos(mi) -> dict:
         ...
     @abstractmethod
-    def recuperar_lista_participantes_filtrados(mi):
+    def recuperar_lista_participantes_filtrados(mi) -> dict:
         ...
     @abstractmethod
-    def recuperar_participante_por_id(mi):
+    def recuperar_participante_por_id(mi) -> dict:
         ...
     @abstractmethod
-    def insertar_nuevo_participante(mi):
+    def insertar_nuevo_participante(mi) -> dict:
         ...
     @abstractmethod
-    def actualizar_participante_por_id(mi):
+    def actualizar_participante_por_id(mi) -> dict:
         ...
     @abstractmethod
-    def eliminar_participante_por_id(mi):
+    def eliminar_participante_por_id(mi) -> dict:
         ...
 
 # --------------------------------------------------
@@ -54,6 +55,9 @@ class ServicioParticipantes(Servicio):
     def __init__(mi, operador:I_OperadorParticipantes):
         mi.operador:I_OperadorParticipantes = operador
 
+    # --------------------------------------------------
+    # Métodos públicos (usados en la capa de adaptadores)
+
     def solicitar_accion(mi, accion:ACCION, peticion:ModeloPeticion):
         realizar = {
             ACCION.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
@@ -63,6 +67,9 @@ class ServicioParticipantes(Servicio):
             ACCION.VER_PARTICIPANTE: mi._ver_participante
         }
         return realizar.get(accion)(peticion)
+
+    # --------------------------------------------------
+    # Métodos privados
 
     def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
         resultado = mi.operador.recuperar_lista_participantes_todos()

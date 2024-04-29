@@ -53,7 +53,7 @@ class BasedatosSqlite(Basedatos):
             mi.conexion.close()
             mi.conexion = None
 
-    def obtener(mi, sql:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=Basedatos.CONTENIDO.DICCIONARIO) -> tuple:
+    def obtener(mi, sql:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({sql})"
         cursor.execute(sql_total, parametros)
@@ -69,7 +69,7 @@ class BasedatosSqlite(Basedatos):
             sql += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
         cursor.execute(sql, parametros)
-        if contenido == Basedatos.CONTENIDO.DICCIONARIO:
+        if contenido == Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             paginador = []
@@ -86,17 +86,17 @@ class BasedatosSqlite(Basedatos):
                 "paginador": paginador
             }
             return datos, total
-        elif contenido == Basedatos.CONTENIDO.TUPLA:
+        elif contenido == Basedatos.FORMATO.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, sql:str, parametros:list, contenido:int=Basedatos.CONTENIDO.DICCIONARIO) -> tuple:
+    def leer(mi, sql:str, parametros:list, contenido:int=Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         cursor.execute(sql, parametros)
-        if contenido == Basedatos.CONTENIDO.DICCIONARIO:
+        if contenido == Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             return lista[0], 1
-        elif contenido == Basedatos.CONTENIDO.TUPLA:
+        elif contenido == Basedatos.FORMATO.TUPLA:
             return (cursor.fetchone(), 1)
 
     def insertar(mi, sql:str, parametros:list) -> int:

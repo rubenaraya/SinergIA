@@ -6,7 +6,6 @@ from pydantic import BaseModel
 # Clase: Entidad
 # --------------------------------------------------
 class Entidad():
-    def __init__(mi):
         ...
 
 # --------------------------------------------------

@@ -9,7 +9,7 @@ from backend.pysinergia.web import (
     ServidorApi,
     RegistradorLogs,
 )
-from backend.pysinergia.servicio import Servicio
+from backend.pysinergia.servicio import Servicio, I_Operador
 from backend.pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
@@ -27,15 +27,16 @@ from backend.pysinergia.adaptadores import (
 )
 
 __all__ = [
-    'Operador',
-    'Controlador',
-    'Entidad',
-    'Servicio',
     'EmisorWeb',
     'ServidorApi',
+    'RegistradorLogs',
+    'Servicio',
+    'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',
-    'RegistradorLogs',
+    'Controlador',
+    'Operador',
+    'I_Operador',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
     'I_ConectorDisco',
