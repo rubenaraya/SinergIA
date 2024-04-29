@@ -1,16 +1,16 @@
 {
     "configuracionVista": {
-        "rutaIdioma": "/frontend/prueba/base/textos-[idioma].json",
-        "rutaPlantillas": "/frontend/prueba/base/PlantillasVista.html",
+        "rutaIdioma": "/app/prueba/base/textos-[idioma].json",
+        "rutaPlantillas": "/app/prueba/base/PlantillasVista.html",
         "elementosUI": ["area_menus", "area_encabezado", "area_cuerpo", "area_pie", "area_esperando", "area_instalacion", "area_suscripcion", "boton_login", "boton_suscripcion", "boton_instalacion", "lista_casos"]
     },
     "configuracionModelo": {
         "idModulo": "base",
-        "rutaDominio": "/frontend/prueba/base/EsquemasDominio.json",
+        "rutaDominio": "/app/prueba/base/EsquemasDominio.json",
         "rolesUsuarios": {"Admin": "Administrador", "Editor": "Editor", "Usuario": "Usuario", "Invitado": "Invitado"},
         "serviciosApi": {
-            "ApiLocal": {"urlApi": "https://localhost:8000/prueba", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "/frontend/jsinergia/ApiLocal.js"},
-            "ApiOpenAI": {"urlApi": "https://api.openai.com/v1", "keyApi": ["Oj0MIh86","0uElxaGCM5","JDM0ET4tNT","U8XDEYKDgv","JA40NQMpGA","5COiQsI1YY","HwROUBlfIz"], "rutaAdaptador": "/frontend/jsinergia/ApiOpenAI.js"}
+            "ApiLocal": {"urlApi": "https://localhost:8000/prueba", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "/app/jsinergia/ApiLocal.js"},
+            "ApiOpenAI": {"urlApi": "https://api.openai.com/v1", "keyApi": ["Oj0MIh86","0uElxaGCM5","JDM0ET4tNT","U8XDEYKDgv","JA40NQMpGA","5COiQsI1YY","HwROUBlfIz"], "rutaAdaptador": "/app/jsinergia/ApiOpenAI.js"}
         },
         "notificacionesPush": {
             "clavePublicaServidor": "",

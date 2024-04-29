@@ -14,7 +14,7 @@ window.onload = async () => {
             coordinador = CoordinadorGeneral.obtenerInstancia(operadorDatos, interfazUsuario);
             window.aplicacionIniciada = await coordinador.coordinarInicio('./manifest.json', './errores.php', GestorEstado.obtenerInstancia());
             if (window.aplicacionIniciada) {
-                await coordinador.ejecutarModulo('./frontend/prueba/base/DefinicionModulo.js');
+                await coordinador.ejecutarModulo('/app/prueba/base/DefinicionModulo.js');
             }
         }
     } catch (error) {
