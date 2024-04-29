@@ -78,6 +78,7 @@ class EmisorWeb(I_Emisor):
         respuesta = resultado
         return respuesta
 
+
 # --------------------------------------------------
 # Clase: RegistradorLogs
 # --------------------------------------------------

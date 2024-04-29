@@ -3,7 +3,10 @@
 from fastapi import APIRouter, status, Depends, Body, HTTPException
 from fastapi.responses import JSONResponse
 
-from backend.pysinergia import EmisorWeb, RegistradorLogs
+from backend.pysinergia import (
+    EmisorWeb,
+    RegistradorLogs,
+)
 
 from .adaptadores import ControladorParticipantes as Controlador
 from .dominio import (
@@ -21,6 +24,10 @@ Falta validar api_key y token de sesión
 Falta manejo de excepciones
 Falta personalizar respuesta de errores
 """
+# --------------------------------------------------
+# Rutas personalizadas del servicio
+# --------------------------------------------------
+
 @enrutador.get('/participantes', status_code=status.HTTP_200_OK, response_class=JSONResponse)
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     registrador.debug("buscar participantes filtrados")

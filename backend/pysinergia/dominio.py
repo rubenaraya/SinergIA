@@ -9,12 +9,18 @@ class Entidad():
     def __init__(mi):
         ...
 
+# --------------------------------------------------
+# Clase: ModeloPeticion
+# --------------------------------------------------
 class ModeloPeticion(BaseModel):
     def diccionario(mi):
         return mi.model_dump()
     def json(mi):
         return mi.model_dump_json()
 
+# --------------------------------------------------
+# Clase: ModeloRespuesta
+# --------------------------------------------------
 class ModeloRespuesta(BaseModel):
     def diccionario(mi):
         return mi.model_dump()

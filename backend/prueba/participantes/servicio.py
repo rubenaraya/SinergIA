@@ -13,6 +13,9 @@ from .dominio import (
     ModeloEditarParticipante,
 )
 
+# --------------------------------------------------
+# Constantes: ACCION
+# --------------------------------------------------
 class ACCION:
     BUSCAR_PARTICIPANTES = 1
     AGREGAR_PARTICIPANTE = 2
@@ -20,6 +23,9 @@ class ACCION:
     ACTUALIZAR_PARTICIPANTE = 4
     ELIMINAR_PARTICIPANTE = 5
 
+# --------------------------------------------------
+# Interface: I_OperadorParticipantes
+# --------------------------------------------------
 class I_OperadorParticipantes(metaclass=ABCMeta):
     @abstractmethod
     def recuperar_lista_participantes_filtrados(mi):
@@ -37,6 +43,9 @@ class I_OperadorParticipantes(metaclass=ABCMeta):
     def eliminar_participante_por_id(mi):
         ...
 
+# --------------------------------------------------
+# Clase: ServicioParticipantes
+# --------------------------------------------------
 class ServicioParticipantes(Servicio):
 
     def __init__(mi, operador:I_OperadorParticipantes):

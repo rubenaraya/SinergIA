@@ -16,9 +16,15 @@ from .servicio import (
 )
 from .dominio import ModeloPeticion
 
+# --------------------------------------------------
+# Clase: Config
+# --------------------------------------------------
 class Config():
     ...
 
+# --------------------------------------------------
+# Clase: ControladorParticipantes
+# --------------------------------------------------
 class ControladorParticipantes(Controlador):
 
     """
@@ -50,6 +56,9 @@ class ControladorParticipantes(Controlador):
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
 
+# --------------------------------------------------
+# Clase: OperadorParticipantes
+# --------------------------------------------------
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     """
