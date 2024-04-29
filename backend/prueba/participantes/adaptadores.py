@@ -22,8 +22,6 @@ class ControladorParticipantes(Controlador):
 
     """
     Falta autorizar_acceso según roles
-    Falta convertir codigos de estado para respuesta del emisor
-    Falta formatear la respuesta
     """
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
@@ -59,7 +57,9 @@ class ControladorParticipantes(Controlador):
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     """
-    Falta usar config para inyectar dependencias y cargar configuraciones
+    Falta usar config para cargar configuraciones dinámicamente
+    Falta usar config para inyectar dependencias
+    Falta crear generadores de instrucciones en conectores
     """
     def __init__(mi):
         ...
@@ -69,7 +69,9 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     def recuperar_lista_participantes_todos(mi) -> dict:
 
-        mi.inyectar_conectores(basedatos='BasedatosSqlite')
+        mi.inyectar_conectores(
+            basedatos={'modulo':'basedatos_sqlite', 'clase':'BasedatosSqlite'}
+        )
         mi.basedatos.conectar(config={
             "basedatos": "prueba",
             "ruta": "repositorios/prueba/basedatos"

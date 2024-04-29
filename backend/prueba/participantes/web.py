@@ -19,12 +19,13 @@ from .dominio import (
 
 enrutador = APIRouter(prefix=f"/prueba")
 registrador = RegistradorLogs().crear(__name__, RegistradorLogs.NIVEL.DEBUG, './logs/prueba-participantes.log')
-registrador.debug("Servicio de Gestión de Participantes")
 
 """
-Falta validar api_key y token de sesión
-Falta manejo de excepciones
-Falta personalizar respuesta de errores
+Falta validar api_key
+Falta validar token de sesión
+Falta manejo de excepciones y errores
+Falta personalizar formato de respuesta de errores
+Falta incluir códigos de estado en RespuestaResultado
 """
 # --------------------------------------------------
 # Rutas personalizadas del servicio

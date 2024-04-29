@@ -3,7 +3,7 @@
 import sqlite3, re
 from datetime import (datetime, timedelta)
 
-from backend.pysinergia import I_ConectorBasedatos as Basedatos
+from backend.pysinergia import I_ConectorBasedatos as Basedatos, Constantes
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
@@ -43,7 +43,7 @@ class BasedatosSqlite(Basedatos):
             if os.path.isfile(ruta_basedatos):
                 mi.conexion = sqlite3.connect(ruta_basedatos)
                 mi.conexion.enable_load_extension(True)
-                extension = os.path.normpath(os.path.abspath('./_lib/sqlean/regexp'))
+                extension = os.path.normpath(os.path.abspath(Constantes.LIB_SQLITE_REGEXP))
                 mi.conexion.load_extension(extension)
                 return True
         return False

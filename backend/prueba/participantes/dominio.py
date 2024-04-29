@@ -31,7 +31,7 @@ class RolParticipante(str, Enum):
     Invitado = "Invitado"
 
 # --------------------------------------------------
-# Clase: PeticionBuscarParticipantes
+# ClaseModelo: PeticionBuscarParticipantes
 # --------------------------------------------------
 class PeticionBuscarParticipantes(ModeloPeticion):
     alias: str | None = Field('', title='Alias', description='Nombre del participante', max_length=25)
@@ -39,13 +39,13 @@ class PeticionBuscarParticipantes(ModeloPeticion):
     estado: Optional[EstadoParticipante] | None = Field(None, title='Estado', description='Estado del participante', max_length=10)
 
 # --------------------------------------------------
-# Clase: PeticionParticipante
+# ClaseModelo: PeticionParticipante
 # --------------------------------------------------
 class PeticionParticipante(ModeloPeticion):
     id: int = Field(..., title='ID', description='ID del participante', gt=0)
 
 # --------------------------------------------------
-# Clase: ModeloNuevoParticipante
+# ClaseModelo: ModeloNuevoParticipante
 # --------------------------------------------------
 class ModeloNuevoParticipante(ModeloPeticion):
     alias: str
@@ -53,7 +53,7 @@ class ModeloNuevoParticipante(ModeloPeticion):
     rol: RolParticipante
 
 # --------------------------------------------------
-# Clase: ModeloEditarParticipante
+# ClaseModelo: ModeloEditarParticipante
 # --------------------------------------------------
 class ModeloEditarParticipante(ModeloNuevoParticipante):
     id: int

@@ -16,7 +16,7 @@ class I_Operador(metaclass=ABCMeta):
     spi = None
 
     @abstractmethod
-    def inyectar_conectores(mi, basedatos:str=None, almacen:str=None, disco:str=None, llm:str=None, spi:str=None):
+    def inyectar_conectores(mi, basedatos:dict=None, almacen:dict=None, disco:dict=None, llm:dict=None, spi:dict=None):
         ...
 
 
@@ -36,7 +36,7 @@ class Servicio(I_Servicio):
     ...
 
 # --------------------------------------------------
-# Clase: RespuestaResultado
+# ClaseModelo: RespuestaResultado
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
     codigo: int | None = 200

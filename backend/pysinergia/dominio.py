@@ -1,15 +1,32 @@
 # backend\pysinergia\dominio.py
 
 from pydantic import BaseModel
+from dataclasses import dataclass, asdict
+
+from backend.pysinergia.globales import UUID
 
 # --------------------------------------------------
 # Clase: Entidad
 # --------------------------------------------------
 class Entidad():
-        ...
+    ...
 
 # --------------------------------------------------
-# Clase: ModeloPeticion
+# ClaseDatos: Caso
+# --------------------------------------------------
+@dataclass
+class Caso:
+    uid: UUID
+
+    @classmethod
+    def importar(cls, datos):
+        return cls(**datos)
+
+    def exportar(mi):
+        return asdict(mi)
+
+# --------------------------------------------------
+# ClaseModelo: ModeloPeticion
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
     def diccionario(mi):
@@ -18,7 +35,7 @@ class ModeloPeticion(BaseModel):
         return mi.model_dump_json()
 
 # --------------------------------------------------
-# Clase: ModeloRespuesta
+# ClaseModelo: ModeloRespuesta
 # --------------------------------------------------
 class ModeloRespuesta(BaseModel):
     def diccionario(mi):

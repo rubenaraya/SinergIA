@@ -31,7 +31,6 @@ __all__ = [
     'EmisorWeb',
     'ServidorApi',
     'RegistradorLogs',
-    'RespuestaJson',
     'Constantes',
     'Servicio',
     'RespuestaResultado',
