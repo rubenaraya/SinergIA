@@ -1,6 +1,6 @@
 # backend\prueba\participantes\dominio.py
 
-from typing import (Optional, List)
+from typing import (Optional, List, Dict, Tuple)
 from enum import Enum
 
 # --------------------------------------------------

@@ -21,15 +21,15 @@ from .dominio import ModeloPeticion
 # --------------------------------------------------
 # Clase: ControladorParticipantes
 # --------------------------------------------------
+"""
+Falta autorizar_acceso según roles
+Falta manejar errores de la aplicación
+Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
+Faltaría crear un formato de Vista? (ViewModel)
+Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
+"""
 class ControladorParticipantes(Controlador):
 
-    """
-    Falta autorizar_acceso según roles
-    Falta manejar errores de la aplicación
-    Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
-    Faltaría crear un formato de Vista? (ViewModel)
-    Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
-    """
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
@@ -68,11 +68,12 @@ class ControladorParticipantes(Controlador):
 # --------------------------------------------------
 # Clase: OperadorParticipantes
 # --------------------------------------------------
+"""
+Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> Debería usar Entidad
+Falta probar Modelos para insertar y actualizar participantes
+Falta reemplazar "sql" por "instruccion" para hacerlo genérico
+"""
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
-
-    """
-    Falta crear generadores de instrucciones en conectores
-    """
 
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)

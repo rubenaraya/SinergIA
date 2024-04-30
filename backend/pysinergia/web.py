@@ -9,7 +9,6 @@ import logging
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.globales import Constantes
 from backend.pysinergia.adaptadores import I_Emisor
 
 # --------------------------------------------------
@@ -65,17 +64,16 @@ class ServidorApi():
                         print(e)
                         continue
 
-    def iniciar_servicio(mi, app:str, host:str, puerto:int, modo:str):
-        if modo == Constantes.MODO.LOCAL or modo == Constantes.MODO.DESARROLLO:
-            import uvicorn
-            uvicorn.run(
-                app,
-                host=host,
-                port=puerto,
-                ssl_keyfile="./key.pem",
-                ssl_certfile="./cert.pem",
-                reload=True
-            )
+    def iniciar_servicio(mi, app:str, host:str, puerto:int):
+        import uvicorn
+        uvicorn.run(
+            app,
+            host=host,
+            port=puerto,
+            ssl_keyfile="./key.pem",
+            ssl_certfile="./cert.pem",
+            reload=True
+        )
 
 
 # --------------------------------------------------
