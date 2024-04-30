@@ -25,7 +25,7 @@ class I_Operador(metaclass=ABCMeta):
     spi = None
 
     @abstractmethod
-    def inyectar_conectores(mi, basedatos:dict=None, almacen:dict=None, disco:dict=None, llm:dict=None, spi:dict=None):
+    def inyectar_conectores(mi, config):
         ...
 
 

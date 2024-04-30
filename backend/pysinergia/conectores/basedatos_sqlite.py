@@ -39,11 +39,11 @@ class BasedatosSqlite(Basedatos):
 
     def conectar(mi, config:dict) -> bool:
         import os
-        if mi.conexion and mi.basedatos == config.get('basedatos'):
+        if mi.conexion and mi.basedatos == config.get('nombre'):
             return True
         if mi.conexion:
             mi.conexion.close()
-        mi.basedatos = config.get('basedatos')
+        mi.basedatos = config.get('nombre')
         mi.ruta = config.get('ruta')
         if mi.basedatos and mi.ruta:
             ruta_basedatos = f"{mi.ruta}/{mi.basedatos}.db"

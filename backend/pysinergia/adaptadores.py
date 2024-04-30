@@ -1,6 +1,7 @@
 # backend\pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
+from typing import Dict
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -129,86 +130,6 @@ class I_ConectorSpi(metaclass=ABCMeta):
 
 
 # --------------------------------------------------
-# Clase: Operador
-# --------------------------------------------------
-class Operador(I_Operador):
-
-    # --------------------------------------------------
-    # Métodos privados
-
-    def _importar_modulo(mi, config:dict):
-        import importlib
-        try:
-            modulo = getattr(
-                importlib.import_module(f"{Constantes.RUTA_CONECTORES}.{config.get('modulo')}"),
-                config.get('clase'))
-            if modulo:
-                return modulo
-            return None
-        except Exception as e:
-            print(e)
-            return None
-
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def inyectar_conectores(mi, basedatos:dict=None, almacen:dict=None, disco:dict=None, llm:dict=None, spi:dict=None):
-        try:
-            if basedatos:
-                conector_basedatos = mi._importar_modulo(basedatos)
-                if conector_basedatos:
-                    mi.basedatos:I_ConectorBasedatos = conector_basedatos()
-            if disco:
-                conector_disco = mi._importar_modulo(disco)
-                if conector_disco:
-                    mi.disco:I_ConectorDisco = conector_disco()
-            if almacen:
-                conector_almacen = mi._importar_modulo(almacen)
-                if conector_almacen:
-                    mi.almacen:I_ConectorAlmacen = conector_almacen()
-            if llm:
-                conector_llm = mi._importar_modulo(llm)
-                if conector_llm:
-                    mi.llm:I_ConectorLlm = conector_llm()
-            if spi:
-                conector_spi = mi._importar_modulo(spi)
-                if conector_spi:
-                    mi.spi:I_ConectorSpi = conector_spi()
-        except Exception as e:
-            print(e)
-
-
-# --------------------------------------------------
-# Interface: I_Emisor
-# --------------------------------------------------
-class I_Emisor(metaclass=ABCMeta):
-    # Implementada en la capa web por EmisorWeb
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def entregar_respuesta(mi, resultado:dict):
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_Exportador
-# --------------------------------------------------
-class I_Exportador(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los exportadores
-    ...
-
-
-# --------------------------------------------------
-# Clase: Controlador
-# --------------------------------------------------
-class Controlador():
-    def __init__(mi, emisor:I_Emisor):
-        mi.emisor:I_Emisor = emisor
-
-
-# --------------------------------------------------
 # ClaseModelo: Configuracion
 # --------------------------------------------------
 class Configuracion(BaseSettings):
@@ -256,4 +177,138 @@ class Configuracion(BaseSettings):
     spi_ruta: str = ''
     spi_apikey: str = ''
     spi_url: str = ''
+    def basedatos(mi) -> Dict:
+        return dict({
+            'fuente': mi.basedatos_fuente,
+            'clase': mi.basedatos_clase,
+            'nombre': mi.basedatos_nombre,
+            'ruta': mi.basedatos_ruta,
+            'url': mi.basedatos_url,
+            'usuario': mi.basedatos_usuario,
+            'password': mi.basedatos_password
+        })
+    def almacen(mi) -> Dict:
+        return dict({
+            'fuente': mi.almacen_fuente,
+            'clase': mi.almacen_clase,
+            'nombre': mi.almacen_nombre,
+            'ruta': mi.almacen_ruta,
+            'url': mi.almacen_url,
+            'apikey': mi.almacen_apikey,
+            'usuario': mi.almacen_usuario,
+            'password': mi.almacen_password
+        })
+    def disco(mi) -> Dict:
+        return dict({
+            'fuente': mi.disco_fuente,
+            'clase': mi.disco_clase,
+            'nombre': mi.disco_nombre,
+            'ruta': mi.disco_ruta,
+            'url': mi.disco_url,
+            'apikey': mi.disco_apikey,
+            'usuario': mi.disco_usuario,
+            'password': mi.disco_password
+        })
+    def llm(mi) -> Dict:
+        return dict({
+            'fuente': mi.llm_fuente,
+            'clase': mi.llm_clase,
+            'nombre': mi.llm_nombre,
+            'ruta': mi.llm_ruta,
+            'url': mi.llm_url,
+            'apikey': mi.llm_apikey,
+        })
+    def spi(mi) -> Dict:
+        return dict({
+            'fuente': mi.spi_fuente,
+            'clase': mi.spi_clase,
+            'nombre': mi.spi_nombre,
+            'ruta': mi.spi_ruta,
+            'url': mi.spi_url,
+            'apikey': mi.spi_apikey,
+        })
+
+
+# --------------------------------------------------
+# Clase: Operador
+# --------------------------------------------------
+class Operador(I_Operador):
+    def __init__(mi, config:Configuracion):
+        mi.config:Configuracion = config
+        mi.inyectar_conectores(mi.config)
+
+    # --------------------------------------------------
+    # Métodos privados
+
+    def _importar_modulo(mi, config:dict):
+        import importlib
+        try:
+            modulo = getattr(
+                importlib.import_module(f"{Constantes.RUTA_CONECTORES}.{config.get('fuente')}"),
+                config.get('clase'))
+            if modulo:
+                return modulo
+            return None
+        except Exception as e:
+            print(e)
+            return None
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def inyectar_conectores(mi, config:Configuracion):
+        try:
+            if config.basedatos_clase:
+                conector_basedatos = mi._importar_modulo(config=mi.config.basedatos())
+                if conector_basedatos:
+                    mi.basedatos:I_ConectorBasedatos = conector_basedatos()
+            if config.disco_clase:
+                conector_disco = mi._importar_modulo(mi.config.disco())
+                if conector_disco:
+                    mi.disco:I_ConectorDisco = conector_disco()
+            if config.almacen_clase:
+                conector_almacen = mi._importar_modulo(mi.config.almacen())
+                if conector_almacen:
+                    mi.almacen:I_ConectorAlmacen = conector_almacen()
+            if config.llm_clase:
+                conector_llm = mi._importar_modulo(mi.config.llm())
+                if conector_llm:
+                    mi.llm:I_ConectorLlm = conector_llm()
+            if config.spi_clase:
+                conector_spi = mi._importar_modulo(mi.config.spi())
+                if conector_spi:
+                    mi.spi:I_ConectorSpi = conector_spi()
+        except Exception as e:
+            print(e)
+
+
+# --------------------------------------------------
+# Interface: I_Emisor
+# --------------------------------------------------
+class I_Emisor(metaclass=ABCMeta):
+    # Implementada en la capa web por EmisorWeb
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
+    @abstractmethod
+    def entregar_respuesta(mi, resultado:dict):
+        ...
+
+
+# --------------------------------------------------
+# Interface: I_Exportador
+# --------------------------------------------------
+class I_Exportador(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los exportadores
+    ...
+
+
+# --------------------------------------------------
+# Clase: Controlador
+# --------------------------------------------------
+class Controlador():
+    def __init__(mi, config:Configuracion, emisor:I_Emisor):
+        mi.emisor:I_Emisor = emisor
+        mi.config:Configuracion = config
 
