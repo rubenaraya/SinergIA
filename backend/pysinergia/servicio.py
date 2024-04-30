@@ -52,3 +52,4 @@ class RespuestaResultado(ModeloRespuesta):
     tipo: str | None = 'EXITO'
     mensaje: str | None = ''
     resultado: dict | None = {}
+

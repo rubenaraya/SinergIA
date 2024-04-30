@@ -50,7 +50,7 @@ class BasedatosSqlite(Basedatos):
             if os.path.isfile(ruta_basedatos):
                 mi.conexion = sqlite3.connect(ruta_basedatos)
                 mi.conexion.enable_load_extension(True)
-                extension = os.path.normpath(os.path.abspath(Constantes.LIB_SQLITE_REGEXP))
+                extension = os.path.normpath(os.path.abspath(f"{Constantes.DIR_LIB_SQLEAN}/regexp"))
                 mi.conexion.load_extension(extension)
                 return True
         return False

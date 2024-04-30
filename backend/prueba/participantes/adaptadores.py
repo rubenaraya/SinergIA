@@ -19,12 +19,6 @@ from .servicio import (
 from .dominio import ModeloPeticion
 
 # --------------------------------------------------
-# Clase: Config
-# --------------------------------------------------
-class Config():
-    ...
-
-# --------------------------------------------------
 # Clase: ControladorParticipantes
 # --------------------------------------------------
 class ControladorParticipantes(Controlador):
@@ -33,6 +27,7 @@ class ControladorParticipantes(Controlador):
     Falta autorizar_acceso según roles
     Falta manejar errores de la aplicación
     Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
+    Faltaría crear un formato de Vista? (ViewModel)
     Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
     """
     # --------------------------------------------------
@@ -68,6 +63,7 @@ class ControladorParticipantes(Controlador):
         resultado = ServicioParticipantes(OperadorParticipantes()).solicitar_accion(
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return mi.emisor.entregar_respuesta(resultado)
+
 
 # --------------------------------------------------
 # Clase: OperadorParticipantes

@@ -22,6 +22,7 @@ from backend.pysinergia.servicio import (
 from backend.pysinergia.adaptadores import (
     Controlador, 
     Operador, 
+    Configuracion,
     I_ConectorBasedatos, 
     I_ConectorAlmacen, 
     I_ConectorDisco, 
@@ -47,6 +48,7 @@ __all__ = [
     'I_Operador',
     'Controlador',
     'Operador',
+    'Configuracion',
     'I_ConectorBasedatos',
     'I_ConectorAlmacen',
     'I_ConectorDisco',

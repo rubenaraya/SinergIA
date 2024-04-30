@@ -17,6 +17,8 @@ from backend.pysinergia import (
     EmisorWeb,
     RegistradorLogs,
     RespuestaResultado,
+    Configuracion,
+    Funciones,
 )
 
 # --------------------------------------------------
@@ -31,8 +33,14 @@ from .dominio import (
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
+config = Configuracion(
+    _env_file=Funciones.obtener_ruta_config(__name__, '.config.env'),
+    _env_prefix='part_',
+    _env_file_encoding='utf-8',
+    _extra='ignore'
+)
 enrutador = APIRouter(prefix=f"/prueba")
-registrador = RegistradorLogs().crear(__name__, RegistradorLogs.NIVEL.DEBUG, './logs/prueba-participantes.log')
+registrador = RegistradorLogs().crear(__name__, config.nivel_registro, config.ruta_logs)
 
 """
 Falta validar api_key

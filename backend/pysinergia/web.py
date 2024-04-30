@@ -99,22 +99,15 @@ class EmisorWeb(I_Emisor):
 class RegistradorLogs():
 
     # --------------------------------------------------
-    # Constantes
-    class NIVEL:
-        DEBUG = 10
-        INFO = 20
-        WARNING = 30
-        ERROR = 40
-        CRITICAL = 50
-
-    # --------------------------------------------------
     # Métodos públicos
 
-    def crear(mi, nombre:str, nivel:int, archivo:str):
+    def crear(mi, nombre:str, nivel:str, archivo:str):
         logging.basicConfig(
             level=nivel,
+            encoding='utf-8',
             filename=archivo,
             filemode='a',
-            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s'
+            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s',
+            datefmt="%d/%m/%Y %H:%M:%S"
         )
         return logging.getLogger(nombre)

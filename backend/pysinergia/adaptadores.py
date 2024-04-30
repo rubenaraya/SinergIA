@@ -3,6 +3,10 @@
 from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
+# Importaciones de bibliotecas (capa de Adaptadores)
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# --------------------------------------------------
 # Importaciones de PySinergIA
 from backend.pysinergia.globales import Constantes
 from backend.pysinergia.servicio import I_Operador
@@ -202,3 +206,54 @@ class I_Exportador(metaclass=ABCMeta):
 class Controlador():
     def __init__(mi, emisor:I_Emisor):
         mi.emisor:I_Emisor = emisor
+
+
+# --------------------------------------------------
+# ClaseModelo: Configuracion
+# --------------------------------------------------
+class Configuracion(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        env_prefix='',
+        extra='ignore',
+    )
+    ruta_logs: str = ''
+    nivel_registro: str = ''
+    ruta_repositorios: str = ''
+    basedatos_fuente: str = ''
+    basedatos_clase: str = ''
+    basedatos_nombre: str = ''
+    basedatos_ruta: str = ''
+    basedatos_url: str = ''
+    basedatos_usuario: str = ''
+    basedatos_password: str = ''
+    almacen_fuente: str = ''
+    almacen_clase: str = ''
+    almacen_nombre: str = ''
+    almacen_ruta: str = ''
+    almacen_apikey: str = ''
+    almacen_url: str = ''
+    almacen_usuario: str = ''
+    almacen_password: str = ''
+    disco_fuente: str = ''
+    disco_clase: str = ''
+    disco_nombre: str = ''
+    disco_ruta: str = ''
+    disco_apikey: str = ''
+    disco_url: str = ''
+    disco_usuario: str = ''
+    disco_password: str = ''
+    llm_fuente: str = ''
+    llm_clase: str = ''
+    llm_nombre: str = ''
+    llm_ruta: str = ''
+    llm_apikey: str = ''
+    llm_url: str = ''
+    spi_fuente: str = ''
+    spi_clase: str = ''
+    spi_nombre: str = ''
+    spi_ruta: str = ''
+    spi_apikey: str = ''
+    spi_url: str = ''
+

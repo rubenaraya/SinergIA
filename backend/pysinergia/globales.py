@@ -17,7 +17,8 @@ class Constantes:
         raise TypeError('Esta es una clase estática')
 
     RUTA_CONECTORES = 'backend.pysinergia.conectores'
-    LIB_SQLITE_REGEXP = './_lib/sqlean/regexp'
+    DIR_LIB_SQLEAN = './_lib/sqlean'
+    DIR_LIB_FFMPEG = './_lib/ffmpeg'
 
     class MODO:
         PRODUCCION = 'PRODUCCION'
@@ -106,4 +107,10 @@ class Funciones:
         fechahora['ahora'] = local.strftime( "%Y%m%d%H%M%S" )
         fechahora['periodo'] = local.strftime( "%Y%m%d" )
         return fechahora
+
+    @staticmethod
+    def obtener_ruta_config(nombre_modulo:str, nombre_archivo:str):
+        parts = nombre_modulo.split('.')[:-1]
+        path = os.path.join(*parts)
+        return os.path.join(path, nombre_archivo)
 
