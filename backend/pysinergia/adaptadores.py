@@ -139,9 +139,8 @@ class Configuracion(BaseSettings):
         env_prefix='',
         extra='ignore',
     )
-    ruta_logs: str = ''
+    archivo_logs: str = ''
     nivel_registro: str = ''
-    ruta_repositorios: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
     basedatos_nombre: str = ''

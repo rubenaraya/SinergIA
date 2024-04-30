@@ -19,6 +19,7 @@ from backend.pysinergia import (
     RespuestaResultado,
     Configuracion,
     Funciones,
+    Constantes,
 )
 
 # --------------------------------------------------
@@ -33,16 +34,17 @@ from .dominio import (
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-config = Configuracion(_env_file=Funciones.obtener_ruta_env(__name__))
+config = Configuracion(_env_file=Funciones.obtener_ruta_env(__name__, modo=None))
 enrutador = APIRouter(prefix=f"/prueba")
-registrador = RegistradorLogs().crear(__name__, config.nivel_registro, config.ruta_logs)
+registrador = RegistradorLogs().crear(__name__, config.nivel_registro, config.archivo_logs)
 
 """
-Falta validar api_key
-Falta validar token de sesión
 Falta manejo de excepciones y errores
 Falta personalizar formato de respuesta de errores
 Falta incluir códigos de estado en RespuestaResultado
+Falta traducir códigos internos en códigos de estado HTTP
+Falta validar token de sesión JWT
+Falta validar api_key
 """
 # --------------------------------------------------
 # Rutas del Servicio personalizado

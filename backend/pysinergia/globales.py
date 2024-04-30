@@ -109,8 +109,10 @@ class Funciones:
         return fechahora
 
     @staticmethod
-    def obtener_ruta_env(nombre_modulo:str, nombre_archivo:str='.config.env'):
+    def obtener_ruta_env(nombre_modulo:str, modo:str):
+        nombre_archivo = '.config.env'
+        if modo:
+            nombre_archivo = f".{modo.lower()}.env"
         parts = nombre_modulo.split('.')[:-1]
         path = os.path.join(*parts)
         return os.path.join(path, nombre_archivo)
-
