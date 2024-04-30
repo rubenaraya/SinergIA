@@ -78,7 +78,7 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     # Métodos públicos (usados en la capa de servicio)
 
     def recuperar_lista_participantes_todos(mi) -> Dict:
-        mi.basedatos.conectar(config=mi.config.basedatos())
+        mi.basedatos.conectar(mi.config.basedatos())
 
         sql = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
 
