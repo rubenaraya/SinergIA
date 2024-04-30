@@ -8,6 +8,7 @@ from backend.pysinergia.globales import (
     Constantes,
     Funciones,
     Json,
+    RegistradorLogs,
 )
 from backend.pysinergia.dominio import (
     Entidad,
@@ -32,7 +33,6 @@ from backend.pysinergia.adaptadores import (
 )
 from backend.pysinergia.web import (
     EmisorWeb,
-    RegistradorLogs,
     ServidorApi,
 )
 
@@ -40,6 +40,7 @@ __all__ = [
     'Constantes',
     'Funciones',
     'Json',
+    'RegistradorLogs',
     'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',
@@ -56,6 +57,5 @@ __all__ = [
     'I_ConectorSpi',
     'I_Exportador',
     'EmisorWeb',
-    'RegistradorLogs',
     'ServidorApi',
 ]

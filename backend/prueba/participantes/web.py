@@ -16,11 +16,11 @@ from functools import lru_cache
 # Importaciones de PySinergIA
 from backend.pysinergia import (
     EmisorWeb,
-    RegistradorLogs,
     RespuestaResultado,
     Configuracion,
     Funciones,
     Constantes,
+    RegistradorLogs
 )
 
 # --------------------------------------------------
@@ -41,7 +41,7 @@ def obtener_config():
 # Configuración del Servicio personalizado
 config = obtener_config()
 enrutador = APIRouter(prefix=f"/prueba")
-registrador = RegistradorLogs().crear(__name__, config.nivel_registro, config.archivo_logs)
+registrador = RegistradorLogs.crear(__name__, config.nivel_registro, config.archivo_logs)
 
 """
 Falta manejo de excepciones y errores

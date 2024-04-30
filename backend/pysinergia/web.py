@@ -6,7 +6,6 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import logging
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -107,24 +106,3 @@ class EmisorWeb(I_Emisor):
     def entregar_respuesta(mi, resultado:dict):
         respuesta = resultado
         return respuesta
-
-
-# --------------------------------------------------
-# Clase: RegistradorLogs
-# --------------------------------------------------
-class RegistradorLogs():
-
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def crear(mi, nombre:str, nivel:str, archivo:str):
-        logging.basicConfig(
-            level=nivel,
-            encoding='utf-8',
-            filename=archivo,
-            filemode='a',
-            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s',
-            datefmt="%d/%m/%Y %H:%M:%S"
-        )
-        return logging.getLogger(nombre)
-

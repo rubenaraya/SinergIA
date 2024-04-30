@@ -26,6 +26,13 @@ class Constantes:
         PRUEBAS = 'PRUEBAS'
         LOCAL = 'LOCAL'
 
+    class NIVEL:
+        INFO = 'INFO'
+        DEBUG = 'DEBUG'
+        WARNING = 'WARNING'
+        ERROR = 'ERROR'
+        CRITICAL = 'CRITICAL'
+
     class CONECTOR:
         AlmacenChroma = 'AlmacenChroma'
         AlmacenFaiss = 'AlmacenFaiss'
@@ -116,3 +123,26 @@ class Funciones:
         parts = nombre_modulo.split('.')[:-1]
         path = os.path.join(*parts)
         return os.path.join(path, nombre_archivo)
+
+
+# --------------------------------------------------
+# Clase estática: RegistradorLogs
+# --------------------------------------------------
+class RegistradorLogs():
+
+    def __new__(cls):
+        raise TypeError('Esta es una clase estática')
+
+    @staticmethod
+    def crear(nombre:str, nivel:str, archivo:str):
+        import logging
+        logging.basicConfig(
+            level=nivel,
+            encoding='utf-8',
+            filename=archivo,
+            filemode='a',
+            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s',
+            datefmt="%d/%m/%Y %H:%M:%S"
+        )
+        return logging.getLogger(nombre)
+
