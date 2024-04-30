@@ -10,6 +10,7 @@ from fastapi import (
     Body,
 )
 from fastapi.responses import JSONResponse
+from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -32,9 +33,13 @@ from .dominio import (
     ModeloEditarParticipante,
 )
 
+@lru_cache
+def obtener_config():
+    return Configuracion(_env_file=Funciones.obtener_ruta_env(__name__, modo=None))
+
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-config = Configuracion(_env_file=Funciones.obtener_ruta_env(__name__, modo=None))
+config = obtener_config()
 enrutador = APIRouter(prefix=f"/prueba")
 registrador = RegistradorLogs().crear(__name__, config.nivel_registro, config.archivo_logs)
 

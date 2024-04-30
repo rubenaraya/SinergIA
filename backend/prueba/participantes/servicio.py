@@ -58,6 +58,11 @@ class I_OperadorParticipantes(I_Operador, metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ServicioParticipantes
 # --------------------------------------------------
+"""
+Falta convertir los Modelos de peticiones en Modelos de instrucciones para traspasar al Oprador?
+Falta autorizar_acceso(permisos='?', credenciales='?') -> usar roles ¿Dónde se configuran?
+Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
+"""
 class ServicioParticipantes(Servicio):
 
     def __init__(mi, operador:I_OperadorParticipantes):

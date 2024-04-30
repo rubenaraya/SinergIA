@@ -8,3 +8,8 @@ jinja2
 pydantic-settings
 
 databases[sqlite]
+
+# pydantic[email]
+# passlib[bcrypt]
+# python-jose[cryptography]
+# python-multipart

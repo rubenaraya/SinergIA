@@ -2,7 +2,8 @@
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import logging
@@ -10,6 +11,9 @@ import logging
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from backend.pysinergia.adaptadores import I_Emisor
+
+class ExternalError(Exception):
+    pass
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -75,10 +79,24 @@ class ServidorApi():
             reload=True
         )
 
+    def manejar_errores(mi, api:FastAPI):
+
+        @api.exception_handler(ExternalError)
+        async def external_exception_handler(request:Request, exc:ExternalError) -> JSONResponse:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"message": "Algo salió mal"},
+            )
+
 
 # --------------------------------------------------
 # Clase: EmisorWeb
 # --------------------------------------------------
+"""
+Falta que procese plantillas con Jinja2
+Falta que pueda servir HTML
+Falta que pueda servir archivos para descarga
+"""
 class EmisorWeb(I_Emisor):
     def __init__(mi):
         ...
@@ -109,3 +127,4 @@ class RegistradorLogs():
             datefmt="%d/%m/%Y %H:%M:%S"
         )
         return logging.getLogger(nombre)
+

@@ -22,11 +22,10 @@ from .dominio import ModeloPeticion
 # Clase: ControladorParticipantes
 # --------------------------------------------------
 """
-Falta autorizar_acceso según roles
 Falta manejar errores de la aplicación
-Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
-Faltaría crear un formato de Vista? (ViewModel)
+Falta que reciba el registrador para que lo use en el manejo de errores
 Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
+Falta crear un formato de Vista? (ViewModel)?
 """
 class ControladorParticipantes(Controlador):
 
@@ -34,14 +33,8 @@ class ControladorParticipantes(Controlador):
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:ModeloPeticion):
-        """
-        autorizar_acceso(permisos='?', credenciales='?')
-
-        """
-        # resultado = ServicioParticipantes(OperadorParticipantes(mi.config)).solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         servicio = ServicioParticipantes(operador=OperadorParticipantes(mi.config))
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
-
         return mi.emisor.entregar_respuesta(resultado)
     
     def agregar_participante(mi, peticion:ModeloPeticion):
@@ -70,7 +63,7 @@ class ControladorParticipantes(Controlador):
 # --------------------------------------------------
 """
 Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> Debería usar Entidad
-Falta probar Modelos para insertar y actualizar participantes
+Falta probar Modelos iniciales para insertar y actualizar participantes
 Falta reemplazar "sql" por "instruccion" para hacerlo genérico
 """
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
