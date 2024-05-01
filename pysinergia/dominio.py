@@ -7,9 +7,6 @@ from dataclasses import (dataclass, asdict)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    UUID
-)
 
 # --------------------------------------------------
 # Clase: Entidad
@@ -22,7 +19,6 @@ class Entidad():
 # --------------------------------------------------
 @dataclass
 class Caso:
-    uid: UUID
 
     @classmethod
     def importar(cls, datos):

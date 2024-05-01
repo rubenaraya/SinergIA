@@ -27,10 +27,11 @@ class ACCION:
     ACTUALIZAR_PARTICIPANTE = 4
     ELIMINAR_PARTICIPANTE = 5
 
+
 # --------------------------------------------------
 # Interface: I_OperadorParticipantes
 # --------------------------------------------------
-class I_OperadorParticipantes(metaclass=ABCMeta): # I_Operador
+class I_OperadorParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por OperadorParticipantes
     @abstractmethod
     def recuperar_lista_participantes_todos(mi) -> Dict:
@@ -50,6 +51,7 @@ class I_OperadorParticipantes(metaclass=ABCMeta): # I_Operador
     @abstractmethod
     def eliminar_participante_por_id(mi) -> Dict:
         ...
+
 
 # --------------------------------------------------
 # Clase: ServicioParticipantes
