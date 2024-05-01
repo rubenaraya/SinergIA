@@ -13,9 +13,12 @@ from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import Funciones
+from pysinergia.globales import (
+    Funciones,
+    Constantes,
+    ErrorPersonalizado,
+)
 from pysinergia.servicio import RespuestaResultado
-from pysinergia.adaptadores import Configuracion
 from pysinergia.web import EmisorWeb
 
 # --------------------------------------------------
@@ -26,15 +29,18 @@ from .dominio import (
     ModeloNuevoParticipante,
     ModeloEditarParticipante,
 )
-from .adaptadores import ControladorParticipantes
+from .adaptadores import (
+    ControladorParticipantes as Controlador,
+    ConfigParticipantes as Config,
+)
 
 @lru_cache
-def obtener_config():
-    return Configuracion(_env_file=Funciones.obtener_ruta_env(__name__, modo=None))
-config = obtener_config()
+def obtener_config(modo:str=None):
+    return Config(_env_file=Funciones.obtener_ruta_env(__name__, modo=modo))
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
+config = obtener_config(None)
 enrutador = APIRouter(prefix=f"/prueba")
 
 """
@@ -50,28 +56,28 @@ Falta validar api_key
                response_class=JSONResponse,
                response_model=RespuestaResultado)
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    return ControladorParticipantes(config, EmisorWeb()).buscar_participantes(peticion)
+    return Controlador(config, EmisorWeb()).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
                status_code=status.HTTP_200_OK,
                response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    return ControladorParticipantes(config, EmisorWeb()).ver_participante(peticion)
+    return Controlador(config, EmisorWeb()).ver_participante(peticion)
 
 @enrutador.post('/participantes',
                 status_code=status.HTTP_201_CREATED,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
-    return ControladorParticipantes(config, EmisorWeb()).agregar_participante(peticion)
+    return Controlador(config, EmisorWeb()).agregar_participante(peticion)
 
 @enrutador.put('/participantes/{id}',
                status_code=status.HTTP_204_NO_CONTENT,
                response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
-    return ControladorParticipantes(config, EmisorWeb()).actualizar_participante(peticion)
+    return Controlador(config, EmisorWeb()).actualizar_participante(peticion)
 
 @enrutador.delete('/participantes/{id}',
                   status_code=status.HTTP_204_NO_CONTENT,
                   response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
-    return ControladorParticipantes(config, EmisorWeb()).eliminar_participante(peticion)
+    return Controlador(config, EmisorWeb()).eliminar_participante(peticion)

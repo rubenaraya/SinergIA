@@ -132,12 +132,6 @@ class I_ConectorSpi(metaclass=ABCMeta):
 # ClaseModelo: Configuracion
 # --------------------------------------------------
 class Configuracion(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file='.env',
-        env_file_encoding='utf-8',
-        env_prefix='',
-        extra='ignore',
-    )
     aplicacion: str = ''
     servicio: str = ''
     nivel_registro: str = ''
@@ -176,6 +170,12 @@ class Configuracion(BaseSettings):
     spi_ruta: str = ''
     spi_apikey: str = ''
     spi_url: str = ''
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        env_prefix='',
+        extra='ignore',
+    )
     def basedatos(mi) -> Dict:
         return dict({
             'fuente': mi.basedatos_fuente,
@@ -229,6 +229,7 @@ class Configuracion(BaseSettings):
     def identificar(mi, aplicacion:str, servicio:str):
         mi.aplicacion = aplicacion
         mi.servicio = servicio
+
 
 # --------------------------------------------------
 # Clase: Operador

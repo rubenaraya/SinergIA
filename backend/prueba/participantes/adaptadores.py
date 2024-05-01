@@ -8,6 +8,7 @@ from pysinergia.dominio import ModeloPeticion
 from pysinergia.adaptadores import (
     Controlador,
     Operador,
+    Configuracion,
 )
 
 # --------------------------------------------------
@@ -17,6 +18,13 @@ from .servicio import (
     ServicioParticipantes, 
     I_OperadorParticipantes
 )
+
+# --------------------------------------------------
+# ClaseModelo: ConfigParticipantes
+# --------------------------------------------------
+class ConfigParticipantes(Configuracion):
+    secret_key: str = ''
+
 
 # --------------------------------------------------
 # Clase: ControladorParticipantes
