@@ -39,7 +39,6 @@ config = obtener_config()
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-config.identificar(aplicacion='prueba', servicio='participantez')
 enrutador = APIRouter(prefix=f"/prueba")
 
 """

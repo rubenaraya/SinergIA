@@ -118,12 +118,13 @@ class ServidorApi():
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            nombre = nombre_registrador
-            if exc.aplicacion and exc.servicio:
-                nombre = f'{exc.aplicacion}_{exc.servicio}'
-            RegistradorLogs.crear(f'{nombre}', 'WARNING', f'./logs/{nombre}.log').error(
-                f'{mi._obtener_url(request)} | {salida.__repr__()}'
-            )
+            if exc.tipo == Constantes.SALIDA.ERROR:
+                nombre = nombre_registrador
+                if exc.aplicacion and exc.servicio:
+                    nombre = f'{exc.aplicacion}_{exc.servicio}'
+                RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
+                    f'{mi._obtener_url(request)} | {salida.__repr__()}'
+                )
             return JSONResponse(
                 status_code=exc.codigo,
                 content=jsonable_encoder(salida)
@@ -145,9 +146,6 @@ class ServidorApi():
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
-            RegistradorLogs.crear(nombre_registrador, 'DEBUG', f'./logs/{nombre_registrador}.log').debug(
-                f'{mi._obtener_url(request)} | {salida.__repr__()}'
-            )
             return JSONResponse(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 content=jsonable_encoder(salida)
@@ -160,9 +158,10 @@ class ServidorApi():
                 tipo=mi._tipo_salida(exc.status_code),
                 mensaje=exc.detail
             )
-            RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
-                f'{mi._obtener_url(request)} | {salida.__repr__()}'
-            )
+            if exc.status_code >= 500:
+                RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
+                    f'{mi._obtener_url(request)} | {salida.__repr__()}'
+                )
             return JSONResponse(
                 status_code=exc.status_code,
                 content=jsonable_encoder(salida)

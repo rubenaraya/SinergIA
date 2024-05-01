@@ -141,7 +141,6 @@ class Configuracion(BaseSettings):
     )
     aplicacion: str = ''
     servicio: str = ''
-    archivo_logs: str = ''
     nivel_registro: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
