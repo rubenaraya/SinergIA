@@ -234,7 +234,7 @@ class Configuracion(BaseSettings):
 # --------------------------------------------------
 # Clase: Operador
 # --------------------------------------------------
-class Operador():
+class Operador:
     def __init__(mi, config:Configuracion):
         mi.config:Configuracion = config
         mi.inyectar_conectores(mi.config)
@@ -242,7 +242,7 @@ class Operador():
     # --------------------------------------------------
     # Métodos privados
 
-    def _importar_modulo(mi, config:dict):
+    def _importar_conector(mi, config:dict):
         import importlib
         try:
             modulo = getattr(
@@ -261,23 +261,23 @@ class Operador():
     def inyectar_conectores(mi, config:Configuracion):
         try:
             if config.basedatos_clase:
-                conector_basedatos = mi._importar_modulo(config=mi.config.basedatos())
+                conector_basedatos = mi._importar_conector(config=mi.config.basedatos())
                 if conector_basedatos:
                     mi.basedatos:I_ConectorBasedatos = conector_basedatos()
             if config.disco_clase:
-                conector_disco = mi._importar_modulo(mi.config.disco())
+                conector_disco = mi._importar_conector(mi.config.disco())
                 if conector_disco:
                     mi.disco:I_ConectorDisco = conector_disco()
             if config.almacen_clase:
-                conector_almacen = mi._importar_modulo(mi.config.almacen())
+                conector_almacen = mi._importar_conector(mi.config.almacen())
                 if conector_almacen:
                     mi.almacen:I_ConectorAlmacen = conector_almacen()
             if config.llm_clase:
-                conector_llm = mi._importar_modulo(mi.config.llm())
+                conector_llm = mi._importar_conector(mi.config.llm())
                 if conector_llm:
                     mi.llm:I_ConectorLlm = conector_llm()
             if config.spi_clase:
-                conector_spi = mi._importar_modulo(mi.config.spi())
+                conector_spi = mi._importar_conector(mi.config.spi())
                 if conector_spi:
                     mi.spi:I_ConectorSpi = conector_spi()
         except Exception as e:
@@ -309,7 +309,7 @@ class I_Exportador(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: Controlador
 # --------------------------------------------------
-class Controlador():
+class Controlador:
     def __init__(mi, config:Configuracion, emisor:I_Emisor):
         mi.emisor:I_Emisor = emisor
         mi.config:Configuracion = config

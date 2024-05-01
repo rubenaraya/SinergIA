@@ -7,7 +7,7 @@ from pysinergia.dominio import ModeloRespuesta as _ModeloRespuesta
 # --------------------------------------------------
 # Clase: Servicio
 # --------------------------------------------------
-class Servicio():
+class Servicio:
     ...
 
 

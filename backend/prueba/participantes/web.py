@@ -35,8 +35,8 @@ from .adaptadores import (
 )
 
 @lru_cache
-def obtener_config(modo:str=None):
-    return Config(_env_file=Funciones.obtener_ruta_env(__name__, modo=modo))
+def obtener_config(entorno:str=None):
+    return Config(_env_file=Funciones.obtener_ruta_env(__name__, entorno=entorno))
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado

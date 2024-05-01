@@ -19,16 +19,17 @@ class Constantes:
         raise TypeError('Esta es una clase estática')
 
     RUTA_CONECTORES = 'pysinergia.conectores'
+    RUTA_EXPORTADORES = 'pysinergia.exportadores'
     DIR_LIB_SQLEAN = './_lib/sqlean'
     DIR_LIB_FFMPEG = './_lib/ffmpeg'
 
-    class MODO:
+    class ENTORNO:
         PRODUCCION = 'PRODUCCION'
         DESARROLLO = 'DESARROLLO'
         PRUEBAS = 'PRUEBAS'
         LOCAL = 'LOCAL'
 
-    class NIVEL:
+    class REGISTRO:
         INFO = 'INFO'
         DEBUG = 'DEBUG'
         WARNING = 'WARNING'
@@ -48,6 +49,12 @@ class Constantes:
         BasedatosSqlite = 'BasedatosSqlite'
         DiscoLocal = 'DiscoLocal'
         LlmOpenai = 'LlmOpenai'
+    
+    class EXPORTADOR:
+        ExportadorCsv = "ExportadorCsv"
+        ExportadorExcel = "ExportadorExcel"
+        ExportadorPdf = "ExportadorPdf"
+        ExportadorWord = "ExportadorWord"
 
 
 # --------------------------------------------------
@@ -120,10 +127,10 @@ class Funciones:
         return fechahora
 
     @staticmethod
-    def obtener_ruta_env(nombre_modulo:str, modo:str):
+    def obtener_ruta_env(nombre_modulo:str, entorno:str):
         nombre_archivo = '.config.env'
-        if modo:
-            nombre_archivo = f".{modo.lower()}.env"
+        if entorno:
+            nombre_archivo = f".{entorno.lower()}.env"
         parts = nombre_modulo.split('.')[:-1]
         path = os.path.join(*parts)
         return os.path.join(path, nombre_archivo)

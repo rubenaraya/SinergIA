@@ -24,7 +24,7 @@ from pysinergia.globales import (
 # --------------------------------------------------
 # Clase: ServidorApi
 # --------------------------------------------------
-class ServidorApi():
+class ServidorApi:
 
     # --------------------------------------------------
     # Métodos privados
