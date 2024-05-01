@@ -2,12 +2,12 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_ConectorAlmacen as Almacen
+from pysinergia.adaptadores import I_ConectorAlmacen as _Almacen
 
 # --------------------------------------------------
 # Clase: AlmacenFaiss
 # --------------------------------------------------
-class AlmacenFaiss(Almacen):
+class AlmacenFaiss(_Almacen):
     def __init__(mi):
         ...
     def conectar(mi, config:dict) -> bool:

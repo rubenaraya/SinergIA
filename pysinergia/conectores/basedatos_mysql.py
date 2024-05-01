@@ -2,12 +2,12 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_ConectorBasedatos as Basedatos
+from pysinergia.adaptadores import I_ConectorBasedatos as _Basedatos
 
 # --------------------------------------------------
 # Clase: BasedatosMysql
 # --------------------------------------------------
-class BasedatosMysql(Basedatos):
+class BasedatosMysql(_Basedatos):
     def __init__(mi):
         ...
 

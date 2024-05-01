@@ -14,11 +14,11 @@ from fastapi.exceptions import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_Emisor
+from pysinergia.adaptadores import I_Emisor as _I_Emisor
 from pysinergia.globales import (
-    Constantes,
-    ErrorPersonalizado,
-    RegistradorLogs,
+    Constantes as _Constantes,
+    ErrorPersonalizado as _ErrorPersonalizado,
+    RegistradorLogs as _RegistradorLogs,
 )
 
 # --------------------------------------------------
@@ -56,14 +56,14 @@ class ServidorApi():
 
     def _tipo_salida(mi, estado:int) -> str:
         if estado < 200:
-            return Constantes.SALIDA.ERROR
+            return _Constantes.SALIDA.ERROR
         if estado < 300:
-            return Constantes.SALIDA.EXITO
+            return _Constantes.SALIDA.EXITO
         if estado < 400:
-            return Constantes.SALIDA.AVISO
+            return _Constantes.SALIDA.AVISO
         if estado < 500:
-            return Constantes.SALIDA.ALERTA
-        return Constantes.SALIDA.ERROR
+            return _Constantes.SALIDA.ALERTA
+        return _Constantes.SALIDA.ERROR
 
     def _obtener_url(mi, request:Request) -> str:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
@@ -85,17 +85,16 @@ class ServidorApi():
         import importlib, os
         aplicaciones = os.listdir(ubicacion)
         for aplicacion in aplicaciones:
-            if aplicacion != 'pysinergia':
-                servicios = os.listdir(f'{ubicacion}/{aplicacion}')
-                for servicio in servicios:
-                    try:
-                        ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'web.py')
-                        if os.path.isfile(ruta_archivo):
-                            enrutador = importlib.import_module(f'{ubicacion}.{aplicacion}.{servicio}.web')
-                            api.include_router(getattr(enrutador, 'enrutador'))
-                    except Exception as e:
-                        print(e)
-                        continue
+            servicios = os.listdir(f'{ubicacion}/{aplicacion}')
+            for servicio in servicios:
+                try:
+                    ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'web.py')
+                    if os.path.isfile(ruta_archivo):
+                        enrutador = importlib.import_module(f'{ubicacion}.{aplicacion}.{servicio}.web')
+                        api.include_router(getattr(enrutador, 'enrutador'))
+                except Exception as e:
+                    print(e)
+                    continue
 
     def iniciar_servicio(mi, app:str, host:str, puerto:int):
         import uvicorn
@@ -110,19 +109,19 @@ class ServidorApi():
 
     def manejar_errores(mi, api:FastAPI, nombre_registrador:str):
 
-        @api.exception_handler(ErrorPersonalizado)
-        async def _error_personalizado_handler(request:Request, exc:ErrorPersonalizado) -> JSONResponse:
+        @api.exception_handler(_ErrorPersonalizado)
+        async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
             salida = mi._crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            if exc.tipo == Constantes.SALIDA.ERROR:
+            if exc.tipo == _Constantes.SALIDA.ERROR:
                 nombre = nombre_registrador
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
-                RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
+                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__repr__()}'
                 )
             return JSONResponse(
@@ -142,7 +141,7 @@ class ServidorApi():
                 })
             salida = mi._crear_salida(
                 codigo=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                tipo=Constantes.SALIDA.ALERTA,
+                tipo=_Constantes.SALIDA.ALERTA,
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
@@ -159,7 +158,7 @@ class ServidorApi():
                 mensaje=exc.detail
             )
             if exc.status_code >= 500:
-                RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
+                _RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__repr__()}'
                 )
             return JSONResponse(
@@ -175,10 +174,10 @@ class ServidorApi():
             mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
             salida = mi._crear_salida(
                 codigo=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                tipo=Constantes.SALIDA.ERROR,
+                tipo=_Constantes.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
+            _RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(
@@ -195,7 +194,7 @@ Falta que procese plantillas con Jinja2
 Falta que pueda servir HTML
 Falta que pueda servir archivos para descarga
 """
-class EmisorWeb(I_Emisor):
+class EmisorWeb(_I_Emisor):
     def __init__(mi):
         ...
 

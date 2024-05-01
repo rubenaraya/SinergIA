@@ -2,12 +2,12 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_ConectorLlm as Llm
+from pysinergia.adaptadores import I_ConectorLlm as _Llm
 
 # --------------------------------------------------
 # Clase: LlmOpenai
 # --------------------------------------------------
-class LlmOpenai(Llm):
+class LlmOpenai(_Llm):
     def __init__(mi):
         ...
     def conectar(mi, config:dict) -> bool:

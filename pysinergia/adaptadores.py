@@ -9,8 +9,7 @@ from pydantic_settings import (BaseSettings, SettingsConfigDict)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes
-from pysinergia.servicio import I_Operador
+from pysinergia.globales import Constantes as _Constantes
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen
@@ -234,7 +233,7 @@ class Configuracion(BaseSettings):
 # --------------------------------------------------
 # Clase: Operador
 # --------------------------------------------------
-class Operador(I_Operador):
+class Operador():
     def __init__(mi, config:Configuracion):
         mi.config:Configuracion = config
         mi.inyectar_conectores(mi.config)
@@ -246,7 +245,7 @@ class Operador(I_Operador):
         import importlib
         try:
             modulo = getattr(
-                importlib.import_module(f"{Constantes.RUTA_CONECTORES}.{config.get('fuente')}"),
+                importlib.import_module(f"{_Constantes.RUTA_CONECTORES}.{config.get('fuente')}"),
                 config.get('clase'))
             if modulo:
                 return modulo

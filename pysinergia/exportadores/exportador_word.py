@@ -2,12 +2,12 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_Exportador
+from pysinergia.adaptadores import I_Exportador as _I_Exportador
 
 # --------------------------------------------------
 # Clase: ExportadorWord
 # --------------------------------------------------
-class ExportadorWord(I_Exportador):
+class ExportadorWord(_I_Exportador):
     def __init__(mi):
         ...
     def generar(mi, opciones:dict):

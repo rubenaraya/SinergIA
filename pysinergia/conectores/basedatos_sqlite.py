@@ -7,29 +7,29 @@ from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes
-from pysinergia.adaptadores import I_ConectorBasedatos as Basedatos
+from pysinergia.globales import Constantes as _Constantes
+from pysinergia.adaptadores import I_ConectorBasedatos as _Basedatos
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
 # --------------------------------------------------
-class BasedatosSqlite(Basedatos):
+class BasedatosSqlite(_Basedatos):
     def __init__(mi):
         mi.conexion:sqlite3.Connection = None
         mi.basedatos:str = None
         mi.ruta:str
         mi.filtros = {
-            Basedatos.FILTRO.CONTIENE: mi._filtro_CONTIENE,
-            Basedatos.FILTRO.COINCIDE: mi._filtro_COINCIDE,
-            Basedatos.FILTRO.PALABRAS: mi._filtro_PALABRAS,
-            Basedatos.FILTRO.FRASE: mi._filtro_FRASE,
-            Basedatos.FILTRO.INCLUYE: mi._filtro_INCLUYE,
-            Basedatos.FILTRO.FECHA: mi._filtro_FECHA,
-            Basedatos.FILTRO.RANGO_FECHAS: mi._filtro_RANGO_FECHAS,
-            Basedatos.FILTRO.RANGO_NUMEROS: mi._filtro_RANGO_NUMEROS,
-            Basedatos.FILTRO.PERIODO: mi._filtro_PERIODO,
-            Basedatos.FILTRO.LISTA_DATOS: mi._filtro_LISTA_DATOS,
-            Basedatos.FILTRO.NUMERO: mi._filtro_NUMERO
+            _Basedatos.FILTRO.CONTIENE: mi._filtro_CONTIENE,
+            _Basedatos.FILTRO.COINCIDE: mi._filtro_COINCIDE,
+            _Basedatos.FILTRO.PALABRAS: mi._filtro_PALABRAS,
+            _Basedatos.FILTRO.FRASE: mi._filtro_FRASE,
+            _Basedatos.FILTRO.INCLUYE: mi._filtro_INCLUYE,
+            _Basedatos.FILTRO.FECHA: mi._filtro_FECHA,
+            _Basedatos.FILTRO.RANGO_FECHAS: mi._filtro_RANGO_FECHAS,
+            _Basedatos.FILTRO.RANGO_NUMEROS: mi._filtro_RANGO_NUMEROS,
+            _Basedatos.FILTRO.PERIODO: mi._filtro_PERIODO,
+            _Basedatos.FILTRO.LISTA_DATOS: mi._filtro_LISTA_DATOS,
+            _Basedatos.FILTRO.NUMERO: mi._filtro_NUMERO
         }
 
     # --------------------------------------------------
@@ -48,7 +48,7 @@ class BasedatosSqlite(Basedatos):
             if os.path.isfile(ruta_basedatos):
                 mi.conexion = sqlite3.connect(ruta_basedatos)
                 mi.conexion.enable_load_extension(True)
-                extension = os.path.normpath(os.path.abspath(f"{Constantes.DIR_LIB_SQLEAN}/regexp"))
+                extension = os.path.normpath(os.path.abspath(f"{_Constantes.DIR_LIB_SQLEAN}/regexp"))
                 mi.conexion.load_extension(extension)
                 return True
         return False
@@ -58,7 +58,7 @@ class BasedatosSqlite(Basedatos):
             mi.conexion.close()
             mi.conexion = None
 
-    def obtener(mi, sql:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=Basedatos.FORMATO.DICCIONARIO) -> tuple:
+    def obtener(mi, sql:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({sql})"
         cursor.execute(sql_total, parametros)
@@ -74,7 +74,7 @@ class BasedatosSqlite(Basedatos):
             sql += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
         cursor.execute(sql, parametros)
-        if contenido == Basedatos.FORMATO.DICCIONARIO:
+        if contenido == _Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             paginador = []
@@ -91,17 +91,17 @@ class BasedatosSqlite(Basedatos):
                 "paginador": paginador
             }
             return datos, total
-        elif contenido == Basedatos.FORMATO.TUPLA:
+        elif contenido == _Basedatos.FORMATO.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, sql:str, parametros:list, contenido:int=Basedatos.FORMATO.DICCIONARIO) -> tuple:
+    def leer(mi, sql:str, parametros:list, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         cursor.execute(sql, parametros)
-        if contenido == Basedatos.FORMATO.DICCIONARIO:
+        if contenido == _Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             return lista[0], 1
-        elif contenido == Basedatos.FORMATO.TUPLA:
+        elif contenido == _Basedatos.FORMATO.TUPLA:
             return (cursor.fetchone(), 1)
 
     def insertar(mi, sql:str, parametros:list) -> int:
