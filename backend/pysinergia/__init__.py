@@ -9,6 +9,7 @@ from backend.pysinergia.globales import (
     Funciones,
     Json,
     RegistradorLogs,
+    ErrorPersonalizado,
 )
 from backend.pysinergia.dominio import (
     Entidad,
@@ -41,6 +42,7 @@ __all__ = [
     'Funciones',
     'Json',
     'RegistradorLogs',
+    'ErrorPersonalizado',
     'Entidad',
     'ModeloPeticion',
     'ModeloRespuesta',

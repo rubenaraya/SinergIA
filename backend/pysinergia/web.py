@@ -6,13 +6,20 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import (
+    RequestValidationError,
+    HTTPException,
+)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from backend.pysinergia.adaptadores import I_Emisor
-
-class ExternalError(Exception):
-    pass
+from backend.pysinergia.globales import (
+    Constantes,
+    ErrorPersonalizado,
+    RegistradorLogs,
+)
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -35,9 +42,35 @@ class ServidorApi():
             CORSMiddleware,
             allow_origins = origenes,
             allow_credentials = True,
-            allow_methods = ["*"],
-            allow_headers = ["*"],
+            allow_methods = ['*'],
+            allow_headers = ['*'],
         )
+
+    def _crear_salida(mi, codigo:int, tipo:str, titulo:str='', contenido:str='', detalles:list=[]) -> dict:
+        return dict({
+            'codigo': str(codigo),
+            'tipo': tipo,
+            'titulo': titulo,
+            'contenido': contenido,
+            'detalles': detalles
+        })
+
+    def _tipo_salida(mi, estado:int) -> str:
+        if estado < 200:
+            return Constantes.SALIDA.ERROR
+        if estado < 300:
+            return Constantes.SALIDA.EXITO
+        if estado < 400:
+            return Constantes.SALIDA.AVISO
+        if estado < 500:
+            return Constantes.SALIDA.ALERTA
+        return Constantes.SALIDA.ERROR
+
+    def _obtener_url(mi, request:Request) -> str:
+        host = getattr(getattr(request, 'client', None), 'host', None)
+        port = getattr(getattr(request, 'client', None), 'port', None)
+        url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
+        return f'{host}:{port} - {request.method} {url}'
 
     # --------------------------------------------------
     # Métodos públicos
@@ -49,19 +82,19 @@ class ServidorApi():
         return api
 
     def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
-        api.mount(f"/{alias}", StaticFiles(directory=f"{directorio}"), name="static")
+        api.mount(f'/{alias}', StaticFiles(directory=f'{directorio}'), name='static')
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib, os
         aplicaciones = os.listdir(ubicacion)
         for aplicacion in aplicaciones:
             if aplicacion != 'pysinergia':
-                servicios = os.listdir(f"{ubicacion}/{aplicacion}")
+                servicios = os.listdir(f'{ubicacion}/{aplicacion}')
                 for servicio in servicios:
                     try:
                         ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'web.py')
                         if os.path.isfile(ruta_archivo):
-                            enrutador = importlib.import_module(f"{ubicacion}.{aplicacion}.{servicio}.web")
+                            enrutador = importlib.import_module(f'{ubicacion}.{aplicacion}.{servicio}.web')
                             api.include_router(getattr(enrutador, 'enrutador'))
                     except Exception as e:
                         print(e)
@@ -73,18 +106,89 @@ class ServidorApi():
             app,
             host=host,
             port=puerto,
-            ssl_keyfile="./key.pem",
-            ssl_certfile="./cert.pem",
+            ssl_keyfile='./key.pem',
+            ssl_certfile='./cert.pem',
             reload=True
         )
 
     def manejar_errores(mi, api:FastAPI):
 
-        @api.exception_handler(ExternalError)
-        async def external_exception_handler(request:Request, exc:ExternalError) -> JSONResponse:
+        @api.exception_handler(ErrorPersonalizado)
+        async def _error_personalizado_handler(request:Request, exc:ErrorPersonalizado) -> JSONResponse:
+            salida = mi._crear_salida(
+                codigo=exc.codigo,
+                tipo=exc.tipo,
+                titulo='Error en la Aplicación',
+                contenido=exc.contenido,
+                detalles=exc.detalles
+            )
+            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+                f'{mi._obtener_url(request)} | {salida.__repr__()}'
+            )
             return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content={"message": "Algo salió mal"},
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content=jsonable_encoder(salida)
+            )
+
+        @api.exception_handler(RequestValidationError)
+        async def _request_validation_exception_handler(request:Request, exc:RequestValidationError) -> JSONResponse:
+            errores = exc.errors()
+            detalles = []
+            for error in errores:
+                detalles.append({
+                    'mensaje': error['msg'],
+                    'origen': error['loc'],
+                    'valor': error['input']
+                })
+            salida = mi._crear_salida(
+                codigo=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                tipo=Constantes.SALIDA.ALERTA,
+                titulo='Error de validación',
+                contenido='Los datos recibidos no fueron procesados correctamente',
+                detalles=detalles
+            )
+            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+                f'{mi._obtener_url(request)} | {salida.__repr__()}'
+            )
+            return JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content=jsonable_encoder(salida)
+            )
+
+        @api.exception_handler(HTTPException)
+        async def _http_exception_handler(request:Request, exc:HTTPException) -> JSONResponse:
+            salida = mi._crear_salida(
+                codigo=exc.status_code,
+                tipo=mi._tipo_salida(exc.status_code),
+                titulo='Error en el Servicio',
+                contenido=exc.detail
+            )
+            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+                f'{mi._obtener_url(request)} | {salida.__repr__()}'
+            )
+            return JSONResponse(
+                status_code=exc.status_code,
+                content=jsonable_encoder(salida)
+            )
+
+        @api.exception_handler(Exception)
+        async def _unhandled_exception_handler(request:Request, exc:Exception) -> JSONResponse:
+            import sys
+            exception_type, exception_value, exception_traceback = sys.exc_info()
+            exception_name = getattr(exception_type, '__name__', None)
+            contenido = f'Error interno del Servidor <{exception_name}: {exception_value}>'
+            salida = mi._crear_salida(
+                codigo=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                tipo=Constantes.SALIDA.ERROR,
+                titulo='Error interno',
+                contenido=contenido
+            )
+            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+                f'{mi._obtener_url(request)} | {contenido}'
+            )
+            return JSONResponse(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                content=jsonable_encoder(salida)
             )
 
 
@@ -106,3 +210,4 @@ class EmisorWeb(I_Emisor):
     def entregar_respuesta(mi, resultado:dict):
         respuesta = resultado
         return respuesta
+

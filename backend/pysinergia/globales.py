@@ -1,6 +1,6 @@
 # backend\pysinergia\globales.py
 
-import uuid, os, json
+import uuid, os, json, logging
 from typing import Dict
 
 # --------------------------------------------------
@@ -32,6 +32,12 @@ class Constantes:
         WARNING = 'WARNING'
         ERROR = 'ERROR'
         CRITICAL = 'CRITICAL'
+
+    class SALIDA:
+        EXITO = "EXITO"
+        AVISO = "AVISO"
+        ALERTA = "ALERTA"
+        ERROR = "ERROR"
 
     class CONECTOR:
         AlmacenChroma = 'AlmacenChroma'
@@ -90,10 +96,6 @@ class Funciones:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def _() -> str:
-        return os.sep
-
-    @staticmethod
     def fecha_hora(zona_horaria:str) -> Dict:
         import pytz
         from datetime import datetime
@@ -135,7 +137,6 @@ class RegistradorLogs():
 
     @staticmethod
     def crear(nombre:str, nivel:str, archivo:str):
-        import logging
         logging.basicConfig(
             level=nivel,
             encoding='utf-8',
@@ -146,3 +147,20 @@ class RegistradorLogs():
         )
         return logging.getLogger(nombre)
 
+
+# --------------------------------------------------
+# Clase: ErrorPersonalizado
+# --------------------------------------------------
+class ErrorPersonalizado(Exception):
+    def __init__(mi, contenido:str, tipo:str='ERROR', codigo:int=500, detalles:list=[]):
+        mi.codigo = codigo
+        mi.tipo = tipo
+        mi.contenido = contenido
+        mi.detalles = detalles
+        super().__init__(mi.contenido)
+
+    def __str__(mi):
+        return f'{mi.contenido}'
+
+    def __repr__(mi):
+        return f'{mi.tipo} {mi.codigo}: {mi.contenido}. {mi.detalles.__str__()}'
