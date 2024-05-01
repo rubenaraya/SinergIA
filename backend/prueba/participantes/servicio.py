@@ -5,11 +5,8 @@ from typing import Dict
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import (
-    Servicio,
-    I_Operador,
-    ModeloPeticion,
-)
+from pysinergia.dominio import ModeloPeticion
+from pysinergia.servicio import Servicio
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
@@ -33,7 +30,7 @@ class ACCION:
 # --------------------------------------------------
 # Interface: I_OperadorParticipantes
 # --------------------------------------------------
-class I_OperadorParticipantes(I_Operador, metaclass=ABCMeta):
+class I_OperadorParticipantes(metaclass=ABCMeta): # I_Operador
     # Implementada en la capa de adaptadores por OperadorParticipantes
     @abstractmethod
     def recuperar_lista_participantes_todos(mi) -> Dict:

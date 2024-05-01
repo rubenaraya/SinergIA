@@ -1,13 +1,16 @@
-# backend\pysinergia\conectores\llm_openai.py
+# pysinergia\conectores\disco_local.py
+
+# --------------------------------------------------
+# Importaciones de Infraestructura de Datos
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import I_ConectorLlm as Llm
+from pysinergia.adaptadores import I_ConectorDisco as Disco
 
 # --------------------------------------------------
-# Clase: LlmOpenai
+# Clase: DiscoLocal
 # --------------------------------------------------
-class LlmOpenai(Llm):
+class DiscoLocal(Disco):
     def __init__(mi):
         ...
     def conectar(mi, config:dict) -> bool:

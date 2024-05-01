@@ -1,4 +1,4 @@
-# backend\pysinergia\web.py
+# pysinergia\web.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -14,8 +14,8 @@ from fastapi.exceptions import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.adaptadores import I_Emisor
-from backend.pysinergia.globales import (
+from pysinergia.adaptadores import I_Emisor
+from pysinergia.globales import (
     Constantes,
     ErrorPersonalizado,
     RegistradorLogs,

@@ -1,4 +1,4 @@
-# backend\pysinergia\globales.py
+# pysinergia\globales.py
 
 import uuid, os, json
 from typing import Dict
@@ -18,7 +18,7 @@ class Constantes:
     def __new__(cls):
         raise TypeError('Esta es una clase estática')
 
-    RUTA_CONECTORES = 'backend.pysinergia.conectores'
+    RUTA_CONECTORES = 'pysinergia.conectores'
     DIR_LIB_SQLEAN = './_lib/sqlean'
     DIR_LIB_FFMPEG = './_lib/ffmpeg'
 

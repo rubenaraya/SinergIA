@@ -1,8 +1,8 @@
-# backend\pysinergia\exportadores\exportador_pdf.py
+# pysinergia\exportadores\exportador_pdf.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import I_Exportador
+from pysinergia.adaptadores import I_Exportador
 
 # --------------------------------------------------
 # Clase: ExportadorPdf

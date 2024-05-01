@@ -9,7 +9,7 @@ from pydantic import Field
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import (
+from pysinergia.dominio import (
     Entidad,
     ModeloPeticion,
 )

@@ -1,13 +1,13 @@
-# backend\pysinergia\exportadores\exportador_csv.py
+# pysinergia\exportadores\exportador_excel.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import I_Exportador
+from pysinergia.adaptadores import I_Exportador
 
 # --------------------------------------------------
-# Clase: ExportadorCsv
+# Clase: ExportadorExcel
 # --------------------------------------------------
-class ExportadorCsv(I_Exportador):
+class ExportadorExcel(I_Exportador):
     def __init__(mi):
         ...
     def generar(mi, opciones:dict):

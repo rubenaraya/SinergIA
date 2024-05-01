@@ -13,24 +13,24 @@ from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import (
-    EmisorWeb,
-    RespuestaResultado,
-    Configuracion,
+from pysinergia.globales import (
+    Constantes,
     Funciones,
     ErrorPersonalizado,
-    Constantes,
 )
+from pysinergia.servicio import RespuestaResultado
+from pysinergia.adaptadores import Configuracion
+from pysinergia.web import EmisorWeb
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
-from .adaptadores import ControladorParticipantes
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
     ModeloNuevoParticipante,
     ModeloEditarParticipante,
 )
+from .adaptadores import ControladorParticipantes
 
 @lru_cache
 def obtener_config():
@@ -54,8 +54,6 @@ Falta validar api_key
                response_class=JSONResponse,
                response_model=RespuestaResultado)
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    if peticion:
-        raise ErrorPersonalizado('Error personalizadó', 'ERROR', 501, [], aplicacion=config.aplicacion, servicio=config.servicio)
     return ControladorParticipantes(config, EmisorWeb()).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',

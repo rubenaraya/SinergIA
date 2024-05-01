@@ -1,10 +1,10 @@
-# backend\pysinergia\servicio.py
+# pysinergia\servicio.py
 
 from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.dominio import (
+from pysinergia.dominio import (
     ModeloPeticion,
     ModeloRespuesta,
 )
@@ -14,11 +14,13 @@ from backend.pysinergia.dominio import (
 # --------------------------------------------------
 class I_Operador(metaclass=ABCMeta):
 
+    """
     basedatos = None
     almacen = None
     llm = None
     disco = None
     spi = None
+    """
 
     @abstractmethod
     def inyectar_conectores(mi, config):

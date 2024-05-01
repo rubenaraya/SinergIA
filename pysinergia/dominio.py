@@ -1,4 +1,4 @@
-# backend\pysinergia\dominio.py
+# pysinergia\dominio.py
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
@@ -7,9 +7,8 @@ from dataclasses import (dataclass, asdict)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.globales import (
-    UUID,
-    Constantes
+from pysinergia.globales import (
+    UUID
 )
 
 # --------------------------------------------------

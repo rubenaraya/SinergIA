@@ -4,7 +4,8 @@ from typing import Dict
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import (
+from pysinergia.dominio import ModeloPeticion
+from pysinergia.adaptadores import (
     Controlador,
     Operador,
 )
@@ -16,7 +17,6 @@ from .servicio import (
     ServicioParticipantes, 
     I_OperadorParticipantes
 )
-from .dominio import ModeloPeticion
 
 # --------------------------------------------------
 # Clase: ControladorParticipantes

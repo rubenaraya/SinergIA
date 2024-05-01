@@ -1,16 +1,16 @@
-# backend\pysinergia\adaptadores.py
+# pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
 from typing import Dict
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (BaseSettings, SettingsConfigDict)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.globales import Constantes
-from backend.pysinergia.servicio import I_Operador
+from pysinergia.globales import Constantes
+from pysinergia.servicio import I_Operador
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen

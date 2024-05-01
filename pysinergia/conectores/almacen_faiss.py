@@ -1,8 +1,8 @@
-# backend\pysinergia\conectores\almacen_faiss.py
+# pysinergia\conectores\almacen_faiss.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia import I_ConectorAlmacen as Almacen
+from pysinergia.adaptadores import I_ConectorAlmacen as Almacen
 
 # --------------------------------------------------
 # Clase: AlmacenFaiss
