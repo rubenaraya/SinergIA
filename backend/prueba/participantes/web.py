@@ -13,11 +13,7 @@ from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes,
-    Funciones,
-    ErrorPersonalizado,
-)
+from pysinergia.globales import Funciones
 from pysinergia.servicio import RespuestaResultado
 from pysinergia.adaptadores import Configuracion
 from pysinergia.web import EmisorWeb

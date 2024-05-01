@@ -1,7 +1,5 @@
 # pysinergia\servicio.py
 
-from abc import (ABCMeta, abstractmethod)
-
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.dominio import ModeloRespuesta as _ModeloRespuesta

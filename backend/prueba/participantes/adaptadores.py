@@ -62,7 +62,6 @@ class ControladorParticipantes(Controlador):
 """
 Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> Debería usar Entidad
 Falta probar Modelos iniciales para insertar y actualizar participantes
-Falta reemplazar "sql" por "instruccion" para hacerlo genérico
 """
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
@@ -72,9 +71,9 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     def recuperar_lista_participantes_todos(mi) -> Dict:
         mi.basedatos.conectar(mi.config.basedatos())
 
-        sql = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
+        instruccion = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
 
-        datos, total = mi.basedatos.obtener(sql=sql, parametros=[])
+        datos, total = mi.basedatos.obtener(instruccion, parametros=[])
         mi.basedatos.desconectar()
         return dict(datos)
 

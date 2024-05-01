@@ -17,19 +17,19 @@ class BasedatosMysql(_Basedatos):
     def desconectar(mi):
         ...
 
-    def insertar(mi, sql:str, parametros:list) -> int:
+    def insertar(mi, instruccion:str, parametros:list) -> int:
         ...
 
-    def actualizar(mi, sql:str, parametros:list) -> int:
+    def actualizar(mi, instruccion:str, parametros:list) -> int:
         ...
 
-    def eliminar(mi, sql:str, parametros:int) -> int:
+    def eliminar(mi, instruccion:str, parametros:int) -> int:
         ...
 
-    def leer(mi, sql:str, parametros:int, contenido:int) -> tuple:
+    def leer(mi, instruccion:str, parametros:int, contenido:int) -> tuple:
         ...
 
-    def obtener(mi, sql:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
+    def obtener(mi, instruccion:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
         ...
 
     def crear_filtro(mi, filtro:str) -> str:

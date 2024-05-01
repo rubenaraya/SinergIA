@@ -58,9 +58,9 @@ class BasedatosSqlite(_Basedatos):
             mi.conexion.close()
             mi.conexion = None
 
-    def obtener(mi, sql:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
+    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
-        sql_total = f"SELECT COUNT(*) FROM ({sql})"
+        sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
         cursor.execute(sql_total, parametros)
         total = cursor.fetchone()[0]
         paginas = (total + maximo - 1) // maximo
@@ -70,10 +70,10 @@ class BasedatosSqlite(_Basedatos):
             ultimo = total
         if primero > ultimo:
             primero = ultimo
-        if not " LIMIT " in sql and not " OFFSET " in sql:
-            sql += " LIMIT ? OFFSET ?"
+        if not " LIMIT " in instruccion and not " OFFSET " in instruccion:
+            instruccion += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
-        cursor.execute(sql, parametros)
+        cursor.execute(instruccion, parametros)
         if contenido == _Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
@@ -94,9 +94,9 @@ class BasedatosSqlite(_Basedatos):
         elif contenido == _Basedatos.FORMATO.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, sql:str, parametros:list, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
+    def leer(mi, instruccion:str, parametros:list, contenido:int=_Basedatos.FORMATO.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
-        cursor.execute(sql, parametros)
+        cursor.execute(instruccion, parametros)
         if contenido == _Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
@@ -104,25 +104,25 @@ class BasedatosSqlite(_Basedatos):
         elif contenido == _Basedatos.FORMATO.TUPLA:
             return (cursor.fetchone(), 1)
 
-    def insertar(mi, sql:str, parametros:list) -> int:
+    def insertar(mi, instruccion:str, parametros:list) -> int:
         cursor = mi.conexion.cursor()
-        cursor.execute(sql, parametros)
+        cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.lastrowid
 
-    def actualizar(mi, sql:str, parametros:list) -> int:
+    def actualizar(mi, instruccion:str, parametros:list) -> int:
         cursor = mi.conexion.cursor()
-        cursor.execute(sql, parametros)
+        cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.rowcount
 
-    def eliminar(mi, sql:str, parametros:list) -> int:
+    def eliminar(mi, instruccion:str, parametros:list) -> int:
         cursor = mi.conexion.cursor()
-        sql_total = sql.replace('DELETE FROM ', 'SELECT COUNT(*) FROM ')
+        sql_total = instruccion.replace('DELETE FROM ', 'SELECT COUNT(*) FROM ')
         cursor.execute(sql_total, parametros)
         total = cursor.fetchone()[0]
         if total > 0:
-            cursor.execute(sql, parametros)
+            cursor.execute(instruccion, parametros)
             mi.conexion.commit()
         return total
 

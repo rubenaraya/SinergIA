@@ -67,19 +67,19 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     def desconectar(mi):
         ...
     @abstractmethod
-    def insertar(mi, sql:str, parametros:list) -> int:
+    def insertar(mi, instruccion:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def actualizar(mi, sql:str, parametros:list) -> int:
+    def actualizar(mi, instruccion:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def eliminar(mi, sql:str, parametros:list) -> int:
+    def eliminar(mi, instruccion:str, parametros:list) -> int:
         ...
     @abstractmethod
-    def leer(mi, sql:str, parametros:list, contenido:int) -> tuple:
+    def leer(mi, instruccion:str, parametros:list, contenido:int) -> tuple:
         ...
     @abstractmethod
-    def obtener(mi, sql:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
+    def obtener(mi, instruccion:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
         ...
     @abstractmethod
     def crear_filtro(mi, filtro:str) -> str:
