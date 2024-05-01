@@ -25,8 +25,6 @@ from backend.pysinergia.globales import (
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi():
-    def __init__(mi, nombre:str='api'):
-        mi.archivo_logs = f'./logs/{nombre}.log'
 
     # --------------------------------------------------
     # Métodos privados
@@ -110,7 +108,7 @@ class ServidorApi():
             reload=True
         )
 
-    def manejar_errores(mi, api:FastAPI):
+    def manejar_errores(mi, api:FastAPI, nombre_registrador:str):
 
         @api.exception_handler(ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:ErrorPersonalizado) -> JSONResponse:
@@ -120,7 +118,10 @@ class ServidorApi():
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            RegistradorLogs.crear(__name__, 'WARNING', mi.archivo_logs).error(
+            nombre = nombre_registrador
+            if exc.aplicacion and exc.servicio:
+                nombre = f'{exc.aplicacion}_{exc.servicio}'
+            RegistradorLogs.crear(f'{nombre}', 'WARNING', f'./logs/{nombre}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
@@ -144,7 +145,7 @@ class ServidorApi():
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
-            RegistradorLogs.crear(__name__, 'DEBUG', mi.archivo_logs).error(
+            RegistradorLogs.crear(nombre_registrador, 'DEBUG', f'./logs/{nombre_registrador}.log').debug(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
@@ -159,7 +160,7 @@ class ServidorApi():
                 tipo=mi._tipo_salida(exc.status_code),
                 mensaje=exc.detail
             )
-            RegistradorLogs.crear(__name__, 'ERROR', mi.archivo_logs).error(
+            RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
@@ -178,7 +179,7 @@ class ServidorApi():
                 tipo=Constantes.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            RegistradorLogs.crear(__name__, 'ERROR', mi.archivo_logs).error(
+            RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(

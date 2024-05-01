@@ -1,7 +1,9 @@
 # backend\pysinergia\globales.py
 
-import uuid, os, json, logging
+import uuid, os, json
 from typing import Dict
+from logging import (Formatter, getLogger)
+from logging.handlers import RotatingFileHandler
 
 # --------------------------------------------------
 # Valores globales
@@ -130,38 +132,47 @@ class Funciones:
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
 # --------------------------------------------------
-class RegistradorLogs():
+class RegistradorLogs:
 
     def __new__(cls):
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
     def crear(nombre:str, nivel:str, archivo:str):
-        logging.basicConfig(
-            level=nivel,
-            encoding='utf-8',
-            filename=archivo,
-            filemode='a',
-            format='%(asctime)s - %(levelname)s - %(message)s - %(module)s.%(funcName)s',
-            datefmt="%d/%m/%Y %H:%M:%S"
+        registrador = getLogger(nombre)
+        registrador.setLevel(nivel)
+        registrador.propagate = False
+        manejador = RotatingFileHandler(
+            filename = archivo,
+            maxBytes = (10 * (1048576)),
+            backupCount = 9,
+            encoding = 'utf-8'
         )
-        return logging.getLogger(nombre)
+        manejador.setLevel(nivel)
+        manejador.setFormatter(Formatter(
+            fmt='%(asctime)s - %(levelname)s - %(message)s | %(module)s.%(funcName)s',
+            datefmt="%Y-%m-%d %H:%M"
+        ))
+        registrador.addHandler(manejador)
+        return registrador
 
 
 # --------------------------------------------------
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[]):
+    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str=''):
         mi.codigo = codigo
         mi.tipo = tipo
         mi.mensaje = mensaje
         mi.detalles = detalles
+        mi.aplicacion = aplicacion
+        mi.servicio = servicio
         super().__init__(mi.mensaje)
 
     def __str__(mi):
         return f'{mi.mensaje}'
 
     def __repr__(mi):
-        return f'{mi.tipo} {mi.codigo}: {mi.mensaje}. {mi.detalles.__str__()}'
+        return f'{mi.aplicacion}.{mi.servicio} | {mi.tipo} {mi.codigo}: {mi.mensaje}. {mi.detalles.__str__()}'
 

@@ -4,7 +4,6 @@
 # Importaciones de Infraestructura Web
 from fastapi import (
     APIRouter,
-    HTTPException,
     status,
     Depends,
     Body,
@@ -19,6 +18,8 @@ from backend.pysinergia import (
     RespuestaResultado,
     Configuracion,
     Funciones,
+    ErrorPersonalizado,
+    Constantes,
 )
 
 # --------------------------------------------------
@@ -34,10 +35,11 @@ from .dominio import (
 @lru_cache
 def obtener_config():
     return Configuracion(_env_file=Funciones.obtener_ruta_env(__name__, modo=None))
+config = obtener_config()
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-config = obtener_config()
+config.identificar(aplicacion='prueba', servicio='participantez')
 enrutador = APIRouter(prefix=f"/prueba")
 
 """
@@ -53,16 +55,15 @@ Falta validar api_key
                response_class=JSONResponse,
                response_model=RespuestaResultado)
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
+    if peticion:
+        raise ErrorPersonalizado('Error personalizadó', 'ERROR', 501, [], aplicacion=config.aplicacion, servicio=config.servicio)
     return ControladorParticipantes(config, EmisorWeb()).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
                status_code=status.HTTP_200_OK,
                response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    try:
-        return ControladorParticipantes(config, EmisorWeb()).ver_participante(peticion)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) 
+    return ControladorParticipantes(config, EmisorWeb()).ver_participante(peticion)
 
 @enrutador.post('/participantes',
                 status_code=status.HTTP_201_CREATED,

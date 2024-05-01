@@ -139,6 +139,8 @@ class Configuracion(BaseSettings):
         env_prefix='',
         extra='ignore',
     )
+    aplicacion: str = ''
+    servicio: str = ''
     archivo_logs: str = ''
     nivel_registro: str = ''
     basedatos_fuente: str = ''
@@ -226,7 +228,9 @@ class Configuracion(BaseSettings):
             'url': mi.spi_url,
             'apikey': mi.spi_apikey,
         })
-
+    def identificar(mi, aplicacion:str, servicio:str):
+        mi.aplicacion = aplicacion
+        mi.servicio = servicio
 
 # --------------------------------------------------
 # Clase: Operador
