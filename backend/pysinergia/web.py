@@ -25,6 +25,8 @@ from backend.pysinergia.globales import (
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi():
+    def __init__(mi, nombre:str='api'):
+        mi.archivo_logs = f'./logs/{nombre}.log'
 
     # --------------------------------------------------
     # Métodos privados
@@ -66,10 +68,8 @@ class ServidorApi():
         return Constantes.SALIDA.ERROR
 
     def _obtener_url(mi, request:Request) -> str:
-        host = getattr(getattr(request, 'client', None), 'host', None)
-        port = getattr(getattr(request, 'client', None), 'port', None)
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
-        return f'{host}:{port} - {request.method} {url}'
+        return f'{request.method} {url}'
 
     # --------------------------------------------------
     # Métodos públicos
@@ -120,11 +120,11 @@ class ServidorApi():
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+            RegistradorLogs.crear(__name__, 'WARNING', mi.archivo_logs).error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=exc.codigo,
                 content=jsonable_encoder(salida)
             )
 
@@ -134,7 +134,7 @@ class ServidorApi():
             detalles = []
             for error in errores:
                 detalles.append({
-                    'mensaje': error['msg'],
+                    'error': error['msg'],
                     'origen': error['loc'],
                     'valor': error['input']
                 })
@@ -144,7 +144,7 @@ class ServidorApi():
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
-            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+            RegistradorLogs.crear(__name__, 'DEBUG', mi.archivo_logs).error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
@@ -159,7 +159,7 @@ class ServidorApi():
                 tipo=mi._tipo_salida(exc.status_code),
                 mensaje=exc.detail
             )
-            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+            RegistradorLogs.crear(__name__, 'ERROR', mi.archivo_logs).error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
             )
             return JSONResponse(
@@ -178,7 +178,7 @@ class ServidorApi():
                 tipo=Constantes.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
+            RegistradorLogs.crear(__name__, 'ERROR', mi.archivo_logs).error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(

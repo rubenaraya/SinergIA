@@ -142,7 +142,7 @@ class RegistradorLogs():
             encoding='utf-8',
             filename=archivo,
             filemode='a',
-            format='%(asctime)s - %(levelname)s - %(module)s.%(funcName)s - %(message)s',
+            format='%(asctime)s - %(levelname)s - %(message)s - %(module)s.%(funcName)s',
             datefmt="%d/%m/%Y %H:%M:%S"
         )
         return logging.getLogger(nombre)
