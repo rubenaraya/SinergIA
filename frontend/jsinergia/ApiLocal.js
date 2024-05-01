@@ -24,10 +24,9 @@ class ApiLocal extends AdaptadorApi {
         return { "encabezados": encabezados, "cuerpo": cuerpo };
     }
     adaptarRespuesta(respuesta) {
-        const { codigo='', tipo='', texto='', esquemas=null, resultado } = respuesta;
+        const { codigo='', tipo='', mensaje='', esquemas=null, resultado } = respuesta;
         return {
-            codigo, tipo, esquemas,
-            mensaje: texto,
+            codigo, tipo, esquemas, mensaje,
             caso: resultado?.caso || null,
             lista: resultado?.lista || null,
         };

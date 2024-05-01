@@ -46,12 +46,11 @@ class ServidorApi():
             allow_headers = ['*'],
         )
 
-    def _crear_salida(mi, codigo:int, tipo:str, titulo:str='', contenido:str='', detalles:list=[]) -> dict:
+    def _crear_salida(mi, codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
         return dict({
             'codigo': str(codigo),
             'tipo': tipo,
-            'titulo': titulo,
-            'contenido': contenido,
+            'mensaje': mensaje,
             'detalles': detalles
         })
 
@@ -118,8 +117,7 @@ class ServidorApi():
             salida = mi._crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
-                titulo='Error en la Aplicación',
-                contenido=exc.contenido,
+                mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
             RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
@@ -143,8 +141,7 @@ class ServidorApi():
             salida = mi._crear_salida(
                 codigo=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 tipo=Constantes.SALIDA.ALERTA,
-                titulo='Error de validación',
-                contenido='Los datos recibidos no fueron procesados correctamente',
+                mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
             RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
@@ -160,8 +157,7 @@ class ServidorApi():
             salida = mi._crear_salida(
                 codigo=exc.status_code,
                 tipo=mi._tipo_salida(exc.status_code),
-                titulo='Error en el Servicio',
-                contenido=exc.detail
+                mensaje=exc.detail
             )
             RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__repr__()}'
@@ -176,15 +172,14 @@ class ServidorApi():
             import sys
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            contenido = f'Error interno del Servidor <{exception_name}: {exception_value}>'
+            mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
             salida = mi._crear_salida(
                 codigo=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 tipo=Constantes.SALIDA.ERROR,
-                titulo='Error interno',
-                contenido=contenido
+                mensaje=mensaje
             )
             RegistradorLogs.crear(__name__, 'ERROR', f'./logs/{__name__}.log').error(
-                f'{mi._obtener_url(request)} | {contenido}'
+                f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

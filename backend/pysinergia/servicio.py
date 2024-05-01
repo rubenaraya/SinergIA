@@ -4,10 +4,6 @@ from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from backend.pysinergia.globales import (
-    Constantes,
-    Funciones,
-)
 from backend.pysinergia.dominio import (
     ModeloPeticion,
     ModeloRespuesta,
@@ -44,6 +40,7 @@ class I_Servicio(metaclass=ABCMeta):
 class Servicio(I_Servicio):
     ...
 
+
 # --------------------------------------------------
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
@@ -52,4 +49,5 @@ class RespuestaResultado(ModeloRespuesta):
     tipo: str | None = 'EXITO'
     mensaje: str | None = ''
     resultado: dict | None = {}
+    esquemas: dict | None = {}
 

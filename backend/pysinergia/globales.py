@@ -152,15 +152,16 @@ class RegistradorLogs():
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, contenido:str, tipo:str='ERROR', codigo:int=500, detalles:list=[]):
+    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[]):
         mi.codigo = codigo
         mi.tipo = tipo
-        mi.contenido = contenido
+        mi.mensaje = mensaje
         mi.detalles = detalles
-        super().__init__(mi.contenido)
+        super().__init__(mi.mensaje)
 
     def __str__(mi):
-        return f'{mi.contenido}'
+        return f'{mi.mensaje}'
 
     def __repr__(mi):
-        return f'{mi.tipo} {mi.codigo}: {mi.contenido}. {mi.detalles.__str__()}'
+        return f'{mi.tipo} {mi.codigo}: {mi.mensaje}. {mi.detalles.__str__()}'
+

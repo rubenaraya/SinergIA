@@ -19,8 +19,6 @@ from backend.pysinergia import (
     RespuestaResultado,
     Configuracion,
     Funciones,
-    Constantes,
-    RegistradorLogs
 )
 
 # --------------------------------------------------
@@ -41,13 +39,8 @@ def obtener_config():
 # Configuración del Servicio personalizado
 config = obtener_config()
 enrutador = APIRouter(prefix=f"/prueba")
-registrador = RegistradorLogs.crear(__name__, config.nivel_registro, config.archivo_logs)
 
 """
-Falta manejo de excepciones y errores
-Falta personalizar formato de respuesta de errores
-Falta incluir códigos de estado en RespuestaResultado
-Falta traducir códigos internos en códigos de estado HTTP
 Falta validar token de sesión JWT
 Falta validar api_key
 """

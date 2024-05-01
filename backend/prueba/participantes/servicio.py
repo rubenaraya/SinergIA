@@ -14,7 +14,6 @@ from backend.pysinergia import (
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
 from .dominio import (
-    EntidadParticipante,
     PeticionBuscarParticipantes,
     PeticionParticipante,
     ModeloNuevoParticipante,

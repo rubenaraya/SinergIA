@@ -22,10 +22,8 @@ from .dominio import ModeloPeticion
 # Clase: ControladorParticipantes
 # --------------------------------------------------
 """
-Falta manejar errores de la aplicación
-Falta que reciba el registrador para que lo use en el manejo de errores
 Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
-Falta crear un formato de Vista? (ViewModel)?
+Falta crear un formato de Vista? (esquema = ViewModel)?
 """
 class ControladorParticipantes(Controlador):
 
