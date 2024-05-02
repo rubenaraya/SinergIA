@@ -285,16 +285,20 @@ class Operador:
 
 
 # --------------------------------------------------
-# Interface: I_Emisor
+# Interface: I_Comunicador
 # --------------------------------------------------
-class I_Emisor(metaclass=ABCMeta):
-    # Implementada en la capa web por EmisorWeb
+class I_Comunicador(metaclass=ABCMeta):
+    # Implementada en la capa web por ComunicadorWeb
 
     # --------------------------------------------------
     # Métodos obligatorios
 
     @abstractmethod
     def entregar_respuesta(mi, resultado:dict):
+        ...
+
+    @abstractmethod
+    def validar_apikey(mi, api_key_header:str) -> bool:
         ...
 
 
@@ -310,7 +314,7 @@ class I_Exportador(metaclass=ABCMeta):
 # Clase: Controlador
 # --------------------------------------------------
 class Controlador:
-    def __init__(mi, config:Configuracion, emisor:I_Emisor):
-        mi.emisor:I_Emisor = emisor
+    def __init__(mi, config:Configuracion, comunicador:I_Comunicador):
+        mi.comunicador:I_Comunicador = comunicador
         mi.config:Configuracion = config
 

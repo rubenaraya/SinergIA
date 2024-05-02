@@ -2,10 +2,16 @@
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
-from fastapi import FastAPI, Request, status
+from fastapi import (
+    FastAPI,
+    Request,
+    status,
+    Security,
+)
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import APIKeyHeader
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import (
     RequestValidationError,
@@ -14,7 +20,7 @@ from fastapi.exceptions import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_Emisor as _I_Emisor
+from pysinergia.adaptadores import I_Comunicador as _I_Comunicador
 from pysinergia.globales import (
     Constantes as _Constantes,
     ErrorPersonalizado as _ErrorPersonalizado,
@@ -187,16 +193,16 @@ class ServidorApi:
 
 
 # --------------------------------------------------
-# Clase: EmisorWeb
+# Clase: ComunicadorWeb
 # --------------------------------------------------
 """
 Falta que procese plantillas con Jinja2
 Falta que pueda servir HTML
 Falta que pueda servir archivos para descarga
 """
-class EmisorWeb(_I_Emisor):
-    def __init__(mi):
-        ...
+class ComunicadorWeb(_I_Comunicador):
+    def __init__(mi, api_keys:dict={}):
+        mi.api_keys = api_keys
 
     # --------------------------------------------------
     # Métodos públicos
@@ -204,4 +210,17 @@ class EmisorWeb(_I_Emisor):
     def entregar_respuesta(mi, resultado:dict):
         respuesta = resultado
         return respuesta
+
+    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name="X-API-Key"))) -> str:
+        if mi.api_keys:
+            if api_key_header in mi.api_keys:
+                return mi.api_keys.get(api_key_header)
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="API key no válida"
+            )
+        return None
+
+    def validar_token():
+        ...
 
