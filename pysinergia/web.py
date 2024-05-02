@@ -27,7 +27,6 @@ from fastapi.exceptions import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_Comunicador as _I_Comunicador
 from pysinergia.globales import (
     Constantes as _Constantes,
     ErrorPersonalizado as _ErrorPersonalizado,
@@ -207,16 +206,12 @@ Falta que procese plantillas con Jinja2
 Falta que pueda servir HTML
 Falta que pueda servir archivos para descarga
 """
-class ComunicadorWeb(_I_Comunicador):
+class ComunicadorWeb():
     def __init__(mi, api_keys:dict={}):
         mi.api_keys = api_keys
 
     # --------------------------------------------------
     # Métodos públicos
-
-    def entregar_respuesta(mi, resultado:dict):
-        respuesta = resultado
-        return respuesta
 
     def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
         if mi.api_keys:
@@ -266,7 +261,7 @@ class AutenticadorJWT(HTTPBearer):
             return None
         try:
             token_decodificado = jwt.decode(mi.token, mi.secreto, algorithms=[mi.algoritmo])
-            return token_decodificado if token_decodificado["expires"] >= time.time() else None
+            return token_decodificado if token_decodificado['expires'] >= time.time() else None
         except:
             return {}
 

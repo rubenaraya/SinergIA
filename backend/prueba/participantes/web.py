@@ -61,28 +61,28 @@ enrutador = APIRouter(prefix=f"/prueba")
                 # dependencies=[Depends(autenticador)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    return Controlador(config, comunicador).buscar_participantes(peticion)
+    return Controlador(config).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
                 status_code=status.HTTP_200_OK,
                 response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    return Controlador(config, comunicador).ver_participante(peticion)
+    return Controlador(config).ver_participante(peticion)
 
 @enrutador.post('/participantes',
                 status_code=status.HTTP_201_CREATED,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
-    return Controlador(config, comunicador).agregar_participante(peticion)
+    return Controlador(config).agregar_participante(peticion)
 
 @enrutador.put('/participantes/{id}',
                 status_code=status.HTTP_204_NO_CONTENT,
                 response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
-    return Controlador(config, comunicador).actualizar_participante(peticion)
+    return Controlador(config).actualizar_participante(peticion)
 
 @enrutador.delete('/participantes/{id}',
                 status_code=status.HTTP_204_NO_CONTENT,
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
-    return Controlador(config, comunicador).eliminar_participante(peticion)
+    return Controlador(config).eliminar_participante(peticion)

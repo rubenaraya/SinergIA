@@ -129,6 +129,14 @@ class I_ConectorSpi(metaclass=ABCMeta):
 
 
 # --------------------------------------------------
+# Interface: I_Exportador
+# --------------------------------------------------
+class I_Exportador(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura por los exportadores
+    ...
+
+
+# --------------------------------------------------
 # ClaseModelo: Configuracion
 # --------------------------------------------------
 class Configuracion(BaseSettings):
@@ -285,36 +293,9 @@ class Operador:
 
 
 # --------------------------------------------------
-# Interface: I_Comunicador
-# --------------------------------------------------
-class I_Comunicador(metaclass=ABCMeta):
-    # Implementada en la capa web por ComunicadorWeb
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def entregar_respuesta(mi, resultado:dict):
-        ...
-
-    @abstractmethod
-    def validar_apikey(mi, api_key_header:str) -> bool:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_Exportador
-# --------------------------------------------------
-class I_Exportador(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los exportadores
-    ...
-
-
-# --------------------------------------------------
 # Clase: Controlador
 # --------------------------------------------------
 class Controlador:
-    def __init__(mi, config:Configuracion, comunicador:I_Comunicador):
-        mi.comunicador:I_Comunicador = comunicador
+    def __init__(mi, config:Configuracion):
         mi.config:Configuracion = config
 
