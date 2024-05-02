@@ -1,5 +1,8 @@
 # pysinergia\web.py
 
+from typing import Dict
+import time, jwt
+
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
 from fastapi import (
@@ -11,7 +14,11 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import APIKeyHeader
+from fastapi.security import (
+    APIKeyHeader,
+    HTTPBearer,
+    HTTPAuthorizationCredentials,
+)
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import (
     RequestValidationError,
@@ -113,7 +120,7 @@ class ServidorApi:
             reload=True
         )
 
-    def manejar_errores(mi, api:FastAPI, nombre_registrador:str):
+    def manejar_errores(mi, api:FastAPI, registro:str):
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
@@ -124,7 +131,7 @@ class ServidorApi:
                 detalles=exc.detalles
             )
             if exc.tipo == _Constantes.SALIDA.ERROR:
-                nombre = nombre_registrador
+                nombre = registro
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
                 _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
@@ -164,7 +171,7 @@ class ServidorApi:
                 mensaje=exc.detail
             )
             if exc.status_code >= 500:
-                _RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
+                _RegistradorLogs.crear(registro, 'ERROR', f'./logs/{registro}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__repr__()}'
                 )
             return JSONResponse(
@@ -183,7 +190,7 @@ class ServidorApi:
                 tipo=_Constantes.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(nombre_registrador, 'ERROR', f'./logs/{nombre_registrador}.log').error(
+            _RegistradorLogs.crear(registro, 'ERROR', f'./logs/{registro}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(
@@ -211,16 +218,63 @@ class ComunicadorWeb(_I_Comunicador):
         respuesta = resultado
         return respuesta
 
-    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name="X-API-Key"))) -> str:
+    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
         if mi.api_keys:
             if api_key_header in mi.api_keys:
                 return mi.api_keys.get(api_key_header)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="API key no válida"
+                detail='API key no válida'
             )
         return None
 
-    def validar_token():
-        ...
+
+# --------------------------------------------------
+# Clase: AutenticadorJWT
+# --------------------------------------------------
+class AutenticadorJWT(HTTPBearer):
+    def __init__(mi, secreto:str, algoritmo:str='HS256', auto_error:bool=True):
+        super(AutenticadorJWT, mi).__init__(auto_error=auto_error)
+        mi.secreto = secreto
+        mi.algoritmo = algoritmo
+        mi.token:str = None
+
+    async def __call__(mi, request:Request):
+        credentials:HTTPAuthorizationCredentials = await super(AutenticadorJWT, mi).__call__(request)
+        if credentials:
+            if not credentials.scheme == 'Bearer':
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Esquema de autenticación no válido.')
+            mi.token = credentials.credentials
+            if not mi._verificar_jwt():
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Token no válido o caducado.')
+            return mi.token
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Código de autorización no válido.')
+
+    def _verificar_jwt(mi) -> bool:
+        es_valido:bool = False
+        try:
+            payload = mi.decodificar_jwt()
+        except:
+            payload = None
+        if payload:
+            es_valido = True
+        return es_valido
+
+    def decodificar_jwt(mi) -> dict:
+        if not mi.token:
+            return None
+        try:
+            token_decodificado = jwt.decode(mi.token, mi.secreto, algorithms=[mi.algoritmo])
+            return token_decodificado if token_decodificado["expires"] >= time.time() else None
+        except:
+            return {}
+
+    def firmar_jwt(mi, user_id:str, duracion:int=30) -> Dict[str, str]:
+        payload = {
+            'user_id': user_id,
+            'expires': time.time() + 60 * duracion
+        }
+        token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
+        return {'access_token': str(token)}
 

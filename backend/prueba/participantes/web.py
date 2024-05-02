@@ -21,6 +21,7 @@ from pysinergia.globales import (
 from pysinergia.servicio import RespuestaResultado
 from pysinergia.web import (
     ComunicadorWeb,
+    AutenticadorJWT,
 )
 
 # --------------------------------------------------
@@ -44,28 +45,27 @@ def obtener_config(entorno:str=None):
 # --------------------------------------------------
 # Configuración del Servicio personalizado
 config = obtener_config(None)
-enrutador = APIRouter(prefix=f"/prueba")
 comunicador = ComunicadorWeb(api_keys)
+autenticador = AutenticadorJWT(config.secret_key)
+enrutador = APIRouter(prefix=f"/prueba")
 
-"""
-Falta validar token de sesión JWT
-"""
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
 @enrutador.get('/participantes',
-               status_code=status.HTTP_200_OK,
-               response_class=JSONResponse,
-               response_model=RespuestaResultado,
-               # dependencies=[Depends(comunicador.validar_apikey)]
-               )
+                status_code=status.HTTP_200_OK,
+                response_class=JSONResponse,
+                response_model=RespuestaResultado,
+                # dependencies=[Depends(comunicador.validar_apikey)]
+                # dependencies=[Depends(autenticador)]
+            )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     return Controlador(config, comunicador).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
-               status_code=status.HTTP_200_OK,
-               response_class=JSONResponse)
+                status_code=status.HTTP_200_OK,
+                response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config, comunicador).ver_participante(peticion)
 
@@ -76,13 +76,13 @@ async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
     return Controlador(config, comunicador).agregar_participante(peticion)
 
 @enrutador.put('/participantes/{id}',
-               status_code=status.HTTP_204_NO_CONTENT,
-               response_class=JSONResponse)
+                status_code=status.HTTP_204_NO_CONTENT,
+                response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
     return Controlador(config, comunicador).actualizar_participante(peticion)
 
 @enrutador.delete('/participantes/{id}',
-                  status_code=status.HTTP_204_NO_CONTENT,
-                  response_class=JSONResponse)
+                status_code=status.HTTP_204_NO_CONTENT,
+                response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config, comunicador).eliminar_participante(peticion)
