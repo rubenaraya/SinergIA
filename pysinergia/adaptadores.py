@@ -2,6 +2,7 @@
 
 from abc import (ABCMeta, abstractmethod)
 from typing import Dict
+import os
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -143,6 +144,9 @@ class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
     usuario: str = ''
+    zona_horaria: str = ''
+    secret_key: str = ''
+    ruta_servicio: str = ''
     nivel_registro: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
@@ -235,7 +239,7 @@ class Configuracion(BaseSettings):
             'url': mi.spi_url,
             'apikey': mi.spi_apikey,
         })
-    def identificar(mi, aplicacion:str, servicio:str):
+    def identificar(mi, aplicacion:str, servicio:str) -> None:
         mi.aplicacion = aplicacion
         mi.servicio = servicio
 

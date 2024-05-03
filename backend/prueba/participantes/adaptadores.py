@@ -14,7 +14,7 @@ from .servicio import (
 # ClaseModelo: ConfigParticipantes
 # --------------------------------------------------
 class ConfigParticipantes(Configuracion):
-    secret_key: str = ''
+    ...
 
 
 # --------------------------------------------------

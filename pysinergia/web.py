@@ -14,6 +14,7 @@ from fastapi import (
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.security import (
     APIKeyHeader,
     HTTPBearer,
@@ -91,7 +92,7 @@ class ServidorApi:
         return api
 
     def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
-        api.mount(f'/{alias}', StaticFiles(directory=f'{directorio}'), name='static')
+        api.mount(f'/{alias}', StaticFiles(directory=f'{directorio}'), name='frontend')
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib, os
@@ -201,11 +202,6 @@ class ServidorApi:
 # --------------------------------------------------
 # Clase: ComunicadorWeb
 # --------------------------------------------------
-"""
-Falta que procese plantillas con Jinja2
-Falta que pueda servir HTML
-Falta que pueda servir archivos para descarga
-"""
 class ComunicadorWeb():
     def __init__(mi, api_keys:dict={}):
         mi.api_keys = api_keys
@@ -222,6 +218,15 @@ class ComunicadorWeb():
                 detail='API key no válida'
             )
         return None
+
+    def transformar_contenido(mi, request:Request, contenido:dict={}, plantilla:str='', directorio:str=''):
+        plantillas = Jinja2Templates(directory=directorio)
+        contenido['request'] = request
+        resultado = plantillas.TemplateResponse(
+            name=plantilla,
+            context=contenido
+        )
+        return resultado
 
 
 # --------------------------------------------------

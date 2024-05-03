@@ -18,7 +18,10 @@ from . import api_keys
 
 @lru_cache
 def obtener_config(entorno:str=None):
-    return Config(_env_file=Funciones.obtener_ruta_env(__name__, entorno=entorno))
+    archivo_env = Funciones.obtener_ruta_env(__name__, entorno=entorno)
+    config = Config(_env_file=archivo_env)
+    config.ruta_servicio = os.path.dirname(archivo_env)
+    return config
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
@@ -66,6 +69,11 @@ async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config).eliminar_participante(peticion)
 
+
+# --------------------------------------------------
+# Rutas de pruebas
+# --------------------------------------------------
+
 @enrutador.get('/participantes/token/{email}',
                 status_code=status.HTTP_200_OK,
                 response_class=PlainTextResponse)
@@ -74,3 +82,14 @@ async def token(email:str):
     usuario = autenticador.obtener_id_usuario()
     print(usuario)
     return autenticador.token
+
+@enrutador.get('/participantes/html/{nombre}',
+                status_code=status.HTTP_200_OK,
+                response_class=HTMLResponse)
+async def html(request:Request, nombre:str):
+    respuesta = comunicador.transformar_contenido(request,
+        contenido={"nombre": nombre},
+        plantilla='plantilla.html',
+        directorio=config.ruta_servicio
+    )
+    return respuesta

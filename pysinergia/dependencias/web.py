@@ -4,6 +4,7 @@
 # Importaciones de Infraestructura Web
 from fastapi import (
     APIRouter,
+    Request,
     status,
     Depends,
     Body,
@@ -16,7 +17,9 @@ from fastapi.responses import (
     FileResponse,
     StreamingResponse,
 )
+from fastapi.templating import Jinja2Templates
 from functools import lru_cache
+import os
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
