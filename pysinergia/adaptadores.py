@@ -143,7 +143,6 @@ class I_Exportador(metaclass=ABCMeta):
 class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
-    usuario: str = ''
     zona_horaria: str = ''
     secret_key: str = ''
     ruta_servicio: str = ''

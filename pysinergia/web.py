@@ -11,7 +11,9 @@ from fastapi import (
     status,
     Security,
 )
-from fastapi.responses import JSONResponse
+from fastapi.responses import (
+    JSONResponse,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -33,6 +35,7 @@ from pysinergia.globales import (
     ErrorPersonalizado as _ErrorPersonalizado,
     RegistradorLogs as _RegistradorLogs,
 )
+from pysinergia import __version__
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -43,9 +46,15 @@ class ServidorApi:
     # Métodos privados
 
     def _configurar_endpoints(mi, api:FastAPI):
+        @api.middleware("http")
+        async def version_header(request:Request, call_next):
+            response = await call_next(request)
+            response.headers["x-api-version"] = __version__
+            return response
+
         @api.get('/')
         def entrypoint():
-            return {'entrypoint-api': 'SinergIA'}
+            return {'api-entrypoint': f'{__version__}'}
         @api.get('/favicon.ico')
         def favicon():
             return ''

@@ -42,7 +42,7 @@ enrutador = APIRouter(prefix=f"/prueba")
                 # dependencies=[Depends(autenticador)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    config.usuario = autenticador.obtener_id_usuario()
+    usuario = autenticador.obtener_id_usuario()
     return Controlador(config).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
