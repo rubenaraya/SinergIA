@@ -1,15 +1,6 @@
 # backend\prueba\participantes\adaptadores.py
 
-from typing import Dict
-
-# --------------------------------------------------
-# Importaciones de PySinergIA
-from pysinergia.dominio import ModeloPeticion
-from pysinergia.adaptadores import (
-    Controlador,
-    Operador,
-    Configuracion,
-)
+from pysinergia.dependencias.adaptadores import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado

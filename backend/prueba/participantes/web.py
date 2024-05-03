@@ -1,28 +1,6 @@
 # backend\prueba\participantes\web.py
 
-# --------------------------------------------------
-# Importaciones de Infraestructura Web
-from fastapi import (
-    APIRouter,
-    status,
-    Depends,
-    Body,
-)
-from fastapi.responses import JSONResponse
-from functools import lru_cache
-
-# --------------------------------------------------
-# Importaciones de PySinergIA
-from pysinergia.globales import (
-    Funciones,
-    Constantes,
-    ErrorPersonalizado,
-)
-from pysinergia.servicio import RespuestaResultado
-from pysinergia.web import (
-    ComunicadorWeb,
-    AutenticadorJWT,
-)
+from pysinergia.dependencias.web import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
@@ -61,6 +39,7 @@ enrutador = APIRouter(prefix=f"/prueba")
                 # dependencies=[Depends(autenticador)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
+    config.usuario = autenticador.obtener_id_usuario()
     return Controlador(config).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
@@ -86,3 +65,12 @@ async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config).eliminar_participante(peticion)
+
+@enrutador.get('/participantes/token/{email}',
+                status_code=status.HTTP_200_OK,
+                response_class=PlainTextResponse)
+async def token(email:str):
+    autenticador.token = autenticador.firmar_jwt(email)
+    usuario = autenticador.obtener_id_usuario()
+    print(usuario)
+    return autenticador.token

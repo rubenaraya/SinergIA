@@ -246,30 +246,42 @@ class AutenticadorJWT(HTTPBearer):
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Código de autorización no válido.')
 
+    # --------------------------------------------------
+    # Métodos privados
+
     def _verificar_jwt(mi) -> bool:
         es_valido:bool = False
         try:
-            payload = mi.decodificar_jwt()
+            payload = mi._decodificar_jwt()
         except:
             payload = None
         if payload:
             es_valido = True
         return es_valido
 
-    def decodificar_jwt(mi) -> dict:
+    def _decodificar_jwt(mi) -> dict:
         if not mi.token:
             return None
         try:
             token_decodificado = jwt.decode(mi.token, mi.secreto, algorithms=[mi.algoritmo])
-            return token_decodificado if token_decodificado['expires'] >= time.time() else None
+            return token_decodificado if token_decodificado['caducidad'] >= time.time() else None
         except:
             return {}
 
-    def firmar_jwt(mi, user_id:str, duracion:int=30) -> Dict[str, str]:
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def obtener_id_usuario(mi):
+        token_decodificado = mi._decodificar_jwt()
+        if token_decodificado:
+            return token_decodificado.get('id_usuario')
+        return ''
+
+    def firmar_jwt(mi, id_usuario:str, duracion:int=30) -> str:
         payload = {
-            'user_id': user_id,
-            'expires': time.time() + 60 * duracion
+            'id_usuario': id_usuario,
+            'caducidad': time.time() + 60 * duracion
         }
         token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
-        return {'access_token': str(token)}
+        return token
 

@@ -142,6 +142,7 @@ class I_Exportador(metaclass=ABCMeta):
 class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
+    usuario: str = ''
     nivel_registro: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
