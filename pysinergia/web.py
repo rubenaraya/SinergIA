@@ -45,24 +45,27 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos privados
 
-    def _configurar_endpoints(mi, api:FastAPI):
+    def _configurar_encabezados(mi, api:FastAPI):
         @api.middleware("http")
         async def version_header(request:Request, call_next):
             response = await call_next(request)
             response.headers["x-api-version"] = __version__
             return response
 
+    def _configurar_endpoints(mi, api:FastAPI):
+
         @api.get('/')
         def entrypoint():
             return {'api-entrypoint': f'{__version__}'}
+
         @api.get('/favicon.ico')
         def favicon():
             return ''
 
-    def _configurar_cors(mi, api:FastAPI, origenes:list):
+    def _configurar_cors(mi, api:FastAPI, origenes_cors:list):
         api.add_middleware(
             CORSMiddleware,
-            allow_origins = origenes,
+            allow_origins = origenes_cors,
             allow_credentials = True,
             allow_methods = ['*'],
             allow_headers = ['*'],
@@ -94,10 +97,22 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi, origenes:list) -> FastAPI:
-        api = FastAPI()
+    def crear_api(mi, titulo:str='', descripcion:str='', version:str='', origenes_cors:list=['*'], doc:bool=False) -> FastAPI:
+        docs_url = None
+        redoc_url = None
+        if doc:
+            docs_url = '/docs'
+            redoc_url = '/redoc'
+        api = FastAPI(
+            title=titulo,
+            description=descripcion,
+            version=version,
+            docs_url=docs_url,
+            redoc_url=redoc_url,
+        )
+        mi._configurar_cors(api, origenes_cors)
+        mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
-        mi._configurar_cors(api, origenes)
         return api
 
     def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
@@ -129,7 +144,7 @@ class ServidorApi:
             reload=True
         )
 
-    def manejar_errores(mi, api:FastAPI, registro:str):
+    def manejar_errores(mi, api:FastAPI, registro_logs:str):
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
@@ -140,7 +155,7 @@ class ServidorApi:
                 detalles=exc.detalles
             )
             if exc.tipo == _Constantes.SALIDA.ERROR:
-                nombre = registro
+                nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
                 _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
@@ -180,7 +195,7 @@ class ServidorApi:
                 mensaje=exc.detail
             )
             if exc.status_code >= 500:
-                _RegistradorLogs.crear(registro, 'ERROR', f'./logs/{registro}.log').error(
+                _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__repr__()}'
                 )
             return JSONResponse(
@@ -199,7 +214,7 @@ class ServidorApi:
                 tipo=_Constantes.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(registro, 'ERROR', f'./logs/{registro}.log').error(
+            _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(
