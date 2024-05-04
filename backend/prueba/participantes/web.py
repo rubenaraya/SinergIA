@@ -20,7 +20,7 @@ from . import api_keys
 def obtener_config(entorno:str=None):
     archivo_env = Funciones.obtener_ruta_env(__name__, entorno=entorno)
     config = Config(_env_file=archivo_env)
-    config.ruta_servicio = os.path.dirname(archivo_env)
+    config.reconocer_servicio(archivo_env)
     return config
 
 # --------------------------------------------------

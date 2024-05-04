@@ -8,6 +8,7 @@ import time, jwt
 from fastapi import (
     FastAPI,
     Request,
+    Response,
     status,
     Security,
 )
@@ -35,7 +36,7 @@ from pysinergia.globales import (
     ErrorPersonalizado as _ErrorPersonalizado,
     RegistradorLogs as _RegistradorLogs,
 )
-from pysinergia import __version__
+from pysinergia import __version__ as api_version
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -47,16 +48,19 @@ class ServidorApi:
 
     def _configurar_encabezados(mi, api:FastAPI):
         @api.middleware("http")
-        async def version_header(request:Request, call_next):
-            response = await call_next(request)
-            response.headers["x-api-version"] = __version__
-            return response
+        async def configurar_encabezados_(request:Request, call_next):
+            inicio = time.time()
+            respuesta:Response = await call_next(request)
+            tiempo_proceso = str(round(time.time() - inicio, 3))
+            respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
+            respuesta.headers["X-API-Version"] = api_version
+            return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
 
         @api.get('/')
         def entrypoint():
-            return {'api-entrypoint': f'{__version__}'}
+            return {'api-entrypoint': f'{api_version}'}
 
         @api.get('/favicon.ico')
         def favicon():
@@ -98,11 +102,8 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, titulo:str='', descripcion:str='', version:str='', origenes_cors:list=['*'], doc:bool=False) -> FastAPI:
-        docs_url = None
-        redoc_url = None
-        if doc:
-            docs_url = '/docs'
-            redoc_url = '/redoc'
+        docs_url = '/docs' if doc else None
+        redoc_url = '/redoc' if doc else None
         api = FastAPI(
             title=titulo,
             description=descripcion,
