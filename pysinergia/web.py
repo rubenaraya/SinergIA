@@ -325,13 +325,13 @@ class AutenticadorWeb(HTTPBearer):
             return token_decodificado.get('id_sesion')
         return ''
 
-    def firmar_jwt(mi, id_sesion:str, duracion:int=30) -> str:
+    def firmar_token(mi, id_sesion:str, duracion:int=30) -> str:
         payload = {
             'id_sesion': id_sesion,
             'caducidad': time.time() + 60 * duracion
         }
-        token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
-        return token
+        mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
+        return mi.token
 
     def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
         if mi.api_keys:

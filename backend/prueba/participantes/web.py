@@ -82,28 +82,17 @@ async def eliminar_participante(peticion:PeticionParticipante=Depends()):
                 status_code=status.HTTP_200_OK,
                 response_class=PlainTextResponse)
 async def token(email:str):
-    autenticador.token = autenticador.firmar_jwt(email)
+    autenticador.firmar_token(email)
     sesion = autenticador.id_sesion()
     print(sesion)
     return autenticador.token
-
-@enrutador.get('/participantes/html/{nombre}',
-                status_code=status.HTTP_200_OK,
-                response_class=HTMLResponse)
-async def html(request:Request, nombre:str):
-    respuesta = comunicador.transformar_contenido(request,
-        contenido={"nombre": nombre},
-        plantilla='plantilla.html',
-        directorio=config.ruta_servicio
-    )
-    return respuesta
 
 @enrutador.get('/login',
                 status_code=status.HTTP_200_OK,
                 response_class=HTMLResponse)
 async def get_login(request:Request):
     respuesta = comunicador.transformar_contenido(request,
-        plantilla='login.html',
+        plantilla='plantillas/login.html',
         directorio=config.ruta_servicio
     )
     return respuesta
