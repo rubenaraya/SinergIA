@@ -1,14 +1,9 @@
 # pysinergia\globales.py
 
-import uuid, os, json
+import os, json
 from typing import Dict
 from logging import (Formatter, getLogger)
 from logging.handlers import RotatingFileHandler
-
-# --------------------------------------------------
-# Valores globales
-UUID = uuid.UUID
-
 
 # --------------------------------------------------
 # Clase estática: Constantes

@@ -1,7 +1,7 @@
 # pysinergia\web.py
 
 from typing import Dict
-import time, jwt, os, json
+import time, jwt, os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -33,6 +33,7 @@ from fastapi.exceptions import (
 # Importaciones de PySinergIA
 from pysinergia.globales import (
     Constantes as _Constantes,
+    Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     RegistradorLogs as _RegistradorLogs,
 )
@@ -228,8 +229,9 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb():
-    def __init__(mi, api_keys:dict={}):
-        mi.api_keys = api_keys
+    def __init__(mi, api_keys:dict={}, ruta_temp:str='tmp'):
+        mi.api_keys:dict = api_keys
+        mi.ruta_temp:str = ruta_temp
 
     # --------------------------------------------------
     # Métodos públicos
@@ -245,15 +247,8 @@ class ComunicadorWeb():
         return None
 
     def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
-        sesion:dict = {}
-        archivo = f'tmp/{aplicacion}/sesiones/{id_sesion}.json'
-        try:
-            if archivo and os.path.isfile(archivo):
-                with open(archivo, 'r', encoding='utf-8') as f:
-                    sesion = json.load(f)
-        except Exception as e:
-            print(e)
-        return sesion
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.leer(archivo)
 
     def transformar_contenido(mi, request:Request, contenido:dict={}, plantilla:str='', directorio:str=''):
         plantillas = Jinja2Templates(directory=directorio)
@@ -268,6 +263,9 @@ class ComunicadorWeb():
 # --------------------------------------------------
 # Clase: AutenticadorJWT
 # --------------------------------------------------
+"""
+Evaluar cómo manejar la redirección hacia ruta para "login"
+"""
 class AutenticadorJWT(HTTPBearer):
     def __init__(mi, secreto:str, algoritmo:str='HS256', auto_error:bool=True):
         super(AutenticadorJWT, mi).__init__(auto_error=auto_error)
