@@ -57,8 +57,9 @@ Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
 """
 class ServicioParticipantes(Servicio):
 
-    def __init__(mi, operador:I_OperadorParticipantes):
+    def __init__(mi, operador:I_OperadorParticipantes, sesion:dict=None):
         mi.operador:I_OperadorParticipantes = operador
+        mi.sesion:dict = sesion
 
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de adaptadores)

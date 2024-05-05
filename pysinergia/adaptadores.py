@@ -307,6 +307,7 @@ class Operador:
 # Clase: Controlador
 # --------------------------------------------------
 class Controlador:
-    def __init__(mi, config:Configuracion):
+    def __init__(mi, config:Configuracion, sesion:dict=None):
         mi.config:Configuracion = config
+        mi.sesion:dict = sesion
 

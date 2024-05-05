@@ -42,8 +42,8 @@ enrutador = APIRouter(prefix=f"/prueba")
                 # dependencies=[Depends(autenticador)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    usuario = autenticador.obtener_id_usuario()
-    return Controlador(config).buscar_participantes(peticion)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    return Controlador(config, sesion).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
                 status_code=status.HTTP_200_OK,
@@ -79,8 +79,8 @@ async def eliminar_participante(peticion:PeticionParticipante=Depends()):
                 response_class=PlainTextResponse)
 async def token(email:str):
     autenticador.token = autenticador.firmar_jwt(email)
-    usuario = autenticador.obtener_id_usuario()
-    print(usuario)
+    sesion = autenticador.id_sesion()
+    print(sesion)
     return autenticador.token
 
 @enrutador.get('/participantes/html/{nombre}',

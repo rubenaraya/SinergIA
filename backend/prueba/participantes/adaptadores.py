@@ -30,27 +30,27 @@ class ControladorParticipantes(Controlador):
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:ModeloPeticion):
-        servicio = ServicioParticipantes(operador=OperadorParticipantes(mi.config))
+        servicio = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         return resultado
     
     def agregar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config)).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion)
         return resultado
 
     def ver_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config)).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.config, mi.sesion)).solicitar_accion(
             ACCION.VER_PARTICIPANTE, peticion)
         return resultado
 
     def actualizar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config)).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
             ACCION.ACTUALIZAR_PARTICIPANTE, peticion)
         return resultado
 
     def eliminar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config)).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return resultado
 

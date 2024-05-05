@@ -1,7 +1,7 @@
 # pysinergia\web.py
 
 from typing import Dict
-import time, jwt
+import time, jwt, os, json
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -53,7 +53,7 @@ class ServidorApi:
             respuesta:Response = await call_next(request)
             tiempo_proceso = str(round(time.time() - inicio, 3))
             respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
-            respuesta.headers["X-API-Version"] = api_version
+            respuesta.headers["X-API-Motor"] = api_version
             return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
@@ -244,6 +244,17 @@ class ComunicadorWeb():
             )
         return None
 
+    def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
+        sesion:dict = {}
+        archivo = f'tmp/{aplicacion}/sesiones/{id_sesion}.json'
+        try:
+            if archivo and os.path.isfile(archivo):
+                with open(archivo, 'r', encoding='utf-8') as f:
+                    sesion = json.load(f)
+        except Exception as e:
+            print(e)
+        return sesion
+
     def transformar_contenido(mi, request:Request, contenido:dict={}, plantilla:str='', directorio:str=''):
         plantillas = Jinja2Templates(directory=directorio)
         contenido['request'] = request
@@ -301,15 +312,15 @@ class AutenticadorJWT(HTTPBearer):
     # --------------------------------------------------
     # Métodos públicos
 
-    def obtener_id_usuario(mi):
+    def id_sesion(mi):
         token_decodificado = mi._decodificar_jwt()
         if token_decodificado:
-            return token_decodificado.get('id_usuario')
+            return token_decodificado.get('id_sesion')
         return ''
 
-    def firmar_jwt(mi, id_usuario:str, duracion:int=30) -> str:
+    def firmar_jwt(mi, id_sesion:str, duracion:int=30) -> str:
         payload = {
-            'id_usuario': id_usuario,
+            'id_sesion': id_sesion,
             'caducidad': time.time() + 60 * duracion
         }
         token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
