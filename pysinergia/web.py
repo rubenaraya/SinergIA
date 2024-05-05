@@ -14,6 +14,7 @@ from fastapi import (
 )
 from fastapi.responses import (
     JSONResponse,
+    RedirectResponse,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -35,6 +36,7 @@ from pysinergia.globales import (
     Constantes as _Constantes,
     Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
+    ErrorAutenticacion as _ErrorAutenticacion,
     RegistradorLogs as _RegistradorLogs,
 )
 from pysinergia import __version__ as api_version
@@ -168,6 +170,21 @@ class ServidorApi:
                 content=jsonable_encoder(salida)
             )
 
+        @api.exception_handler(_ErrorAutenticacion)
+        async def _error_autenticacion_handler(request:Request, exc:_ErrorAutenticacion):
+            salida = mi._crear_salida(
+                codigo=exc.codigo,
+                tipo=_Constantes.SALIDA.ALERTA,
+                mensaje=exc.mensaje,
+                detalles=[]
+            )
+            if exc.url_login:
+                return RedirectResponse(url=exc.url_login)
+            return JSONResponse(
+                status_code=exc.codigo,
+                content=jsonable_encoder(salida)
+            )
+
         @api.exception_handler(RequestValidationError)
         async def _request_validation_exception_handler(request:Request, exc:RequestValidationError) -> JSONResponse:
             errores = exc.errors()
@@ -229,22 +246,11 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb():
-    def __init__(mi, api_keys:dict={}, ruta_temp:str='tmp'):
-        mi.api_keys:dict = api_keys
+    def __init__(mi, ruta_temp:str='tmp'):
         mi.ruta_temp:str = ruta_temp
 
     # --------------------------------------------------
     # Métodos públicos
-
-    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
-        if mi.api_keys:
-            if api_key_header in mi.api_keys:
-                return mi.api_keys.get(api_key_header)
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='API key no válida'
-            )
-        return None
 
     def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
         archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
@@ -261,29 +267,32 @@ class ComunicadorWeb():
 
 
 # --------------------------------------------------
-# Clase: AutenticadorJWT
+# Clase: AutenticadorWeb
 # --------------------------------------------------
-"""
-Evaluar cómo manejar la redirección hacia ruta para "login"
-"""
-class AutenticadorJWT(HTTPBearer):
-    def __init__(mi, secreto:str, algoritmo:str='HS256', auto_error:bool=True):
-        super(AutenticadorJWT, mi).__init__(auto_error=auto_error)
+class AutenticadorWeb(HTTPBearer):
+    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str=None, api_keys:dict={}):
+        super(AutenticadorWeb, mi).__init__(auto_error=False)
         mi.secreto = secreto
         mi.algoritmo = algoritmo
+        mi.url_login:str = url_login
+        mi.api_keys:dict = api_keys
         mi.token:str = None
 
     async def __call__(mi, request:Request):
-        credentials:HTTPAuthorizationCredentials = await super(AutenticadorJWT, mi).__call__(request)
+        credentials:HTTPAuthorizationCredentials = await super(AutenticadorWeb, mi).__call__(request)
+        mensaje = ''
         if credentials:
             if not credentials.scheme == 'Bearer':
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Esquema de autenticación no válido.')
-            mi.token = credentials.credentials
-            if not mi._verificar_jwt():
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Token no válido o caducado.')
-            return mi.token
+                mensaje = 'Esquema de autenticación no válido.'
+            else:
+                mi.token = credentials.credentials
+                if not mi._verificar_jwt():
+                    mensaje = 'Token no válido o caducado.'
+                else:
+                    return mi.token
         else:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Código de autorización no válido.')
+            mensaje = 'Código de autorización no válido.'
+        raise _ErrorAutenticacion(mensaje=mensaje, codigo=status.HTTP_401_UNAUTHORIZED, url_login=mi.url_login)
 
     # --------------------------------------------------
     # Métodos privados
@@ -323,4 +332,14 @@ class AutenticadorJWT(HTTPBearer):
         }
         token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
         return token
+
+    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
+        if mi.api_keys:
+            if api_key_header in mi.api_keys:
+                return mi.api_keys.get(api_key_header)
+            raise _ErrorAutenticacion(
+                codigo=status.HTTP_401_UNAUTHORIZED,
+                mensaje='API key no válida'
+            )
+        return None
 

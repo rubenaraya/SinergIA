@@ -32,5 +32,5 @@ from pysinergia.globales import (
 from pysinergia.servicio import RespuestaResultado
 from pysinergia.web import (
     ComunicadorWeb,
-    AutenticadorJWT,
+    AutenticadorWeb,
 )

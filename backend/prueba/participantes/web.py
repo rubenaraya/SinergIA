@@ -26,9 +26,13 @@ def obtener_config(entorno:str=None):
 # --------------------------------------------------
 # Configuración del Servicio personalizado
 config = obtener_config(None)
-comunicador = ComunicadorWeb(api_keys)
-autenticador = AutenticadorJWT(config.secret_key)
-enrutador = APIRouter(prefix=f"/prueba")
+comunicador = ComunicadorWeb()
+autenticador = AutenticadorWeb(
+    secreto=config.secret_key,
+    api_keys=api_keys,
+    url_login=f'/prueba/login',
+)
+enrutador = APIRouter(prefix=f'/prueba')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
@@ -38,8 +42,8 @@ enrutador = APIRouter(prefix=f"/prueba")
                 status_code=status.HTTP_200_OK,
                 response_class=JSONResponse,
                 response_model=RespuestaResultado,
-                # dependencies=[Depends(comunicador.validar_apikey)]
-                # dependencies=[Depends(autenticador)]
+                dependencies=[Depends(autenticador)],
+                # dependencies=[Depends(autenticador.validar_apikey)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
@@ -92,4 +96,21 @@ async def html(request:Request, nombre:str):
         plantilla='plantilla.html',
         directorio=config.ruta_servicio
     )
+    return respuesta
+
+@enrutador.get('/login',
+                status_code=status.HTTP_200_OK,
+                response_class=HTMLResponse)
+async def get_login(request:Request):
+    respuesta = comunicador.transformar_contenido(request,
+        plantilla='login.html',
+        directorio=config.ruta_servicio
+    )
+    return respuesta
+
+@enrutador.post('/login',
+                status_code=status.HTTP_200_OK,
+                response_class=JSONResponse)
+async def post_login(request:Request):
+    respuesta = {}
     return respuesta

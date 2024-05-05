@@ -179,3 +179,17 @@ class ErrorPersonalizado(Exception):
     def __repr__(mi):
         return f'{mi.aplicacion}.{mi.servicio} | {mi.tipo} {mi.codigo}: {mi.mensaje}. {mi.detalles.__str__()}'
 
+
+# --------------------------------------------------
+# Clase: ErrorAutenticacion
+# --------------------------------------------------
+class ErrorAutenticacion(Exception):
+    def __init__(mi, mensaje:str, codigo:int, url_login:str):
+        mi.codigo = codigo
+        mi.mensaje = mensaje
+        mi.url_login = url_login
+        super().__init__(mi.mensaje)
+
+    def __str__(mi):
+        return f'{mi.mensaje}'
+
