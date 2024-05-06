@@ -18,7 +18,6 @@ from fastapi.responses import (
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.security import (
     APIKeyHeader,
     HTTPBearer,
@@ -29,17 +28,22 @@ from fastapi.exceptions import (
     RequestValidationError,
     HTTPException,
 )
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.globales import (
     Constantes as _Constantes,
+    Funciones as _Funciones,
     Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
     RegistradorLogs as _RegistradorLogs,
 )
-from pysinergia import __version__ as api_version
+from pysinergia import __version__ as api_motor
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -56,14 +60,14 @@ class ServidorApi:
             respuesta:Response = await call_next(request)
             tiempo_proceso = str(round(time.time() - inicio, 3))
             respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
-            respuesta.headers["X-API-Motor"] = api_version
+            respuesta.headers["X-API-Motor"] = api_motor
             return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
 
         @api.get('/')
         def entrypoint():
-            return {'api-entrypoint': f'{api_version}'}
+            return {'api-entrypoint': f'{api_motor}'}
 
         @api.get('/favicon.ico')
         def favicon():
@@ -255,14 +259,19 @@ class ComunicadorWeb():
     def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
         archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
         return _Json.leer(archivo)
+    
+    def guardar_sesion(mi, id_sesion:str, aplicacion:str, datos:dict) -> bool:
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.guardar(datos, archivo)
 
-    def transformar_contenido(mi, request:Request, contenido:dict={}, plantilla:str='', directorio:str=''):
-        plantillas = Jinja2Templates(directory=directorio)
-        contenido['request'] = request
-        resultado = plantillas.TemplateResponse(
-            name=plantilla,
-            context=contenido
-        )
+    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
+        resultado = ''
+        if os.path.exists(f'{directorio}/{plantilla}'):
+            cargador = FileSystemLoader(directorio)
+            entorno = Environment(loader=cargador)
+            template = entorno.get_template(plantilla)
+            resultado = template.render(info)
+            resultado = resultado.replace('{ruta_raiz}', _Funciones.obtener_ruta_raiz())
         return resultado
 
 

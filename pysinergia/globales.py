@@ -131,6 +131,10 @@ class Funciones:
         path = os.path.join(*parts)
         return os.path.join(path, nombre_archivo)
 
+    @staticmethod
+    def obtener_ruta_raiz():
+        return os.path.abspath('.').replace('\\','/')
+
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs

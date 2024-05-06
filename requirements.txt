@@ -1,16 +1,9 @@
+fastapi
+pydantic-settings
 PyJWT
 pytz
-python-dotenv
 Pillow
-fastapi
-uvicorn
-jinja2
-pydantic-settings
+weasyprint
 
-databases[sqlite]
-
-# pydantic[email]
 # passlib[bcrypt]
 # python-jose[cryptography]
-# python-multipart
-# python-decouple

@@ -90,8 +90,9 @@ async def token(email:str):
 @enrutador.get('/login',
                 status_code=status.HTTP_200_OK,
                 response_class=HTMLResponse)
-async def get_login(request:Request):
-    respuesta = comunicador.transformar_contenido(request,
+async def get_login():
+    respuesta = comunicador.transformar_contenido(
+        {},
         plantilla='plantillas/login.html',
         directorio=config.ruta_servicio
     )
@@ -103,3 +104,22 @@ async def get_login(request:Request):
 async def post_login(request:Request):
     respuesta = {}
     return respuesta
+
+@enrutador.get('/pdf', status_code=status.HTTP_200_OK)
+async def pdf():
+    from weasyprint import HTML, CSS
+    import io
+
+    nombre = 'documento-prueba.pdf'
+    titulo = 'Documento de Pruebas'
+    info = {'titulo': titulo}
+    estilos_css = f'{config.ruta_servicio}/plantillas/pdf.css'
+    plantilla_html = f'{config.ruta_servicio}/plantillas/pdf.html'
+
+    contenido = comunicador.transformar_contenido(info=info, plantilla=plantilla_html)
+    css = CSS(filename=estilos_css)
+    pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
+    encabezados = {'Content-Type': 'application/pdf', 'Content-disposition': f'inline; filename={nombre}'}
+    return StreamingResponse(io.BytesIO(pdf), headers=encabezados)
+ 
+ 

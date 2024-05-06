@@ -242,7 +242,7 @@ class Configuracion(BaseSettings):
         mi.aplicacion = aplicacion
         mi.servicio = servicio
     def reconocer_servicio(mi, ruta_archivo:str):
-        mi.ruta_servicio = os.path.dirname(ruta_archivo)
+        mi.ruta_servicio = os.path.dirname(ruta_archivo).replace('\\', '/')
         if mi.ruta_servicio:
             ruta_normalizada = os.path.normpath(mi.ruta_servicio)
             partes = ruta_normalizada.split(os.sep)
