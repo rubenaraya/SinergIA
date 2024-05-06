@@ -122,4 +122,3 @@ async def pdf():
     encabezados = {'Content-Type': 'application/pdf', 'Content-disposition': f'inline; filename={nombre}'}
     return StreamingResponse(io.BytesIO(pdf), headers=encabezados)
  
- 
