@@ -1,4 +1,4 @@
-# pysinergia\dependencias\web.py
+# pysinergia\dependencias\web_fastapi.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -31,7 +31,8 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.servicio import RespuestaResultado
-from pysinergia.web import (
+
+from pysinergia.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

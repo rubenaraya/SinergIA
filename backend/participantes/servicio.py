@@ -1,4 +1,4 @@
-# backend\prueba\participantes\servicio.py
+# backend\participantes\servicio.py
 
 from pysinergia.dependencias.servicio import *
 

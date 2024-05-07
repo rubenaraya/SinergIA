@@ -1,4 +1,4 @@
-# pysinergia\web.py
+# pysinergia\web_fastapi.py
 
 from typing import Dict
 import time, jwt, os
@@ -128,18 +128,17 @@ class ServidorApi:
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib, os
-        aplicaciones = os.listdir(ubicacion)
-        for aplicacion in aplicaciones:
-            servicios = os.listdir(f'{ubicacion}/{aplicacion}')
-            for servicio in servicios:
-                try:
-                    ruta_archivo = os.path.join(ubicacion, aplicacion, servicio, 'web.py')
-                    if os.path.isfile(ruta_archivo):
-                        enrutador = importlib.import_module(f'{ubicacion}.{aplicacion}.{servicio}.web')
-                        api.include_router(getattr(enrutador, 'enrutador'))
-                except Exception as e:
-                    print(e)
-                    continue
+        servicios = os.listdir(ubicacion)
+        modulo_base = 'web_fastapi'
+        for servicio in servicios:
+            try:
+                ruta_modulo = os.path.join(ubicacion, servicio, f'{modulo_base}.py')
+                if os.path.isfile(ruta_modulo):
+                    enrutador = importlib.import_module(f'{ubicacion}.{servicio}.{modulo_base}')
+                    api.include_router(getattr(enrutador, 'enrutador'))
+            except Exception as e:
+                print(e)
+                continue
 
     def iniciar_servicio(mi, app:str, host:str, puerto:int):
         import uvicorn

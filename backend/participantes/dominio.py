@@ -1,4 +1,4 @@
-# backend\prueba\participantes\dominio.py
+# backend\participantes\dominio.py
 
 from pysinergia.dependencias.dominio import *
 

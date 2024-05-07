@@ -1,4 +1,4 @@
-# backend\prueba\participantes\adaptadores.py
+# backend\participantes\adaptadores.py
 
 from pysinergia.dependencias.adaptadores import *
 

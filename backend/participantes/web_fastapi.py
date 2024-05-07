@@ -1,6 +1,6 @@
-# backend\prueba\participantes\web.py
+# backend\participantes\web_fastapi.py
 
-from pysinergia.dependencias.web import *
+from pysinergia.dependencias.web_fastapi import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
