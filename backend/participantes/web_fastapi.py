@@ -17,22 +17,23 @@ from .adaptadores import (
 from . import api_keys
 
 @lru_cache
-def obtener_config(entorno:str=None):
+def obtener_config(aplicacion:str, entorno:str=None):
     archivo_env = Funciones.obtener_ruta_env(__name__, entorno=entorno)
     config = Config(_env_file=archivo_env)
-    config.reconocer_servicio(archivo_env)
+    config.reconocer_servicio(archivo_env, aplicacion)
     return config
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-config = obtener_config(None)
+aplicacion = 'prueba'
+config = obtener_config(aplicacion, None)
 comunicador = ComunicadorWeb()
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=api_keys,
-    url_login=f'/prueba/login',
+    url_login=f'/{aplicacion}/login',
 )
-enrutador = APIRouter(prefix=f'/prueba')
+enrutador = APIRouter(prefix=f'/{aplicacion}')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado

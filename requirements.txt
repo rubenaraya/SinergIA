@@ -4,6 +4,3 @@ PyJWT
 pytz
 Pillow
 weasyprint==52.5
-
-# passlib[bcrypt]
-# python-jose[cryptography]

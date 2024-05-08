@@ -156,16 +156,10 @@ _instalador/
 _lib/
 _mkcert/
 logs/
-locales/*/
 repositorios/
 repositorios/*/
 tmp/
 tmp/*/
-frontend/static/app_*/
-biblioteca/
-biblioteca/*/
-aplicacion/
-aplicacion/*/
 _backend/
 _backend/*/
 
@@ -179,5 +173,4 @@ _limpiar.py
 _subir.py
 _prueba*.*
 app.py
-inicio.py
 docs/~*.~vsd
