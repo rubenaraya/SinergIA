@@ -4,3 +4,6 @@ PyJWT
 pytz
 Pillow
 weasyprint==52.5
+
+flask
+flask-cors

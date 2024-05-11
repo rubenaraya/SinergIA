@@ -127,7 +127,7 @@ class ServidorApi:
         api.mount(f'/{alias}', StaticFiles(directory=f'{directorio}'), name='frontend')
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
-        import importlib, os
+        import importlib
         servicios = os.listdir(ubicacion)
         modulo_base = 'web_fastapi'
         for servicio in servicios:

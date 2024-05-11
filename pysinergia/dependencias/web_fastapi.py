@@ -19,7 +19,6 @@ from fastapi.responses import (
     StreamingResponse,
     Response
 )
-from fastapi.templating import Jinja2Templates
 from functools import lru_cache
 import os
 
