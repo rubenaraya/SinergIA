@@ -10,7 +10,10 @@ from pydantic_settings import (BaseSettings, SettingsConfigDict)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes as _Constantes
+from pysinergia.globales import (
+    Constantes as _Constantes,
+    Funciones as _Funciones,
+)
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen

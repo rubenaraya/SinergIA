@@ -16,17 +16,10 @@ from .adaptadores import (
 )
 from . import api_keys
 
-@lru_cache
-def obtener_config(aplicacion:str, entorno:str=None):
-    archivo_env = F.obtener_ruta_env(__name__, entorno=entorno)
-    config = Config(_env_file=archivo_env)
-    config.reconocer_servicio(archivo_env, aplicacion)
-    return config
-
 # --------------------------------------------------
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
-config = obtener_config(aplicacion, None)
+config = obtener_config(Config, __name__, aplicacion, None)
 comunicador = ComunicadorWeb()
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,

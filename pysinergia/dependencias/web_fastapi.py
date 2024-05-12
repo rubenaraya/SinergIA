@@ -18,7 +18,6 @@ from fastapi.responses import (
     StreamingResponse,
     Response,
 )
-from functools import lru_cache
 import os
 
 # --------------------------------------------------
@@ -33,4 +32,5 @@ from pysinergia.servicio import RespuestaResultado
 from pysinergia.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
+    obtener_config,
 )

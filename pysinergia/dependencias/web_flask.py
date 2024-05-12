@@ -12,7 +12,6 @@ from flask import (
 )
 from flask_cors import cross_origin
 from flask_pydantic import validate
-from functools import lru_cache
 import os
 
 # --------------------------------------------------
@@ -28,4 +27,5 @@ from pysinergia.servicio import RespuestaResultado
 from pysinergia.web_flask import (
     ComunicadorWeb,
     AutenticadorWeb,
+    obtener_config,
 )
