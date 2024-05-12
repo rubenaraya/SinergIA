@@ -121,7 +121,7 @@ class ServidorApi:
                 continue
 
     def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
-        servidor = ServidorLocal(
+        servidor = ServicioLocal(
             host=host,
             port=puerto,
             ssl_cert='./cert.pem',
@@ -322,9 +322,9 @@ class AutenticadorWeb():
 
 
 # --------------------------------------------------
-# Clase: ServidorLocal
+# Clase: ServicioLocal
 # --------------------------------------------------
-class ServidorLocal(Thread):
+class ServicioLocal(Thread):
 
     def __init__(mi, host:str, port:int, ssl_cert:str, ssl_key:str, app:Flask):
         from werkzeug.serving import make_server

@@ -117,6 +117,6 @@ def pdf():
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)
-    sesion = autenticador.id_sesion()
-    return autenticador.token
+    #print(autenticador.id_sesion())
+    return Response(autenticador.token, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.TXT)
 
