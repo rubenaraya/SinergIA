@@ -134,6 +134,7 @@ class ServidorApi:
 
     def manejar_errores(mi, api:Flask, registro_logs:str):
         from werkzeug.exceptions import HTTPException, InternalServerError
+        from pydantic import ValidationError
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado_handler(exc:_ErrorPersonalizado):
@@ -163,6 +164,24 @@ class ServidorApi:
             if exc.url_login:
                 return redirect(exc.url_login)
             return make_response(_Json.codificar(salida), exc.codigo)
+
+        @api.errorhandler(ValidationError)
+        def _error_validation_handler(exc:ValidationError):
+            errores = exc.errors()
+            detalles = []
+            for error in errores:
+                detalles.append({
+                    'error': error['msg'],
+                    'origen': error['loc'],
+                    'valor': error['input']
+                })
+            salida = mi._crear_salida(
+                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                tipo=_C.SALIDA.ALERTA,
+                mensaje='Los datos recibidos no fueron procesados correctamente',
+                detalles=detalles
+            )
+            return make_response(_Json.codificar(salida), _C.ESTADO.HTTP_422_NO_PROCESABLE)
 
         @api.errorhandler(HTTPException)
         def _error_http_handler(exc:HTTPException):

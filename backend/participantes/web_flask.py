@@ -50,9 +50,9 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
-@enrutador.route('/participantes/<int:id>', methods=['GET'])
+@enrutador.route('/participantes/<id>', methods=['GET'])
 @validate()
-def ver_participante(id:int):
+def ver_participante(id):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(config, sesion).ver_participante(peticion)
@@ -64,15 +64,15 @@ def agregar_participante(body:ModeloNuevoParticipante):
     respuesta = Controlador(config, sesion).agregar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_201_CREADO, mimetype=C.MIME.JSON)
 
-@enrutador.route('/participantes/<int:id>', methods=['PUT'])
-def actualizar_participante(id:int, body:ModeloEditarParticipante):
+@enrutador.route('/participantes/<id>', methods=['PUT'])
+def actualizar_participante(id, body:ModeloEditarParticipante):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
     body.id = id
     respuesta = Controlador(config, sesion).actualizar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
 
-@enrutador.route('/participantes/<int:id>', methods=['DELETE'])
-def eliminar_participante(id:int):
+@enrutador.route('/participantes/<int>', methods=['DELETE'])
+def eliminar_participante(id):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(config, sesion).eliminar_participante(peticion)
@@ -114,7 +114,7 @@ def pdf():
     encabezados = {'Content-Type': C.MIME.PDF, 'Content-disposition': f'inline; filename={nombre}'}
     return Response(io.BytesIO(pdf), headers=encabezados)
 
-@enrutador.route('/participantes/token/<email>', methods=['GET'])
+@enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)
     sesion = autenticador.id_sesion()
