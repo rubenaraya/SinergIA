@@ -20,7 +20,6 @@ from jinja2 import (
 )
 from threading import Thread
 from pydantic import ValidationError
-from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -344,10 +343,3 @@ class ServicioLocal(Thread):
     def shutdown(mi):
         mi.servidor.shutdown()
 
-
-@lru_cache
-def obtener_config(modelo:_Configuracion, modulo:str, aplicacion:str, entorno:str=None):
-    archivo_env = _F.obtener_ruta_env(modulo, entorno)
-    config:_Configuracion = modelo(_env_file=archivo_env)
-    config.reconocer_servicio(archivo_env, aplicacion)
-    return config

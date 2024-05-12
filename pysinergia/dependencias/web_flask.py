@@ -23,9 +23,8 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.servicio import RespuestaResultado
-
+from pysinergia.adaptadores import obtener_config
 from pysinergia.web_flask import (
     ComunicadorWeb,
     AutenticadorWeb,
-    obtener_config,
 )

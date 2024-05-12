@@ -3,6 +3,7 @@
 from abc import (ABCMeta, abstractmethod)
 from typing import Dict
 import os
+from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -314,3 +315,13 @@ class Controlador:
         mi.config:Configuracion = config
         mi.sesion:dict = sesion
 
+
+# --------------------------------------------------
+# Función: obtener_config
+# --------------------------------------------------
+@lru_cache
+def obtener_config(modelo:Configuracion, modulo:str, aplicacion:str, entorno:str=None):
+    archivo_env = _Funciones.obtener_ruta_env(modulo, entorno)
+    config:Configuracion = modelo(_env_file=archivo_env)
+    config.reconocer_servicio(archivo_env, aplicacion)
+    return config

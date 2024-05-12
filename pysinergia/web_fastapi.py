@@ -31,7 +31,6 @@ from jinja2 import (
     Environment,
     FileSystemLoader,
 )
-from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -350,10 +349,3 @@ class AutenticadorWeb(HTTPBearer):
             )
         return None
 
-
-@lru_cache
-def obtener_config(modelo:_Configuracion, modulo:str, aplicacion:str, entorno:str=None):
-    archivo_env = _F.obtener_ruta_env(modulo, entorno)
-    config:_Configuracion = modelo(_env_file=archivo_env)
-    config.reconocer_servicio(archivo_env, aplicacion)
-    return config
