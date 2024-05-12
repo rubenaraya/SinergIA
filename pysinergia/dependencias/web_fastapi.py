@@ -16,7 +16,7 @@ from fastapi.responses import (
     RedirectResponse,
     FileResponse,
     StreamingResponse,
-    Response
+    Response,
 )
 from functools import lru_cache
 import os

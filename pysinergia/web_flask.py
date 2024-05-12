@@ -19,6 +19,7 @@ from jinja2 import (
     FileSystemLoader,
 )
 from threading import Thread
+from pydantic import ValidationError
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -94,7 +95,7 @@ class ServidorApi:
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> Flask:
         api = Flask(__name__,
             static_url_path=f'/{alias_frontend}',
-            static_folder=f'{dir_frontend}',
+            static_folder=os.path.abspath(dir_frontend),
         )
         mi.titulo = titulo
         mi.descripcion = descripcion
@@ -103,7 +104,6 @@ class ServidorApi:
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
         api.app_context().push()
-        api.test_request_context().push()
         return api
 
     def mapear_enrutadores(mi, api:Flask, ubicacion:str):

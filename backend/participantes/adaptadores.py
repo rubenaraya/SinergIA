@@ -40,7 +40,7 @@ class ControladorParticipantes(Controlador):
         return resultado
 
     def ver_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config, mi.sesion)).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
             ACCION.VER_PARTICIPANTE, peticion)
         return resultado
 

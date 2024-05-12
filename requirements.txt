@@ -7,3 +7,4 @@ weasyprint==52.5
 
 flask
 flask-cors
+Flask-Pydantic
