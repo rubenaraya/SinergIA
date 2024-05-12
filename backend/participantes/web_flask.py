@@ -46,15 +46,37 @@ enrutador = Blueprint(
 @enrutador.route('/participantes', methods=['GET'])
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
-    respuesta = Controlador(config).buscar_participantes(query)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<int:id>', methods=['GET'])
 @validate()
 def ver_participante(id:int):
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
     peticion = PeticionParticipante(id=id)
-    respuesta = Controlador(config).ver_participante(peticion)
+    respuesta = Controlador(config, sesion).ver_participante(peticion)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+
+@enrutador.route('/participantes', methods=['POST'])
+def agregar_participante(body:ModeloNuevoParticipante):
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).agregar_participante(body)
+    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_201_CREADO, mimetype=C.MIME.JSON)
+
+@enrutador.route('/participantes/<int:id>', methods=['PUT'])
+def actualizar_participante(id:int, body:ModeloEditarParticipante):
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    body.id = id
+    respuesta = Controlador(config, sesion).actualizar_participante(body)
+    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
+
+@enrutador.route('/participantes/<int:id>', methods=['DELETE'])
+def eliminar_participante(id:int):
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    peticion = PeticionParticipante(id=id)
+    respuesta = Controlador(config, sesion).eliminar_participante(peticion)
+    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
 
 
 # --------------------------------------------------
@@ -91,4 +113,10 @@ def pdf():
     pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
     encabezados = {'Content-Type': C.MIME.PDF, 'Content-disposition': f'inline; filename={nombre}'}
     return Response(io.BytesIO(pdf), headers=encabezados)
+
+@enrutador.route('/participantes/token/<email>', methods=['GET'])
+def token(email:str):
+    autenticador.firmar_token(email)
+    sesion = autenticador.id_sesion()
+    return autenticador.token
 

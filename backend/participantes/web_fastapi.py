@@ -48,31 +48,40 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
-    return Controlador(config, sesion).buscar_participantes(peticion)
+    respuesta = Controlador(config, sesion).buscar_participantes(peticion)
+    return respuesta
 
 @enrutador.get('/participantes/{id}',
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    return Controlador(config).ver_participante(peticion)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).ver_participante(peticion)
+    return respuesta
 
 @enrutador.post('/participantes',
                 status_code=C.ESTADO.HTTP_201_CREADO,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
-    return Controlador(config).agregar_participante(peticion)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).agregar_participante(peticion)
+    return respuesta
 
 @enrutador.put('/participantes/{id}',
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
-    return Controlador(config).actualizar_participante(peticion)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).actualizar_participante(peticion)
+    return respuesta
 
 @enrutador.delete('/participantes/{id}',
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
-    return Controlador(config).eliminar_participante(peticion)
+    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    respuesta = Controlador(config, sesion).eliminar_participante(peticion)
+    return respuesta
 
 
 # --------------------------------------------------
