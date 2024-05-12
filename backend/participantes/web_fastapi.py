@@ -18,7 +18,7 @@ from . import api_keys
 
 @lru_cache
 def obtener_config(aplicacion:str, entorno:str=None):
-    archivo_env = Funciones.obtener_ruta_env(__name__, entorno=entorno)
+    archivo_env = F.obtener_ruta_env(__name__, entorno=entorno)
     config = Config(_env_file=archivo_env)
     config.reconocer_servicio(archivo_env, aplicacion)
     return config
@@ -40,7 +40,7 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
 # --------------------------------------------------
 
 @enrutador.get('/participantes',
-                status_code=status.HTTP_200_OK,
+                status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse,
                 response_model=RespuestaResultado,
                 dependencies=[Depends(autenticador)],
@@ -51,25 +51,25 @@ async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     return Controlador(config, sesion).buscar_participantes(peticion)
 
 @enrutador.get('/participantes/{id}',
-                status_code=status.HTTP_200_OK,
+                status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config).ver_participante(peticion)
 
 @enrutador.post('/participantes',
-                status_code=status.HTTP_201_CREATED,
+                status_code=C.ESTADO.HTTP_201_CREADO,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
     return Controlador(config).agregar_participante(peticion)
 
 @enrutador.put('/participantes/{id}',
-                status_code=status.HTTP_204_NO_CONTENT,
+                status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
     return Controlador(config).actualizar_participante(peticion)
 
 @enrutador.delete('/participantes/{id}',
-                status_code=status.HTTP_204_NO_CONTENT,
+                status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
     return Controlador(config).eliminar_participante(peticion)
@@ -80,7 +80,7 @@ async def eliminar_participante(peticion:PeticionParticipante=Depends()):
 # --------------------------------------------------
 
 @enrutador.get('/participantes/token/{email}',
-                status_code=status.HTTP_200_OK,
+                status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=PlainTextResponse)
 async def token(email:str):
     autenticador.firmar_token(email)
@@ -89,7 +89,7 @@ async def token(email:str):
     return autenticador.token
 
 @enrutador.get('/login',
-                status_code=status.HTTP_200_OK,
+                status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=HTMLResponse)
 async def get_login():
     respuesta = comunicador.transformar_contenido(
@@ -100,13 +100,13 @@ async def get_login():
     return respuesta
 
 @enrutador.post('/login',
-                status_code=status.HTTP_200_OK,
+                status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse)
 async def post_login(request:Request):
     respuesta = {}
     return respuesta
 
-@enrutador.get('/pdf', status_code=status.HTTP_200_OK)
+@enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
 async def pdf():
     from weasyprint import HTML, CSS
     import io
@@ -120,6 +120,6 @@ async def pdf():
     contenido = comunicador.transformar_contenido(info=info, plantilla=plantilla_html)
     css = CSS(filename=estilos_css)
     pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
-    encabezados = {'Content-Type': 'application/pdf', 'Content-disposition': f'inline; filename={nombre}'}
+    encabezados = {'Content-Type': C.MIME.PDF, 'Content-disposition': f'inline; filename={nombre}'}
     return StreamingResponse(io.BytesIO(pdf), headers=encabezados)
  

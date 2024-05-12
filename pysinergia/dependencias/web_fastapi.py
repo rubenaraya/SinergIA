@@ -5,7 +5,6 @@
 from fastapi import (
     APIRouter,
     Request,
-    status,
     Depends,
     Body,
     Header,
@@ -25,8 +24,8 @@ import os
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.globales import (
-    Funciones,
-    Constantes,
+    Funciones as F,
+    Constantes as C,
     ErrorPersonalizado,
 )
 from pysinergia.servicio import RespuestaResultado

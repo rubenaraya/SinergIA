@@ -9,7 +9,6 @@ from fastapi import (
     FastAPI,
     Request,
     Response,
-    status,
     Security,
 )
 from fastapi.responses import (
@@ -36,8 +35,8 @@ from jinja2 import (
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.globales import (
-    Constantes as _Constantes,
-    Funciones as _Funciones,
+    Constantes as _C,
+    Funciones as _F,
     Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
@@ -92,14 +91,14 @@ class ServidorApi:
 
     def _tipo_salida(mi, estado:int) -> str:
         if estado < 200:
-            return _Constantes.SALIDA.ERROR
+            return _C.SALIDA.ERROR
         if estado < 300:
-            return _Constantes.SALIDA.EXITO
+            return _C.SALIDA.EXITO
         if estado < 400:
-            return _Constantes.SALIDA.AVISO
+            return _C.SALIDA.AVISO
         if estado < 500:
-            return _Constantes.SALIDA.ALERTA
-        return _Constantes.SALIDA.ERROR
+            return _C.SALIDA.ALERTA
+        return _C.SALIDA.ERROR
 
     def _obtener_url(mi, request:Request) -> str:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
@@ -108,7 +107,7 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi, titulo:str='', descripcion:str='', version:str='', origenes_cors:list=['*'], doc:bool=False) -> FastAPI:
+    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> FastAPI:
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None
         api = FastAPI(
@@ -118,13 +117,11 @@ class ServidorApi:
             docs_url=docs_url,
             redoc_url=redoc_url,
         )
+        api.mount(f'/{alias_frontend}', StaticFiles(directory=f'{dir_frontend}'), name='frontend')
         mi._configurar_cors(api, origenes_cors)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
         return api
-
-    def asignar_frontend(mi, api:FastAPI, directorio:str, alias:str):
-        api.mount(f'/{alias}', StaticFiles(directory=f'{directorio}'), name='frontend')
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib
@@ -161,7 +158,7 @@ class ServidorApi:
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            if exc.tipo == _Constantes.SALIDA.ERROR:
+            if exc.tipo == _C.SALIDA.ERROR:
                 nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
@@ -177,7 +174,7 @@ class ServidorApi:
         async def _error_autenticacion_handler(request:Request, exc:_ErrorAutenticacion):
             salida = mi._crear_salida(
                 codigo=exc.codigo,
-                tipo=_Constantes.SALIDA.ALERTA,
+                tipo=_C.SALIDA.ALERTA,
                 mensaje=exc.mensaje,
                 detalles=[]
             )
@@ -199,13 +196,13 @@ class ServidorApi:
                     'valor': error['input']
                 })
             salida = mi._crear_salida(
-                codigo=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                tipo=_Constantes.SALIDA.ALERTA,
+                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                tipo=_C.SALIDA.ALERTA,
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
             return JSONResponse(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
             )
 
@@ -232,15 +229,15 @@ class ServidorApi:
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
             salida = mi._crear_salida(
-                codigo=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                tipo=_Constantes.SALIDA.ERROR,
+                codigo=_C.ESTADO.HTTP_500_ERROR,
+                tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=_C.ESTADO.HTTP_500_ERROR,
                 content=jsonable_encoder(salida)
             )
 
@@ -270,7 +267,7 @@ class ComunicadorWeb():
             entorno = Environment(loader=cargador)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
-            resultado = resultado.replace('{ruta_raiz}', _Funciones.obtener_ruta_raiz())
+            resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
         return resultado
 
 
@@ -300,7 +297,7 @@ class AutenticadorWeb(HTTPBearer):
                     return mi.token
         else:
             mensaje = 'Código de autorización no válido.'
-        raise _ErrorAutenticacion(mensaje=mensaje, codigo=status.HTTP_401_UNAUTHORIZED, url_login=mi.url_login)
+        raise _ErrorAutenticacion(mensaje=mensaje, codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO, url_login=mi.url_login)
 
     # --------------------------------------------------
     # Métodos privados
@@ -346,7 +343,7 @@ class AutenticadorWeb(HTTPBearer):
             if api_key_header in mi.api_keys:
                 return mi.api_keys.get(api_key_header)
             raise _ErrorAutenticacion(
-                codigo=status.HTTP_401_UNAUTHORIZED,
+                codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
                 mensaje='API key no válida'
             )
         return None

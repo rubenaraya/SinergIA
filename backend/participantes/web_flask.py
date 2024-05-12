@@ -18,7 +18,7 @@ from . import api_keys
 
 @lru_cache
 def obtener_config(aplicacion:str, entorno:str=None):
-    archivo_env = Funciones.obtener_ruta_env(__name__, entorno=entorno)
+    archivo_env = F.obtener_ruta_env(__name__, entorno=entorno)
     config = Config(_env_file=archivo_env)
     config.reconocer_servicio(archivo_env, aplicacion)
     return config
@@ -34,19 +34,36 @@ autenticador = AutenticadorWeb(
     url_login=f'/{aplicacion}/login',
 )
 enrutador = Blueprint(
-    name='participantes',
-    import_name=__package__,
+    name=config.servicio,
+    import_name=__name__,
     url_prefix=f'/{aplicacion}'
 )
+
+print(f'root_path = {enrutador.root_path}')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
+@enrutador.route('/participantes', methods=['GET'])
+def buscar_participantes(peticion:PeticionBuscarParticipantes):
+    respuesta = Controlador(config).buscar_participantes(peticion)
+    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+
+@enrutador.route('/participantes/<id>', methods=['GET'])
+def ver_participante(id, peticion:PeticionParticipante):
+    respuesta = Controlador(config).ver_participante(peticion)
+    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+
+
 # --------------------------------------------------
 # Rutas de pruebas
 # --------------------------------------------------
 
+"""
+Falta que valide un post con un modelo Pydantic y genere error
+Falta que use AutenticadorWeb para validar apikey y token
+"""
 @enrutador.route('/login', methods=['GET'])
 def get_login():
     respuesta = comunicador.transformar_contenido(
@@ -54,4 +71,8 @@ def get_login():
         plantilla='plantillas/login.html',
         directorio=config.ruta_servicio
     )
-    return respuesta
+    return Response(respuesta, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.HTML)
+
+@enrutador.route('/login', methods=['POST'])
+def post_login():
+    ...

@@ -5,7 +5,8 @@
 from flask import (
     Response,
     Blueprint,
-    request
+    request,
+    make_response
 )
 from flask_cors import cross_origin
 from functools import lru_cache
@@ -14,8 +15,9 @@ import os
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.globales import (
-    Funciones,
-    Constantes,
+    Funciones as F,
+    Constantes as C,
+    Json,
     ErrorPersonalizado,
 )
 from pysinergia.servicio import RespuestaResultado

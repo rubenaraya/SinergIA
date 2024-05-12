@@ -18,12 +18,13 @@ from jinja2 import (
     Environment,
     FileSystemLoader,
 )
+from threading import Thread
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.globales import (
-    Constantes as _Constantes,
-    Funciones as _Funciones,
+    Constantes as _C,
+    Funciones as _F,
     Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
@@ -74,14 +75,14 @@ class ServidorApi:
 
     def _tipo_salida(mi, estado:int) -> str:
         if estado < 200:
-            return _Constantes.SALIDA.ERROR
+            return _C.SALIDA.ERROR
         if estado < 300:
-            return _Constantes.SALIDA.EXITO
+            return _C.SALIDA.EXITO
         if estado < 400:
-            return _Constantes.SALIDA.AVISO
+            return _C.SALIDA.AVISO
         if estado < 500:
-            return _Constantes.SALIDA.ALERTA
-        return _Constantes.SALIDA.ERROR
+            return _C.SALIDA.ALERTA
+        return _C.SALIDA.ERROR
 
     def _obtener_url(mi) -> str:
         url = f'{request.url}'
@@ -90,8 +91,11 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi, titulo:str='', descripcion:str='', version:str='', origenes_cors:list=['*'], doc:bool=False) -> Flask:
-        api = Flask(__name__)
+    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> Flask:
+        api = Flask(__name__,
+            static_url_path=f'/{alias_frontend}',
+            static_folder=f'{dir_frontend}',
+        )
         mi.titulo = titulo
         mi.descripcion = descripcion
         mi.version = version
@@ -101,10 +105,6 @@ class ServidorApi:
         api.app_context().push()
         api.test_request_context().push()
         return api
-
-    def asignar_frontend(mi, api:Flask, directorio:str, alias:str):
-        api.static_folder = directorio
-        api.static_url_path = f'/{alias}'
 
     def mapear_enrutadores(mi, api:Flask, ubicacion:str):
         import importlib
@@ -120,16 +120,17 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:str, host:str, puerto:int):
-        import uvicorn
-        uvicorn.run(
-            app,
+    def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
+        servidor = ServidorLocal(
             host=host,
             port=puerto,
-            ssl_keyfile='./key.pem',
-            ssl_certfile='./cert.pem',
-            reload=True
+            ssl_cert='./cert.pem',
+            ssl_key='./key.pem',
+            app=app
         )
+        if servidor:
+            servidor.start()
+            print(f"Servidor web en: https://{host}:{puerto}/")
 
     def manejar_errores(mi, api:Flask, registro_logs:str):
         from werkzeug.exceptions import HTTPException, InternalServerError
@@ -142,7 +143,7 @@ class ServidorApi:
                 mensaje=exc.mensaje,
                 detalles=exc.detalles
             )
-            if exc.tipo == _Constantes.SALIDA.ERROR:
+            if exc.tipo == _C.SALIDA.ERROR:
                 nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
@@ -155,7 +156,7 @@ class ServidorApi:
         def _error_autenticacion_handler(exc:_ErrorAutenticacion):
             salida = mi._crear_salida(
                 codigo=exc.codigo,
-                tipo=_Constantes.SALIDA.ALERTA,
+                tipo=_C.SALIDA.ALERTA,
                 mensaje=exc.mensaje,
                 detalles=[]
             )
@@ -185,14 +186,14 @@ class ServidorApi:
             if len(origen.args) > 0:
                 descripcion = origen.args[0]
             salida = mi._crear_salida(
-                codigo=500,
-                tipo=mi._tipo_salida(500),
+                codigo=_C.ESTADO.HTTP_500_ERROR,
+                tipo=mi._tipo_salida(_C.ESTADO.HTTP_500_ERROR),
                 mensaje=descripcion
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {salida.__repr__()}'
             )
-            return make_response(_Json.codificar(salida), 500)
+            return make_response(_Json.codificar(salida), _C.ESTADO.HTTP_500_ERROR)
 
         @api.errorhandler(Exception)
         def _unhandled_errorhandler(exc:Exception):
@@ -201,8 +202,8 @@ class ServidorApi:
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
             salida = mi._crear_salida(
-                codigo=500,
-                tipo=_Constantes.SALIDA.ERROR,
+                codigo=_C.ESTADO.HTTP_500_ERROR,
+                tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
@@ -236,7 +237,7 @@ class ComunicadorWeb():
             entorno = Environment(loader=cargador)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
-            resultado = resultado.replace('{ruta_raiz}', _Funciones.obtener_ruta_raiz())
+            resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
         return resultado
 
 
@@ -299,4 +300,26 @@ class AutenticadorWeb():
                 mensaje='API key no válida'
             )
         return None
+
+
+# --------------------------------------------------
+# Clase: ServidorLocal
+# --------------------------------------------------
+class ServidorLocal(Thread):
+
+    def __init__(mi, host:str, port:int, ssl_cert:str, ssl_key:str, app:Flask):
+        from werkzeug.serving import make_server
+        Thread.__init__(mi)
+        ssl_context = None
+        if ssl_key and ssl_cert:
+            ssl_context = (ssl_cert, ssl_key)
+        mi.servidor = make_server(host=host, port=port, app=app, ssl_context=ssl_context)
+        mi.ctx = app.app_context()
+        mi.ctx.push()
+
+    def run(mi):
+        mi.servidor.serve_forever()
+
+    def shutdown(mi):
+        mi.servidor.shutdown()
 
