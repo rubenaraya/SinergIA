@@ -80,7 +80,7 @@ async def eliminar_participante(peticion:PeticionParticipante=Depends()):
 # Rutas de pruebas
 # --------------------------------------------------
 
-@enrutador.get('/participantes/token/{email}',
+@enrutador.get('/token/{email}',
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=PlainTextResponse)
 async def token(email:str):

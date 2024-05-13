@@ -77,9 +77,6 @@ def eliminar_participante(id):
 # Rutas de pruebas
 # --------------------------------------------------
 
-"""
-Falta que use AutenticadorWeb para validar apikey y token
-"""
 @enrutador.route('/login', methods=['GET'])
 def get_login():
     respuesta = comunicador.transformar_contenido(
