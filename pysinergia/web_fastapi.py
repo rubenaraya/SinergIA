@@ -8,29 +8,14 @@ import time, jwt, os
 from fastapi import (
     FastAPI,
     Request,
-    Response,
-    Security,
 )
 from fastapi.responses import (
     JSONResponse,
     RedirectResponse,
-)
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.security import (
-    APIKeyHeader,
-    HTTPBearer,
-    HTTPAuthorizationCredentials,
+    FileResponse,
+    Response,
 )
 from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import (
-    RequestValidationError,
-    HTTPException,
-)
-from jinja2 import (
-    Environment,
-    FileSystemLoader,
-)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -68,11 +53,12 @@ class ServidorApi:
         def entrypoint():
             return {'api-entrypoint': f'{api_motor}'}
 
-        @api.get('/favicon.ico')
+        @api.get('/favicon.ico', include_in_schema=False)
         def favicon():
-            return ''
+            return FileResponse(os.path.join(mi.dir_frontend, 'favicon.ico'))
 
     def _configurar_cors(mi, api:FastAPI, origenes_cors:list):
+        from fastapi.middleware.cors import CORSMiddleware
         api.add_middleware(
             CORSMiddleware,
             allow_origins = origenes_cors,
@@ -108,6 +94,8 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> FastAPI:
+        from fastapi.staticfiles import StaticFiles
+        mi.dir_frontend = os.path.abspath(dir_frontend)
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None
         api = FastAPI(
@@ -149,6 +137,7 @@ class ServidorApi:
         )
 
     def manejar_errores(mi, api:FastAPI, registro_logs:str):
+        from fastapi.exceptions import (RequestValidationError, HTTPException)
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
@@ -261,6 +250,7 @@ class ComunicadorWeb:
         return _Json.guardar(datos, archivo)
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
+        from jinja2 import (Environment, FileSystemLoader)
         resultado = ''
         if os.path.exists(f'{directorio}/{plantilla}'):
             cargador = FileSystemLoader(directorio)

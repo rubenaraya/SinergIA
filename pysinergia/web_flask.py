@@ -12,14 +12,9 @@ from flask import (
     request,
     make_response,
     redirect,
-)
-from flask_cors import CORS
-from jinja2 import (
-    Environment,
-    FileSystemLoader,
+    send_from_directory,
 )
 from threading import Thread
-from pydantic import ValidationError
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -55,9 +50,10 @@ class ServidorApi:
 
         @api.route('/favicon.ico', methods=['GET'])
         def favicon():
-            return ''
+            return send_from_directory(mi.dir_frontend, 'favicon.ico')
 
     def _configurar_cors(mi, api:Flask, origenes_cors:list):
+        from flask_cors import CORS
         CORS(api, resources={
                 r'/*': {
                     'origins': origenes_cors,
@@ -93,9 +89,10 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> Flask:
+        mi.dir_frontend = os.path.abspath(dir_frontend)
         api = Flask(__name__,
             static_url_path=f'/{alias_frontend}',
-            static_folder=os.path.abspath(dir_frontend),
+            static_folder=mi.dir_frontend,
         )
         mi.titulo = titulo
         mi.descripcion = descripcion
@@ -250,6 +247,7 @@ class ComunicadorWeb:
         return _Json.guardar(datos, archivo)
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
+        from jinja2 import (Environment, FileSystemLoader)
         resultado = ''
         if os.path.exists(f'{directorio}/{plantilla}'):
             cargador = FileSystemLoader(directorio)
