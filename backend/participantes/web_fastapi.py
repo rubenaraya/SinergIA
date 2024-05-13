@@ -36,10 +36,10 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse,
                 response_model=RespuestaResultado,
-                dependencies=[Depends(autenticador.autenticar)]
+                dependencies=[Depends(autenticador.validar_todo)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion)
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
     return respuesta
 
@@ -47,7 +47,7 @@ async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion)
     respuesta = Controlador(config, sesion).ver_participante(peticion)
     return respuesta
 
@@ -55,7 +55,7 @@ async def ver_participante(peticion:PeticionParticipante=Depends()):
                 status_code=C.ESTADO.HTTP_201_CREADO,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
-    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion)
     respuesta = Controlador(config, sesion).agregar_participante(peticion)
     return respuesta
 
@@ -63,7 +63,7 @@ async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
-    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion)
     respuesta = Controlador(config, sesion).actualizar_participante(peticion)
     return respuesta
 
@@ -71,7 +71,7 @@ async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
-    sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion)
     respuesta = Controlador(config, sesion).eliminar_participante(peticion)
     return respuesta
 
@@ -109,18 +109,11 @@ async def post_login(request:Request):
 
 @enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
 async def pdf():
-    from weasyprint import HTML, CSS
-    import io
-
-    nombre = 'documento-prueba.pdf'
-    titulo = 'Documento de Pruebas'
-    info = {'titulo': titulo}
-    estilos_css = f'{config.ruta_servicio}/plantillas/pdf.css'
-    plantilla_html = f'{config.ruta_servicio}/plantillas/pdf.html'
-
-    contenido = comunicador.transformar_contenido(info=info, plantilla=plantilla_html)
-    css = CSS(filename=estilos_css)
-    pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
-    encabezados = {'Content-Type': C.MIME.PDF, 'Content-disposition': f'inline; filename={nombre}'}
-    return StreamingResponse(io.BytesIO(pdf), headers=encabezados)
+    documento = comunicador.generar_documento_pdf(
+        nombre='documento-prueba.pdf',
+        estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
+        plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
+        info={{'titulo': 'Documento de Pruebas'}}
+    )
+    return documento
  

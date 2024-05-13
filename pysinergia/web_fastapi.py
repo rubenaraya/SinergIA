@@ -13,6 +13,7 @@ from fastapi.responses import (
     JSONResponse,
     RedirectResponse,
     FileResponse,
+    StreamingResponse,
     Response,
 )
 from fastapi.encoders import jsonable_encoder
@@ -235,19 +236,11 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb:
-    def __init__(mi, ruta_temp:str='tmp'):
-        mi.ruta_temp:str = ruta_temp
+    def __init__(mi):
+        ...
 
     # --------------------------------------------------
     # Métodos públicos
-
-    def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
-        return _Json.leer(archivo)
-    
-    def guardar_sesion(mi, id_sesion:str, aplicacion:str, datos:dict) -> bool:
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
-        return _Json.guardar(datos, archivo)
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -260,16 +253,29 @@ class ComunicadorWeb:
             resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
         return resultado
 
+    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}):
+        from weasyprint import HTML, CSS
+        import io
+        encabezados = {
+            'Content-Type': _C.MIME.PDF,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
+        css = CSS(filename=estilos_css)
+        pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
+        return StreamingResponse(io.BytesIO(pdf), headers=encabezados)
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
 class AutenticadorWeb:
-    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str=None, api_keys:dict={}):
+    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str='tmp'):
         mi.secreto = secreto
         mi.algoritmo = algoritmo
         mi.url_login:str = url_login
         mi.api_keys:dict = api_keys
+        mi.ruta_temp:str = ruta_temp
         mi.token:str = None
 
     # --------------------------------------------------
@@ -297,7 +303,7 @@ class AutenticadorWeb:
     # --------------------------------------------------
     # Métodos públicos
 
-    def id_sesion(mi):
+    def obtener_id_sesion(mi):
         token_decodificado = mi._decodificar_jwt()
         if token_decodificado:
             return token_decodificado.get('id_sesion')
@@ -339,7 +345,17 @@ class AutenticadorWeb:
             url_login=mi.url_login
         )
 
-    async def autenticar(mi, request:Request):
+    async def validar_todo(mi, request:Request):
         await mi.validar_apikey(request)
         await mi.validar_token(request)
+
+    def recuperar_sesion(mi, aplicacion:str) -> Dict:
+        id_sesion = mi.obtener_id_sesion()
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.leer(archivo)
+    
+    def guardar_sesion(mi, aplicacion:str, datos:dict) -> bool:
+        id_sesion = mi.obtener_id_sesion()
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.guardar(datos, archivo)
 

@@ -1,6 +1,7 @@
 # pysinergia\web_flask.py
 
 from typing import Dict
+from functools import wraps
 import time, jwt, os
 
 # --------------------------------------------------
@@ -232,19 +233,11 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb:
-    def __init__(mi, ruta_temp:str='tmp'):
-        mi.ruta_temp:str = ruta_temp
+    def __init__(mi):
+        ...
 
     # --------------------------------------------------
     # Métodos públicos
-
-    def recuperar_sesion(mi, id_sesion:str, aplicacion:str) -> Dict:
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
-        return _Json.leer(archivo)
-    
-    def guardar_sesion(mi, id_sesion:str, aplicacion:str, datos:dict) -> bool:
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
-        return _Json.guardar(datos, archivo)
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -257,16 +250,29 @@ class ComunicadorWeb:
             resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
         return resultado
 
+    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}):
+        from weasyprint import HTML, CSS
+        import io
+        encabezados = {
+            'Content-Type': _C.MIME.PDF,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
+        css = CSS(filename=estilos_css)
+        pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
+        return Response(io.BytesIO(pdf), headers=encabezados)
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
 class AutenticadorWeb:
-    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str=None, api_keys:dict={}):
+    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str='tmp'):
         mi.secreto = secreto
         mi.algoritmo = algoritmo
         mi.url_login:str = url_login
         mi.api_keys:dict = api_keys
+        mi.ruta_temp:str = ruta_temp
         mi.token:str = None
 
     # --------------------------------------------------
@@ -291,24 +297,7 @@ class AutenticadorWeb:
         except:
             return {}
 
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def id_sesion(mi):
-        token_decodificado = mi._decodificar_jwt()
-        if token_decodificado:
-            return token_decodificado.get('id_sesion')
-        return ''
-
-    def firmar_token(mi, id_sesion:str, duracion:int=30) -> str:
-        payload = {
-            'id_sesion': id_sesion,
-            'caducidad': time.time() + 60 * duracion
-        }
-        mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
-        return mi.token
-
-    def validar_apikey(mi) -> str:
+    def _validar_apikey(mi) -> str:
         mensaje = 'API key no válida'
         if 'Authorization' in request.headers:
             api_key_header = request.headers.get('Authorization').replace('Bearer ', '')
@@ -319,8 +308,8 @@ class AutenticadorWeb:
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
             url_login=''
         )
-
-    def validar_token(mi) -> str:
+    
+    def _validar_token(mi) -> str:
         mensaje = 'Encabezado de autorización no válido.'
         if 'X-Token' in request.headers:
             sesion_token_header = request.headers.get('X-Token')
@@ -336,9 +325,54 @@ class AutenticadorWeb:
             url_login=mi.url_login
         )
 
-    def autenticar(mi):
-        mi.validar_apikey()
-        mi.validar_token()
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def obtener_id_sesion(mi):
+        token_decodificado = mi._decodificar_jwt()
+        if token_decodificado:
+            return token_decodificado.get('id_sesion')
+        return ''
+
+    def firmar_token(mi, id_sesion:str, duracion:int=30) -> str:
+        payload = {
+            'id_sesion': id_sesion,
+            'caducidad': time.time() + 60 * duracion
+        }
+        mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
+        return mi.token
+
+    def validar_todo(mi, f):
+        @wraps(f)
+        def decorador(*args, **kwargs):
+            mi._validar_apikey()
+            mi._validar_token()
+            return f(*args, **kwargs)
+        return decorador
+
+    def validar_token(mi, f):
+        @wraps(f)
+        def decorador(*args, **kwargs):
+            mi._validar_token()
+            return f(*args, **kwargs)
+        return decorador
+
+    def validar_apikey(mi, f):
+        @wraps(f)
+        def decorador(*args, **kwargs):
+            mi._validar_apikey()
+            return f(*args, **kwargs)
+        return decorador
+
+    def recuperar_sesion(mi, aplicacion:str) -> Dict:
+        id_sesion = mi.obtener_id_sesion()
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.leer(archivo)
+    
+    def guardar_sesion(mi, aplicacion:str, datos:dict) -> bool:
+        id_sesion = mi.obtener_id_sesion()
+        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        return _Json.guardar(datos, archivo)
 
 
 # --------------------------------------------------
