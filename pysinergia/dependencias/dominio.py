@@ -1,6 +1,6 @@
 # pysinergia\dependencias\dominio.py
 
-from typing import (Optional, List, Dict, Tuple)
+from typing import (Optional, List, Dict, Tuple, Any)
 from enum import Enum
 
 # --------------------------------------------------

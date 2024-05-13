@@ -12,8 +12,8 @@ class ApiLocal extends AdaptadorApi {
             'Content-Type': 'application/json; charset=UTF-8',
             'Accept': 'application/json',
             'Authorization': `Bearer ${keyApi}`,
-            'token': this.token,
-            'uuid': this.uuid
+            'X-Token': this.token,
+            'X-UUID': this.uuid
         };
         let cuerpo = JSON.stringify(datos, (clave, valor) => {
             if (valor === null || valor === undefined) {

@@ -42,7 +42,6 @@ from pysinergia.globales import (
     ErrorAutenticacion as _ErrorAutenticacion,
     RegistradorLogs as _RegistradorLogs,
 )
-from pysinergia.adaptadores import Configuracion as _Configuracion
 from pysinergia import __version__ as api_motor
 
 # --------------------------------------------------
@@ -246,7 +245,7 @@ class ServidorApi:
 # --------------------------------------------------
 # Clase: ComunicadorWeb
 # --------------------------------------------------
-class ComunicadorWeb():
+class ComunicadorWeb:
     def __init__(mi, ruta_temp:str='tmp'):
         mi.ruta_temp:str = ruta_temp
 
@@ -275,30 +274,13 @@ class ComunicadorWeb():
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
-class AutenticadorWeb(HTTPBearer):
+class AutenticadorWeb:
     def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str=None, api_keys:dict={}):
-        super(AutenticadorWeb, mi).__init__(auto_error=False)
         mi.secreto = secreto
         mi.algoritmo = algoritmo
         mi.url_login:str = url_login
         mi.api_keys:dict = api_keys
         mi.token:str = None
-
-    async def __call__(mi, request:Request):
-        credentials:HTTPAuthorizationCredentials = await super(AutenticadorWeb, mi).__call__(request)
-        mensaje = ''
-        if credentials:
-            if not credentials.scheme == 'Bearer':
-                mensaje = 'Esquema de autenticación no válido.'
-            else:
-                mi.token = credentials.credentials
-                if not mi._verificar_jwt():
-                    mensaje = 'Token no válido o caducado.'
-                else:
-                    return mi.token
-        else:
-            mensaje = 'Código de autorización no válido.'
-        raise _ErrorAutenticacion(mensaje=mensaje, codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO, url_login=mi.url_login)
 
     # --------------------------------------------------
     # Métodos privados
@@ -339,13 +321,34 @@ class AutenticadorWeb(HTTPBearer):
         mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
         return mi.token
 
-    def validar_apikey(mi, api_key_header:str=Security(APIKeyHeader(name='X-API-Key'))) -> str:
-        if mi.api_keys:
-            if api_key_header in mi.api_keys:
-                return mi.api_keys.get(api_key_header)
-            raise _ErrorAutenticacion(
-                codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
-                mensaje='API key no válida'
-            )
-        return None
+    async def validar_apikey(mi, request:Request) -> str:
+        mensaje = 'API key no válida'
+        if request.headers.get('Authorization'):
+            api_key_header = request.headers.get('Authorization')
+            if mi.api_keys and api_key_header:
+                api_key_header = api_key_header.replace('Bearer ', '')
+                if api_key_header in mi.api_keys:
+                    return mi.api_keys.get(api_key_header)
+        raise _ErrorAutenticacion(
+            mensaje=mensaje,
+            codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
+            url_login=''
+        )
+
+    async def validar_token(mi, request:Request) -> str:
+        mensaje = 'Encabezado de autorización no válido.'
+        if request.headers.get('X-Token'):
+            sesion_token_header = request.headers.get('X-Token')
+            if sesion_token_header:
+                mi.token = sesion_token_header
+                if not mi._verificar_jwt():
+                    mensaje = 'Token no válido o caducado.'
+                else:
+                    return mi.token
+        raise _ErrorAutenticacion(
+            mensaje=mensaje,
+            codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
+            url_login=mi.url_login
+        )
+
 

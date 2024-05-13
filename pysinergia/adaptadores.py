@@ -242,9 +242,6 @@ class Configuracion(BaseSettings):
             'url': mi.spi_url,
             'apikey': mi.spi_apikey,
         })
-    def identificar_servicio(mi, aplicacion:str, servicio:str) -> None:
-        mi.aplicacion = aplicacion
-        mi.servicio = servicio
     def reconocer_servicio(mi, ruta_archivo:str, aplicacion:str):
         mi.ruta_servicio = os.path.dirname(ruta_archivo).replace('\\', '/')
         if mi.ruta_servicio:
@@ -320,8 +317,9 @@ class Controlador:
 # Función: obtener_config
 # --------------------------------------------------
 @lru_cache
-def obtener_config(modelo:Configuracion, modulo:str, aplicacion:str, entorno:str=None):
-    archivo_env = _Funciones.obtener_ruta_env(modulo, entorno)
+def obtener_config(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
+    archivo_env = _Funciones.obtener_ruta_env(paquete, entorno)
     config:Configuracion = modelo(_env_file=archivo_env)
     config.reconocer_servicio(archivo_env, aplicacion)
     return config
+
