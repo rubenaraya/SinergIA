@@ -310,12 +310,10 @@ class AutenticadorWeb:
 
     def validar_apikey(mi) -> str:
         mensaje = 'API key no válida'
-        if request.headers.get('Authorization'):
-            api_key_header = request.headers.get('Authorization')
-            if mi.api_keys and api_key_header:
-                api_key_header = api_key_header.replace('Bearer ', '')
-                if api_key_header in mi.api_keys:
-                    return mi.api_keys.get(api_key_header)
+        if 'Authorization' in request.headers:
+            api_key_header = request.headers.get('Authorization').replace('Bearer ', '')
+            if mi.api_keys and api_key_header and api_key_header in mi.api_keys:
+                return mi.api_keys.get(api_key_header)
         raise _ErrorAutenticacion(
             mensaje=mensaje,
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
@@ -324,7 +322,7 @@ class AutenticadorWeb:
 
     def validar_token(mi) -> str:
         mensaje = 'Encabezado de autorización no válido.'
-        if request.headers.get('X-Token'):
+        if 'X-Token' in request.headers:
             sesion_token_header = request.headers.get('X-Token')
             if sesion_token_header:
                 mi.token = sesion_token_header
