@@ -93,10 +93,10 @@ def post_login():
 @enrutador.route('/pdf', methods=['GET'])
 def pdf():
     documento = comunicador.generar_documento_pdf(
-        nombre='documento-prueba.pdf',
+        nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
-        info={{'titulo': 'Documento de Pruebas'}}
+        info={'titulo': 'Documento de Pruebas'}
     )
     return documento
 

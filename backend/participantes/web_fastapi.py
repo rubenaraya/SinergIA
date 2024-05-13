@@ -110,10 +110,10 @@ async def post_login(request:Request):
 @enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
 async def pdf():
     documento = comunicador.generar_documento_pdf(
-        nombre='documento-prueba.pdf',
+        nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
-        info={{'titulo': 'Documento de Pruebas'}}
+        info={'titulo': 'Documento de Pruebas'}
     )
     return documento
  

@@ -15,7 +15,6 @@ from flask import (
     redirect,
     send_from_directory,
 )
-from threading import Thread
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -119,16 +118,9 @@ class ServidorApi:
                 continue
 
     def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
-        servidor = ServicioLocal(
-            host=host,
-            port=puerto,
-            ssl_cert='./cert.pem',
-            ssl_key='./key.pem',
-            app=app
-        )
-        if servidor:
-            servidor.start()
-            print(f"Servidor web en: https://{host}:{puerto}/")
+        ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
+        ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
+        app.run(host=host, port=puerto, ssl_context=(ssl_cert, ssl_key))
 
     def manejar_errores(mi, api:Flask, registro_logs:str):
         from werkzeug.exceptions import HTTPException, InternalServerError
@@ -373,26 +365,4 @@ class AutenticadorWeb:
         id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
         return _Json.guardar(datos, archivo)
-
-
-# --------------------------------------------------
-# Clase: ServicioLocal
-# --------------------------------------------------
-class ServicioLocal(Thread):
-
-    def __init__(mi, host:str, port:int, ssl_cert:str, ssl_key:str, app:Flask):
-        from werkzeug.serving import make_server
-        Thread.__init__(mi)
-        ssl_context = None
-        if ssl_key and ssl_cert:
-            ssl_context = (ssl_cert, ssl_key)
-        mi.servidor = make_server(host=host, port=port, app=app, ssl_context=ssl_context)
-        mi.ctx = app.app_context()
-        mi.ctx.push()
-
-    def run(mi):
-        mi.servidor.serve_forever()
-
-    def shutdown(mi):
-        mi.servidor.shutdown()
 
