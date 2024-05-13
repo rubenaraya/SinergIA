@@ -36,10 +36,7 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse,
                 response_model=RespuestaResultado,
-                dependencies=[
-                    Depends(autenticador.validar_apikey),
-                    Depends(autenticador.validar_token)
-                ]
+                dependencies=[Depends(autenticador.autenticar)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     sesion = comunicador.recuperar_sesion(autenticador.id_sesion(), config.aplicacion)

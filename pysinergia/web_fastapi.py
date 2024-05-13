@@ -351,4 +351,7 @@ class AutenticadorWeb:
             url_login=mi.url_login
         )
 
+    async def autenticar(mi, request:Request):
+        await mi.validar_apikey(request)
+        await mi.validar_token(request)
 

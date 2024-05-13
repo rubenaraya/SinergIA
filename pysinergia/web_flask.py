@@ -321,6 +321,7 @@ class AutenticadorWeb:
         raise _ErrorAutenticacion(
             mensaje=mensaje,
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
+            url_login=''
         )
 
     def validar_token(mi) -> str:
@@ -338,6 +339,10 @@ class AutenticadorWeb:
             codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
+
+    def autenticar(mi):
+        mi.validar_apikey()
+        mi.validar_token()
 
 
 # --------------------------------------------------
