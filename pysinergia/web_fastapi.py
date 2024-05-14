@@ -68,25 +68,6 @@ class ServidorApi:
             allow_headers = ['*'],
         )
 
-    def _crear_salida(mi, codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
-        return dict({
-            'codigo': str(codigo),
-            'tipo': tipo,
-            'mensaje': mensaje,
-            'detalles': detalles
-        })
-
-    def _tipo_salida(mi, estado:int) -> str:
-        if estado < 200:
-            return _C.SALIDA.ERROR
-        if estado < 300:
-            return _C.SALIDA.EXITO
-        if estado < 400:
-            return _C.SALIDA.AVISO
-        if estado < 500:
-            return _C.SALIDA.ALERTA
-        return _C.SALIDA.ERROR
-
     def _obtener_url(mi, request:Request) -> str:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
         return f'{request.method} {url}'
@@ -146,7 +127,7 @@ class ServidorApi:
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
                 mensaje=exc.mensaje,
@@ -166,7 +147,7 @@ class ServidorApi:
 
         @api.exception_handler(_ErrorAutenticacion)
         async def _error_autenticacion_handler(request:Request, exc:_ErrorAutenticacion):
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=exc.mensaje,
@@ -189,7 +170,7 @@ class ServidorApi:
                     'origen': error['loc'],
                     'valor': error['input']
                 })
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje='Los datos recibidos no fueron procesados correctamente',
@@ -202,9 +183,9 @@ class ServidorApi:
 
         @api.exception_handler(HTTPException)
         async def _error_http_handler(request:Request, exc:HTTPException) -> JSONResponse:
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.status_code,
-                tipo=mi._tipo_salida(exc.status_code),
+                tipo=_F.tipo_salida(exc.status_code),
                 mensaje=exc.detail
             )
             if exc.status_code >= 500:
@@ -222,7 +203,7 @@ class ServidorApi:
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje

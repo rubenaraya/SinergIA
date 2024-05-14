@@ -180,6 +180,27 @@ class Funciones:
     def obtener_ruta_raiz():
         return os.path.abspath('.').replace('\\','/')
 
+    @staticmethod
+    def tipo_salida(estado:int) -> str:
+        if estado < 200:
+            return Constantes.SALIDA.ERROR
+        if estado < 300:
+            return Constantes.SALIDA.EXITO
+        if estado < 400:
+            return Constantes.SALIDA.AVISO
+        if estado < 500:
+            return Constantes.SALIDA.ALERTA
+        return Constantes.SALIDA.ERROR
+
+    @staticmethod
+    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
+        return dict({
+            'codigo': str(codigo),
+            'tipo': tipo,
+            'mensaje': mensaje,
+            'detalles': detalles
+        })
+
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs

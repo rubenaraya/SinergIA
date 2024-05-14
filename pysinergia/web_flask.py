@@ -61,25 +61,6 @@ class ServidorApi:
             }
         )
 
-    def _crear_salida(mi, codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
-        return dict({
-            'codigo': str(codigo),
-            'tipo': tipo,
-            'mensaje': mensaje,
-            'detalles': detalles
-        })
-
-    def _tipo_salida(mi, estado:int) -> str:
-        if estado < 200:
-            return _C.SALIDA.ERROR
-        if estado < 300:
-            return _C.SALIDA.EXITO
-        if estado < 400:
-            return _C.SALIDA.AVISO
-        if estado < 500:
-            return _C.SALIDA.ALERTA
-        return _C.SALIDA.ERROR
-
     def _obtener_url(mi) -> str:
         url = f'{request.url}'
         return f'{request.method} {url}'
@@ -135,7 +116,7 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado_handler(exc:_ErrorPersonalizado):
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
                 mensaje=exc.mensaje,
@@ -156,7 +137,7 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorAutenticacion)
         def _error_autenticacion_handler(exc:_ErrorAutenticacion):
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=exc.mensaje,
@@ -180,7 +161,7 @@ class ServidorApi:
                     'origen': error['loc'],
                     'valor': error['input']
                 })
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje='Los datos recibidos no fueron procesados correctamente',
@@ -194,9 +175,9 @@ class ServidorApi:
 
         @api.errorhandler(HTTPException)
         def _error_http_handler(exc:HTTPException):
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=exc.code,
-                tipo=mi._tipo_salida(exc.code),
+                tipo=_F.tipo_salida(exc.code),
                 mensaje=exc.description
             )
             if exc.code >= 500:
@@ -217,9 +198,9 @@ class ServidorApi:
                 descripcion = origen.__doc__
             if len(origen.args) > 0:
                 descripcion = origen.args[0]
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
-                tipo=mi._tipo_salida(_C.ESTADO.HTTP_500_ERROR),
+                tipo=_F.tipo_salida(_C.ESTADO.HTTP_500_ERROR),
                 mensaje=descripcion
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
@@ -237,7 +218,7 @@ class ServidorApi:
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
-            salida = mi._crear_salida(
+            salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
