@@ -51,7 +51,6 @@ class I_OperadorParticipantes(metaclass=ABCMeta):
 # Clase: ServicioParticipantes
 # --------------------------------------------------
 """
-Falta autorizar_acceso(permisos='?', credenciales='?') -> usar roles ¿Dónde se configuran?
 Falta convertir los Modelos de peticiones en Modelos de instrucciones para traspasar al Operador (procesar: validar y completar)
 Falta entregar un estado interno del resultado (exito / error) ¿y un mensaje?
 """
@@ -78,6 +77,7 @@ class ServicioParticipantes(Servicio):
     # Métodos privados
 
     def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
+        mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
         resultado = mi.operador.recuperar_lista_participantes_todos()
         return {"accion": "_buscar_participantes", "operacion": "recuperar_lista_participantes_todos", "modelo": "PeticionBuscarParticipantes", "peticion": peticion.diccionario(), "resultado": resultado}
 

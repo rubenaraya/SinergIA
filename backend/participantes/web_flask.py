@@ -40,7 +40,7 @@ enrutador = Blueprint(
 #@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
     respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(respuesta.json(), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 

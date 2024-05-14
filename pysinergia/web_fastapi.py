@@ -333,8 +333,9 @@ class AutenticadorWeb:
         await mi.validar_apikey(request)
         await mi.validar_token(request)
 
-    def recuperar_sesion(mi, aplicacion:str) -> Dict:
-        id_sesion = mi.obtener_id_sesion()
+    def recuperar_sesion(mi, aplicacion:str, id_sesion:str='') -> Dict:
+        if not id_sesion:
+            id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
         return _Json.leer(archivo)
     
