@@ -31,8 +31,10 @@ class Caso:
 # ClaseModelo: ModeloPeticion
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
+
     def diccionario(mi):
         return mi.model_dump()
+
     def json(mi):
         return mi.model_dump_json()
 
@@ -40,7 +42,9 @@ class ModeloPeticion(BaseModel):
 # ClaseModelo: ModeloRespuesta
 # --------------------------------------------------
 class ModeloRespuesta(BaseModel):
-    def diccionario(mi):
+
+    def diccionario(mi) -> dict:
         return mi.model_dump()
-    def json(mi):
+
+    def json(mi) -> str:
         return mi.model_dump_json()

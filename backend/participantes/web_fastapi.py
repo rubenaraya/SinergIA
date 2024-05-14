@@ -39,8 +39,9 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion(config.aplicacion)
-    datos = Controlador(config, sesion).buscar_participantes(peticion)
-    return RespuestaResultado.model_validate(datos)
+    resultado = Controlador(config, sesion).buscar_participantes(peticion)
+    respuesta = RespuestaResultado(**resultado)
+    return respuesta
 
 @enrutador.get('/participantes/{id}',
                 status_code=C.ESTADO.HTTP_200_EXITO,

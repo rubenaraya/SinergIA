@@ -126,16 +126,17 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:str, host:str, puerto:int):
-        import uvicorn
-        uvicorn.run(
-            app,
-            host=host,
-            port=puerto,
-            ssl_keyfile='./key.pem',
-            ssl_certfile='./cert.pem',
-            reload=True
-        )
+    def iniciar_servicio(mi, app:str, host:str, puerto:int, entorno:str):
+        if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
+            import uvicorn
+            uvicorn.run(
+                app,
+                host=host,
+                port=puerto,
+                ssl_keyfile='./key.pem',
+                ssl_certfile='./cert.pem',
+                reload=True if entorno == _C.ENTORNO.DESARROLLO else False
+            )
 
     def manejar_errores(mi, api:FastAPI, registro_logs:str):
         from fastapi.exceptions import (

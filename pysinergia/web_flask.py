@@ -11,7 +11,6 @@ from flask import (
     Flask,
     Response,
     request,
-    make_response,
     redirect,
     send_from_directory,
 )
@@ -117,14 +116,15 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
-        ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
-        ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
-        app.run(
-            host=host,
-            port=puerto,
-            ssl_context=(ssl_cert, ssl_key)
-        )
+    def iniciar_servicio(mi, app:Flask, host:str, puerto:int, entorno:str):
+        if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
+            ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
+            ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
+            app.run(
+                host=host,
+                port=puerto,
+                ssl_context=(ssl_cert, ssl_key),
+            )
 
     def manejar_errores(mi, api:Flask, registro_logs:str):
         from werkzeug.exceptions import (

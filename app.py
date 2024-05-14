@@ -3,8 +3,8 @@
 # --------------------------------------------------
 # Script de inicio para Servidor Local
 # --------------------------------------------------
-framework = ''
-modo = 'local'
+framework = 'fastapi'
+entorno = 'DESARROLLO'
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -36,9 +36,10 @@ servidor.manejar_errores(api, registro_logs=registro_logs)
 
 # --------------------------------------------------
 # Lanzamiento del Servidor Web (local)
-if __name__ == '__main__' and modo == 'local':
+if __name__ == '__main__':
     servidor.iniciar_servicio(
         host='localhost', 
         puerto=8000 if framework=='fastapi' else 5000,
         app='app:api' if framework=='fastapi' else api,
+        entorno=entorno
     )
