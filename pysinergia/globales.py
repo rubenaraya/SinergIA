@@ -2,8 +2,6 @@
 
 import os, json
 from typing import Dict
-from logging import (Formatter, getLogger)
-from logging.handlers import RotatingFileHandler
 
 # --------------------------------------------------
 # Clase estática: Constantes
@@ -193,6 +191,8 @@ class RegistradorLogs:
 
     @staticmethod
     def crear(nombre:str, nivel:str, archivo:str):
+        from logging import (Formatter, getLogger)
+        from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
         registrador.setLevel(nivel)
         registrador.propagate = False
@@ -235,7 +235,7 @@ class ErrorPersonalizado(Exception):
 # Clase: ErrorAutenticacion
 # --------------------------------------------------
 class ErrorAutenticacion(Exception):
-    def __init__(mi, mensaje:str, codigo:int, url_login:str):
+    def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
         mi.codigo = codigo
         mi.mensaje = mensaje
         mi.url_login = url_login

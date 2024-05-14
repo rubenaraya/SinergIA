@@ -138,7 +138,10 @@ class ServidorApi:
         )
 
     def manejar_errores(mi, api:FastAPI, registro_logs:str):
-        from fastapi.exceptions import (RequestValidationError, HTTPException)
+        from fastapi.exceptions import (
+            RequestValidationError,
+            HTTPException,
+        )
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado) -> JSONResponse:
@@ -176,7 +179,7 @@ class ServidorApi:
             )
 
         @api.exception_handler(RequestValidationError)
-        async def _request_validation_exception_handler(request:Request, exc:RequestValidationError) -> JSONResponse:
+        async def _error_validation_handler(request:Request, exc:RequestValidationError) -> JSONResponse:
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -197,7 +200,7 @@ class ServidorApi:
             )
 
         @api.exception_handler(HTTPException)
-        async def _http_exception_handler(request:Request, exc:HTTPException) -> JSONResponse:
+        async def _error_http_handler(request:Request, exc:HTTPException) -> JSONResponse:
             salida = mi._crear_salida(
                 codigo=exc.status_code,
                 tipo=mi._tipo_salida(exc.status_code),
@@ -326,7 +329,6 @@ class AutenticadorWeb:
         raise _ErrorAutenticacion(
             mensaje=mensaje,
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
-            url_login=''
         )
 
     async def validar_token(mi, request:Request) -> str:

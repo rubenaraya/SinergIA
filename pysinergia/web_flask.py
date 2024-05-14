@@ -120,10 +120,17 @@ class ServidorApi:
     def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
         ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
         ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
-        app.run(host=host, port=puerto, ssl_context=(ssl_cert, ssl_key))
+        app.run(
+            host=host,
+            port=puerto,
+            ssl_context=(ssl_cert, ssl_key)
+        )
 
     def manejar_errores(mi, api:Flask, registro_logs:str):
-        from werkzeug.exceptions import HTTPException, InternalServerError
+        from werkzeug.exceptions import (
+            HTTPException,
+            InternalServerError,
+        )
         from pydantic import ValidationError
 
         @api.errorhandler(_ErrorPersonalizado)
@@ -141,7 +148,11 @@ class ServidorApi:
                 _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
                     f'{mi._obtener_url()} | {salida.__repr__()}'
                 )
-            return make_response(_Json.codificar(salida), exc.codigo)
+            return Response(
+                _Json.codificar(salida),
+                status=exc.codigo,
+                mimetype=_C.MIME.JSON
+            )
 
         @api.errorhandler(_ErrorAutenticacion)
         def _error_autenticacion_handler(exc:_ErrorAutenticacion):
@@ -153,7 +164,11 @@ class ServidorApi:
             )
             if exc.url_login:
                 return redirect(exc.url_login)
-            return make_response(_Json.codificar(salida), exc.codigo)
+            return Response(
+                _Json.codificar(salida),
+                status=exc.codigo,
+                mimetype=_C.MIME.JSON
+            )
 
         @api.errorhandler(ValidationError)
         def _error_validation_handler(exc:ValidationError):
@@ -171,7 +186,11 @@ class ServidorApi:
                 mensaje='Los datos recibidos no fueron procesados correctamente',
                 detalles=detalles
             )
-            return make_response(_Json.codificar(salida), _C.ESTADO.HTTP_422_NO_PROCESABLE)
+            return Response(
+                _Json.codificar(salida),
+                status=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                mimetype=_C.MIME.JSON
+            )
 
         @api.errorhandler(HTTPException)
         def _error_http_handler(exc:HTTPException):
@@ -184,7 +203,11 @@ class ServidorApi:
                 _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                     f'{mi._obtener_url()} | {salida.__repr__()}'
                 )
-            return make_response(_Json.codificar(salida), exc.code)
+            return Response(
+                _Json.codificar(salida),
+                status=exc.code,
+                mimetype=_C.MIME.JSON
+            )
 
         @api.errorhandler(InternalServerError)
         def _error_internal_handler(exc:InternalServerError):
@@ -202,7 +225,11 @@ class ServidorApi:
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {salida.__repr__()}'
             )
-            return make_response(_Json.codificar(salida), _C.ESTADO.HTTP_500_ERROR)
+            return Response(
+                _Json.codificar(salida),
+                status=_C.ESTADO.HTTP_500_ERROR,
+                mimetype=_C.MIME.JSON
+            )
 
         @api.errorhandler(Exception)
         def _unhandled_errorhandler(exc:Exception):
@@ -218,7 +245,11 @@ class ServidorApi:
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {mensaje}'
             )
-            return salida
+            return Response(
+                _Json.codificar(salida),
+                status=_C.ESTADO.HTTP_500_ERROR,
+                mimetype=_C.MIME.JSON
+            )
 
 
 # --------------------------------------------------
@@ -298,7 +329,6 @@ class AutenticadorWeb:
         raise _ErrorAutenticacion(
             mensaje=mensaje,
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
-            url_login=''
         )
     
     def _validar_token(mi) -> str:
