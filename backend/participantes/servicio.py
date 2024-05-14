@@ -51,9 +51,9 @@ class I_OperadorParticipantes(metaclass=ABCMeta):
 # Clase: ServicioParticipantes
 # --------------------------------------------------
 """
-Falta convertir los Modelos de peticiones en Modelos de instrucciones para traspasar al Oprador?
 Falta autorizar_acceso(permisos='?', credenciales='?') -> usar roles ¿Dónde se configuran?
-Falta entregar un código interno del resultado ¿y un mensaje? ¿y un tipo?
+Falta convertir los Modelos de peticiones en Modelos de instrucciones para traspasar al Operador (procesar: validar y completar)
+Falta entregar un estado interno del resultado (exito / error) ¿y un mensaje?
 """
 class ServicioParticipantes(Servicio):
 

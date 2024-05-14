@@ -20,19 +20,16 @@ class ConfigParticipantes(Configuracion):
 # --------------------------------------------------
 # Clase: ControladorParticipantes
 # --------------------------------------------------
-"""
-Falta indicar que_hacer al entregar respuesta (enviar, descargar, redirigir)
-Falta crear un formato de Vista? (esquema = ViewModel)?
-"""
 class ControladorParticipantes(Controlador):
 
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
-    def buscar_participantes(mi, peticion:ModeloPeticion):
+    def buscar_participantes(mi, peticion:ModeloPeticion) -> RespuestaResultado:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
-        return resultado
+        respuesta = RespuestaResultado(**resultado)
+        return respuesta
     
     def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
@@ -59,7 +56,8 @@ class ControladorParticipantes(Controlador):
 # Clase: OperadorParticipantes
 # --------------------------------------------------
 """
-Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> Debería usar Entidad
+Falta recibir la petición procesada
+Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> ¿Debería usar Entidad?
 Falta probar Modelos iniciales para insertar y actualizar participantes
 """
 class OperadorParticipantes(Operador, I_OperadorParticipantes):

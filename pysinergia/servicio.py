@@ -2,7 +2,10 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.dominio import ModeloRespuesta as _ModeloRespuesta
+from pysinergia.dominio import (
+    ModeloRespuesta as _ModeloRespuesta,
+    ModeloPeticion as _ModeloPeticion,
+)
 from pysinergia.globales import (
     Constantes as _Constantes,
     Funciones as _Funciones,
@@ -12,7 +15,9 @@ from pysinergia.globales import (
 # Clase: Servicio
 # --------------------------------------------------
 class Servicio:
-    ...
+
+    def solicitar_accion(mi, accion:int, peticion:_ModeloPeticion):
+        return NotImplementedError
 
 
 # --------------------------------------------------
@@ -30,3 +35,4 @@ class RespuestaResultado(_ModeloRespuesta):
         mi.tipo = _Funciones.tipo_salida(estado)
         if mensaje:
             mi.mensaje = mensaje
+

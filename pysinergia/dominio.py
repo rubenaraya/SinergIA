@@ -48,3 +48,4 @@ class ModeloRespuesta(BaseModel):
 
     def json(mi) -> str:
         return mi.model_dump_json()
+

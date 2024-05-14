@@ -27,7 +27,6 @@ from pysinergia.globales import (
     Constantes as C,
     ErrorPersonalizado,
 )
-from pysinergia.servicio import RespuestaResultado
 from pysinergia.adaptadores import obtener_config
 from pysinergia.web_fastapi import (
     ComunicadorWeb,

@@ -41,8 +41,7 @@ enrutador = Blueprint(
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion)
-    resultado = Controlador(config, sesion).buscar_participantes(query)
-    respuesta = RespuestaResultado(**resultado)
+    respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(respuesta.json(), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])

@@ -22,7 +22,6 @@ from pysinergia.globales import (
     Json,
     ErrorPersonalizado,
 )
-from pysinergia.servicio import RespuestaResultado
 from pysinergia.adaptadores import obtener_config
 from pysinergia.web_flask import (
     ComunicadorWeb,
