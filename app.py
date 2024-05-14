@@ -1,18 +1,17 @@
 # app.py
 
-framework = 'flask'
-host = 'localhost'
-
-# --------------------------------------------------
-# Importaciones de PySinergIA
-if framework == 'flask':
-    from pysinergia.web_flask import ServidorApi
-else:
-    from pysinergia.web_fastapi import ServidorApi
-
 # --------------------------------------------------
 # Script de inicio para Servidor Local
 # --------------------------------------------------
+framework = ''
+modo = 'local'
+
+# --------------------------------------------------
+# Importaciones de PySinergIA
+if framework == 'fastapi':
+    from pysinergia.web_fastapi import ServidorApi
+else:
+    from pysinergia.web_flask import ServidorApi
 
 # --------------------------------------------------
 # Configuración de la Api
@@ -36,10 +35,10 @@ servidor.mapear_enrutadores(api, ubicacion=ubicacion_enrutadores)
 servidor.manejar_errores(api, registro_logs=registro_logs)
 
 # --------------------------------------------------
-# Lanzamiento del Servidor Web
-if __name__ == '__main__' and host == 'localhost':
+# Lanzamiento del Servidor Web (local)
+if __name__ == '__main__' and modo == 'local':
     servidor.iniciar_servicio(
-        host=host, 
-        puerto=5000 if framework=='flask' else 8000,
-        app=api if framework=='flask' else 'app:api',
+        host='localhost', 
+        puerto=8000 if framework=='fastapi' else 5000,
+        app='app:api' if framework=='fastapi' else api,
     )

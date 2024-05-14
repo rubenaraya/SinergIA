@@ -176,7 +176,7 @@ class ServidorApi:
             return JSONResponse(
                 status_code=exc.codigo,
                 content=jsonable_encoder(salida)
-            )
+        )
 
         @api.exception_handler(RequestValidationError)
         async def _error_validation_handler(request:Request, exc:RequestValidationError) -> JSONResponse:
