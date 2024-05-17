@@ -1,7 +1,7 @@
 # pysinergia\globales.py
 
-import os, json
 from typing import Dict
+import os, json
 
 # --------------------------------------------------
 # Clase estática: Constantes

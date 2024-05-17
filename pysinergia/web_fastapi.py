@@ -99,10 +99,8 @@ class ServidorApi:
         modulo_base = 'web_fastapi'
         for servicio in servicios:
             try:
-                ruta_modulo = os.path.join(ubicacion, servicio, f'{modulo_base}.py')
-                if os.path.isfile(ruta_modulo):
-                    enrutador = importlib.import_module(f'{ubicacion}.{servicio}.{modulo_base}')
-                    api.include_router(getattr(enrutador, 'enrutador'))
+                enrutador = importlib.import_module(f'{ubicacion}.{servicio}.{modulo_base}')
+                api.include_router(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
                 continue
