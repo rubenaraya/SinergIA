@@ -172,9 +172,9 @@ class Funciones:
         nombre_archivo = '.config.env'
         if entorno:
             nombre_archivo = f".{entorno.lower()}.env"
-        parts = nombre_modulo.split('.')[:-1]
-        path = os.path.join(*parts)
-        return os.path.join(path, nombre_archivo)
+        partes = nombre_modulo.split('.')[:-1]
+        ruta = os.path.join(*partes)
+        return os.path.join(ruta, nombre_archivo)
 
     @staticmethod
     def obtener_ruta_raiz():
@@ -200,6 +200,24 @@ class Funciones:
             'mensaje': mensaje,
             'detalles': detalles
         })
+
+    @staticmethod
+    def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list):
+        idiomas = idiomas_aceptados.split(',')
+        lista_idiomas = []
+        for idioma in idiomas:
+            partes = idioma.split(';')
+            codigo = partes[0].split('-')[0].strip()
+            q = 1.0
+            if len(partes) > 1 and partes[1].startswith('q='):
+                q = float(partes[1].split('=')[1])
+            lista_idiomas.append((codigo, q))
+        idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
+        idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
+        for idioma_preferido in idiomas_preferidos:
+            if idioma_preferido in idiomas_disponibles:
+                return idioma_preferido
+        return idiomas_disponibles[0]
 
 
 # --------------------------------------------------

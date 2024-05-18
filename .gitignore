@@ -171,6 +171,7 @@ cert.pem
 key.pem
 _limpiar.py
 _subir.py
+_traduccion.py
 _prueba*.*
 main.py
 docs/~*.~vsd

@@ -1,7 +1,7 @@
 # pysinergia\web_fastapi.py
 
 from typing import Dict
-import time, jwt, os
+import time, jwt, os, gettext
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web

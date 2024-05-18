@@ -2,7 +2,7 @@
 
 from typing import Dict
 from functools import wraps
-import time, jwt, os
+import time, jwt, os, gettext
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web

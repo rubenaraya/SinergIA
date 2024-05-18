@@ -32,6 +32,14 @@ enrutador = Blueprint(
     url_prefix=f'/{aplicacion}'
 )
 
+t = gettext.translation(
+    domain='base',
+    localedir='./locales/prueba',
+    languages=['en'],
+    fallback=False,
+)
+_ = t.gettext
+
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
@@ -79,6 +87,7 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
+    print(_('HTTP_403_NO_AUTORIZADO'))
     respuesta = comunicador.transformar_contenido(
         {},
         plantilla='plantillas/login.html',
