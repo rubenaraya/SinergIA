@@ -14,26 +14,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: web_flask.py:165
-msgid "HTTP_422_NO_PROCESABLE"
+msgid "Los-datos-recibidos-no-se-procesaron"
 msgstr "Los datos recibidos no fueron procesados correctamente"
 
 #: web_flask.py:218
-msgid "HTTP_500_ERROR"
+msgid "Error-interno"
 msgstr "Error interno del Servidor"
 
 #: web_flask.py:303
-msgid "APIKEY_NO_VALIDA"
+msgid "API-key-invalida"
 msgstr "API key no válida"
 
 #: web_flask.py:314
-msgid "CREDENCIALES_NO_VALIDAS"
+msgid "Encabezado-de-autorizacion-invalido"
 msgstr "Encabezado de autorización no válido"
 
 #: web_flask.py:320
-msgid "TOKEN_NO_VALIDO"
+msgid "Token-invalido"
 msgstr "Token no válido o caducado"
 
 #: servicio.py:40
-msgid "HTTP_403_NO_AUTORIZADO"
+msgid "No-autorizado-para-acceder"
 msgstr "No tiene permisos para realizar esta acción"
 

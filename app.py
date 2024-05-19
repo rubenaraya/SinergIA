@@ -26,13 +26,14 @@ registro_logs = 'api_demo'
 alias_frontend = 'app'
 dir_frontend = './frontend'
 ubicacion_enrutadores = 'backend'
+idiomas = ['es','en']
 
 # --------------------------------------------------
 # Creación de la Api
 servidor = ServidorApi()
 api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=True)
 servidor.mapear_enrutadores(api, ubicacion=ubicacion_enrutadores)
-servidor.manejar_errores(api, registro_logs=registro_logs)
+servidor.manejar_errores(api, registro_logs=registro_logs, idiomas=idiomas)
 
 # --------------------------------------------------
 # Lanzamiento del Servidor Web (local)

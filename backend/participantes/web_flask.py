@@ -32,20 +32,19 @@ enrutador = Blueprint(
     url_prefix=f'/{aplicacion}'
 )
 
-t = gettext.translation(
-    domain='base',
-    localedir='./locales/prueba',
-    languages=['en'],
-    fallback=False,
-)
-_ = t.gettext
+
+"""
+Cómo establezco que se use el idioma de la sesión
+Cómo reemplazo textos traducidos en las plantillas de vista
+Cómo reemplazo textos traducidos en respuestas json
+"""
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
 @enrutador.route('/participantes', methods=['GET'])
-#@autenticador.validar_token
+@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
@@ -87,7 +86,6 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    print(_('HTTP_403_NO_AUTORIZADO'))
     respuesta = comunicador.transformar_contenido(
         {},
         plantilla='plantillas/login.html',

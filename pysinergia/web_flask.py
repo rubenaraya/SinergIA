@@ -2,7 +2,7 @@
 
 from typing import Dict
 from functools import wraps
-import time, jwt, os, gettext
+import time, jwt, os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -105,7 +105,7 @@ class ServidorApi:
                 ssl_context=(ssl_cert, ssl_key),
             )
 
-    def manejar_errores(mi, api:Flask, registro_logs:str):
+    def manejar_errores(mi, api:Flask, registro_logs:str, idiomas:list):
         from werkzeug.exceptions import (
             HTTPException,
             InternalServerError,
@@ -114,10 +114,11 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado_handler(exc:_ErrorPersonalizado):
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
-                mensaje=exc.mensaje,
+                mensaje=_(exc.mensaje),
                 detalles=exc.detalles
             )
             if exc.tipo == _C.SALIDA.ERROR:
@@ -125,7 +126,7 @@ class ServidorApi:
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
                 _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
-                    f'{mi._obtener_url()} | {salida.__repr__()}'
+                    f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
                 _Json.codificar(salida),
@@ -135,14 +136,15 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorAutenticacion)
         def _error_autenticacion_handler(exc:_ErrorAutenticacion):
+            if exc.url_login:
+                return redirect(exc.url_login)
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
-                mensaje=exc.mensaje,
+                mensaje=_(exc.mensaje),
                 detalles=[]
             )
-            if exc.url_login:
-                return redirect(exc.url_login)
             return Response(
                 _Json.codificar(salida),
                 status=exc.codigo,
@@ -151,6 +153,7 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validation_handler(exc:ValidationError):
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -162,7 +165,7 @@ class ServidorApi:
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
-                mensaje='Los datos recibidos no fueron procesados correctamente',
+                mensaje=_('Los-datos-recibidos-no-se-procesaron'),
                 detalles=detalles
             )
             return Response(
@@ -173,14 +176,15 @@ class ServidorApi:
 
         @api.errorhandler(HTTPException)
         def _error_http_handler(exc:HTTPException):
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.code,
                 tipo=_F.tipo_salida(exc.code),
-                mensaje=exc.description
+                mensaje=_(exc.description)
             )
             if exc.code >= 500:
                 _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
-                    f'{mi._obtener_url()} | {salida.__repr__()}'
+                    f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
                 _Json.codificar(salida),
@@ -190,6 +194,7 @@ class ServidorApi:
 
         @api.errorhandler(InternalServerError)
         def _error_internal_handler(exc:InternalServerError):
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             descripcion = ''
             origen = exc.original_exception
             if origen.__doc__:
@@ -199,10 +204,10 @@ class ServidorApi:
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_F.tipo_salida(_C.ESTADO.HTTP_500_ERROR),
-                mensaje=descripcion
+                mensaje=_(descripcion)
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
-                f'{mi._obtener_url()} | {salida.__repr__()}'
+                f'{mi._obtener_url()} | {salida.__str__()}'
             )
             return Response(
                 _Json.codificar(salida),
@@ -213,9 +218,11 @@ class ServidorApi:
         @api.errorhandler(Exception)
         def _unhandled_errorhandler(exc:Exception):
             import sys
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            txt = _('Error-interno')
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            mensaje = f'Error interno del Servidor <{exception_name}: {exception_value}>'
+            mensaje = f'{txt} <{exception_name}: {exception_value}>'
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_C.SALIDA.ERROR,
@@ -300,24 +307,24 @@ class AutenticadorWeb:
             return {}
 
     def _validar_apikey(mi) -> str:
-        mensaje = 'API key no válida'
         if 'Authorization' in request.headers:
             api_key_header = request.headers.get('Authorization').replace('Bearer ', '')
             if mi.api_keys and api_key_header and api_key_header in mi.api_keys:
                 return mi.api_keys.get(api_key_header)
+        mensaje = 'API-key-invalida'
         raise _ErrorAutenticacion(
             mensaje=mensaje,
             codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
         )
     
     def _validar_token(mi) -> str:
-        mensaje = 'Encabezado de autorización no válido.'
+        mensaje = 'Encabezado-de-autorizacion-invalido'
         if 'X-Token' in request.headers:
             sesion_token_header = request.headers.get('X-Token')
             if sesion_token_header:
                 mi.token = sesion_token_header
                 if not mi._verificar_jwt():
-                    mensaje = 'Token no válido o caducado.'
+                    mensaje = 'Token-invalido'
                 else:
                     return mi.token
         raise _ErrorAutenticacion(

@@ -37,7 +37,7 @@ class Servicio:
                 return True
         if rechazar:
             raise _ErrorPersonalizado(
-                mensaje='No tiene permisos para realizar esta acción.',
+                mensaje='No-autorizado-para-acceder',
                 tipo=_Constantes.SALIDA.ALERTA,
                 codigo=_Constantes.ESTADO.HTTP_403_NO_AUTORIZADO,
             )

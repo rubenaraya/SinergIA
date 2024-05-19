@@ -1,7 +1,7 @@
 # pysinergia\globales.py
 
 from typing import Dict
-import os, json
+import os, json, gettext
 
 # --------------------------------------------------
 # Clase estática: Constantes
@@ -218,6 +218,17 @@ class Funciones:
             if idioma_preferido in idiomas_disponibles:
                 return idioma_preferido
         return idiomas_disponibles[0]
+
+    @staticmethod
+    def abrir_traductor(idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', ruta_locales:str='./locales'):
+        idioma = Funciones.negociar_idioma(idiomas_aceptados, idiomas_disponibles)
+        t = gettext.translation(
+            domain=traduccion,
+            localedir=ruta_locales,
+            languages=[idioma],
+            fallback=False,
+        )
+        return t.gettext
 
 
 # --------------------------------------------------
