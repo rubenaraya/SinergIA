@@ -243,11 +243,24 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb:
-    def __init__(mi):
-        ...
+    def __init__(mi, idiomas:list, traduccion:str='base', ruta_locales:str='./locales'):
+        mi.idiomas = idiomas
+        mi.traduccion = traduccion
+        mi.ruta_locales = ruta_locales
+        mi.traductor = None
 
     # --------------------------------------------------
     # Métodos públicos
+
+    def seleccionar_idioma(mi, idiomas_aceptados:str):
+        import gettext
+        idioma = _F.negociar_idioma(idiomas_aceptados, mi.idiomas)
+        mi.traductor = gettext.translation(
+            domain=mi.traduccion,
+            localedir=mi.ruta_locales,
+            languages=[idioma],
+            fallback=False,
+        )
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -255,6 +268,8 @@ class ComunicadorWeb:
         if os.path.exists(f'{directorio}/{plantilla}'):
             cargador = FileSystemLoader(directorio)
             entorno = Environment(loader=cargador)
+            entorno.add_extension('jinja2.ext.i18n')
+            entorno.install_gettext_translations(mi.traductor)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
             resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
