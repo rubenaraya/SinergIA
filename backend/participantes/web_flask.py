@@ -14,7 +14,6 @@ from .adaptadores import (
     ControladorParticipantes as Controlador,
     ConfigParticipantes as Config,
 )
-from . import api_keys
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
@@ -23,7 +22,7 @@ config = obtener_config(Config, __name__, aplicacion, None)
 comunicador = ComunicadorWeb(config.exportar_valores())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
-    api_keys=api_keys,
+    api_keys=config.api_keys,
     url_login=f'/{aplicacion}/login',
 )
 enrutador = Blueprint(
@@ -80,11 +79,11 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma'))
-    info = comunicador.incluir_info({}, sesion)
+    #sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    #comunicador.asignar_idioma(sesion.get('idioma'))
+    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    info = comunicador.incluir_info()
 
-    #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     respuesta = comunicador.transformar_contenido(
         info,
         plantilla='plantillas/login.html',

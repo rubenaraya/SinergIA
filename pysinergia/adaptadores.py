@@ -154,6 +154,7 @@ class Configuracion(BaseSettings):
     traduccion: str = ''
     dir_locales: str = ''
     idiomas: list = []
+    api_keys: dict = {}
     secret_key: str = ''
     ruta_servicio: str = ''
     nivel_registro: str = ''
