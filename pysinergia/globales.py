@@ -203,6 +203,8 @@ class Funciones:
 
     @staticmethod
     def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list):
+        if not idiomas_aceptados:
+            idiomas_aceptados = ''
         idiomas = idiomas_aceptados.split(',')
         lista_idiomas = []
         for idioma in idiomas:

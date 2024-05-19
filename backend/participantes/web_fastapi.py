@@ -38,7 +38,7 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
                 #dependencies=[Depends(autenticador.validar_token)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
     return respuesta

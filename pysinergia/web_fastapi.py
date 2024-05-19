@@ -391,6 +391,8 @@ class AutenticadorWeb:
     def recuperar_sesion(mi, aplicacion:str, id_sesion:str='') -> Dict:
         if not id_sesion:
             id_sesion = mi.obtener_id_sesion()
+        if not id_sesion:
+            return {}
         archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
         return _Json.leer(archivo)
     
