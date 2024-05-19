@@ -1,9 +1,9 @@
 # app.py
 
 # --------------------------------------------------
-# Script de inicio para Servidor Local
+# Script de inicio
 # --------------------------------------------------
-framework = ''
+framework = 'flask'
 entorno = 'DESARROLLO'
 
 # --------------------------------------------------
@@ -21,22 +21,23 @@ Esta es una API REST básica implementada para demostrar las funciones de la bib
 """
 version = '0.1.0'
 
-origenes_cors = ['*']
-registro_logs = 'api_demo'
+ubicacion_enrutadores = 'backend'
 alias_frontend = 'app'
 dir_frontend = './frontend'
-ubicacion_enrutadores = 'backend'
+dir_logs = './logs'
+registro_logs = 'api_demo'
 idiomas = ['es','en']
+origenes_cors = ['*']
 
 # --------------------------------------------------
 # Creación de la Api
 servidor = ServidorApi()
 api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=True)
-servidor.mapear_enrutadores(api, ubicacion=ubicacion_enrutadores)
-servidor.manejar_errores(api, registro_logs=registro_logs, idiomas=idiomas)
+servidor.mapear_enrutadores(api, ubicacion_enrutadores)
+servidor.manejar_errores(api, dir_logs, registro_logs, idiomas)
 
 # --------------------------------------------------
-# Lanzamiento del Servidor Web (local)
+# Lanzamiento del Servidor Web
 if __name__ == '__main__':
     servidor.iniciar_servicio(
         host='localhost', 

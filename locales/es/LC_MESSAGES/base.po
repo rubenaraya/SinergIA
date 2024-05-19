@@ -18,7 +18,7 @@ msgid "Los-datos-recibidos-no-se-procesaron"
 msgstr "Los datos recibidos no fueron procesados correctamente"
 
 #: web_flask.py:218
-msgid "Error-interno"
+msgid "Error-no-manejado"
 msgstr "Error interno del Servidor"
 
 #: web_flask.py:303
@@ -37,3 +37,6 @@ msgstr "Token no válido o caducado"
 msgid "No-autorizado-para-acceder"
 msgstr "No tiene permisos para realizar esta acción"
 
+#: web_fastapi.py:200
+msgid "Los-datos-recibidos-son-invalidos"
+msgstr "Los datos recibidos no son válidos"

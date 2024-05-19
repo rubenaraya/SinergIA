@@ -44,7 +44,7 @@ Cómo reemplazo textos traducidos en respuestas json
 # --------------------------------------------------
 
 @enrutador.route('/participantes', methods=['GET'])
-@autenticador.validar_token
+#@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')

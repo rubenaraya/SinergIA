@@ -117,14 +117,15 @@ class ServidorApi:
                 reload=True if entorno == _C.ENTORNO.DESARROLLO else False
             )
 
-    def manejar_errores(mi, api:FastAPI, registro_logs:str, idiomas:list):
+    def manejar_errores(mi, api:FastAPI, dir_logs:str, registro_logs:str, idiomas:list):
         from fastapi.exceptions import (
             RequestValidationError,
             HTTPException,
         )
+        from pydantic import ValidationError
 
         @api.exception_handler(_ErrorPersonalizado)
-        async def _error_personalizado_handler(request:Request, exc:_ErrorPersonalizado):
+        async def _error_personalizado(request:Request, exc:_ErrorPersonalizado):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
@@ -136,7 +137,7 @@ class ServidorApi:
                 nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
-                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
+                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'{dir_logs}/{nombre}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
                 )
             return JSONResponse(
@@ -145,7 +146,7 @@ class ServidorApi:
             )
 
         @api.exception_handler(_ErrorAutenticacion)
-        async def _error_autenticacion_handler(request:Request, exc:_ErrorAutenticacion):
+        async def _error_autenticacion(request:Request, exc:_ErrorAutenticacion):
             if exc.url_login:
                 return RedirectResponse(url=exc.url_login)
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
@@ -160,21 +161,45 @@ class ServidorApi:
                 content=jsonable_encoder(salida)
         )
 
-        @api.exception_handler(RequestValidationError)
-        async def _error_validation_handler(request:Request, exc:RequestValidationError):
+        @api.exception_handler(ValidationError)
+        async def _error_validacion(request:Request, exc:ValidationError):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             errores = exc.errors()
             detalles = []
             for error in errores:
                 detalles.append({
-                    'error': error['msg'],
+                    'tipo': _(error['type']),
+                    'error': _(error['msg']),
                     'origen': error['loc'],
                     'valor': error['input']
                 })
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
-                mensaje='Los-datos-recibidos-no-se-procesaron',
+                mensaje=_('Los-datos-recibidos-son-invalidos'),
+                detalles=detalles
+            )
+            return JSONResponse(
+                status_code=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                content=jsonable_encoder(salida)
+            )
+
+        @api.exception_handler(RequestValidationError)
+        async def _error_procesar_peticion(request:Request, exc:RequestValidationError):
+            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            errores = exc.errors()
+            detalles = []
+            for error in errores:
+                detalles.append({
+                    'tipo': _(error['type']),
+                    'error': _(error['msg']),
+                    'origen': error['loc'],
+                    'valor': error['input']
+                })
+            salida = _F.crear_salida(
+                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                tipo=_C.SALIDA.ALERTA,
+                mensaje=_('Los-datos-recibidos-no-se-procesaron'),
                 detalles=detalles
             )
             return JSONResponse(
@@ -183,7 +208,7 @@ class ServidorApi:
             )
 
         @api.exception_handler(HTTPException)
-        async def _error_http_handler(request:Request, exc:HTTPException):
+        async def _error_http(request:Request, exc:HTTPException):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.status_code,
@@ -191,7 +216,7 @@ class ServidorApi:
                 mensaje=_(exc.detail)
             )
             if exc.status_code >= 500:
-                _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
+                _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
                 )
             return JSONResponse(
@@ -200,19 +225,19 @@ class ServidorApi:
             )
 
         @api.exception_handler(Exception)
-        async def _unhandled_exception_handler(request:Request, exc:Exception):
+        async def _error_nomanejado(request:Request, exc:Exception):
             import sys
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
-            txt = _('Error-interno')
+            texto = _('Error-no-manejado')
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            mensaje = f'{txt} <{exception_name}: {exception_value}>'
+            mensaje = f'{texto} <{exception_name}: {exception_value}>'
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
+            _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                 f'{mi._obtener_url(request)} | {mensaje}'
             )
             return JSONResponse(

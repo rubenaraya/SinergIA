@@ -105,7 +105,7 @@ class ServidorApi:
                 ssl_context=(ssl_cert, ssl_key),
             )
 
-    def manejar_errores(mi, api:Flask, registro_logs:str, idiomas:list):
+    def manejar_errores(mi, api:Flask, dir_logs:str, registro_logs:str, idiomas:list):
         from werkzeug.exceptions import (
             HTTPException,
             InternalServerError,
@@ -113,7 +113,7 @@ class ServidorApi:
         from pydantic import ValidationError
 
         @api.errorhandler(_ErrorPersonalizado)
-        def _error_personalizado_handler(exc:_ErrorPersonalizado):
+        def _error_personalizado(exc:_ErrorPersonalizado):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
@@ -125,7 +125,7 @@ class ServidorApi:
                 nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
-                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'./logs/{nombre}.log').error(
+                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'{dir_logs}/{nombre}.log').error(
                     f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
@@ -135,7 +135,7 @@ class ServidorApi:
             )
 
         @api.errorhandler(_ErrorAutenticacion)
-        def _error_autenticacion_handler(exc:_ErrorAutenticacion):
+        def _error_autenticacion(exc:_ErrorAutenticacion):
             if exc.url_login:
                 return redirect(exc.url_login)
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
@@ -152,20 +152,21 @@ class ServidorApi:
             )
 
         @api.errorhandler(ValidationError)
-        def _error_validation_handler(exc:ValidationError):
+        def _error_validacion(exc:ValidationError):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             errores = exc.errors()
             detalles = []
             for error in errores:
                 detalles.append({
-                    'error': error['msg'],
+                    'tipo': _(error['type']),
+                    'error': _(error['msg']),
                     'origen': error['loc'],
                     'valor': error['input']
                 })
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
-                mensaje=_('Los-datos-recibidos-no-se-procesaron'),
+                mensaje=_('Los-datos-recibidos-son-invalidos'),
                 detalles=detalles
             )
             return Response(
@@ -175,7 +176,7 @@ class ServidorApi:
             )
 
         @api.errorhandler(HTTPException)
-        def _error_http_handler(exc:HTTPException):
+        def _error_http(exc:HTTPException):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.code,
@@ -183,7 +184,7 @@ class ServidorApi:
                 mensaje=_(exc.description)
             )
             if exc.code >= 500:
-                _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
+                _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                     f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
@@ -193,7 +194,7 @@ class ServidorApi:
             )
 
         @api.errorhandler(InternalServerError)
-        def _error_internal_handler(exc:InternalServerError):
+        def _error_interno(exc:InternalServerError):
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
             descripcion = ''
             origen = exc.original_exception
@@ -206,7 +207,7 @@ class ServidorApi:
                 tipo=_F.tipo_salida(_C.ESTADO.HTTP_500_ERROR),
                 mensaje=_(descripcion)
             )
-            _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
+            _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {salida.__str__()}'
             )
             return Response(
@@ -216,19 +217,19 @@ class ServidorApi:
             )
 
         @api.errorhandler(Exception)
-        def _unhandled_errorhandler(exc:Exception):
+        def _error_nomanejado(exc:Exception):
             import sys
             _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
-            txt = _('Error-interno')
+            texto = _('Error-no-manejado')
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            mensaje = f'{txt} <{exception_name}: {exception_value}>'
+            mensaje = f'{texto} <{exception_name}: {exception_value}>'
             salida = _F.crear_salida(
                 codigo=_C.ESTADO.HTTP_500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(registro_logs, 'ERROR', f'./logs/{registro_logs}.log').error(
+            _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {mensaje}'
             )
             return Response(
