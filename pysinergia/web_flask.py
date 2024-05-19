@@ -65,12 +65,12 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
-    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', ruta_locales:str='./locales'):
+    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', dir_locales:str='./locales'):
         import gettext
         idioma = _F.negociar_idioma(idiomas_aceptados, idiomas_disponibles)
         t = gettext.translation(
             domain=traduccion,
-            localedir=ruta_locales,
+            localedir=dir_locales,
             languages=[idioma],
             fallback=False,
         )
@@ -254,10 +254,9 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb:
-    def __init__(mi, idiomas:list, traduccion:str='base', ruta_locales:str='./locales'):
-        mi.idiomas = idiomas
-        mi.traduccion = traduccion
-        mi.ruta_locales = ruta_locales
+    def __init__(mi, config:dict):
+        mi.config:dict = config
+        mi.idioma = None
         mi.traductor = None
 
     # --------------------------------------------------
@@ -265,13 +264,25 @@ class ComunicadorWeb:
 
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
-        idioma = _F.negociar_idioma(idiomas_aceptados, mi.idiomas)
+        mi.idioma = _F.negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
         mi.traductor = gettext.translation(
-            domain=mi.traduccion,
-            localedir=mi.ruta_locales,
-            languages=[idioma],
+            domain=mi.config.get('traduccion'),
+            localedir=mi.config.get('dir_locales'),
+            languages=[mi.idioma],
             fallback=False,
         )
+
+    def incluir_info(mi, info:dict={}, sesion:dict={}):
+        info['ruta_raiz'] = _F.obtener_ruta_raiz()
+        info['idioma'] = mi.idioma
+        info['url'] = {
+            'absoluta': request.base_url,
+            'base': str(request.url_root).strip('/'),
+            'relativa': request.path,
+        }
+        info['config'] = mi.config
+        info['sesion'] = sesion
+        return info
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -283,7 +294,6 @@ class ComunicadorWeb:
             entorno.install_gettext_translations(mi.traductor, newstyle=True)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
-            resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())
         return resultado
 
     def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}):

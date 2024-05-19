@@ -151,6 +151,8 @@ class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
     zona_horaria: str = ''
+    traduccion: str = ''
+    dir_locales: str = ''
     idiomas: list = []
     secret_key: str = ''
     ruta_servicio: str = ''
@@ -253,6 +255,15 @@ class Configuracion(BaseSettings):
             partes = ruta_normalizada.split(os.sep)
             mi.aplicacion = aplicacion
             mi.servicio = partes[-1] if len(partes) > 0 else ''
+    def exportar_valores(mi) -> Dict:
+        return {
+            'aplicacion': mi.aplicacion,
+            'servicio': mi.servicio,
+            'traduccion': mi.traduccion,
+            'dir_locales': mi.dir_locales,
+            'zona_horaria': mi.zona_horaria,
+            'idiomas': mi.idiomas
+        }
 
 
 # --------------------------------------------------

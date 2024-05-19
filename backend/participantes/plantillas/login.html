@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ idioma }}">
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -14,6 +14,14 @@
     <div>LOGIN</div>
     <img src="/app/prueba/img/icon-128x128.png" alt="">
     <div>{{ _("No-autorizado-para-acceder") }}</div>
+
+    <div>raiz: {{ ruta_raiz }}</div>
+    <div>idioma: {{ idioma }}</div>
+    <div>url: {{ url }}</div>
+    <div>sesion: {{ sesion }}</div>
+    <div>config: {{ config }}</div>
+
+
 </p>
 </body>
 </html>

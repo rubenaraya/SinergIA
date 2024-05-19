@@ -20,7 +20,7 @@ from . import api_keys
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(idiomas=config.idiomas)
+comunicador = ComunicadorWeb(config.exportar_valores())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=api_keys,
@@ -80,9 +80,13 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma'))
+    info = comunicador.incluir_info({}, sesion)
+
+    #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     respuesta = comunicador.transformar_contenido(
-        {},
+        info,
         plantilla='plantillas/login.html',
         directorio=config.ruta_servicio
     )
