@@ -65,6 +65,17 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
+    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', ruta_locales:str='./locales'):
+        import gettext
+        idioma = _F.negociar_idioma(idiomas_aceptados, idiomas_disponibles)
+        t = gettext.translation(
+            domain=traduccion,
+            localedir=ruta_locales,
+            languages=[idioma],
+            fallback=False,
+        )
+        return t.gettext
+
     # --------------------------------------------------
     # Métodos públicos
 
@@ -114,7 +125,7 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado(exc:_ErrorPersonalizado):
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
@@ -138,7 +149,7 @@ class ServidorApi:
         def _error_autenticacion(exc:_ErrorAutenticacion):
             if exc.url_login:
                 return redirect(exc.url_login)
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
@@ -153,7 +164,7 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validacion(exc:ValidationError):
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -177,7 +188,7 @@ class ServidorApi:
 
         @api.errorhandler(HTTPException)
         def _error_http(exc:HTTPException):
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             salida = _F.crear_salida(
                 codigo=exc.code,
                 tipo=_F.tipo_salida(exc.code),
@@ -195,7 +206,7 @@ class ServidorApi:
 
         @api.errorhandler(InternalServerError)
         def _error_interno(exc:InternalServerError):
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             descripcion = ''
             origen = exc.original_exception
             if origen.__doc__:
@@ -219,7 +230,7 @@ class ServidorApi:
         @api.errorhandler(Exception)
         def _error_nomanejado(exc:Exception):
             import sys
-            _ = _F.abrir_traductor(request.headers.get('Accept-Language'), idiomas)
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
             texto = _('Error-no-manejado')
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
@@ -252,7 +263,7 @@ class ComunicadorWeb:
     # --------------------------------------------------
     # Métodos públicos
 
-    def seleccionar_idioma(mi, idiomas_aceptados:str):
+    def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
         idioma = _F.negociar_idioma(idiomas_aceptados, mi.idiomas)
         mi.traductor = gettext.translation(
@@ -269,7 +280,7 @@ class ComunicadorWeb:
             cargador = FileSystemLoader(directorio)
             entorno = Environment(loader=cargador)
             entorno.add_extension('jinja2.ext.i18n')
-            entorno.install_gettext_translations(mi.traductor)
+            entorno.install_gettext_translations(mi.traductor, newstyle=True)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
             resultado = resultado.replace('{ruta_raiz}', _F.obtener_ruta_raiz())

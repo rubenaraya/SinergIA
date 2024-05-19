@@ -20,7 +20,7 @@ from . import api_keys
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(idiomas=['es','en'])
+comunicador = ComunicadorWeb(config.idiomas)
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=api_keys,
@@ -39,7 +39,7 @@ enrutador = APIRouter(prefix=f'/{aplicacion}')
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion(config.aplicacion)
-    comunicador.seleccionar_idioma(sesion.get('idioma'))
+    comunicador.asignar_idioma(sesion.get('idioma'))
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
     return respuesta
 
@@ -93,7 +93,7 @@ async def token(email:str):
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=HTMLResponse)
 async def get_login(request:Request):
-    comunicador.seleccionar_idioma(request.headers.get('Accept-Language'))
+    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     respuesta = comunicador.transformar_contenido(
         {},
         plantilla='plantillas/login.html',

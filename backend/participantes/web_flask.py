@@ -20,7 +20,7 @@ from . import api_keys
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(idiomas=['es','en'])
+comunicador = ComunicadorWeb(idiomas=config.idiomas)
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=api_keys,
@@ -41,7 +41,7 @@ enrutador = Blueprint(
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
-    comunicador.seleccionar_idioma(sesion.get('idioma'))
+    comunicador.asignar_idioma(sesion.get('idioma'))
     respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(respuesta.json(), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
@@ -80,7 +80,7 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    comunicador.seleccionar_idioma(request.headers.get('Accept-Language'))
+    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     respuesta = comunicador.transformar_contenido(
         {},
         plantilla='plantillas/login.html',

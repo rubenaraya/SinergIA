@@ -151,6 +151,7 @@ class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
     zona_horaria: str = ''
+    idiomas: list = []
     secret_key: str = ''
     ruta_servicio: str = ''
     nivel_registro: str = ''
