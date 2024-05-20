@@ -1,15 +1,15 @@
 # app.py
 
 # --------------------------------------------------
-# Script de inicio
+# Script de inicio (produccion)
 # --------------------------------------------------
 
 # --------------------------------------------------
-# Configuración general de la Aplicacion
+# Configuracion general de la Aplicacion
 framework = 'flask'  # flask | fastapi
-entorno = 'PRODUCCION'  # PRODUCCION o DESARROLLO
+entorno = 'PRODUCCION'
 app_web = 'api' # App real en: CPanel/Python/Web Applications/Application URL = 'api'
-raiz_api = ''  # Url relativa de la App (solo en desarrollo/local) = '/api'
+raiz_api = ''
 
 # --------------------------------------------------
 # Configuracion especifica de la Api
@@ -37,16 +37,7 @@ else:
 # --------------------------------------------------
 # Creacion de la Api
 servidor = ServidorApi(app_web, raiz_api)
-api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=True)
+api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=False)
 servidor.mapear_enrutadores(api, ubicacion_enrutadores)
 servidor.manejar_errores(api, dir_logs, registro_logs, idiomas)
 
-# --------------------------------------------------
-# Lanzamiento del Servidor Web
-if __name__ == '__main__':
-    servidor.iniciar_servicio(
-        host='localhost', 
-        puerto=8000 if framework=='fastapi' else 5000,
-        app='app:api' if framework=='fastapi' else api,
-        entorno=entorno
-    )
