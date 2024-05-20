@@ -171,5 +171,6 @@ cert.pem
 key.pem
 _*.py
 _prueba*.*
+pendientes.txt
 main.py
 docs/~*.~vsd

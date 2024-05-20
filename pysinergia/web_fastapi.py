@@ -279,7 +279,7 @@ class ComunicadorWeb:
             fallback=False,
         )
 
-    def incluir_info(mi, request:Request, info:dict={}, sesion:dict={}):
+    def agregar_contexto(mi, request:Request, info:dict={}, sesion:dict={}) -> Dict:
         info['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['idioma'] = mi.idioma
         info['url'] = {
@@ -354,7 +354,7 @@ class AutenticadorWeb:
     # --------------------------------------------------
     # Métodos públicos
 
-    def obtener_id_sesion(mi):
+    def obtener_id_sesion(mi) -> str:
         token_decodificado = mi._decodificar_jwt()
         if token_decodificado:
             return token_decodificado.get('id_sesion')

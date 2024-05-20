@@ -168,7 +168,7 @@ class Funciones:
         return fechahora
 
     @staticmethod
-    def obtener_ruta_env(nombre_modulo:str, entorno:str):
+    def obtener_ruta_env(nombre_modulo:str, entorno:str) -> str:
         nombre_archivo = '.config.env'
         if entorno:
             nombre_archivo = f".{entorno.lower()}.env"
@@ -177,7 +177,7 @@ class Funciones:
         return os.path.join(ruta, nombre_archivo)
 
     @staticmethod
-    def obtener_ruta_raiz():
+    def obtener_ruta_raiz() -> str:
         return os.path.abspath('.').replace('\\','/')
 
     @staticmethod
@@ -193,7 +193,7 @@ class Funciones:
         return Constantes.SALIDA.ERROR
 
     @staticmethod
-    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
+    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> Dict:
         return dict({
             'codigo': str(codigo),
             'tipo': tipo,
@@ -202,7 +202,7 @@ class Funciones:
         })
 
     @staticmethod
-    def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list):
+    def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
         if not idiomas_aceptados:
             idiomas_aceptados = ''
         idiomas = idiomas_aceptados.split(',')

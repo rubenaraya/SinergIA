@@ -1,6 +1,6 @@
 // frontend\prueba\base\DefinicionModulo.js
 
-import { DefinicionModulo } from '../jsinergia/DefinicionModulo.js';
+import { DefinicionModulo } from '../../jsinergia/DefinicionModulo.js';
 
 /* ************************************************************************
 MODULO: Base

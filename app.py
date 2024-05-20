@@ -4,7 +4,7 @@
 # Script de inicio
 # --------------------------------------------------
 framework = 'flask'
-entorno = 'DESARROLLO'
+entorno = 'PRODUCCION'
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -17,12 +17,12 @@ else:
 # Configuración de la Api
 titulo = 'Api Demo'
 descripcion = """
-Esta es una API REST básica implementada para demostrar las funciones de la biblioteca PySinergIA.
+Esta es una API REST básica implementada para probar y demostrar las funciones de la biblioteca PySinergIA.
 """
 version = '0.1.0'
 
 ubicacion_enrutadores = 'backend'
-alias_frontend = 'app'
+alias_frontend = 'api/web'
 dir_frontend = './frontend'
 dir_logs = './logs'
 registro_logs = 'api_demo'

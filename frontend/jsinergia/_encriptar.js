@@ -22,9 +22,9 @@ function dividirInvertirCadena(cadena) {
     return resultadoFormateado;
 }
 
-//const textoOriginal = 'app-key-pruebas';
-const textoOriginal = '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';
-const urlApi = 'https://localhost/JSinergIA';
+const textoOriginal = 'e54d4431-5dab-474e-b71a-0db1fcb9e659';
+//const textoOriginal = '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';
+const urlApi = 'https://localhost:5000/api/web/prueba';
 
 const claveCifrado = depurarUrl(urlApi);
 const textoEncriptado = encriptar(textoOriginal, claveCifrado);

@@ -1,5 +1,7 @@
 # pysinergia\dominio.py
 
+from typing import Dict
+
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
 from pydantic import BaseModel
@@ -24,10 +26,10 @@ class Entidad:
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
 
-    def diccionario(mi):
+    def diccionario(mi) -> Dict:
         return mi.model_dump()
 
-    def json(mi):
+    def json(mi) -> str:
         return mi.model_dump_json()
 
 
@@ -36,7 +38,7 @@ class ModeloPeticion(BaseModel):
 # --------------------------------------------------
 class ModeloRespuesta(BaseModel):
 
-    def diccionario(mi) -> dict:
+    def diccionario(mi) -> Dict:
         return mi.model_dump()
 
     def json(mi) -> str:

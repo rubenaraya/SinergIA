@@ -256,7 +256,7 @@ class Configuracion(BaseSettings):
             partes = ruta_normalizada.split(os.sep)
             mi.aplicacion = aplicacion
             mi.servicio = partes[-1] if len(partes) > 0 else ''
-    def exportar_valores(mi) -> Dict:
+    def contexto(mi) -> Dict:
         return {
             'aplicacion': mi.aplicacion,
             'servicio': mi.servicio,

@@ -2594,7 +2594,7 @@ class ConfiguradorModulos {
             const urlModulo = `${Base.construirUrlAbsoluta(rutaModulo)}?nocache=${noCache}`;
             const modulo = await import(urlModulo);
             this.definicionModulo = modulo.modulo;
-            const rutaEsquema = urlModulo.replace('.js','.json');
+            const rutaEsquema = urlModulo.replace('DefinicionModulo.js','EsquemasModulo.json');
             const resultadoCarga = await this._cargarConfiguraciones(rutaEsquema);
             if (resultadoCarga) {
                 this.gestorEstado.asignarEstado(

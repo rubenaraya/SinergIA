@@ -19,7 +19,7 @@ from .adaptadores import (
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(config.exportar_valores())
+comunicador = ComunicadorWeb(config.contexto())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
@@ -82,7 +82,7 @@ def get_login():
     #sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
     #comunicador.asignar_idioma(sesion.get('idioma'))
     comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    info = comunicador.incluir_info()
+    info = comunicador.agregar_contexto()
 
     respuesta = comunicador.transformar_contenido(
         info,
@@ -98,7 +98,7 @@ def post_login():
 @enrutador.route('/pdf', methods=['GET'])
 def pdf():
     info = {'titulo': 'Documento de Pruebas'}
-    comunicador.incluir_info(info=info)
+    comunicador.agregar_contexto(info=info)
     documento, encabezados = comunicador.generar_documento_pdf(
         nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
