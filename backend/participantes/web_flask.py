@@ -97,13 +97,15 @@ def post_login():
 
 @enrutador.route('/pdf', methods=['GET'])
 def pdf():
-    documento = comunicador.generar_documento_pdf(
+    info = {'titulo': 'Documento de Pruebas'}
+    comunicador.incluir_info(info=info)
+    documento, encabezados = comunicador.generar_documento_pdf(
         nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
-        info={'titulo': 'Documento de Pruebas'}
+        info=info
     )
-    return documento
+    return Response(response=documento, headers=encabezados)
 
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):

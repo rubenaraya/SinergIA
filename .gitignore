@@ -169,9 +169,7 @@ _backend/*/
 *.zip
 cert.pem
 key.pem
-_limpiar.py
-_subir.py
-_traduccion.py
+_*.py
 _prueba*.*
 main.py
 docs/~*.~vsd

@@ -110,6 +110,10 @@ class ServidorApi:
         if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
             ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
             ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
+            app.config['TEMPLATES_AUTO_RELOAD'] = True
+            app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+            #app.config['PROPAGATE_EXCEPTIONS'] = True
+            app.app_context().push()
             app.run(
                 host=host,
                 port=puerto,
@@ -291,12 +295,13 @@ class ComunicadorWeb:
             cargador = FileSystemLoader(directorio)
             entorno = Environment(loader=cargador)
             entorno.add_extension('jinja2.ext.i18n')
-            entorno.install_gettext_translations(mi.traductor, newstyle=True)
+            if mi.traductor:
+                entorno.install_gettext_translations(mi.traductor, newstyle=True)
             template = entorno.get_template(plantilla)
             resultado = template.render(info)
         return resultado
 
-    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}):
+    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}) -> tuple:
         from weasyprint import HTML, CSS
         import io
         encabezados = {
@@ -306,7 +311,7 @@ class ComunicadorWeb:
         contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
         css = CSS(filename=estilos_css)
         pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
-        return Response(io.BytesIO(pdf), headers=encabezados)
+        return (io.BytesIO(pdf), encabezados)
 
 
 # --------------------------------------------------
