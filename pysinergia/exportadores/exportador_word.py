@@ -12,11 +12,20 @@ class ExportadorWord(_I_Exportador):
         mi.opciones:dict = opciones
 
     def generar(mi, contenido:str, destino:str=''):
-        import pandoc, io, subprocess
+        import subprocess, os, io
 
-        ruta_html = './tmp/prueba/archivos/temp.html'
-        with open(ruta_html, 'w') as html_file:
-            html_file.write(contenido)
+        ruta_pandoc = os.path.join(os.path.abspath('.'),'_lib','pandoc','pandoc')
+        ruta_html = os.path.join(os.path.abspath('.'),'tmp','prueba','archivos','temp.html')
+        ruta_docx_temp = os.path.join(os.path.abspath('.'),'tmp','prueba','archivos','temp.docx')
 
-        if destino:
-            subprocess.run(["./_lib/pandoc/pandoc", ruta_html, "-o", destino])
+        with open(ruta_html, 'w') as f:
+            f.write(contenido)
+        salida_docx = destino if destino else ruta_docx_temp
+        subprocess.run([ruta_pandoc, ruta_html, '-o', salida_docx])
+        with open(salida_docx, 'rb') as f:
+            docx_bytes = f.read()
+        os.remove(ruta_html)
+        if not destino:
+            os.remove(salida_docx)
+        return io.BytesIO(docx_bytes)
+
