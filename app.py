@@ -4,8 +4,8 @@
 # Script de inicio
 # --------------------------------------------------
 framework = 'flask'  # flask | fastapi
-entorno = 'PRODUCCION'  # PRODUCCION | DESARROLLO
-raiz_api = ''  # /api
+entorno = 'DESARROLLO'  # PRODUCCION | DESARROLLO
+raiz_api = '/api'  # /api
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
