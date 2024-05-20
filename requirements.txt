@@ -14,8 +14,9 @@ pytz
 # Convertidores
 Pillow
 weasyprint==52.5
-python-docx
-openpyxl
+#python-docx
+#openpyxl
+pandoc
 pandas
 
 # Vectores + Cargadores +LLM

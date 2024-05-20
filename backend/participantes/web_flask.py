@@ -112,6 +112,19 @@ def pdf():
     )
     return Response(response=documento, headers=encabezados)
 
+@enrutador.route('/docx', methods=['GET'])
+def docx():
+    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    info = {'titulo': 'Documento de Pruebas'}
+    comunicador.agregar_contexto(info=info)
+    documento, encabezados = comunicador.generar_documento_word(
+        nombre_archivo='documento-prueba.docx',
+        plantilla_html=f'{config.ruta_servicio}/plantillas/docx.html',
+        destino=f'./repositorios/{config.aplicacion}/disco/documento-prueba.docx',
+        info=info
+    )
+    return Response(response=documento, headers=encabezados)
+
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)

@@ -318,6 +318,20 @@ class ComunicadorWeb:
         documento = exportador.generar(contenido=contenido, destino=destino)
         return (documento, encabezados)
 
+    def generar_documento_word(mi, nombre_archivo:str, plantilla_html:str, info:dict={}, destino:str='') -> tuple:
+        from pysinergia.exportadores.exportador_word import ExportadorWord
+        encabezados = {
+            'Content-Type': _C.MIME.DOCX,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+        opciones = {
+            'idioma': mi.idioma
+        }
+        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
+        exportador = ExportadorWord(opciones)
+        documento = exportador.generar(contenido=contenido, destino=destino)
+        return (documento, encabezados)
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb

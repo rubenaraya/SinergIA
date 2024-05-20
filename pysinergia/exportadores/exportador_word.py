@@ -12,4 +12,11 @@ class ExportadorWord(_I_Exportador):
         mi.opciones:dict = opciones
 
     def generar(mi, contenido:str, destino:str=''):
-        return ''
+        import pandoc, io, subprocess
+
+        ruta_html = './tmp/prueba/archivos/temp.html'
+        with open(ruta_html, 'w') as html_file:
+            html_file.write(contenido)
+
+        if destino:
+            subprocess.run(["./_lib/pandoc/pandoc", ruta_html, "-o", destino])
