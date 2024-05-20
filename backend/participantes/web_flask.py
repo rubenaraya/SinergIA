@@ -86,7 +86,7 @@ def get_login():
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    info = comunicador.agregar_contexto()
+    info = comunicador.agregar_contexto({}, sesion)
 
     respuesta = comunicador.transformar_contenido(
         info,
@@ -107,6 +107,7 @@ def pdf():
         nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
+        destino=f'./repositorios/{config.aplicacion}/disco/documento-prueba.pdf',
         info=info
     )
     return Response(response=documento, headers=encabezados)

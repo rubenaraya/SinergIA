@@ -96,10 +96,10 @@ async def token(email:str):
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=HTMLResponse)
 async def get_login(request:Request):
-    #sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
-    #comunicador.asignar_idioma(sesion.get('idioma'))
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    info = comunicador.agregar_contexto(request)
+    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma'))
+    #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    info = comunicador.agregar_contexto(request, {}, sesion)
 
     respuesta = comunicador.transformar_contenido(
         info,
@@ -123,6 +123,7 @@ async def pdf(request:Request):
         nombre_archivo='documento-prueba.pdf',
         estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
+        destino=f'./repositorios/{config.aplicacion}/disco/documento-prueba.pdf',
         info=info
     )
     return StreamingResponse(content=documento, headers=encabezados)

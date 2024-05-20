@@ -308,17 +308,19 @@ class ComunicadorWeb:
             resultado = template.render(info)
         return resultado
 
-    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}) -> tuple:
-        from weasyprint import HTML, CSS
-        import io
+    def generar_documento_pdf(mi, nombre_archivo:str, estilos_css:str, plantilla_html:str, info:dict={}, destino:str='') -> tuple:
+        from pysinergia.exportadores.exportador_pdf import ExportadorPdf
         encabezados = {
             'Content-Type': _C.MIME.PDF,
             'Content-disposition': f'inline; filename={nombre_archivo}'
         }
+        opciones = {
+            'estilos_css': estilos_css,
+        }
         contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
-        css = CSS(filename=estilos_css)
-        pdf = HTML(string=contenido).write_pdf(stylesheets=[css])
-        return (io.BytesIO(pdf), encabezados)
+        exportador = ExportadorPdf(opciones)
+        documento = exportador.generar(contenido=contenido, destino=destino)
+        return (documento, encabezados)
 
 
 # --------------------------------------------------
