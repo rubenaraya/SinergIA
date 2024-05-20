@@ -18,7 +18,7 @@ from fastapi.responses import (
     StreamingResponse,
     Response,
 )
-import os, gettext
+import os
 
 # --------------------------------------------------
 # Importaciones de PySinergIA

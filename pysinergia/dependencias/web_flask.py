@@ -12,7 +12,7 @@ from flask import (
 )
 from flask_cors import cross_origin
 from flask_pydantic import validate
-import os, gettext
+import os
 
 # --------------------------------------------------
 # Importaciones de PySinergIA

@@ -4,8 +4,10 @@ from typing import Dict
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.dominio import ModeloPeticion
-from pysinergia.servicio import RespuestaResultado
+from pysinergia.dominio import (
+    ModeloPeticion,
+    RespuestaResultado,
+)
 from pysinergia.adaptadores import (
     Controlador,
     Operador,
