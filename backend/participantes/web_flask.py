@@ -23,17 +23,21 @@ comunicador = ComunicadorWeb(config.contexto())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
-    url_login=f'/{aplicacion}/login',
+    url_login=f'/api/{aplicacion}/login',
 )
 enrutador = Blueprint(
     name=config.servicio,
     import_name=__name__,
-    url_prefix=f'/{aplicacion}'
+    url_prefix=f'{config.raiz_api}/{aplicacion}'
 )
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
+
+@enrutador.route('', methods=['GET'])
+def get_inicio():
+    return redirect(f'{config.frontend}/{aplicacion}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
 #@autenticador.validar_token

@@ -3,8 +3,9 @@
 # --------------------------------------------------
 # Script de inicio
 # --------------------------------------------------
-framework = 'flask'
-entorno = 'PRODUCCION'
+framework = 'flask'  # flask | fastapi
+entorno = 'PRODUCCION'  # PRODUCCION | DESARROLLO
+raiz_api = ''  # /api
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -31,7 +32,7 @@ origenes_cors = ['*']
 
 # --------------------------------------------------
 # Creación de la Api
-servidor = ServidorApi()
+servidor = ServidorApi(raiz_api)
 api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=True)
 servidor.mapear_enrutadores(api, ubicacion_enrutadores)
 servidor.manejar_errores(api, dir_logs, registro_logs, idiomas)

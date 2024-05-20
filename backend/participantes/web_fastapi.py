@@ -23,13 +23,17 @@ comunicador = ComunicadorWeb(config.contexto())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
-    url_login=f'/{aplicacion}/login',
+    url_login=f'/api/{aplicacion}/login',
 )
-enrutador = APIRouter(prefix=f'/{aplicacion}')
+enrutador = APIRouter(prefix=f'{config.raiz_api}/{aplicacion}')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
 # --------------------------------------------------
+
+@enrutador.route('', methods=['GET'])
+def get_inicio():
+    return RedirectResponse(f'{config.frontend}/{aplicacion}/index.html')
 
 @enrutador.get('/participantes',
                 status_code=C.ESTADO.HTTP_200_EXITO,

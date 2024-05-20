@@ -7,20 +7,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title></title>
+    <title>{{ _("No-autorizado-para-acceder") }}</title>
 </head>
 <body>
 <p>
-    <div>LOGIN</div>
-    <img src="/api/web/{{config.aplicacion}}/img/icon-128x128.png" alt="">
-    <div>{{ _("No-autorizado-para-acceder") }}</div>
+    <img src="{{config.frontend}}/{{config.aplicacion}}/img/icon-128x128.png" alt="">
 
-    <div>raiz: {{ ruta_raiz }}</div>
     <div>idioma: {{ idioma }}</div>
     <div>url: {{ url }}</div>
     <div>sesion: {{ sesion }}</div>
     <div>config: {{ config }}</div>
-
 
 </p>
 </body>

@@ -34,6 +34,8 @@ from pysinergia import __version__ as api_motor
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi:
+    def __init__(mi, raiz_api:str=''):
+        os.environ['RAIZ_API'] = raiz_api
 
     # --------------------------------------------------
     # Métodos privados
@@ -89,6 +91,7 @@ class ServidorApi:
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> FastAPI:
         from fastapi.staticfiles import StaticFiles
         mi.dir_frontend = os.path.abspath(dir_frontend)
+        os.environ['ALIAS_FRONTEND'] = f'/{alias_frontend}'
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None
         api = FastAPI(
