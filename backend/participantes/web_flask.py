@@ -40,7 +40,7 @@ def get_inicio():
     return redirect(f'/{config.app_web}/{config.frontend}/{aplicacion}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
-@autenticador.validar_token
+#@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
@@ -83,9 +83,9 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    #sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
-    #comunicador.asignar_idioma(sesion.get('idioma'))
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma'))
+    #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     info = comunicador.agregar_contexto()
 
     respuesta = comunicador.transformar_contenido(

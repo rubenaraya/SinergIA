@@ -9,7 +9,7 @@
         "rutaDominio": "/api/web/prueba/base/EsquemasDominio.json",
         "rolesUsuarios": {"Admin": "Administrador", "Editor": "Editor", "Usuario": "Usuario", "Invitado": "Invitado"},
         "serviciosApi": {
-            "ApiLocal": {"urlApi": "https://localhost:5000/prueba", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "/api/web/jsinergia/ApiLocal.js"},
+            "ApiLocal": {"urlApi": "https://localhost:5000/api/prueba", "keyApi": ["4EOCYMDAQB", "DR8TTAcNFl"], "rutaAdaptador": "/api/web/jsinergia/ApiLocal.js"},
             "ApiOpenAI": {"urlApi": "https://api.openai.com/v1", "keyApi": ["Oj0MIh86","0uElxaGCM5","JDM0ET4tNT","U8XDEYKDgv","JA40NQMpGA","5COiQsI1YY","HwROUBlfIz"], "rutaAdaptador": "/api/web/jsinergia/ApiOpenAI.js"}
         },
         "notificacionesPush": {
