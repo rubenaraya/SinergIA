@@ -23,7 +23,7 @@ comunicador = ComunicadorWeb(config.contexto())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
-    url_login=f'/api/{aplicacion}/login',
+    url_login=f'/{config.app_web}/{aplicacion}/login',
 )
 enrutador = APIRouter(prefix=f'{config.raiz_api}/{aplicacion}')
 
@@ -33,7 +33,7 @@ enrutador = APIRouter(prefix=f'{config.raiz_api}/{aplicacion}')
 
 @enrutador.route('', methods=['GET'])
 def get_inicio():
-    return RedirectResponse(f'{config.frontend}/{aplicacion}/index.html')
+    return RedirectResponse(f'/{config.app_web}/{config.frontend}/{aplicacion}/index.html')
 
 @enrutador.get('/participantes',
                 status_code=C.ESTADO.HTTP_200_EXITO,

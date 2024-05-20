@@ -159,6 +159,7 @@ class Configuracion(BaseSettings):
     ruta_servicio: str = ''
     nivel_registro: str = ''
     raiz_api: str = ''
+    app_web: str = ''
     frontend: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
@@ -258,6 +259,7 @@ class Configuracion(BaseSettings):
             partes = ruta_normalizada.split(os.sep)
             mi.aplicacion = aplicacion
             mi.servicio = partes[-1] if len(partes) > 0 else ''
+            mi.app_web = os.getenv('APP_WEB', '')
             mi.raiz_api = os.getenv('RAIZ_API', '')
             mi.frontend = os.getenv('ALIAS_FRONTEND', '')
     def contexto(mi) -> Dict:
@@ -268,6 +270,7 @@ class Configuracion(BaseSettings):
             'dir_locales': mi.dir_locales,
             'zona_horaria': mi.zona_horaria,
             'idiomas': mi.idiomas,
+            'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend
         }

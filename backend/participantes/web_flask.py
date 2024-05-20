@@ -23,7 +23,7 @@ comunicador = ComunicadorWeb(config.contexto())
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
-    url_login=f'/api/{aplicacion}/login',
+    url_login=f'/{config.app_web}/{aplicacion}/login',
 )
 enrutador = Blueprint(
     name=config.servicio,
@@ -37,10 +37,10 @@ enrutador = Blueprint(
 
 @enrutador.route('', methods=['GET'])
 def get_inicio():
-    return redirect(f'{config.frontend}/{aplicacion}/index.html')
+    return redirect(f'/{config.app_web}/{config.frontend}/{aplicacion}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
-#@autenticador.validar_token
+@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
