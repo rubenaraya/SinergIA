@@ -158,6 +158,7 @@ tmp/
 tmp/*/
 _backend/
 _backend/*/
+frontend/jsinergia/_encriptar.js
 
 .*.env
 *.env
