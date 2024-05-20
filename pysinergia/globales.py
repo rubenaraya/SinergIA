@@ -15,6 +15,7 @@ class Constantes:
     RUTA_EXPORTADORES = 'pysinergia.exportadores'
     DIR_LIB_SQLEAN = './_lib/sqlean'
     DIR_LIB_FFMPEG = './_lib/ffmpeg'
+    DIR_LIB_PANDOC = './_lib/pandoc/bin'
 
     class ENTORNO:
         PRODUCCION = 'PRODUCCION'

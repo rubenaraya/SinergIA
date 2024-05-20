@@ -24,6 +24,7 @@ autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
     url_login=f'/{config.app_web}/{aplicacion}/login',
+    ruta_temp=config.ruta_temp
 )
 enrutador = Blueprint(
     name=config.servicio,

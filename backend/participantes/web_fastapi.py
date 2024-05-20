@@ -24,6 +24,7 @@ autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
     url_login=f'/{config.app_web}/{aplicacion}/login',
+    ruta_temp=config.ruta_temp
 )
 enrutador = APIRouter(prefix=f'{config.raiz_api}/{aplicacion}')
 
@@ -128,3 +129,17 @@ async def pdf(request:Request):
     )
     return StreamingResponse(content=documento, headers=encabezados)
  
+@enrutador.get('/docx', status_code=C.ESTADO.HTTP_200_EXITO)
+async def docx(request:Request):
+    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
+    info = {'titulo': 'Documento de Pruebas'}
+    comunicador.agregar_contexto(info=info)
+    documento, encabezados = comunicador.generar_documento_word(
+        nombre_archivo='documento-prueba.docx',
+        plantilla_html=f'{config.ruta_servicio}/plantillas/docx.html',
+        destino=f'./repositorios/{config.aplicacion}/disco/documento-prueba.docx',
+        info=info
+    )
+    return StreamingResponse(content=documento, headers=encabezados)
+
+

@@ -322,12 +322,27 @@ class ComunicadorWeb:
         documento = exportador.generar(contenido=contenido, destino=destino)
         return (documento, encabezados)
 
+    def generar_documento_word(mi, nombre_archivo:str, plantilla_html:str, info:dict={}, destino:str='') -> tuple:
+        from pysinergia.exportadores.exportador_word import ExportadorWord
+        encabezados = {
+            'Content-Type': _C.MIME.DOCX,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+        opciones = {
+            'idioma': mi.idioma,
+            'ruta_temp': mi.config.get('ruta_temp')
+        }
+        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
+        exportador = ExportadorWord(opciones)
+        documento = exportador.generar(contenido=contenido, destino=destino)
+        return (documento, encabezados)
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
 class AutenticadorWeb:
-    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str='tmp'):
+    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str=''):
         mi.secreto = secreto
         mi.algoritmo = algoritmo
         mi.url_login:str = url_login
@@ -410,11 +425,11 @@ class AutenticadorWeb:
             id_sesion = mi.obtener_id_sesion()
         if not id_sesion:
             return {}
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
         return _Json.leer(archivo)
     
     def guardar_sesion(mi, aplicacion:str, datos:dict) -> bool:
         id_sesion = mi.obtener_id_sesion()
-        archivo = f'{mi.ruta_temp}/{aplicacion}/sesiones/{id_sesion}.json'
+        archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
         return _Json.guardar(datos, archivo)
 

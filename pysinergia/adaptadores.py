@@ -153,6 +153,7 @@ class Configuracion(BaseSettings):
     zona_horaria: str = ''
     traduccion: str = ''
     dir_locales: str = ''
+    ruta_temp: str = ''
     idiomas: list = []
     api_keys: dict = {}
     secret_key: str = ''
@@ -268,6 +269,7 @@ class Configuracion(BaseSettings):
             'servicio': mi.servicio,
             'traduccion': mi.traduccion,
             'dir_locales': mi.dir_locales,
+            'ruta_temp': mi.ruta_temp,
             'zona_horaria': mi.zona_horaria,
             'idiomas': mi.idiomas,
             'app_web': mi.app_web,
