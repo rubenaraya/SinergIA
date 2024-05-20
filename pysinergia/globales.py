@@ -48,7 +48,6 @@ class Constantes:
         ExportadorExcel = "ExportadorExcel"
         ExportadorPdf = "ExportadorPdf"
         ExportadorWord = "ExportadorWord"
-        ExportadorHtml = "ExportadorHtml"
 
     class MIME:
         HTML = 'text/html'

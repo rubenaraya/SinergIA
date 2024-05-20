@@ -1,10 +1,28 @@
-fastapi
-pydantic-settings
-PyJWT
-pytz
-Pillow
-weasyprint==52.5
-
+# Flask
 flask
 flask-cors
 Flask-Pydantic
+
+# FastAPI
+fastapi
+
+# Otros
+pydantic-settings
+PyJWT
+pytz
+
+# Convertidores
+Pillow
+weasyprint==52.5
+python-docx
+openpyxl
+pandas
+
+# Vectores + Cargadores +LLM
+chromadb
+faiss-cpu
+openai
+openai[datalib]
+langchain
+PyMuPDF
+docx2txt
