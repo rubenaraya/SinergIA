@@ -4,8 +4,8 @@
 # Script de inicio
 # --------------------------------------------------
 framework = 'flask'  # flask | fastapi
-entorno = 'DESARROLLO'  # PRODUCCION | DESARROLLO
-raiz_api = '/api'  # /api
+entorno = 'PRODUCCION'  # PRODUCCION | DESARROLLO
+raiz_api = ''  # /api
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -15,10 +15,10 @@ else:
     from pysinergia.web_flask import ServidorApi
 
 # --------------------------------------------------
-# Configuración de la Api
+# Configuracion de la Api
 titulo = 'Api Demo'
 descripcion = """
-Esta es una API REST básica implementada para probar y demostrar las funciones de la biblioteca PySinergIA.
+Esta es una API REST basica implementada para probar y demostrar las funciones de la biblioteca PySinergIA.
 """
 version = '0.1.0'
 
@@ -31,7 +31,7 @@ idiomas = ['es','en']
 origenes_cors = ['*']
 
 # --------------------------------------------------
-# Creación de la Api
+# Creacion de la Api
 servidor = ServidorApi(raiz_api)
 api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=True)
 servidor.mapear_enrutadores(api, ubicacion_enrutadores)
