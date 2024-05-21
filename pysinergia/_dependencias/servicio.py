@@ -1,4 +1,4 @@
-# pysinergia\dependencias\servicio.py
+# pysinergia\_dependencias\servicio.py
 
 from abc import (ABCMeta, abstractmethod)
 from typing import Dict

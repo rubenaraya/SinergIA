@@ -12,6 +12,14 @@ class ExportadorExcel(_I_Exportador):
         mi.config:dict = config
 
     def generar(mi, contenido:str, opciones:dict={}):
-        import pandas, io, os
+        import pandas as pd
+        import io, os
+        hoja_estilos = opciones.get('hoja_estilos', '')
+        ruta_destino = opciones.get('ruta_destino', '')
 
-        return ''
+        salida_xlsx = ''
+        with open(salida_xlsx, 'rb') as f:
+            xlsx_bytes = f.read()
+            xlsx_io = io.BytesIO(xlsx_bytes)
+        return xlsx_io
+

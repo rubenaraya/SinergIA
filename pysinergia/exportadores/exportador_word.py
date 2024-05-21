@@ -3,7 +3,7 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_Exportador as _I_Exportador
-from pysinergia.globales import Constantes as _Constantes
+from pysinergia import Constantes as _Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorWord
@@ -15,13 +15,7 @@ class ExportadorWord(_I_Exportador):
     def generar(mi, contenido:str, opciones:dict={}):
         import subprocess, os, io
         dir_pandoc = os.path.normpath(os.path.abspath(_Constantes.DIR_LIB_PANDOC))
-        """
-        import pandoc
         os.environ["PATH"] = dir_pandoc + os.pathsep + os.getenv("PATH")
-        pandoc.configure(path=dir_pandoc, version="3.2")
-        doc = pandoc.read(contenido, format='html')
-        res = pandoc.write(doc=doc, format='docx', file=destino)
-        """
         ruta_pandoc = os.path.join(dir_pandoc,'pandoc')
         idioma = opciones.get('idioma', '')
         hoja_estilos = opciones.get('hoja_estilos', '')

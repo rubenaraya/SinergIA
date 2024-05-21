@@ -7,7 +7,7 @@ from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes as _Constantes
+from pysinergia import Constantes as _Constantes
 from pysinergia.adaptadores import I_ConectorBasedatos as _Basedatos
 
 # --------------------------------------------------

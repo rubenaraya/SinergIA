@@ -2,7 +2,7 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
+from pysinergia import (
     Constantes as _Constantes,
     ErrorPersonalizado as _ErrorPersonalizado,
 )

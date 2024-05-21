@@ -1,6 +1,6 @@
 # backend\participantes\web_flask.py
 
-from pysinergia.dependencias.web_flask import *
+from pysinergia._dependencias.web_flask import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado

@@ -1,4 +1,4 @@
-# pysinergia\dependencias\web_flask.py
+# pysinergia\_dependencias\web_flask.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -16,14 +16,14 @@ import os
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
+from pysinergia import (
     Funciones as F,
     Constantes as C,
     Json,
     ErrorPersonalizado,
 )
 from pysinergia.adaptadores import obtener_config
-from pysinergia.web_flask import (
+from pysinergia.interfaces.web_flask import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

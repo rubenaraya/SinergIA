@@ -1,6 +1,6 @@
 # backend\participantes\servicio.py
 
-from pysinergia.dependencias.servicio import *
+from pysinergia._dependencias.servicio import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado

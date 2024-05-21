@@ -1,6 +1,6 @@
 # backend\participantes\adaptadores.py
 
-from pysinergia.dependencias.adaptadores import *
+from pysinergia._dependencias.adaptadores import *
 
 # --------------------------------------------------
 # Importaciones del Servicio personalizado

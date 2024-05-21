@@ -1,7 +1,7 @@
-# pysinergia\web_fastapi.py
+# pysinergia\interfaces\web_fastapi.py
 
 from typing import Dict
-import time, jwt, os
+import time, os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -13,22 +13,23 @@ from fastapi.responses import (
     JSONResponse,
     RedirectResponse,
     FileResponse,
-    StreamingResponse,
     Response,
 )
 from fastapi.encoders import jsonable_encoder
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
+from pysinergia import (
     Constantes as _C,
     Funciones as _F,
-    Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
     RegistradorLogs as _RegistradorLogs,
 )
-from pysinergia.web import Comunicador as _Comunicador
+from pysinergia.web import (
+    Comunicador as _Comunicador,
+    Autenticador as _Autenticador,
+)
 from pysinergia import __version__ as api_motor
 
 # --------------------------------------------------
@@ -296,53 +297,10 @@ class ComunicadorWeb(_Comunicador):
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
-class AutenticadorWeb:
-    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str=''):
-        mi.secreto = secreto
-        mi.algoritmo = algoritmo
-        mi.url_login:str = url_login
-        mi.api_keys:dict = api_keys
-        mi.ruta_temp:str = ruta_temp
-        mi.token:str = None
-
-    # --------------------------------------------------
-    # Métodos privados
-
-    def _verificar_jwt(mi) -> bool:
-        es_valido:bool = False
-        try:
-            payload = mi._decodificar_jwt()
-        except:
-            payload = None
-        if payload:
-            es_valido = True
-        return es_valido
-
-    def _decodificar_jwt(mi) -> dict:
-        if not mi.token:
-            return None
-        try:
-            token_decodificado = jwt.decode(mi.token, mi.secreto, algorithms=[mi.algoritmo])
-            return token_decodificado if token_decodificado['caducidad'] >= time.time() else None
-        except:
-            return {}
+class AutenticadorWeb(_Autenticador):
 
     # --------------------------------------------------
     # Métodos públicos
-
-    def obtener_id_sesion(mi) -> str:
-        token_decodificado = mi._decodificar_jwt()
-        if token_decodificado:
-            return token_decodificado.get('id_sesion')
-        return ''
-
-    def firmar_token(mi, id_sesion:str, duracion:int=30) -> str:
-        payload = {
-            'id_sesion': id_sesion,
-            'caducidad': time.time() + 60 * duracion
-        }
-        mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
-        return mi.token
 
     async def validar_apikey(mi, request:Request) -> str:
         if 'Authorization' in request.headers:
@@ -374,17 +332,4 @@ class AutenticadorWeb:
     async def validar_todo(mi, request:Request):
         await mi.validar_apikey(request)
         await mi.validar_token(request)
-
-    def recuperar_sesion(mi, aplicacion:str, id_sesion:str='') -> Dict:
-        if not id_sesion:
-            id_sesion = mi.obtener_id_sesion()
-        if not id_sesion:
-            return {}
-        archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
-        return _Json.leer(archivo)
-    
-    def guardar_sesion(mi, aplicacion:str, datos:dict) -> bool:
-        id_sesion = mi.obtener_id_sesion()
-        archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
-        return _Json.guardar(datos, archivo)
 

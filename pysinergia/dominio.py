@@ -8,11 +8,10 @@ from pydantic import BaseModel
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
+from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
 )
-
 
 # --------------------------------------------------
 # Clase: Entidad

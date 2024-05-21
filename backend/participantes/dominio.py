@@ -1,6 +1,6 @@
 # backend\participantes\dominio.py
 
-from pysinergia.dependencias.dominio import *
+from pysinergia._dependencias.dominio import *
 
 # --------------------------------------------------
 # Clase: EntidadParticipante

@@ -9,7 +9,7 @@
 framework = 'flask'  # flask | fastapi
 entorno = 'PRODUCCION'
 app_web = 'api' # App real en: CPanel/Python/Web Applications/Application URL = 'api'
-raiz_api = ''
+raiz_api = '' # Vacio!
 
 # --------------------------------------------------
 # Configuracion especifica de la Api
@@ -30,9 +30,9 @@ origenes_cors = ['*']
 # --------------------------------------------------
 # Importaciones de PySinergIA
 if framework == 'fastapi':
-    from pysinergia.web_fastapi import ServidorApi
+    from pysinergia.interfaces.web_fastapi import ServidorApi
 else:
-    from pysinergia.web_flask import ServidorApi
+    from pysinergia.interfaces.web_flask import ServidorApi
 
 # --------------------------------------------------
 # Creacion de la Api

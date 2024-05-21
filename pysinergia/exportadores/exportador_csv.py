@@ -12,6 +12,14 @@ class ExportadorCsv(_I_Exportador):
         mi.config:dict = config
 
     def generar(mi, contenido:str='', opciones:dict={}):
-        import pandas, io, os
+        import pandas as pd
+        import io, os
+        hoja_estilos = opciones.get('hoja_estilos', '')
+        ruta_destino = opciones.get('ruta_destino', '')
 
-        return ''
+        salida_csv = ''
+        with open(salida_csv, 'rb') as f:
+            csv_bytes = f.read()
+            csv_io = io.BytesIO(csv_bytes)
+        return csv_io
+

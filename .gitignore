@@ -166,7 +166,7 @@ _desarrollo/*/
 *.zip
 cert.pem
 key.pem
-_*.py
+_app*.py
 _prueba*.*
 main.py
 docs/~*.~vsd

@@ -1,4 +1,4 @@
-# pysinergia\dependencias\adaptadores.py
+# pysinergia\_dependencias\adaptadores.py
 
 from typing import Dict
 

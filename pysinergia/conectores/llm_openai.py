@@ -1,6 +1,9 @@
 # pysinergia\conectores\llm_openai.py
 
 # --------------------------------------------------
+# Importaciones de Infraestructura de Datos
+
+# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_ConectorLlm as _Llm
 

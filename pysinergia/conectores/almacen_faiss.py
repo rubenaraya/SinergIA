@@ -1,6 +1,9 @@
 # pysinergia\conectores\almacen_faiss.py
 
 # --------------------------------------------------
+# Importaciones de Infraestructura de Datos
+
+# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_ConectorAlmacen as _Almacen
 

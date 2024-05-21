@@ -1,4 +1,4 @@
-# pysinergia\dependencias\web_fastapi.py
+# pysinergia\_dependencias\web_fastapi.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -22,13 +22,13 @@ import os
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.globales import (
+from pysinergia import (
     Funciones as F,
     Constantes as C,
     ErrorPersonalizado,
 )
 from pysinergia.adaptadores import obtener_config
-from pysinergia.web_fastapi import (
+from pysinergia.interfaces.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
 )
