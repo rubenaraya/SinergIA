@@ -47,7 +47,6 @@ class Constantes:
         AlmacenFaiss = 'AlmacenFaiss'
         BasedatosMysql = 'BasedatosMysql'
         BasedatosSqlite = 'BasedatosSqlite'
-        DiscoLocal = 'DiscoLocal'
         LlmOpenai = 'LlmOpenai'
     
     class FORMATO:

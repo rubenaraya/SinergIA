@@ -95,20 +95,6 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 
 
 # --------------------------------------------------
-# Interface: I_ConectorDisco
-# --------------------------------------------------
-class I_ConectorDisco(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los conectores
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-
-# --------------------------------------------------
 # Interface: I_ConectorLlm
 # --------------------------------------------------
 class I_ConectorLlm(metaclass=ABCMeta):
@@ -183,14 +169,6 @@ class Configuracion(BaseSettings):
     almacen_url: str = ''
     almacen_usuario: str = ''
     almacen_password: str = ''
-    disco_fuente: str = ''
-    disco_clase: str = ''
-    disco_nombre: str = ''
-    disco_ruta: str = ''
-    disco_apikey: str = ''
-    disco_url: str = ''
-    disco_usuario: str = ''
-    disco_password: str = ''
     llm_fuente: str = ''
     llm_clase: str = ''
     llm_nombre: str = ''
@@ -229,17 +207,6 @@ class Configuracion(BaseSettings):
             'apikey': mi.almacen_apikey,
             'usuario': mi.almacen_usuario,
             'password': mi.almacen_password
-        })
-    def disco(mi) -> Dict:
-        return dict({
-            'fuente': mi.disco_fuente,
-            'clase': mi.disco_clase,
-            'nombre': mi.disco_nombre,
-            'ruta': mi.disco_ruta,
-            'url': mi.disco_url,
-            'apikey': mi.disco_apikey,
-            'usuario': mi.disco_usuario,
-            'password': mi.disco_password
         })
     def llm(mi) -> Dict:
         return dict({
@@ -317,10 +284,6 @@ class Operador:
                 conector_basedatos = mi._importar_conector(config=mi.config.basedatos())
                 if conector_basedatos:
                     mi.basedatos:I_ConectorBasedatos = conector_basedatos()
-            if config.disco_clase:
-                conector_disco = mi._importar_conector(mi.config.disco())
-                if conector_disco:
-                    mi.disco:I_ConectorDisco = conector_disco()
             if config.almacen_clase:
                 conector_almacen = mi._importar_conector(mi.config.almacen())
                 if conector_almacen:
