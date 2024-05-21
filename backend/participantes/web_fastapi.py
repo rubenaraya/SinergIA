@@ -32,7 +32,7 @@ enrutador = APIRouter(prefix=f'{config.raiz_api}/{aplicacion}')
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
-@enrutador.route('', methods=['GET'])
+@enrutador.route('/', methods=['GET'])
 def get_inicio():
     return RedirectResponse(f'/{config.app_web}/{config.frontend}/{aplicacion}/index.html')
 
@@ -42,7 +42,7 @@ def get_inicio():
                 #dependencies=[Depends(autenticador.validar_token)]
             )
 async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
     return respuesta
@@ -51,7 +51,7 @@ async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=JSONResponse)
 async def ver_participante(peticion:PeticionParticipante=Depends()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     respuesta = Controlador(config, sesion).ver_participante(peticion)
     return respuesta
 
@@ -59,7 +59,7 @@ async def ver_participante(peticion:PeticionParticipante=Depends()):
                 status_code=C.ESTADO.HTTP_201_CREADO,
                 response_class=JSONResponse)
 async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     respuesta = Controlador(config, sesion).agregar_participante(peticion)
     return respuesta
 
@@ -67,7 +67,7 @@ async def agregar_participante(peticion:ModeloNuevoParticipante=Body()):
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     respuesta = Controlador(config, sesion).actualizar_participante(peticion)
     return respuesta
 
@@ -75,7 +75,7 @@ async def actualizar_participante(peticion:ModeloEditarParticipante=Body()):
                 status_code=C.ESTADO.HTTP_204_VACIO,
                 response_class=JSONResponse)
 async def eliminar_participante(peticion:PeticionParticipante=Depends()):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     respuesta = Controlador(config, sesion).eliminar_participante(peticion)
     return respuesta
 
@@ -97,7 +97,7 @@ async def token(email:str):
                 status_code=C.ESTADO.HTTP_200_EXITO,
                 response_class=HTMLResponse)
 async def get_login(request:Request):
-    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     info = comunicador.agregar_contexto(request, {}, sesion)
@@ -127,7 +127,7 @@ async def pdf(request:Request):
         'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
     }
     comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(info=info)
+    comunicador.agregar_contexto(request, info=info)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info, plantilla=plantilla, opciones=opciones)
     return StreamingResponse(content=documento, headers=encabezados)
@@ -143,9 +143,8 @@ async def docx(request:Request):
         'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
     }
     comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(info=info)
+    comunicador.agregar_contexto(request, info=info)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info, plantilla=plantilla, opciones=opciones)
     return StreamingResponse(content=documento, headers=encabezados)
-
 

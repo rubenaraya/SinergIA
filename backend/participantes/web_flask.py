@@ -44,7 +44,7 @@ def get_inicio():
 #@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
-    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     respuesta = Controlador(config, sesion).buscar_participantes(query)
     return Response(respuesta.json(), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
@@ -52,27 +52,27 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
 @enrutador.route('/participantes/<id>', methods=['GET'])
 @validate()
 def ver_participante(id):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(config, sesion).ver_participante(peticion)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes', methods=['POST'])
 def agregar_participante(body:ModeloNuevoParticipante):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     respuesta = Controlador(config, sesion).agregar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_201_CREADO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
 def actualizar_participante(id, body:ModeloEditarParticipante):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     body.id = id
     respuesta = Controlador(config, sesion).actualizar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<int>', methods=['DELETE'])
 def eliminar_participante(id):
-    sesion = autenticador.recuperar_sesion(config.aplicacion)
+    sesion = autenticador.recuperar_sesion()
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(config, sesion).eliminar_participante(peticion)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
@@ -84,7 +84,7 @@ def eliminar_participante(id):
 
 @enrutador.route('/login', methods=['GET'])
 def get_login():
-    sesion = autenticador.recuperar_sesion(config.aplicacion, 'rubenarayatagle@gmail.com')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma'))
     #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     info = comunicador.agregar_contexto({}, sesion)
