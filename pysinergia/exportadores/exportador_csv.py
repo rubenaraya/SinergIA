@@ -12,4 +12,6 @@ class ExportadorCsv(_I_Exportador):
         mi.opciones:dict = opciones
 
     def generar(mi, contenido:str, destino:str=''):
+        import pandas, io, os
+
         return ''

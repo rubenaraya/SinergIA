@@ -106,7 +106,7 @@ def pdf():
     comunicador.agregar_contexto(info=info)
     documento, encabezados = comunicador.generar_documento_pdf(
         nombre_archivo='documento-prueba.pdf',
-        estilos_css=f'{config.ruta_servicio}/plantillas/pdf.css',
+        hoja_estilos=f'{config.ruta_servicio}/plantillas/pdf.css',
         plantilla_html=f'{config.ruta_servicio}/plantillas/pdf.html',
         destino=f'./repositorios/{config.aplicacion}/disco/documento-prueba.pdf',
         info=info

@@ -14,8 +14,8 @@ class ExportadorPdf(_I_Exportador):
     def generar(mi, contenido:str, destino:str=''):
         from weasyprint import HTML, CSS
         import io
-        estilos_css = mi.opciones.get('estilos_css', '')
-        css = CSS(filename=estilos_css) if estilos_css else None
+        hoja_estilos = mi.opciones.get('hoja_estilos', '')
+        css = CSS(filename=hoja_estilos) if hoja_estilos else None
         pdf = HTML(string=contenido).write_pdf(stylesheets=[css] if css else None)
         if destino:
             with open(destino, 'wb') as f:

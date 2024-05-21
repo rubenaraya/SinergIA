@@ -141,7 +141,13 @@ class I_ConectorSpi(metaclass=ABCMeta):
 # --------------------------------------------------
 class I_Exportador(metaclass=ABCMeta):
     # Implementada en la capa de infraestructura por los exportadores
-    ...
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
+    @abstractmethod
+    def generar(mi, contenido:str, destino:str=''):
+        ...
 
 
 # --------------------------------------------------
