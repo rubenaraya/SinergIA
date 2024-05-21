@@ -36,7 +36,7 @@ class Constantes:
         ALERTA = "ALERTA"
         ERROR = "ERROR"
 
-    class CONECTOR:
+    class ORIGEN:
         AlmacenChroma = 'AlmacenChroma'
         AlmacenFaiss = 'AlmacenFaiss'
         BasedatosMysql = 'BasedatosMysql'
@@ -44,11 +44,11 @@ class Constantes:
         DiscoLocal = 'DiscoLocal'
         LlmOpenai = 'LlmOpenai'
     
-    class EXPORTADOR:
-        ExportadorCsv = "ExportadorCsv"
-        ExportadorExcel = "ExportadorExcel"
-        ExportadorPdf = "ExportadorPdf"
-        ExportadorWord = "ExportadorWord"
+    class FORMATO:
+        CSV = "CSV"
+        EXCEL = "EXCEL"
+        PDF = "PDF"
+        WORD = "WORD"
 
     class MIME:
         HTML = 'text/html'

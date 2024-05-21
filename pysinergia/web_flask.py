@@ -1,6 +1,5 @@
 # pysinergia\web_flask.py
 
-from typing import Dict
 from functools import wraps
 import time, jwt, os
 
@@ -269,17 +268,7 @@ class ComunicadorWeb:
     # --------------------------------------------------
     # Métodos públicos
 
-    def asignar_idioma(mi, idiomas_aceptados:str):
-        import gettext
-        mi.idioma = _F.negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
-        mi.traductor = gettext.translation(
-            domain=mi.config.get('traduccion'),
-            localedir=mi.config.get('dir_locales'),
-            languages=[mi.idioma],
-            fallback=False,
-        )
-
-    def agregar_contexto(mi, info:dict={}, sesion:dict={}) -> Dict:
+    def agregar_contexto(mi, info:dict={}, sesion:dict={}) -> dict:
         info['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['idioma'] = mi.idioma
         info['url'] = {
@@ -290,6 +279,22 @@ class ComunicadorWeb:
         info['config'] = mi.config
         info['sesion'] = sesion
         return info
+
+    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
+        return {
+            'Content-Type': tipo_mime,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+
+    def asignar_idioma(mi, idiomas_aceptados:str):
+        import gettext
+        mi.idioma = _F.negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
+        mi.traductor = gettext.translation(
+            domain=mi.config.get('traduccion'),
+            localedir=mi.config.get('dir_locales'),
+            languages=[mi.idioma],
+            fallback=False,
+        )
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -304,34 +309,16 @@ class ComunicadorWeb:
             resultado = template.render(info)
         return resultado
 
-    def generar_documento_pdf(mi, nombre_archivo:str, hoja_estilos:str, plantilla_html:str, info:dict={}, destino:str='') -> tuple:
-        from pysinergia.exportadores.exportador_pdf import ExportadorPdf
-        encabezados = {
-            'Content-Type': _C.MIME.PDF,
-            'Content-disposition': f'inline; filename={nombre_archivo}'
-        }
-        opciones = {
-            'hoja_estilos': hoja_estilos,
-        }
-        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
-        exportador = ExportadorPdf(opciones)
-        documento = exportador.generar(contenido=contenido, destino=destino)
-        return (documento, encabezados)
-
-    def generar_documento_word(mi, nombre_archivo:str, plantilla_html:str, info:dict={}, destino:str='') -> tuple:
-        from pysinergia.exportadores.exportador_word import ExportadorWord
-        encabezados = {
-            'Content-Type': _C.MIME.DOCX,
-            'Content-disposition': f'inline; filename={nombre_archivo}'
-        }
-        opciones = {
-            'idioma': mi.idioma,
-            'ruta_temp': mi.config.get('ruta_temp')
-        }
-        contenido = mi.transformar_contenido(info=info, plantilla=plantilla_html)
-        exportador = ExportadorWord(opciones)
-        documento = exportador.generar(contenido=contenido, destino=destino)
-        return (documento, encabezados)
+    def exportar_info(mi, formato:str, info:dict={}, plantilla:str='', opciones:dict={}):
+        import importlib
+        from pysinergia.adaptadores import I_Exportador
+        opciones['idioma'] = mi.idioma
+        contenido = mi.transformar_contenido(info=info, plantilla=plantilla)
+        modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
+        clase = f'Exportador{str(formato).capitalize()}'
+        componente = getattr(importlib.import_module(modulo), clase)
+        exportador:I_Exportador = componente(mi.config)
+        return exportador.generar(contenido=contenido, opciones=opciones)
 
 
 # --------------------------------------------------
@@ -434,7 +421,7 @@ class AutenticadorWeb:
             return f(*args, **kwargs)
         return decorador
 
-    def recuperar_sesion(mi, aplicacion:str, id_sesion:str='') -> Dict:
+    def recuperar_sesion(mi, aplicacion:str, id_sesion:str='') -> dict:
         if not id_sesion:
             id_sesion = mi.obtener_id_sesion()
         if not id_sesion:

@@ -8,17 +8,18 @@ from pysinergia.adaptadores import I_Exportador as _I_Exportador
 # Clase: ExportadorPdf
 # --------------------------------------------------
 class ExportadorPdf(_I_Exportador):
-    def __init__(mi, opciones:dict={}):
-        mi.opciones:dict = opciones
+    def __init__(mi, config:dict={}):
+        mi.config:dict = config
 
-    def generar(mi, contenido:str, destino:str=''):
+    def generar(mi, contenido:str, opciones:dict={}):
         from weasyprint import HTML, CSS
         import io
-        hoja_estilos = mi.opciones.get('hoja_estilos', '')
+        hoja_estilos = opciones.get('hoja_estilos', '')
+        ruta_destino = opciones.get('ruta_destino', '')
         css = CSS(filename=hoja_estilos) if hoja_estilos else None
         pdf = HTML(string=contenido).write_pdf(stylesheets=[css] if css else None)
-        if destino:
-            with open(destino, 'wb') as f:
+        if ruta_destino and pdf:
+            with open(ruta_destino, 'wb') as f:
                 f.write(pdf)
         return io.BytesIO(pdf)
 

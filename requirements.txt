@@ -15,7 +15,7 @@ pytz
 Pillow
 weasyprint==52.5
 #python-docx
-#openpyxl
+openpyxl
 pandoc
 pandas
 

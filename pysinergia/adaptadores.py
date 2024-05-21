@@ -146,7 +146,7 @@ class I_Exportador(metaclass=ABCMeta):
     # Métodos obligatorios
 
     @abstractmethod
-    def generar(mi, contenido:str, destino:str=''):
+    def generar(mi, contenido:str='', opciones:dict={}, config:dict={}):
         ...
 
 
