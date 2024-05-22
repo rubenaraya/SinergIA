@@ -19,10 +19,8 @@ class ExportadorExcel(_I_Exportador):
             nombre_archivo = f'{nombre_archivo}.xlsx'
         ruta_destino = opciones.get('ruta_destino', '')
         ruta_archivo = f'{ruta_destino}/{nombre_archivo}'
-
-        idioma = opciones.get('idioma', '')
-        titulo = opciones.get('titulo', '')
         hoja_estilos = opciones.get('hoja_estilos', '')
+
         """
         salida_xlsx = ''
         with open(salida_xlsx, 'rb') as f:

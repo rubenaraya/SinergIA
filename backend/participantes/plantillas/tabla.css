@@ -6,28 +6,32 @@
         white-space: pre-wrap;
     }
     @page {
-        margin-bottom: 20mm;
-        margin-top: 20mm;
+        margin-bottom: 15mm;
+        margin-top: 15mm;
         margin-left: 15mm;
         margin-right: 15mm;
-        size: Letter;
+        size: Letter landscape;
     }
 }
+h1,h2,h3,h4,h5,h6 { color: #111; }
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img { margin: 0; }
 
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
 }
-h2 {
-    color: blue;
-}
-.centrado {
-    text-align: center; 
-}
-.derecha {
-    text-align: right; 
-}
-.page-break {
-    page-break-after: always;
-}
+h2 { color: blue; }
+.izquierda { text-align: left; float: left !important; }
+.centrada { text-align: center; }
+.derecha { text-align: right; float: right !important; }
+.page-break { page-break-after: always; }
+
+table { margin-bottom: 10mm; width:100%; }
+thead { display: table-header-group; }
+th { font-weight: bold; }
+thead th { background: #c3d9ff; }
+th,td,caption { padding: 3px 9px 3px 6px; }
+tfoot { font-style: italic; display: table-footer-group; }
+caption { background: #eee; }
+

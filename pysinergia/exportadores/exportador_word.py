@@ -22,8 +22,6 @@ class ExportadorWord(_I_Exportador):
         ruta_destino = opciones.get('ruta_destino', '')
         ruta_archivo = f'{ruta_destino}/{nombre_archivo}'
 
-        idioma = opciones.get('idioma', '')
-        titulo = opciones.get('titulo', '')
         hoja_estilos = opciones.get('hoja_estilos', '')
 
         ruta_temp = mi.config.get('ruta_temp', '')

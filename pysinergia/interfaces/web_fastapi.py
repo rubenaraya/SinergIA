@@ -259,9 +259,11 @@ class ServidorApi:
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
-                f'{mi._obtener_url(request)} | {mensaje}'
-            )
+            registrador = _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log')
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                registrador.error(exc, exc_info=True)
+            else:
+                registrador.error(f'{mi._obtener_url(request)} | {mensaje}')
             return JSONResponse(
                 status_code=_C.ESTADO.HTTP_500_ERROR,
                 content=jsonable_encoder(salida)
