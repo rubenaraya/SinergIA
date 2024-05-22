@@ -204,6 +204,8 @@ class ServidorApi:
                 mensaje=_('Los-datos-recibidos-son-invalidos'),
                 detalles=detalles
             )
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                _RegistradorLogs.crear(registro_logs, 'DEBUG', f'{dir_logs}/{registro_logs}.log').debug(exc, exc_info=True)
             return Response(
                 _Json.codificar(salida),
                 status=_C.ESTADO.HTTP_422_NO_PROCESABLE,

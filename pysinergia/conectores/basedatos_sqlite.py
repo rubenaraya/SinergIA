@@ -77,6 +77,7 @@ class BasedatosSqlite(_Basedatos):
         if contenido == _Basedatos.FORMATO.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
+            columnas = list(map(lambda x: x[0], cursor.description))
             paginador = []
             for pag in range(paginas):
                 paginador.append(pag + 1)
@@ -88,6 +89,7 @@ class BasedatosSqlite(_Basedatos):
                 "pagina": pagina,
                 "maximo": maximo,
                 "lista": lista,
+                "columnas": columnas,
                 "paginador": paginador
             }
             return datos, total
