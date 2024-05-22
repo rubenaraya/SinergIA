@@ -10,8 +10,23 @@
 </head>
 <body>
     <h2 class="centrada">{{opciones.titulo}}</h2>
-
-
-
+    <table>
+        <thead>
+            <tr>
+                {% for columna in resultado.columnas %}
+                    <th>{{ columna }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in resultado.lista %}
+                <tr>
+                    {% for columna in resultado.columnas %}
+                        <td>{{ item[columna] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

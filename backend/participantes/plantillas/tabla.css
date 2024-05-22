@@ -29,9 +29,9 @@ h2 { color: blue; }
 
 table { margin-bottom: 10mm; width:100%; }
 thead { display: table-header-group; }
-th { font-weight: bold; }
+th { font-weight: bold; text-transform: capitalize; text-align: center;}
 thead th { background: #c3d9ff; }
-th,td,caption { padding: 3px 9px 3px 6px; }
+th,td,caption { padding: 3px 9px 3px 6px; border-bottom: 1px solid silver;}
 tfoot { font-style: italic; display: table-footer-group; }
 caption { background: #eee; }
 
