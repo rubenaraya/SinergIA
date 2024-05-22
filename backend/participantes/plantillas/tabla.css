@@ -1,0 +1,33 @@
+@media print {
+    a::after {
+        content: " (" attr(href) ") ";
+    }
+    pre {
+        white-space: pre-wrap;
+    }
+    @page {
+        margin-bottom: 20mm;
+        margin-top: 20mm;
+        margin-left: 15mm;
+        margin-right: 15mm;
+        size: Letter;
+    }
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+h2 {
+    color: blue;
+}
+.centrado {
+    text-align: center; 
+}
+.derecha {
+    text-align: right; 
+}
+.page-break {
+    page-break-after: always;
+}

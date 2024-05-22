@@ -37,15 +37,27 @@ class ServidorApi:
     def __init__(mi, app_web:str, raiz_api:str=''):
         os.environ['RAIZ_API'] = raiz_api
         os.environ['APP_WEB'] = app_web
+        mi.entorno:str = None
 
     # --------------------------------------------------
     # Métodos privados
 
     def _configurar_encabezados(mi, api:Flask):
+
         @api.after_request
         def procesar_salidas(respuesta:Response):
             respuesta.headers['X-API-Motor'] = f"{api_motor}"
+            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 400:
+                content_type = str(respuesta.headers.get('Content-Type', ''))
+                print(f'respuesta: {content_type} | {respuesta.mimetype} | {respuesta.status_code}')
             return respuesta
+
+        @api.before_request
+        def procesar_entradas():
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                content_type = str(request.headers.get('Content-Type', ''))
+                if content_type:
+                    print(f'peticion: {content_type}')
 
     def _configurar_endpoints(mi, api:Flask):
 
@@ -114,6 +126,7 @@ class ServidorApi:
                 continue
 
     def iniciar_servicio(mi, app:Flask, host:str, puerto:int, entorno:str):
+        mi.entorno = entorno
         if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
             ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
             ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
@@ -124,6 +137,7 @@ class ServidorApi:
                 host=host,
                 port=puerto,
                 ssl_context=(ssl_cert, ssl_key),
+                debug=True if entorno == _C.ENTORNO.DESARROLLO else False
             )
 
     def manejar_errores(mi, api:Flask, dir_logs:str, registro_logs:str, idiomas:list):
@@ -251,7 +265,7 @@ class ServidorApi:
                 mensaje=mensaje
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
-                f'{mi._obtener_url()} | {mensaje}'
+                f'{mi._obtener_url()} | {mensaje}.\n{exc.__class__.__name__}.\n{exception_traceback}'
             )
             return Response(
                 _Json.codificar(salida),
@@ -273,14 +287,14 @@ class ComunicadorWeb(_Comunicador):
     # Métodos públicos
 
     def agregar_contexto(mi, info:dict={}, sesion:dict={}) -> dict:
-        info['ruta_raiz'] = _F.obtener_ruta_raiz()
-        info['idioma'] = mi.idioma
         info['url'] = {
             'absoluta': request.base_url,
             'base': str(request.url_root).strip('/'),
             'relativa': request.path,
         }
         info['config'] = mi.config
+        info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
+        info['config']['idioma'] = mi.idioma
         info['sesion'] = sesion
         return info
 

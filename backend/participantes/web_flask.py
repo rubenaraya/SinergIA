@@ -45,9 +45,9 @@ def get_inicio():
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma'))
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     respuesta = Controlador(config, sesion).buscar_participantes(query)
-    return Response(respuesta.json(), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+    return Response(respuesta, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
 @validate()
@@ -100,41 +100,48 @@ def get_login():
 def post_login():
     ...
 
-@enrutador.route('/pdf', methods=['GET'])
-def pdf():
-    nombre_archivo = 'documento-prueba.pdf'
-    info = {'titulo': 'Documento de Pruebas PDF'}
-    plantilla = f'{config.ruta_servicio}/plantillas/pdf.html'
-    opciones = {
-        'plantilla': plantilla,
-        'hoja_estilos': f'{config.ruta_servicio}/plantillas/pdf.css',
-        'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
-    }
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(info=info)
-    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info, plantilla=plantilla, opciones=opciones)
-    return Response(response=documento, headers=encabezados)
-
-@enrutador.route('/docx', methods=['GET'])
-def docx():
-    nombre_archivo = 'documento-prueba.docx'
-    info = {'titulo': 'Documento de Pruebas Word'}
-    plantilla = f'{config.ruta_servicio}/plantillas/docx.html'
-    opciones = {
-        'plantilla': plantilla,
-        'hoja_estilos': f'{config.ruta_servicio}/plantillas/docx.css',
-        'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
-    }
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(info=info)
-    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info, plantilla=plantilla, opciones=opciones)
-    return Response(response=documento, headers=encabezados)
-
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)
     #print(autenticador.id_sesion())
     return Response(autenticador.token, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.TXT)
+
+
+
+@enrutador.route('/pdf', methods=['GET'])
+@validate()
+def pdf(query:PeticionBuscarParticipantes):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    info = Controlador(config, sesion).buscar_participantes(query)
+    comunicador.agregar_contexto(info=info, sesion=sesion)
+    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
+    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info)
+    return Response(response=documento, headers=encabezados)
+
+@enrutador.route('/docx', methods=['GET'])
+@validate()
+def docx(query:PeticionBuscarParticipantes):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    info = Controlador(config, sesion).buscar_participantes(query)
+    comunicador.agregar_contexto(info=info, sesion=sesion)
+    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
+    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info)
+    return Response(response=documento, headers=encabezados)
+
+@enrutador.route('/xlsx', methods=['GET'])
+@validate()
+def xlsx(query:PeticionBuscarParticipantes):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    info = Controlador(config, sesion).buscar_participantes(query)
+    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    comunicador.agregar_contexto(info=info, sesion=sesion)
+    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
+    documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info)
+    #return Response(response=documento, headers=encabezados)
+    return info
 

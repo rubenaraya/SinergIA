@@ -1,6 +1,5 @@
 # pysinergia\interfaces\web_fastapi.py
 
-from typing import Dict
 import time, os
 
 # --------------------------------------------------
@@ -39,6 +38,7 @@ class ServidorApi:
     def __init__(mi, app_web:str, raiz_api:str=''):
         os.environ['RAIZ_API'] = raiz_api
         os.environ['APP_WEB'] = app_web
+        mi.entorno:str = None
 
     # --------------------------------------------------
     # Métodos privados
@@ -47,10 +47,14 @@ class ServidorApi:
         @api.middleware("http")
         async def configurar_encabezados_(request:Request, call_next):
             inicio = time.time()
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                print(f'peticion: {str(request.headers.get('Content-Type'))} | {str(request.json)}')
             respuesta:Response = await call_next(request)
             tiempo_proceso = str(round(time.time() - inicio, 3))
             respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
             respuesta.headers["X-API-Motor"] = api_motor
+            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 400:
+                print(f'respuesta: {str(respuesta.headers.get('Content-Type'))} | {str(respuesta.status_code)}')
             return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
@@ -123,6 +127,7 @@ class ServidorApi:
                 continue
 
     def iniciar_servicio(mi, app:str, host:str, puerto:int, entorno:str):
+        mi.entorno = entorno
         if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
             import uvicorn
             uvicorn.run(
@@ -275,15 +280,15 @@ class ComunicadorWeb(_Comunicador):
     # --------------------------------------------------
     # Métodos públicos
 
-    def agregar_contexto(mi, request:Request, info:dict={}, sesion:dict={}) -> Dict:
-        info['ruta_raiz'] = _F.obtener_ruta_raiz()
-        info['idioma'] = mi.idioma
+    def agregar_contexto(mi, request:Request, info:dict={}, sesion:dict={}) -> dict:
         info['url'] = {
             'absoluta': str(request.url).split('?')[0],
             'base': str(request.base_url).strip('/'),
             'relativa': request.url.path,
         }
         info['config'] = mi.config
+        info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
+        info['config']['idioma'] = mi.idioma
         info['sesion'] = sesion
         return info
 

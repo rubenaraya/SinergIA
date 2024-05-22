@@ -45,16 +45,17 @@ class Comunicador:
             resultado = template.render(info)
         return resultado
 
-    def exportar_info(mi, formato:str, info:dict={}, plantilla:str='', opciones:dict={}):
+    def exportar_info(mi, formato:str, info:dict={}):
         import importlib
         from pysinergia.adaptadores import I_Exportador
-        opciones['idioma'] = mi.idioma
+        info['opciones']['idioma'] = mi.idioma
+        plantilla = info['opciones'].get('plantilla')
         contenido = mi.transformar_contenido(info=info, plantilla=plantilla)
         modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
         clase = f'Exportador{str(formato).capitalize()}'
         componente = getattr(importlib.import_module(modulo), clase)
         exportador:I_Exportador = componente(mi.config)
-        return exportador.generar(contenido=contenido, opciones=opciones)
+        return exportador.generar(contenido=contenido, opciones=info['opciones'])
 
 
 # --------------------------------------------------

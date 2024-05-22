@@ -14,12 +14,20 @@ class ExportadorCsv(_I_Exportador):
     def generar(mi, contenido:str='', opciones:dict={}):
         import pandas as pd
         import io, os
-        hoja_estilos = opciones.get('hoja_estilos', '')
-        ruta_destino = opciones.get('ruta_destino', '')
 
+        nombre_archivo = opciones.get('nombre_archivo', '')
+        if nombre_archivo and not str(nombre_archivo).endswith('.xlsx'):
+            nombre_archivo = f'{nombre_archivo}.xlsx'
+        ruta_destino = opciones.get('ruta_destino', '')
+        ruta_archivo = f'{ruta_destino}/{nombre_archivo}'
+
+        idioma = opciones.get('idioma', '')
+        titulo = opciones.get('titulo', '')
+        hoja_estilos = opciones.get('hoja_estilos', '')
+        """
         salida_csv = ''
         with open(salida_csv, 'rb') as f:
             csv_bytes = f.read()
-            csv_io = io.BytesIO(csv_bytes)
+            csv_io = io.BytesIO(xlsx_bytes)
         return csv_io
-
+        """

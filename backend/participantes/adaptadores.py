@@ -25,10 +25,17 @@ class ControladorParticipantes(Controlador):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
-    def buscar_participantes(mi, peticion:ModeloPeticion) -> RespuestaResultado:
+    def buscar_participantes(mi, peticion:ModeloPeticion) -> dict:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
-        respuesta = RespuestaResultado(**resultado)
+        respuesta = RespuestaResultado(**resultado).diccionario()
+        respuesta['opciones'] = {
+            'plantilla': f'{mi.config.ruta_servicio}/plantillas/tabla.html',
+            'hoja_estilos': f'{mi.config.ruta_servicio}/plantillas/tabla.css',
+            'ruta_destino': f'./repositorios/{mi.config.aplicacion}/disco',
+            'nombre_archivo': 'documento-prueba',
+            'titulo': 'Listado de Pruebas',
+        }
         return respuesta
     
     def agregar_participante(mi, peticion:ModeloPeticion):
@@ -65,14 +72,14 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi) -> Dict:
+    def recuperar_lista_participantes_todos(mi) -> dict:
         mi.basedatos.conectar(mi.config.basedatos())
 
         instruccion = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
 
         datos, total = mi.basedatos.obtener(instruccion, parametros=[])
         mi.basedatos.desconectar()
-        return dict(datos)
+        return datos
 
     def recuperar_lista_participantes_filtrados(mi) -> Dict:
         ...

@@ -14,12 +14,20 @@ class ExportadorPdf(_I_Exportador):
     def generar(mi, contenido:str, opciones:dict={}):
         from weasyprint import HTML, CSS
         import io
-        hoja_estilos = opciones.get('hoja_estilos', '')
+
+        nombre_archivo = opciones.get('nombre_archivo', '')
+        if nombre_archivo and not str(nombre_archivo).endswith('.pdf'):
+            nombre_archivo = f'{nombre_archivo}.pdf'
         ruta_destino = opciones.get('ruta_destino', '')
+        ruta_archivo = f'{ruta_destino}/{nombre_archivo}'
+
+        idioma = opciones.get('idioma', '')
+        titulo = opciones.get('titulo', '')
+        hoja_estilos = opciones.get('hoja_estilos', '')
         css = CSS(filename=hoja_estilos) if hoja_estilos else None
         pdf = HTML(string=contenido).write_pdf(stylesheets=[css] if css else None)
-        if ruta_destino and pdf:
-            with open(ruta_destino, 'wb') as f:
+        if ruta_destino and nombre_archivo and pdf:
+            with open(ruta_archivo, 'wb') as f:
                 f.write(pdf)
         return io.BytesIO(pdf)
 

@@ -116,6 +116,8 @@ async def post_login(request:Request):
     respuesta = {}
     return respuesta
 
+
+
 @enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
 async def pdf(request:Request):
     nombre_archivo = 'documento-prueba.pdf'
