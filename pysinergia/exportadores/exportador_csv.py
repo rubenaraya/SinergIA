@@ -14,7 +14,6 @@ class ExportadorCsv(_I_Exportador):
     def generar(mi, contenido:str='', opciones:dict={}):
         import pandas as pd
         import io, os
-
         nombre_archivo = opciones.get('nombre_archivo', '')
         if nombre_archivo and not str(nombre_archivo).endswith('.xlsx'):
             nombre_archivo = f'{nombre_archivo}.xlsx'

@@ -16,7 +16,6 @@ class ExportadorWord(_I_Exportador):
         import subprocess, os, io
         dir_pandoc = os.path.normpath(os.path.abspath(_Constantes.DIR_LIB_PANDOC))
         os.environ["PATH"] = dir_pandoc + os.pathsep + os.getenv("PATH")
-
         nombre_archivo = opciones.get('nombre_archivo', '')
         if nombre_archivo and not str(nombre_archivo).endswith('.docx'):
             nombre_archivo = f'{nombre_archivo}.docx'
@@ -26,6 +25,7 @@ class ExportadorWord(_I_Exportador):
         idioma = opciones.get('idioma', '')
         titulo = opciones.get('titulo', '')
         hoja_estilos = opciones.get('hoja_estilos', '')
+
         ruta_temp = mi.config.get('ruta_temp', '')
         dir_temp = f'{ruta_temp}/archivos'
         ruta_html = os.path.join(os.path.abspath(dir_temp),'temp.html')

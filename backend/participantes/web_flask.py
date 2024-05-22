@@ -106,8 +106,6 @@ def token(email:str):
     #print(autenticador.id_sesion())
     return Response(autenticador.token, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.TXT)
 
-
-
 @enrutador.route('/pdf', methods=['GET'])
 @validate()
 def pdf(query:PeticionBuscarParticipantes):
@@ -115,7 +113,7 @@ def pdf(query:PeticionBuscarParticipantes):
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(query)
     comunicador.agregar_contexto(info=info, sesion=sesion)
-    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'pdf')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info)
     return Response(response=documento, headers=encabezados)
@@ -127,7 +125,7 @@ def docx(query:PeticionBuscarParticipantes):
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(query)
     comunicador.agregar_contexto(info=info, sesion=sesion)
-    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'docx')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info)
     return Response(response=documento, headers=encabezados)
@@ -137,7 +135,7 @@ def docx(query:PeticionBuscarParticipantes):
 def xlsx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     info = Controlador(config, sesion).buscar_participantes(query)
-    nombre_archivo = info['opciones'].get('nombre_archivo','')
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'xlsx')
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)

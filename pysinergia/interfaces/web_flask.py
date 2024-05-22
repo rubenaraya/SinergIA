@@ -47,9 +47,9 @@ class ServidorApi:
         @api.after_request
         def procesar_salidas(respuesta:Response):
             respuesta.headers['X-API-Motor'] = f"{api_motor}"
-            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 400:
+            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
-                print(f'respuesta: {content_type} | {respuesta.mimetype} | {respuesta.status_code}')
+                print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
             return respuesta
 
         @api.before_request
@@ -264,7 +264,7 @@ class ServidorApi:
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
-            _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
+            _RegistradorLogs.crear(registro_logs, 'DEBUG', f'{dir_logs}/{registro_logs}.log').error(
                 f'{mi._obtener_url()} | {mensaje}.\n{exc.__class__.__name__}.\n{exception_traceback}'
             )
             return Response(

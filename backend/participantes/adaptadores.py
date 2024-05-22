@@ -33,11 +33,11 @@ class ControladorParticipantes(Controlador):
             'plantilla': f'{mi.config.ruta_servicio}/plantillas/tabla.html',
             'hoja_estilos': f'{mi.config.ruta_servicio}/plantillas/tabla.css',
             'ruta_destino': f'./repositorios/{mi.config.aplicacion}/disco',
-            'nombre_archivo': 'documento-prueba',
+            'nombre_archivo': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
         }
         return respuesta
-    
+
     def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion)

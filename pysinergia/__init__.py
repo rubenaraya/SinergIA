@@ -226,6 +226,24 @@ class Funciones:
                 return idioma_preferido
         return idiomas_disponibles[0]
 
+    @staticmethod
+    def normalizar_nombre(nombre:str, extension:str='') -> str:
+        import re, unicodedata
+        if not nombre:
+            return ''
+        try:
+            nombre = unicodedata.normalize( 'NFD', nombre ).encode( 'ascii', 'ignore' ).decode( 'utf-8' )
+            nombre = re.sub(r" ", "-", nombre)
+            nombre = re.sub(r"_", "-", nombre)
+            nombre = re.sub(r"---", "-", nombre)
+            nombre = re.sub(r"--", "-", nombre)
+            nombre = re.sub(r'[\\/:"*?<>|°ºª~!#$%&=¿¡+{};@^`…(),\[\]\']', "", nombre)
+        except Exception as e:
+            print(e)
+        if extension and not str(nombre).endswith(f'.{extension}'):
+            nombre = f'{nombre}.{extension}'
+        return nombre
+
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
