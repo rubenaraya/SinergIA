@@ -1,6 +1,5 @@
 # pysinergia\__init__.py
 
-from typing import Dict
 import os, json
 
 # --------------------------------------------------
@@ -151,7 +150,7 @@ class Funciones:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def fecha_hora(zona_horaria:str) -> Dict:
+    def fecha_hora(zona_horaria:str) -> dict:
         import pytz
         from datetime import datetime
         fechahora = {}
@@ -170,6 +169,7 @@ class Funciones:
         fechahora['hoy_año'] = local.strftime( "%Y" )
         fechahora['ahora'] = local.strftime( "%Y%m%d%H%M%S" )
         fechahora['periodo'] = local.strftime( "%Y%m%d" )
+        fechahora['hoy_iso8601'] = local.isoformat(timespec='seconds')
         return fechahora
 
     @staticmethod
@@ -198,7 +198,7 @@ class Funciones:
         return Constantes.SALIDA.ERROR
 
     @staticmethod
-    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> Dict:
+    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
         return dict({
             'codigo': str(codigo),
             'tipo': tipo,

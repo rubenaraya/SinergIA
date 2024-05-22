@@ -41,9 +41,9 @@ def get_inicio():
                 response_class=JSONResponse,
                 #dependencies=[Depends(autenticador.validar_token)]
             )
-async def buscar_participantes(peticion:PeticionBuscarParticipantes=Depends()):
+async def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma'))
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
     return respuesta
 
@@ -116,37 +116,37 @@ async def post_login(request:Request):
     respuesta = {}
     return respuesta
 
-
-
 @enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
-async def pdf(request:Request):
-    nombre_archivo = 'documento-prueba.pdf'
-    info = {'titulo': 'Documento de Pruebas PDF'}
-    plantilla = f'{config.ruta_servicio}/plantillas/pdf.html'
-    opciones = {
-        'plantilla': plantilla,
-        'hoja_estilos': f'{config.ruta_servicio}/plantillas/pdf.css',
-        'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
-    }
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(request, info=info)
+async def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    info = Controlador(config, sesion).buscar_participantes(peticion)
+    comunicador.agregar_contexto(request, info=info, sesion=sesion)
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'pdf')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info, plantilla=plantilla, opciones=opciones)
+    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info)
     return StreamingResponse(content=documento, headers=encabezados)
- 
+
 @enrutador.get('/docx', status_code=C.ESTADO.HTTP_200_EXITO)
-async def docx(request:Request):
-    nombre_archivo = 'documento-prueba.docx'
-    info = {'titulo': 'Documento de Pruebas Word'}
-    plantilla = f'{config.ruta_servicio}/plantillas/docx.html'
-    opciones = {
-        'plantilla': plantilla,
-        'hoja_estilos': f'{config.ruta_servicio}/plantillas/docx.css',
-        'ruta_destino': f'./repositorios/{config.aplicacion}/disco/{nombre_archivo}',
-    }
-    comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    comunicador.agregar_contexto(request, info=info)
+async def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    info = Controlador(config, sesion).buscar_participantes(peticion)
+    comunicador.agregar_contexto(request, info=info, sesion=sesion)
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'docx')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info, plantilla=plantilla, opciones=opciones)
+    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info)
     return StreamingResponse(content=documento, headers=encabezados)
+
+@enrutador.get('/xlsx', status_code=C.ESTADO.HTTP_200_EXITO)
+async def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    info = Controlador(config, sesion).buscar_participantes(peticion)
+    comunicador.agregar_contexto(request, info=info, sesion=sesion)
+    nombre_archivo = F.normalizar_nombre(info['opciones'].get('nombre_archivo'), 'xlsx')
+    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
+    documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info)
+    #return StreamingResponse(content=documento, headers=encabezados)
+    return info
 

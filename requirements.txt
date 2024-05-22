@@ -13,11 +13,10 @@ pytz
 
 # Convertidores
 Pillow
-weasyprint==52.5
-#python-docx
 openpyxl
-pandoc
 pandas
+pandoc
+weasyprint
 
 # Vectores + Cargadores +LLM
 chromadb

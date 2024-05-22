@@ -1,11 +1,11 @@
-<html lang="{{ config.idioma }}">
+<html lang="{{config.idioma}}">
 <head>
     <meta charset="UTF-8">
     <title>{{opciones.titulo}}</title>
-    <meta name="author" content="Rubén Araya Tagle">
-    <meta name="dcterms.created" content="2024-05-22T04:30:00-04:00">
-    <meta name="description" content="Esta es la descripción del documento">
-    <meta name="generator" content="PySinergIA">
+    <meta name="generator" content="{{config.api_motor}}">
+    <meta name="author" content="{{sesion.alias}} ({{sesion.email}})">
+    <meta name="dcterms.created" content="{{fecha.hoy_iso8601}}">
+    <meta name="description" content="">
     <meta name="keywords" content="">
 </head>
 <body>

@@ -48,13 +48,16 @@ class ServidorApi:
         async def configurar_encabezados_(request:Request, call_next):
             inicio = time.time()
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                print(f'peticion: {str(request.headers.get('Content-Type'))} | {str(request.json)}')
+                content_type = str(request.headers.get('Content-Type', ''))
+                if content_type:
+                    print(f'peticion: {content_type}')
             respuesta:Response = await call_next(request)
             tiempo_proceso = str(round(time.time() - inicio, 3))
             respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
             respuesta.headers["X-API-Motor"] = api_motor
-            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 400:
-                print(f'respuesta: {str(respuesta.headers.get('Content-Type'))} | {str(respuesta.status_code)}')
+            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+                content_type = str(respuesta.headers.get('Content-Type', ''))
+                print(f'respuesta: {content_type} | {str(respuesta.status_code)}')
             return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
@@ -95,7 +98,7 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> FastAPI:
+    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> FastAPI:
         from fastapi.staticfiles import StaticFiles
         mi.dir_frontend = os.path.abspath(dir_frontend)
         os.environ['ALIAS_FRONTEND'] = alias_frontend
@@ -108,6 +111,10 @@ class ServidorApi:
             docs_url=docs_url,
             redoc_url=redoc_url,
         )
+        mi.titulo = titulo
+        mi.descripcion = descripcion
+        mi.version = version
+        mi.entorno = entorno
         api.mount(f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}", StaticFiles(directory=f'{dir_frontend}'), name='frontend')
         mi._configurar_cors(api, origenes_cors)
         mi._configurar_encabezados(api)
@@ -126,9 +133,8 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:str, host:str, puerto:int, entorno:str):
-        mi.entorno = entorno
-        if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
+    def iniciar_servicio(mi, app:str, host:str, puerto:int):
+        if mi.entorno == _C.ENTORNO.DESARROLLO or mi.entorno == _C.ENTORNO.LOCAL:
             import uvicorn
             uvicorn.run(
                 app,
@@ -136,7 +142,7 @@ class ServidorApi:
                 port=puerto,
                 ssl_keyfile='./key.pem',
                 ssl_certfile='./cert.pem',
-                reload=True if entorno == _C.ENTORNO.DESARROLLO else False
+                reload=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
             )
 
     def manejar_errores(mi, api:FastAPI, dir_logs:str, registro_logs:str, idiomas:list):
@@ -283,6 +289,7 @@ class ComunicadorWeb(_Comunicador):
     # Métodos públicos
 
     def agregar_contexto(mi, request:Request, info:dict={}, sesion:dict={}) -> dict:
+        global api_motor
         info['url'] = {
             'absoluta': str(request.url).split('?')[0],
             'base': str(request.base_url).strip('/'),
@@ -291,7 +298,9 @@ class ComunicadorWeb(_Comunicador):
         info['config'] = mi.config
         info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['config']['idioma'] = mi.idioma
+        info['config']['api_motor'] = api_motor
         info['sesion'] = sesion
+        info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
         return info
 
     def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:

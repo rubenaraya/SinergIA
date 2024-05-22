@@ -37,7 +37,7 @@ else:
 # --------------------------------------------------
 # Creacion de la Api
 servidor = ServidorApi(app_web, raiz_api)
-api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=False)
+api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=False, entorno=entorno)
 servidor.mapear_enrutadores(api, ubicacion_enrutadores)
 servidor.manejar_errores(api, dir_logs, registro_logs, idiomas)
 

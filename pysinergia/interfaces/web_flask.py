@@ -97,7 +97,7 @@ class ServidorApi:
     # --------------------------------------------------
     # Métodos públicos
 
-    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False) -> Flask:
+    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> Flask:
         mi.dir_frontend = os.path.abspath(dir_frontend)
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         api = Flask(__name__,
@@ -107,6 +107,7 @@ class ServidorApi:
         mi.titulo = titulo
         mi.descripcion = descripcion
         mi.version = version
+        mi.entorno = entorno
         mi._configurar_cors(api, origenes_cors)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -125,9 +126,8 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:Flask, host:str, puerto:int, entorno:str):
-        mi.entorno = entorno
-        if entorno == _C.ENTORNO.DESARROLLO or entorno == _C.ENTORNO.LOCAL:
+    def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
+        if mi.entorno == _C.ENTORNO.DESARROLLO or mi.entorno == _C.ENTORNO.LOCAL:
             ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
             ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
             app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -137,7 +137,7 @@ class ServidorApi:
                 host=host,
                 port=puerto,
                 ssl_context=(ssl_cert, ssl_key),
-                debug=True if entorno == _C.ENTORNO.DESARROLLO else False
+                debug=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
             )
 
     def manejar_errores(mi, api:Flask, dir_logs:str, registro_logs:str, idiomas:list):
@@ -289,6 +289,7 @@ class ComunicadorWeb(_Comunicador):
     # Métodos públicos
 
     def agregar_contexto(mi, info:dict={}, sesion:dict={}) -> dict:
+        global api_motor
         info['url'] = {
             'absoluta': request.base_url,
             'base': str(request.url_root).strip('/'),
@@ -297,7 +298,9 @@ class ComunicadorWeb(_Comunicador):
         info['config'] = mi.config
         info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['config']['idioma'] = mi.idioma
+        info['config']['api_motor'] = api_motor
         info['sesion'] = sesion
+        info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
         return info
 
     def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
