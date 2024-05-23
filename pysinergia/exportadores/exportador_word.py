@@ -3,7 +3,10 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_Exportador as _I_Exportador
-from pysinergia import Constantes as _Constantes
+from pysinergia import (
+    Constantes as _Constantes,
+    ErrorPersonalizado as _ErrorPersonalizado,
+)
 
 # --------------------------------------------------
 # Clase: ExportadorWord
@@ -26,7 +29,7 @@ class ExportadorWord(_I_Exportador):
         ruta_html = os.path.join(os.path.abspath(dir_temp),'temp.html')
         ruta_docx_temp = os.path.join(os.path.abspath(dir_temp),'temp.docx')
         try:
-            with open(ruta_html, 'w') as f:
+            with open(ruta_html, 'w', encoding='utf-8') as f:
                 f.write(contenido)
             salida_docx = ruta_archivo if ruta_destino else ruta_docx_temp
             ruta_pandoc = os.path.join(dir_pandoc,'pandoc')
@@ -40,6 +43,10 @@ class ExportadorWord(_I_Exportador):
                     os.remove(salida_docx)
             return docx_io
         except Exception as e:
-            print(e)
-            return None
+            raise _ErrorPersonalizado(
+                mensaje='Error en ExportadorWord',
+                tipo=_Constantes.SALIDA.ERROR,
+                codigo=_Constantes.ESTADO.HTTP_500_ERROR,
+                detalles=[str(e)]
+            )
 

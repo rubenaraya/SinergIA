@@ -3,6 +3,10 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_Exportador as _I_Exportador
+from pysinergia import (
+    Constantes as _Constantes,
+    ErrorPersonalizado as _ErrorPersonalizado,
+)
 
 # --------------------------------------------------
 # Clase: ExportadorPdf
@@ -30,6 +34,10 @@ class ExportadorPdf(_I_Exportador):
                     f.write(pdf)
             return io.BytesIO(pdf)
         except Exception as e:
-            print(e)
-            return None
+            raise _ErrorPersonalizado(
+                mensaje='Error en ExportadorPdf',
+                tipo=_Constantes.SALIDA.ERROR,
+                codigo=_Constantes.ESTADO.HTTP_500_ERROR,
+                detalles=[str(e)]
+            )
 

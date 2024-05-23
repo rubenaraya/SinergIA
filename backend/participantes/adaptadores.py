@@ -37,6 +37,7 @@ class ControladorParticipantes(Controlador):
             'titulo': 'Listado de Pruebas',
             'descripcion': '',
             'etiquetas': '',
+            'hoja_datos': 'participantes',
         }
         return respuesta
 

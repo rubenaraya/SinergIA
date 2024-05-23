@@ -140,6 +140,18 @@ def xlsx(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info)
+    return Response(response=documento, headers=encabezados)
+
+@enrutador.route('/csv', methods=['GET'])
+@validate()
+def csv(query:PeticionBuscarParticipantes):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    info = Controlador(config, sesion).buscar_participantes(query)
+    nombre_archivo = comunicador.obtener_nombre_archivo(info, 'csv')
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
+    comunicador.agregar_contexto(info=info, sesion=sesion)
+    encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
+    documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info)
     #return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
     return Response(response=documento, headers=encabezados)
 
