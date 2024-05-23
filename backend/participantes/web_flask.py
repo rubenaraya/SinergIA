@@ -140,6 +140,6 @@ def xlsx(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info)
-    #return Response(response=documento, headers=encabezados)
-    return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+    #return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+    return Response(response=documento, headers=encabezados)
 

@@ -20,12 +20,16 @@ class ExportadorPdf(_I_Exportador):
         ruta_destino = opciones.get('ruta_destino', '')
         ruta_archivo = f'{ruta_destino}/{nombre_archivo}'
         hoja_estilos = opciones.get('hoja_estilos', '')
-        css = CSS(filename=hoja_estilos) if hoja_estilos else None
-        pdf = HTML(string=contenido).write_pdf(
-            stylesheets=[css] if css else None,
-        )
-        if ruta_destino and nombre_archivo and pdf:
-            with open(ruta_archivo, 'wb') as f:
-                f.write(pdf)
-        return io.BytesIO(pdf)
+        try:
+            css = CSS(filename=hoja_estilos) if hoja_estilos else None
+            pdf = HTML(string=contenido).write_pdf(
+                stylesheets=[css] if css else None,
+            )
+            if ruta_destino and nombre_archivo and pdf:
+                with open(ruta_archivo, 'wb') as f:
+                    f.write(pdf)
+            return io.BytesIO(pdf)
+        except Exception as e:
+            print(e)
+            return None
 
