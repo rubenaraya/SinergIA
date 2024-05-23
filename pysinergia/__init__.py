@@ -158,18 +158,23 @@ class Funciones:
             zona_horaria = 'Etc/GMT'
         ist = pytz.timezone(zona_horaria)
         local = ist.localize(datetime.now())
-        fechahora['hoy_fecha'] = local.strftime( "%d/%m/%Y" )
-        fechahora['hoy_hora'] = local.strftime( "%H:%M" )
-        fechahora['hoy_amd'] = local.strftime( "%Y-%m-%d" )
-        fechahora['hoy_dma'] = local.strftime( "%d-%m-%Y" )
-        fechahora['hoy_mda'] = local.strftime( "%m-%d-%Y" )
-        fechahora['hoy_md'] = local.strftime( "%m-%d" )
-        fechahora['hoy_dia'] = local.strftime( "%d" )
-        fechahora['hoy_mes'] = local.strftime( "%m" )
-        fechahora['hoy_año'] = local.strftime( "%Y" )
-        fechahora['ahora'] = local.strftime( "%Y%m%d%H%M%S" )
-        fechahora['periodo'] = local.strftime( "%Y%m%d" )
-        fechahora['hoy_iso8601'] = local.isoformat(timespec='seconds')
+        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
+        fechahora['hora'] = local.strftime( "%H:%M" )
+        fechahora['hms'] = local.strftime( "%H:%M:%S" )
+        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
+        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
+        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
+        fechahora['dm'] = local.strftime( "%d-%m" )
+        fechahora['md'] = local.strftime( "%m-%d" )
+        fechahora['ma'] = local.strftime( "%m-%Y" )
+        fechahora['am'] = local.strftime( "%Y-%m" )
+        fechahora['dia'] = local.strftime( "%d" )
+        fechahora['mes'] = local.strftime( "%m" )
+        fechahora['ano'] = local.strftime( "%Y" )
+        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
+        fechahora['iso8601'] = local.isoformat(timespec='seconds')
+        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
+        fechahora['p_am'] = local.strftime( "%Y%m%d" )
         return fechahora
 
     @staticmethod
@@ -227,22 +232,27 @@ class Funciones:
         return idiomas_disponibles[0]
 
     @staticmethod
-    def normalizar_nombre(nombre:str, extension:str='') -> str:
+    def normalizar_nombre(nombre:str, extension:str='', largo:int=250) -> str:
+        from uuid import uuid4
         import re, unicodedata
         if not nombre:
-            return ''
+            nombre = str(uuid4())
         try:
-            nombre = unicodedata.normalize( 'NFD', nombre ).encode( 'ascii', 'ignore' ).decode( 'utf-8' )
-            nombre = re.sub(r" ", "-", nombre)
-            nombre = re.sub(r"_", "-", nombre)
-            nombre = re.sub(r"---", "-", nombre)
-            nombre = re.sub(r"--", "-", nombre)
+            nombre = unicodedata.normalize('NFD', nombre).encode('ascii', 'ignore').decode('utf-8')
+            nombre = re.sub(r"[ _]+", "-", nombre)
             nombre = re.sub(r'[\\/:"*?<>|°ºª~!#$%&=¿¡+{};@^`…(),\[\]\']', "", nombre)
+            nombre = re.sub(r"-+", "-", nombre).strip("-")
         except Exception as e:
             print(e)
-        if extension and not str(nombre).endswith(f'.{extension}'):
-            nombre = f'{nombre}.{extension}'
-        return nombre
+        if extension:
+            extension = f'.{extension.strip(".")}'
+        else:
+            extension = ''
+        max_nombre_largo = largo - len(extension)
+        if len(nombre) > max_nombre_largo:
+            nombre = nombre[:max_nombre_largo]
+        nombre_completo = f'{nombre}{extension}'
+        return nombre_completo
 
 
 # --------------------------------------------------

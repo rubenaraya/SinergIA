@@ -4,12 +4,13 @@
     <title>{{opciones.titulo}}</title>
     <meta name="generator" content="{{config.api_motor}}">
     <meta name="author" content="{{sesion.alias}} ({{sesion.email}})">
-    <meta name="dcterms.created" content="{{fecha.hoy_iso8601}}">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+    <meta name="dcterms.created" content="{{fecha.iso8601}}">
+    <meta name="description" content="{{opciones.descripcion}}">
+    <meta name="keywords" content="{{opciones.etiquetas}}">
 </head>
 <body>
-    <h2 class="centrada">{{opciones.titulo}}</h2>
+    <h2>{{opciones.titulo}}</h2>
+    <p class="alin-cen">{{fecha.fecha}} {{fecha.hora}}</p>
     <table>
         <thead>
             <tr>

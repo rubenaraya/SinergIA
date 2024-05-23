@@ -57,6 +57,13 @@ class Comunicador:
         exportador:I_Exportador = componente(mi.config)
         return exportador.generar(contenido=contenido, opciones=info['opciones'])
 
+    def obtener_nombre_archivo(mi, info:dict, extension:str='') -> str:
+        if 'opciones' in info and extension:
+            nombre = _F.normalizar_nombre(info['opciones'].get('nombre_archivo',''), extension)
+            info['opciones']['nombre_archivo'] = nombre
+        else:
+            nombre = _F.normalizar_nombre('', extension)
+        return nombre
 
 # --------------------------------------------------
 # Clase: Autenticador

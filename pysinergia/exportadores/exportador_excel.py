@@ -3,6 +3,7 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_Exportador as _I_Exportador
+from pysinergia import Funciones as _Funciones
 
 # --------------------------------------------------
 # Clase: ExportadorExcel

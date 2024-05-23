@@ -35,6 +35,8 @@ class ControladorParticipantes(Controlador):
             'ruta_destino': f'./repositorios/{mi.config.aplicacion}/disco',
             'nombre_archivo': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
+            'descripcion': '',
+            'etiquetas': '',
         }
         return respuesta
 
