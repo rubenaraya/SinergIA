@@ -132,7 +132,7 @@ class I_Exportador(metaclass=ABCMeta):
     # Métodos obligatorios
 
     @abstractmethod
-    def generar(mi, contenido:str='', opciones:dict={}, config:dict={}):
+    def generar(mi, contenido:str='', opciones:dict={}, guardar:bool=False):
         ...
 
 
@@ -146,6 +146,7 @@ class Configuracion(BaseSettings):
     traduccion: str = ''
     dir_locales: str = ''
     ruta_temp: str = ''
+    ruta_disco: str = ''
     idiomas: list = []
     api_keys: dict = {}
     secret_key: str = ''
@@ -243,6 +244,8 @@ class Configuracion(BaseSettings):
             'traduccion': mi.traduccion,
             'dir_locales': mi.dir_locales,
             'ruta_temp': mi.ruta_temp,
+            'ruta_disco': mi.ruta_disco,
+            'ruta_servicio': mi.ruta_servicio,
             'zona_horaria': mi.zona_horaria,
             'idiomas': mi.idiomas,
             'app_web': mi.app_web,

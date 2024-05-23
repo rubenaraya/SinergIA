@@ -41,7 +41,7 @@ def get_inicio():
                 response_class=JSONResponse,
                 #dependencies=[Depends(autenticador.validar_token)]
             )
-async def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     respuesta = Controlador(config, sesion).buscar_participantes(peticion)
@@ -117,7 +117,7 @@ async def post_login(request:Request):
     return respuesta
 
 @enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
-async def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(peticion)
@@ -128,7 +128,7 @@ async def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     return StreamingResponse(content=documento, headers=encabezados)
 
 @enrutador.get('/docx', status_code=C.ESTADO.HTTP_200_EXITO)
-async def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(peticion)
@@ -139,7 +139,7 @@ async def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     return StreamingResponse(content=documento, headers=encabezados)
 
 @enrutador.get('/xlsx', status_code=C.ESTADO.HTTP_200_EXITO)
-async def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(peticion)
@@ -150,13 +150,14 @@ async def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     return StreamingResponse(content=documento, headers=encabezados)
 
 @enrutador.get('/csv', status_code=C.ESTADO.HTTP_200_EXITO)
-async def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
+def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     info = Controlador(config, sesion).buscar_participantes(peticion)
+    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     comunicador.agregar_contexto(request, info=info, sesion=sesion)
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'csv')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info)
-    return StreamingResponse(content=documento, headers=encabezados)
+    #return StreamingResponse(content=documento, headers=encabezados)
+    return JSONResponse(info, C.ESTADO.HTTP_200_EXITO)
 

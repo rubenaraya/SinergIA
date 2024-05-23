@@ -79,7 +79,19 @@ class ServicioParticipantes(Servicio):
     def _buscar_participantes(mi, peticion:PeticionBuscarParticipantes):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
         resultado = mi.operador.recuperar_lista_participantes_todos()
-        return {"accion": "_buscar_participantes", "operacion": "recuperar_lista_participantes_todos", "modelo": "PeticionBuscarParticipantes", "peticion": peticion.diccionario(), "resultado": resultado}
+        opciones = mi.establecer_opciones(None, {
+            'nombre_archivo': 'documento de prueba',
+            'titulo': 'Listado de Pruebas',
+            'carpeta_guardar': 'creados'
+        })
+        return {
+            "accion": "_buscar_participantes",
+            "operacion": "recuperar_lista_participantes_todos",
+            "modelo": "PeticionBuscarParticipantes",
+            "peticion": peticion.diccionario(),
+            "resultado": resultado,
+            "opciones": opciones
+        }
 
     def _agregar_participante(mi, peticion:ModeloNuevoParticipante):
         mi.operador.insertar_nuevo_participante()

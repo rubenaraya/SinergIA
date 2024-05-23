@@ -38,3 +38,27 @@ class Servicio:
             )
         return False
 
+    def establecer_opciones(mi, info:dict, opciones:dict) -> dict:
+        requeridas = {
+            'plantilla': 'tabla.html',
+            'hoja_estilos': 'tabla.css',
+            'tabla_datos': 'Hoja1',
+            'ruta_plantillas': '',
+            'ruta_destino': '',
+            'carpeta_guardar': '',
+            'nombre_archivo': '',
+            'titulo': '',
+            'autor': '',
+            'descripcion': '',
+            'etiquetas': '',
+        }
+        if info is None:
+            info = {}
+        for clave, valor in requeridas.items():
+            if clave not in info:
+                info[clave] = valor
+        if opciones is not None:
+            for clave, valor in opciones.items():
+                info[clave] = valor
+        return info
+

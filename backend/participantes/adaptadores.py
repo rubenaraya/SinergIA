@@ -29,16 +29,6 @@ class ControladorParticipantes(Controlador):
         servicio = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         respuesta = RespuestaResultado(**resultado).diccionario()
-        respuesta['opciones'] = {
-            'plantilla': f'{mi.config.ruta_servicio}/plantillas/tabla.html',
-            'hoja_estilos': f'{mi.config.ruta_servicio}/plantillas/tabla.css',
-            'ruta_destino': f'./repositorios/{mi.config.aplicacion}/disco',
-            'nombre_archivo': 'documento de prueba',
-            'titulo': 'Listado de Pruebas',
-            'descripcion': '',
-            'etiquetas': '',
-            'hoja_datos': 'participantes',
-        }
         return respuesta
 
     def agregar_participante(mi, peticion:ModeloPeticion):

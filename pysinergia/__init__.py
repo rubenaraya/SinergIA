@@ -232,10 +232,12 @@ class Funciones:
         return idiomas_disponibles[0]
 
     @staticmethod
-    def normalizar_nombre(nombre:str, extension:str='', largo:int=250) -> str:
+    def normalizar_nombre(nombre:str, extension:str='', largo:int=250, auto:bool=False) -> str:
         from uuid import uuid4
         import re, unicodedata
         if not nombre:
+            if not auto:
+                return ''
             nombre = str(uuid4())
         try:
             nombre = unicodedata.normalize('NFD', nombre).encode('ascii', 'ignore').decode('utf-8')
@@ -253,6 +255,33 @@ class Funciones:
             nombre = nombre[:max_nombre_largo]
         nombre_completo = f'{nombre}{extension}'
         return nombre_completo
+
+    @staticmethod
+    def componer_ruta(opciones:dict, extension:str='') -> str:
+        ruta_destino = opciones.get('ruta_destino', '')
+        carpeta_guardar = opciones.get('carpeta_guardar', '')
+        nombre_archivo = opciones.get('nombre_archivo', '')
+        ruta_archivo = ''
+        if nombre_archivo and not str(nombre_archivo).endswith(f'.{extension}'):
+            nombre_archivo = f'{nombre_archivo}.{extension}'
+        if carpeta_guardar:
+            carpeta_guardar = f'/{carpeta_guardar}'
+        if nombre_archivo and ruta_destino:
+            ruta_archivo = f'{ruta_destino}{carpeta_guardar}/{nombre_archivo}'
+        return ruta_archivo
+
+    @staticmethod
+    def comprobar_plantilla(opciones:dict, tipo:str='') -> str:
+        ruta_plantilla = ''
+        plantilla = opciones.get(tipo, '')
+        ruta_plantillas = opciones.get('ruta_plantillas', '')
+        if plantilla and ruta_plantillas:
+            ruta_plantilla = f'{ruta_plantillas}/{plantilla}'
+            if not os.path.exists(ruta_plantilla):
+                ruta_plantilla = f'./backend/plantillas/{plantilla}'
+                if not os.path.exists(ruta_plantilla):
+                    ruta_plantilla = ''
+        return ruta_plantilla
 
 
 # --------------------------------------------------

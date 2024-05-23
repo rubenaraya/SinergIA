@@ -24,45 +24,64 @@ class Comunicador:
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
         mi.idioma = _F.negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
-        mi.traductor = gettext.translation(
-            domain=mi.config.get('traduccion'),
-            localedir=mi.config.get('dir_locales'),
-            languages=[mi.idioma],
-            fallback=False,
-        )
+        try:
+            mi.traductor = gettext.translation(
+                domain=mi.config.get('traduccion'),
+                localedir=mi.config.get('dir_locales'),
+                languages=[mi.idioma],
+                fallback=False,
+            )
+        except Exception as e:
+            raise e
 
-    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='./') -> str:
+    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
         import os
         resultado = ''
-        if os.path.exists(f'{directorio}/{plantilla}'):
-            cargador = FileSystemLoader(directorio)
-            entorno = Environment(loader=cargador)
-            entorno.add_extension('jinja2.ext.i18n')
-            if mi.traductor:
-                entorno.install_gettext_translations(mi.traductor, newstyle=True)
-            template = entorno.get_template(plantilla)
-            resultado = template.render(info)
-        return resultado
+        try:
+            if not os.path.exists(f'{directorio}/{plantilla}'):
+                directorio = './backend/plantillas'
+            if os.path.exists(f'{directorio}/{plantilla}'):
+                cargador = FileSystemLoader(directorio)
+                entorno = Environment(loader=cargador)
+                entorno.add_extension('jinja2.ext.i18n')
+                if mi.traductor:
+                    entorno.install_gettext_translations(mi.traductor, newstyle=True)
+                template = entorno.get_template(plantilla)
+                resultado = template.render(info)
+            return resultado
+        except Exception as e:
+            raise e
 
-    def exportar_info(mi, formato:str, info:dict={}):
+    def exportar_info(mi, formato:str, info:dict={}, guardar:bool=False):
         import importlib
         from pysinergia.adaptadores import I_Exportador
-        info['opciones']['idioma'] = mi.idioma
-        plantilla = info['opciones'].get('plantilla')
-        contenido = mi.transformar_contenido(info=info, plantilla=plantilla)
-        modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
-        clase = f'Exportador{str(formato).capitalize()}'
-        componente = getattr(importlib.import_module(modulo), clase)
-        exportador:I_Exportador = componente(mi.config)
-        return exportador.generar(contenido=contenido, opciones=info['opciones'])
+        try:
+            info['opciones']['idioma'] = mi.idioma
+            plantilla = info['opciones'].get('plantilla')
+            ruta_plantillas = info['opciones'].get('ruta_plantillas')
+            if plantilla and ruta_plantillas:
+                plantilla = f'{ruta_plantillas}/{plantilla}'
+            contenido = mi.transformar_contenido(info=info, plantilla=plantilla)
+            modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
+            clase = f'Exportador{str(formato).capitalize()}'
+            componente = getattr(importlib.import_module(modulo), clase)
+            exportador:I_Exportador = componente(mi.config)
+            return exportador.generar(contenido=contenido, opciones=info['opciones'], guardar=True)
+        except Exception as e:
+            raise e
 
-    def obtener_nombre_archivo(mi, info:dict, extension:str='') -> str:
-        if 'opciones' in info and extension:
-            nombre = _F.normalizar_nombre(info['opciones'].get('nombre_archivo',''), extension)
+    def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
+        if 'opciones' in info:
+            nombre = _F.normalizar_nombre(info['opciones'].get('nombre_archivo',''), extension, largo, auto)
             info['opciones']['nombre_archivo'] = nombre
+            if not info['opciones'].get('ruta_destino'):
+                info['opciones']['ruta_destino'] = mi.config.get('ruta_disco', '')
+            if not info['opciones'].get('ruta_plantillas'):
+                ruta_plantillas = mi.config.get('ruta_servicio', '')
+                info['opciones']['ruta_plantillas'] = f'{ruta_plantillas}/plantillas'
         else:
-            nombre = _F.normalizar_nombre('', extension)
+            nombre = _F.normalizar_nombre('', extension, largo, auto)
         return nombre
 
 # --------------------------------------------------

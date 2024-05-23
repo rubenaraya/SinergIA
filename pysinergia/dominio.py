@@ -53,6 +53,7 @@ class RespuestaResultado(ModeloRespuesta):
     mensaje: str | None = ''
     resultado: dict | None = {}
     esquemas: dict | None = {}
+    opciones: dict | None = {}
 
     def asignar_contexto(mi, estado:int, mensaje:str=''):
         mi.codigo = estado
