@@ -20,9 +20,9 @@ class ExportadorPdf(_I_Exportador):
         from weasyprint import HTML, CSS
         import io, os
         ruta_destino = _Funciones.componer_ruta(opciones, 'pdf')
-        hoja_estilos = _Funciones.comprobar_plantilla(opciones, 'hoja_estilos')
+        hoja_estilos, ruta_hoja_estilos = _Funciones.comprobar_plantilla(opciones, 'hoja_estilos')
         try:
-            css = CSS(filename=hoja_estilos) if hoja_estilos else None
+            css = CSS(filename=f'{ruta_hoja_estilos}/{hoja_estilos}') if hoja_estilos else None
             pdf = HTML(string=contenido).write_pdf(
                 stylesheets=[css] if css else None,
             )

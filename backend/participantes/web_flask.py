@@ -88,11 +88,10 @@ def get_login():
     comunicador.asignar_idioma(sesion.get('idioma'))
     #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
     info = comunicador.agregar_contexto({}, sesion)
-
     respuesta = comunicador.transformar_contenido(
         info,
-        plantilla='plantillas/login.html',
-        directorio=config.ruta_servicio
+        plantilla='login.html',
+        directorio=f'{config.ruta_servicio}/plantillas'
     )
     return Response(respuesta, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.HTML)
 
@@ -115,7 +114,7 @@ def pdf(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'pdf')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info)
+    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info, guardar=True)
     return Response(response=documento, headers=encabezados)
 
 @enrutador.route('/docx', methods=['GET'])
@@ -127,7 +126,7 @@ def docx(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'docx')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info)
+    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info, guardar=True)
     return Response(response=documento, headers=encabezados)
 
 @enrutador.route('/xlsx', methods=['GET'])
@@ -139,7 +138,7 @@ def xlsx(query:PeticionBuscarParticipantes):
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info)
+    documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info, guardar=True)
     return Response(response=documento, headers=encabezados)
 
 @enrutador.route('/csv', methods=['GET'])
@@ -151,7 +150,7 @@ def csv(query:PeticionBuscarParticipantes):
     comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info)
+    documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info, guardar=True)
     return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
     #return Response(response=documento, headers=encabezados)
 

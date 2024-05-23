@@ -272,16 +272,15 @@ class Funciones:
 
     @staticmethod
     def comprobar_plantilla(opciones:dict, tipo:str='') -> str:
-        ruta_plantilla = ''
         plantilla = opciones.get(tipo, '')
         ruta_plantillas = opciones.get('ruta_plantillas', '')
         if plantilla and ruta_plantillas:
-            ruta_plantilla = f'{ruta_plantillas}/{plantilla}'
-            if not os.path.exists(ruta_plantilla):
-                ruta_plantilla = f'./backend/plantillas/{plantilla}'
-                if not os.path.exists(ruta_plantilla):
-                    ruta_plantilla = ''
-        return ruta_plantilla
+            if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+                ruta_plantillas = 'backend/plantillas'
+                if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+                    ruta_plantillas = ''
+                    plantilla = ''
+        return plantilla, ruta_plantillas
 
 
 # --------------------------------------------------

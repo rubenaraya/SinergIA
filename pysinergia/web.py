@@ -39,8 +39,6 @@ class Comunicador:
         import os
         resultado = ''
         try:
-            if not os.path.exists(f'{directorio}/{plantilla}'):
-                directorio = './backend/plantillas'
             if os.path.exists(f'{directorio}/{plantilla}'):
                 cargador = FileSystemLoader(directorio)
                 entorno = Environment(loader=cargador)
@@ -58,11 +56,8 @@ class Comunicador:
         from pysinergia.adaptadores import I_Exportador
         try:
             info['opciones']['idioma'] = mi.idioma
-            plantilla = info['opciones'].get('plantilla')
-            ruta_plantillas = info['opciones'].get('ruta_plantillas')
-            if plantilla and ruta_plantillas:
-                plantilla = f'{ruta_plantillas}/{plantilla}'
-            contenido = mi.transformar_contenido(info=info, plantilla=plantilla)
+            plantilla, ruta_plantillas = _F.comprobar_plantilla(info['opciones'], 'plantilla')
+            contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
             modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
             clase = f'Exportador{str(formato).capitalize()}'
             componente = getattr(importlib.import_module(modulo), clase)
