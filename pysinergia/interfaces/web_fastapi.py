@@ -352,3 +352,21 @@ class AutenticadorWeb(_Autenticador):
         await mi.validar_apikey(request)
         await mi.validar_token(request)
 
+
+# --------------------------------------------------
+# Clase: CargadorArchivos
+# --------------------------------------------------
+class CargadorArchivos():
+    def __init__(mi):
+        mi.peso_maximo:int = 25
+        mi.formatos:list = []
+
+    # --------------------------------------------------
+    # Métodos privados
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def cargar(mi):
+        ...
+

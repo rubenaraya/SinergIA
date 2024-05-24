@@ -17,7 +17,7 @@ class Servicio:
         mi.sesion:dict = sesion
 
     def solicitar_accion(mi, accion:int, peticion):
-        return NotImplementedError
+        raise NotImplementedError()
 
     def autorizar_roles(mi, roles:str, rechazar:bool=False) -> bool:
         if roles == '':

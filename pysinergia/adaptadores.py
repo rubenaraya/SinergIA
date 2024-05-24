@@ -1,7 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
-from typing import Dict
+from typing import Dict, BinaryIO
 from functools import lru_cache
 import os
 
@@ -133,6 +133,34 @@ class I_ConectorDisco(metaclass=ABCMeta):
 
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
+        ...
+
+    @abstractmethod
+    def generar_nombre(mi, nombre:str) -> str:
+        ...
+
+    @abstractmethod
+    def escribir(mi, archivo:BinaryIO, nombre:str) -> str:
+        ...
+
+    @abstractmethod
+    def abrir(mi, nombre:str) -> BinaryIO:
+        ...
+
+    @abstractmethod
+    def eliminar(mi, nombre:str) -> bool:
+        ...
+
+    @abstractmethod
+    def crear_carpeta(mi, nombre:str):
+        ...
+
+    @abstractmethod
+    def eliminar_carpeta(mi, nombre:str):
+        ...
+
+    @abstractmethod
+    def comprobar_ruta(mi, nombre:str, tipo:str) -> bool:
         ...
 
 
