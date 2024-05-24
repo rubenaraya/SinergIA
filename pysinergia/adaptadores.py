@@ -123,6 +123,20 @@ class I_ConectorSpi(metaclass=ABCMeta):
 
 
 # --------------------------------------------------
+# Interface: I_ConectorDisco
+# --------------------------------------------------
+class I_ConectorDisco(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
+    @abstractmethod
+    def conectar(mi, config:dict) -> bool:
+        ...
+
+
+# --------------------------------------------------
 # Interface: I_Exportador
 # --------------------------------------------------
 class I_Exportador(metaclass=ABCMeta):
@@ -146,7 +160,6 @@ class Configuracion(BaseSettings):
     traduccion: str = ''
     dir_locales: str = ''
     ruta_temp: str = ''
-    ruta_disco: str = ''
     idiomas: list = []
     api_keys: dict = {}
     secret_key: str = ''
@@ -170,6 +183,14 @@ class Configuracion(BaseSettings):
     almacen_url: str = ''
     almacen_usuario: str = ''
     almacen_password: str = ''
+    disco_fuente: str = ''
+    disco_clase: str = ''
+    disco_nombre: str = ''
+    disco_ruta: str = ''
+    disco_id: str = ''
+    disco_location: str = ''
+    disco_key: str = ''
+    disco_secret: str = ''
     llm_fuente: str = ''
     llm_clase: str = ''
     llm_nombre: str = ''
@@ -197,6 +218,17 @@ class Configuracion(BaseSettings):
             'url': mi.basedatos_url,
             'usuario': mi.basedatos_usuario,
             'password': mi.basedatos_password
+        })
+    def disco(mi) -> Dict:
+        return dict({
+            'fuente': mi.disco_fuente,
+            'clase': mi.disco_clase,
+            'nombre': mi.disco_nombre,
+            'ruta': mi.disco_ruta,
+            'id': mi.disco_id,
+            'location': mi.disco_location,
+            'key': mi.disco_key,
+            'secret': mi.disco_secret
         })
     def almacen(mi) -> Dict:
         return dict({
@@ -244,13 +276,13 @@ class Configuracion(BaseSettings):
             'traduccion': mi.traduccion,
             'dir_locales': mi.dir_locales,
             'ruta_temp': mi.ruta_temp,
-            'ruta_disco': mi.ruta_disco,
             'ruta_servicio': mi.ruta_servicio,
             'zona_horaria': mi.zona_horaria,
             'idiomas': mi.idiomas,
             'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
-            'frontend': mi.frontend
+            'frontend': mi.frontend,
+            'disco_ruta': mi.disco_ruta,
         }
 
 
@@ -291,6 +323,10 @@ class Operador:
                 conector_almacen = mi._importar_conector(mi.config.almacen())
                 if conector_almacen:
                     mi.almacen:I_ConectorAlmacen = conector_almacen()
+            if config.disco_clase:
+                conector_disco = mi._importar_conector(mi.config.disco())
+                if conector_disco:
+                    mi.disco:I_ConectorDisco = conector_disco()
             if config.llm_clase:
                 conector_llm = mi._importar_conector(mi.config.llm())
                 if conector_llm:

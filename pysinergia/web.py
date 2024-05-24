@@ -73,7 +73,7 @@ class Comunicador:
             nombre = _F.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
             op['nombre_archivo'] = nombre
             if not op.get('ruta_destino'):
-                op['ruta_destino'] = mi.config.get('ruta_disco', '')
+                op['ruta_destino'] = mi.config.get('disco_ruta', '')
             if not op.get('ruta_plantillas'):
                 ruta = mi.config.get('ruta_servicio', '.')
                 op['ruta_plantillas'] = f'{ruta}/plantillas'

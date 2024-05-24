@@ -311,6 +311,8 @@ class ComunicadorWeb(_Comunicador):
             'Content-disposition': f'inline; filename={nombre_archivo}'
         }
 
+    def cargar_archivo(mi):
+        ...
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb
