@@ -55,26 +55,28 @@ class Comunicador:
         import importlib
         from pysinergia.adaptadores import I_Exportador
         try:
-            info['opciones']['idioma'] = mi.idioma
-            plantilla, ruta_plantillas = _F.comprobar_plantilla(info['opciones'], 'plantilla')
+            op:dict = info['opciones']
+            op['idioma'] = mi.idioma
+            plantilla, ruta_plantillas = _F.comprobar_plantilla(opciones=op, tipo='plantilla')
             contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
             modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
             clase = f'Exportador{str(formato).capitalize()}'
             componente = getattr(importlib.import_module(modulo), clase)
             exportador:I_Exportador = componente(mi.config)
-            return exportador.generar(contenido=contenido, opciones=info['opciones'], guardar=True)
+            return exportador.generar(contenido=contenido, opciones=op, guardar=guardar)
         except Exception as e:
             raise e
 
     def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'opciones' in info:
-            nombre = _F.normalizar_nombre(info['opciones'].get('nombre_archivo',''), extension, largo, auto)
-            info['opciones']['nombre_archivo'] = nombre
-            if not info['opciones'].get('ruta_destino'):
-                info['opciones']['ruta_destino'] = mi.config.get('ruta_disco', '')
-            if not info['opciones'].get('ruta_plantillas'):
-                ruta_plantillas = mi.config.get('ruta_servicio', '')
-                info['opciones']['ruta_plantillas'] = f'{ruta_plantillas}/plantillas'
+            op:dict = info['opciones']
+            nombre = _F.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
+            op['nombre_archivo'] = nombre
+            if not op.get('ruta_destino'):
+                op['ruta_destino'] = mi.config.get('ruta_disco', '')
+            if not op.get('ruta_plantillas'):
+                ruta = mi.config.get('ruta_servicio', '.')
+                op['ruta_plantillas'] = f'{ruta}/plantillas'
         else:
             nombre = _F.normalizar_nombre('', extension, largo, auto)
         return nombre

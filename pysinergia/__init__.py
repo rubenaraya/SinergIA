@@ -271,7 +271,7 @@ class Funciones:
         return ruta_archivo
 
     @staticmethod
-    def comprobar_plantilla(opciones:dict, tipo:str='') -> str:
+    def comprobar_plantilla(opciones:dict, tipo:str='') -> tuple:
         plantilla = opciones.get(tipo, '')
         ruta_plantillas = opciones.get('ruta_plantillas', '')
         if plantilla and ruta_plantillas:
