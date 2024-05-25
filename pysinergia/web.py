@@ -4,10 +4,7 @@ import time, jwt
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    Funciones as _F,
-    Json as _Json,
-)
+from pysinergia import Json as _Json
 from pysinergia.adaptadores import I_ConectorDisco as _Disco
 
 # --------------------------------------------------
@@ -25,7 +22,7 @@ class Comunicador:
 
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
-        mi.idioma = _F.negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
+        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
         try:
             mi.traductor = gettext.translation(
                 domain=mi.config.get('traduccion'),
@@ -59,7 +56,8 @@ class Comunicador:
         try:
             op:dict = info['opciones']
             op['idioma'] = mi.idioma
-            plantilla, ruta_plantillas = _F.comprobar_plantilla(opciones=op, tipo='plantilla')
+            plantilla, ruta_plantillas = mi.comprobar_plantilla(op, 'plantilla')
+            op['ruta_plantillas'] = ruta_plantillas
             contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
             modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
             clase = f'Exportador{str(formato).capitalize()}'
@@ -78,14 +76,26 @@ class Comunicador:
     def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'opciones' in info:
             op:dict = info['opciones']
-            nombre = _F.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
+            nombre = mi.disco.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
             op['nombre_archivo'] = nombre
             if not op.get('ruta_plantillas'):
                 ruta = mi.config.get('ruta_servicio', '.')
                 op['ruta_plantillas'] = f'{ruta}/plantillas'
         else:
-            nombre = _F.normalizar_nombre('', extension, largo, auto)
+            nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
+
+    def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
+        import os
+        plantilla = opciones.get(tipo, '')
+        ruta_plantillas = opciones.get('ruta_plantillas', '')
+        if plantilla and ruta_plantillas:
+            if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+                ruta_plantillas = 'backend/plantillas'
+                if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+                    ruta_plantillas = ''
+                    plantilla = ''
+        return plantilla, ruta_plantillas
 
 
 # --------------------------------------------------
@@ -151,4 +161,27 @@ class Autenticador:
         id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
         return _Json.guardar(datos, archivo)
+
+
+# --------------------------------------------------
+# Funcion: negociar_idioma
+# --------------------------------------------------
+def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
+    if not idiomas_aceptados:
+        idiomas_aceptados = ''
+    idiomas = idiomas_aceptados.split(',')
+    lista_idiomas = []
+    for idioma in idiomas:
+        partes = idioma.split(';')
+        codigo = partes[0].split('-')[0].strip()
+        q = 1.0
+        if len(partes) > 1 and partes[1].startswith('q='):
+            q = float(partes[1].split('=')[1])
+        lista_idiomas.append((codigo, q))
+    idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
+    idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
+    for idioma_preferido in idiomas_preferidos:
+        if idioma_preferido in idiomas_disponibles:
+            return idioma_preferido
+    return idiomas_disponibles[0]
 

@@ -16,10 +16,16 @@ class ExportadorPdf(_Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):
         from weasyprint import HTML, CSS
-        import io
-        hoja_estilos, ruta_hoja_estilos = _Funciones.comprobar_plantilla(opciones, 'hoja_estilos')
+        import io, os
         try:
-            css = CSS(filename=f'{ruta_hoja_estilos}/{hoja_estilos}') if hoja_estilos else None
+            hoja_estilos = opciones.get('hoja_estilos', '')
+            ruta_plantillas = opciones.get('ruta_plantillas', '')
+            if hoja_estilos and ruta_plantillas:
+                if not os.path.exists(f'{ruta_plantillas}/{hoja_estilos}'):
+                    ruta_plantillas = 'backend/plantillas'
+                    if not os.path.exists(f'{ruta_plantillas}/{hoja_estilos}'):
+                        hoja_estilos = ''
+            css = CSS(filename=f'{ruta_plantillas}/{hoja_estilos}') if hoja_estilos else None
             pdf = HTML(string=contenido).write_pdf(
                 stylesheets=[css] if css else None,
             )

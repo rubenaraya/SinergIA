@@ -132,6 +132,10 @@ class I_ConectorDisco(metaclass=ABCMeta):
     # Métodos obligatorios
 
     @abstractmethod
+    def normalizar_nombre(mi, nombre:str, extension:str=None, largo:int=100, auto:bool=False) -> str:
+        ...
+
+    @abstractmethod
     def generar_nombre(mi, nombre:str) -> str:
         ...
 
@@ -148,7 +152,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def crear_carpeta(mi, nombre:str) -> str:
+    def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
         ...
 
     @abstractmethod
@@ -386,6 +390,9 @@ def obtener_config(modelo:Configuracion, paquete:str, aplicacion:str, entorno:st
     config.reconocer_servicio(archivo_env, aplicacion)
     return config
 
+# --------------------------------------------------
+# Función: conectar_disco
+# --------------------------------------------------
 def conectar_disco(config:Configuracion) -> I_ConectorDisco:
     import importlib
     modulo = f'pysinergia.conectores.{config.disco_fuente}'

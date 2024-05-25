@@ -225,63 +225,6 @@ class Funciones:
             'detalles': detalles
         })
 
-    @staticmethod
-    def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
-        if not idiomas_aceptados:
-            idiomas_aceptados = ''
-        idiomas = idiomas_aceptados.split(',')
-        lista_idiomas = []
-        for idioma in idiomas:
-            partes = idioma.split(';')
-            codigo = partes[0].split('-')[0].strip()
-            q = 1.0
-            if len(partes) > 1 and partes[1].startswith('q='):
-                q = float(partes[1].split('=')[1])
-            lista_idiomas.append((codigo, q))
-        idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
-        idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
-        for idioma_preferido in idiomas_preferidos:
-            if idioma_preferido in idiomas_disponibles:
-                return idioma_preferido
-        return idiomas_disponibles[0]
-
-    @staticmethod
-    def normalizar_nombre(nombre:str, extension:str='', largo:int=250, auto:bool=False) -> str:
-        from uuid import uuid4
-        import re, unicodedata
-        if not nombre:
-            if not auto:
-                return ''
-            nombre = str(uuid4())
-        try:
-            nombre = unicodedata.normalize('NFD', nombre).encode('ascii', 'ignore').decode('utf-8')
-            nombre = re.sub(r"[ _]+", "-", nombre)
-            nombre = re.sub(r'[\\/:"*?<>|°ºª~!#$%&=¿¡+{};@^`…(),\[\]\']', "", nombre)
-            nombre = re.sub(r"-+", "-", nombre).strip("-")
-        except Exception as e:
-            print(e)
-        if extension:
-            extension = f'.{extension.strip(".")}'
-        else:
-            extension = ''
-        max_nombre_largo = largo - len(extension)
-        if len(nombre) > max_nombre_largo:
-            nombre = nombre[:max_nombre_largo]
-        nombre_completo = f'{nombre}{extension}'
-        return nombre_completo
-
-    @staticmethod
-    def comprobar_plantilla(opciones:dict, tipo:str='') -> tuple:
-        plantilla = opciones.get(tipo, '')
-        ruta_plantillas = opciones.get('ruta_plantillas', '')
-        if plantilla and ruta_plantillas:
-            if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
-                ruta_plantillas = 'backend/plantillas'
-                if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
-                    ruta_plantillas = ''
-                    plantilla = ''
-        return plantilla, ruta_plantillas
-
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
