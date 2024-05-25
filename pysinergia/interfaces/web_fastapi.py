@@ -1,6 +1,6 @@
 # pysinergia\interfaces\web_fastapi.py
 
-import time, os
+import os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -46,14 +46,11 @@ class ServidorApi:
     def _configurar_encabezados(mi, api:FastAPI):
         @api.middleware("http")
         async def configurar_encabezados_(request:Request, call_next):
-            inicio = time.time()
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
             respuesta:Response = await call_next(request)
-            tiempo_proceso = str(round(time.time() - inicio, 3))
-            respuesta.headers["X-Tiempo-Proceso"] = tiempo_proceso
             respuesta.headers["X-API-Motor"] = api_motor
             if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
@@ -280,10 +277,6 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb(_Comunicador):
-    def __init__(mi, config:dict):
-        mi.config:dict = config or {}
-        mi.idioma = None
-        mi.traductor = None
 
     # --------------------------------------------------
     # Métodos públicos
@@ -299,7 +292,7 @@ class ComunicadorWeb(_Comunicador):
         info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['config']['idioma'] = mi.idioma
         info['config']['api_motor'] = api_motor
-        info['sesion'] = sesion
+        info['sesion'] = sesion or {}
         info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
         return info
 

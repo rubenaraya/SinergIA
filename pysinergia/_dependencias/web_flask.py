@@ -22,7 +22,10 @@ from pysinergia import (
     Json,
     ErrorPersonalizado,
 )
-from pysinergia.adaptadores import obtener_config
+from pysinergia.adaptadores import (
+    obtener_config,
+    conectar_disco,
+)
 from pysinergia.interfaces.web_flask import (
     ComunicadorWeb,
     AutenticadorWeb,

@@ -386,3 +386,9 @@ def obtener_config(modelo:Configuracion, paquete:str, aplicacion:str, entorno:st
     config.reconocer_servicio(archivo_env, aplicacion)
     return config
 
+def conectar_disco(config:Configuracion) -> I_ConectorDisco:
+    import importlib
+    modulo = f'pysinergia.conectores.{config.disco_fuente}'
+    componente = getattr(importlib.import_module(modulo), config.disco_clase)
+    return componente(config.disco())
+

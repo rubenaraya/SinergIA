@@ -27,7 +27,10 @@ from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
 )
-from pysinergia.adaptadores import obtener_config
+from pysinergia.adaptadores import (
+    obtener_config,
+    conectar_disco,
+)
 from pysinergia.interfaces.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,

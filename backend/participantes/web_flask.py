@@ -19,7 +19,7 @@ from .adaptadores import (
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(config.contexto())
+comunicador = ComunicadorWeb(config.contexto(), conectar_disco(config))
 autenticador = AutenticadorWeb(
     secreto=config.secret_key,
     api_keys=config.api_keys,
@@ -151,11 +151,6 @@ def csv(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info, guardar=True)
-
-    from pysinergia.conectores.disco_local import DiscoLocal as Disco
-    disco = Disco(config.disco())
-    disco.escribir(documento, f'creados/{nombre_archivo}')
-
     return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
     #return Response(response=documento, headers=encabezados)
 

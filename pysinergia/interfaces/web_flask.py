@@ -1,7 +1,7 @@
 # pysinergia\interfaces\web_flask.py
 
-from functools import wraps
 import os
+from functools import wraps
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -282,10 +282,6 @@ class ServidorApi:
 # Clase: ComunicadorWeb
 # --------------------------------------------------
 class ComunicadorWeb(_Comunicador):
-    def __init__(mi, config:dict):
-        mi.config:dict = config or {}
-        mi.idioma = None
-        mi.traductor = None
 
     # --------------------------------------------------
     # Métodos públicos
@@ -301,7 +297,7 @@ class ComunicadorWeb(_Comunicador):
         info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
         info['config']['idioma'] = mi.idioma
         info['config']['api_motor'] = api_motor
-        info['sesion'] = sesion
+        info['sesion'] = sesion or {}
         info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
         return info
 
@@ -313,6 +309,7 @@ class ComunicadorWeb(_Comunicador):
 
     def cargar_archivo(mi):
         ...
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb

@@ -14,11 +14,11 @@ from pysinergia.adaptadores import I_ConectorDisco as _Disco
 # Clase: Comunicador
 # --------------------------------------------------
 class Comunicador:
-    def __init__(mi, config:dict):
+    def __init__(mi, config:dict, disco:_Disco):
         mi.config:dict = config or {}
+        mi.disco:_Disco = disco
         mi.idioma = None
         mi.traductor = None
-        mi.disco:_Disco = None
 
     # --------------------------------------------------
     # Métodos públicos
@@ -67,8 +67,10 @@ class Comunicador:
             exportador:Exportador = componente(mi.config)
             archivo = exportador.generar(contenido=contenido, opciones=op)
             if guardar:
-                """TODO: Guardar en disco"""
-
+                nombre_archivo = op.get('nombre_archivo', '')
+                carpeta_guardar = op.get('carpeta_guardar', '')
+                ruta_archivo = str(f'{carpeta_guardar}/{nombre_archivo}').strip('/')
+                mi.disco.escribir(archivo, ruta_archivo)
             return archivo
         except Exception as e:
             raise e
