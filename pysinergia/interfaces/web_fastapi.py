@@ -281,7 +281,7 @@ class ServidorApi:
 # --------------------------------------------------
 class ComunicadorWeb(_Comunicador):
     def __init__(mi, config:dict):
-        mi.config:dict = config
+        mi.config:dict = config or {}
         mi.idioma = None
         mi.traductor = None
 

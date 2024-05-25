@@ -151,6 +151,11 @@ def csv(query:PeticionBuscarParticipantes):
     comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
     documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info, guardar=True)
+
+    from pysinergia.conectores.disco_local import DiscoLocal as Disco
+    disco = Disco(config.disco())
+    disco.escribir(documento, f'creados/{nombre_archivo}')
+
     return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
     #return Response(response=documento, headers=encabezados)
 

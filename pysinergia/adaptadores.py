@@ -132,10 +132,6 @@ class I_ConectorDisco(metaclass=ABCMeta):
     # Métodos obligatorios
 
     @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-    @abstractmethod
     def generar_nombre(mi, nombre:str) -> str:
         ...
 
@@ -152,11 +148,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def crear_carpeta(mi, nombre:str):
+    def crear_carpeta(mi, nombre:str) -> str:
         ...
 
     @abstractmethod
-    def eliminar_carpeta(mi, nombre:str):
+    def eliminar_carpeta(mi, nombre:str) ->bool:
         ...
 
     @abstractmethod
@@ -165,17 +161,21 @@ class I_ConectorDisco(metaclass=ABCMeta):
 
 
 # --------------------------------------------------
-# Interface: I_Exportador
+# Clase: Exportador
 # --------------------------------------------------
-class I_Exportador(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los exportadores
+class Exportador:
+    def __init__(mi, config:dict):
+        mi.config:dict = config or {}
 
-    # --------------------------------------------------
-    # Métodos obligatorios
+    def obtener_ruta(mi):
+        ruta_temp = mi.config.get('ruta_temp', '')
+        ruta = os.path.abspath(f'{ruta_temp}/archivos').replace('\\', '/')
+        if not os.path.exists(ruta):
+            ruta = ''
+        return ruta
 
-    @abstractmethod
-    def generar(mi, contenido:str='', opciones:dict={}, guardar:bool=False):
-        ...
+    def generar(mi, contenido:str='', opciones:dict={}):
+        raise NotImplementedError()
 
 
 # --------------------------------------------------
@@ -354,7 +354,7 @@ class Operador:
             if config.disco_clase:
                 conector_disco = mi._importar_conector(mi.config.disco())
                 if conector_disco:
-                    mi.disco:I_ConectorDisco = conector_disco()
+                    mi.disco:I_ConectorDisco = conector_disco(mi.config.disco())
             if config.llm_clase:
                 conector_llm = mi._importar_conector(mi.config.llm())
                 if conector_llm:
@@ -371,9 +371,9 @@ class Operador:
 # Clase: Controlador
 # --------------------------------------------------
 class Controlador:
-    def __init__(mi, config:Configuracion, sesion:dict=None):
+    def __init__(mi, config:Configuracion, sesion:dict):
         mi.config:Configuracion = config
-        mi.sesion:dict = sesion
+        mi.sesion:dict = sesion or {}
 
 
 # --------------------------------------------------

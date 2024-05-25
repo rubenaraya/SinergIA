@@ -8,15 +8,17 @@ from pysinergia import (
     Funciones as _F,
     Json as _Json,
 )
+from pysinergia.adaptadores import I_ConectorDisco as _Disco
 
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
 class Comunicador:
     def __init__(mi, config:dict):
-        mi.config:dict = config
+        mi.config:dict = config or {}
         mi.idioma = None
         mi.traductor = None
+        mi.disco:_Disco = None
 
     # --------------------------------------------------
     # Métodos públicos
@@ -53,7 +55,7 @@ class Comunicador:
 
     def exportar_info(mi, formato:str, info:dict={}, guardar:bool=False):
         import importlib
-        from pysinergia.adaptadores import I_Exportador
+        from pysinergia.adaptadores import Exportador
         try:
             op:dict = info['opciones']
             op['idioma'] = mi.idioma
@@ -62,8 +64,12 @@ class Comunicador:
             modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
             clase = f'Exportador{str(formato).capitalize()}'
             componente = getattr(importlib.import_module(modulo), clase)
-            exportador:I_Exportador = componente(mi.config)
-            return exportador.generar(contenido=contenido, opciones=op, guardar=guardar)
+            exportador:Exportador = componente(mi.config)
+            archivo = exportador.generar(contenido=contenido, opciones=op)
+            if guardar:
+                """TODO: Guardar en disco"""
+
+            return archivo
         except Exception as e:
             raise e
 
@@ -72,14 +78,13 @@ class Comunicador:
             op:dict = info['opciones']
             nombre = _F.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
             op['nombre_archivo'] = nombre
-            if not op.get('ruta_destino'):
-                op['ruta_destino'] = mi.config.get('disco_ruta', '')
             if not op.get('ruta_plantillas'):
                 ruta = mi.config.get('ruta_servicio', '.')
                 op['ruta_plantillas'] = f'{ruta}/plantillas'
         else:
             nombre = _F.normalizar_nombre('', extension, largo, auto)
         return nombre
+
 
 # --------------------------------------------------
 # Clase: Autenticador

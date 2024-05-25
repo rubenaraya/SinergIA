@@ -2,28 +2,24 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_Exportador as _I_Exportador
+from pysinergia.adaptadores import Exportador as _Exportador
 from pysinergia import (
     Constantes as _Constantes,
-    Funciones as _Funciones,
     ErrorPersonalizado as _ErrorPersonalizado,
 )
 
 # --------------------------------------------------
 # Clase: ExportadorCsv
 # --------------------------------------------------
-class ExportadorCsv(_I_Exportador):
-    def __init__(mi, config:dict={}):
-        mi.config:dict = config
+class ExportadorCsv(_Exportador):
 
-    def generar(mi, contenido:str='', opciones:dict={}, guardar:bool=False):
+    def generar(mi, contenido:str='', opciones:dict={}):
         import pandas as pd
-        import io, os, shutil
+        import io, os
         from uuid import uuid4
         uuid = str(uuid4())
-        ruta_destino = _Funciones.componer_ruta(opciones, 'csv')
-        ruta_temp = mi.config.get('ruta_temp', '')
-        ruta_csv = os.path.join(os.path.abspath(f'{ruta_temp}/archivos'), f'{uuid}.csv')
+        ruta_aux = mi.obtener_ruta()
+        ruta_csv = f'{ruta_aux}/{uuid}.csv'
         try:
             tabla = pd.read_html(io.StringIO(contenido), encoding='utf-8')[0]
             tabla.to_csv(
@@ -36,12 +32,7 @@ class ExportadorCsv(_I_Exportador):
             with open(ruta_csv, 'rb') as f:
                 csv_bytes = f.read()
                 csv_io = io.BytesIO(csv_bytes)
-            if ruta_destino and guardar:
-                if not os.path.exists(os.path.dirname(ruta_destino)):
-                    os.makedirs(os.path.dirname(ruta_destino))
-                shutil.move(ruta_csv, ruta_destino)
-            else:
-                os.remove(ruta_csv)
+            os.remove(ruta_csv)
             return csv_io
         except Exception as e:
             raise _ErrorPersonalizado(

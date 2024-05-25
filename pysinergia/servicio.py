@@ -44,7 +44,6 @@ class Servicio:
             'hoja_estilos': 'tabla.css',
             'tabla_datos': 'Hoja1',
             'ruta_plantillas': '',
-            'ruta_destino': '',
             'carpeta_guardar': '',
             'nombre_archivo': '',
             'titulo': '',

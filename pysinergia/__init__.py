@@ -83,6 +83,20 @@ class Constantes:
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
 
+    class EXT:
+        DOC = 'doc'
+        DOCX = 'docx'
+        XLS = 'xls'
+        XLSX = 'xlsx'
+        PPT = 'ppt'
+        PPTX = 'pptx'
+        PDF = 'pdf'
+        JPG = 'jpg'
+        JPEG = 'jpeg'
+        PNG = 'png'
+        CSV = 'csv'
+        ZIP = 'zip'
+
     class ESTADO:
         HTTP_200_EXITO = 200
         HTTP_201_CREADO = 201
@@ -255,20 +269,6 @@ class Funciones:
             nombre = nombre[:max_nombre_largo]
         nombre_completo = f'{nombre}{extension}'
         return nombre_completo
-
-    @staticmethod
-    def componer_ruta(opciones:dict, extension:str='') -> str:
-        ruta_destino = opciones.get('ruta_destino', '')
-        carpeta_guardar = opciones.get('carpeta_guardar', '')
-        nombre_archivo = opciones.get('nombre_archivo', '')
-        ruta_archivo = ''
-        if nombre_archivo and not str(nombre_archivo).endswith(f'.{extension}'):
-            nombre_archivo = f'{nombre_archivo}.{extension}'
-        if carpeta_guardar:
-            carpeta_guardar = f'/{carpeta_guardar}'
-        if nombre_archivo and ruta_destino:
-            ruta_archivo = f'{ruta_destino}{carpeta_guardar}/{nombre_archivo}'
-        return ruta_archivo
 
     @staticmethod
     def comprobar_plantilla(opciones:dict, tipo:str='') -> tuple:

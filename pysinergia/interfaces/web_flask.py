@@ -283,7 +283,7 @@ class ServidorApi:
 # --------------------------------------------------
 class ComunicadorWeb(_Comunicador):
     def __init__(mi, config:dict):
-        mi.config:dict = config
+        mi.config:dict = config or {}
         mi.idioma = None
         mi.traductor = None
 
@@ -381,7 +381,16 @@ class AutenticadorWeb(_Autenticador):
 class CargadorArchivos():
     def __init__(mi):
         mi.peso_maximo:int = 25
-        mi.formatos:list = []
+        mi.extensiones:list = [
+            _C.EXT.PDF,
+            _C.EXT.DOCX,
+            _C.EXT.DOC,
+            _C.EXT.XLS,
+            _C.EXT.XLSX,
+            _C.EXT.PPT,
+            _C.EXT.PPTX,
+            _C.EXT.CSV,
+        ]
 
     # --------------------------------------------------
     # Métodos privados
@@ -391,4 +400,18 @@ class CargadorArchivos():
 
     def cargar(mi):
         ...
+
+
+# --------------------------------------------------
+# Clase: Archivo (?)
+# --------------------------------------------------
+class Archivo:
+    def __init__(mi):
+        mi.ruta:str = ''
+        mi.nombre:str = ''
+        mi.ubicacion:str = ''
+        mi.extension:str = ''
+        mi.peso:int = 0
+        mi.ancho:int = 0
+        mi.alto:int = 0
 
