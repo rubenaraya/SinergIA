@@ -26,28 +26,28 @@ class ControladorParticipantes(Controlador):
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:ModeloPeticion) -> dict:
-        servicio = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion)
+        servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         respuesta = RespuestaResultado(**resultado).diccionario()
         return respuesta
 
     def agregar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion)
         return resultado
 
     def ver_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.VER_PARTICIPANTE, peticion)
         return resultado
 
     def actualizar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.ACTUALIZAR_PARTICIPANTE, peticion)
         return resultado
 
     def eliminar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.config), mi.sesion).solicitar_accion(
+        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.ELIMINAR_PARTICIPANTE, peticion)
         return resultado
 
@@ -66,7 +66,7 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     # Métodos públicos (usados en la capa de servicio)
 
     def recuperar_lista_participantes_todos(mi) -> dict:
-        mi.basedatos.conectar(mi.config.basedatos())
+        mi.basedatos.conectar(mi.configuracion.basedatos())
 
         instruccion = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
 

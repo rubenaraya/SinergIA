@@ -16,6 +16,7 @@ class Comunicador:
         mi.disco:_Disco = disco
         mi.idioma = None
         mi.traductor = None
+        mi.info:dict = {}
 
     # --------------------------------------------------
     # Métodos públicos
@@ -50,7 +51,7 @@ class Comunicador:
         except Exception as e:
             raise e
 
-    def exportar_info(mi, formato:str, info:dict={}, guardar:bool=False):
+    def exportar_contenido(mi, formato:str, info:dict={}, guardar:bool=False):
         import importlib
         from pysinergia.adaptadores import Exportador
         try:
@@ -96,6 +97,9 @@ class Comunicador:
                     ruta_plantillas = ''
                     plantilla = ''
         return plantilla, ruta_plantillas
+
+    def traspasar_info(mi) -> dict:
+        return mi.info
 
 
 # --------------------------------------------------

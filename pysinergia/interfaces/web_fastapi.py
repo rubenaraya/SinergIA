@@ -282,20 +282,20 @@ class ComunicadorWeb(_Comunicador):
     # --------------------------------------------------
     # Métodos públicos
 
-    def agregar_contexto(mi, request:Request, info:dict={}, sesion:dict={}) -> dict:
+    def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
         global api_motor
-        info['url'] = {
+        mi.asignar_idioma(idiomas_aceptados)
+        mi.info['url'] = {
             'absoluta': str(request.url).split('?')[0],
             'base': str(request.base_url).strip('/'),
             'relativa': request.url.path,
         }
-        info['config'] = mi.config
-        info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
-        info['config']['idioma'] = mi.idioma
-        info['config']['api_motor'] = api_motor
-        info['sesion'] = sesion or {}
-        info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
-        return info
+        mi.info['config'] = mi.config
+        mi.info['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
+        mi.info['config']['idioma'] = mi.idioma
+        mi.info['config']['api_motor'] = api_motor
+        mi.info['sesion'] = sesion or {}
+        mi.info['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
 
     def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
         return {

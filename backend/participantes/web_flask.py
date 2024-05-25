@@ -18,18 +18,18 @@ from .adaptadores import (
 # --------------------------------------------------
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
-config = obtener_config(Config, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(config.contexto(), conectar_disco(config))
+configuracion = obtener_config(Config, __name__, aplicacion, None)
+comunicador = ComunicadorWeb(configuracion.contexto(), conectar_disco(configuracion))
 autenticador = AutenticadorWeb(
-    secreto=config.secret_key,
-    api_keys=config.api_keys,
-    url_login=f'/{config.app_web}/{aplicacion}/login',
-    ruta_temp=config.ruta_temp
+    secreto=configuracion.secret_key,
+    api_keys=configuracion.api_keys,
+    url_login=f'/{configuracion.app_web}/{aplicacion}/login',
+    ruta_temp=configuracion.ruta_temp
 )
 enrutador = Blueprint(
-    name=config.servicio,
+    name=configuracion.servicio,
     import_name=__name__,
-    url_prefix=f'{config.raiz_api}/{aplicacion}'
+    url_prefix=f'{configuracion.raiz_api}/{aplicacion}'
 )
 
 # --------------------------------------------------
@@ -38,43 +38,52 @@ enrutador = Blueprint(
 
 @enrutador.route('', methods=['GET'])
 def get_inicio():
-    return redirect(f'/{config.app_web}/{config.frontend}/{aplicacion}/index.html')
+    return redirect(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
 #@autenticador.validar_token
 @validate()
 def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
-    respuesta = Controlador(config, sesion).buscar_participantes(query)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    respuesta = Controlador(configuracion, comunicador).buscar_participantes(query)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
 @validate()
 def ver_participante(id):
-    sesion = autenticador.recuperar_sesion()
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
     peticion = PeticionParticipante(id=id)
-    respuesta = Controlador(config, sesion).ver_participante(peticion)
+    respuesta = Controlador(configuracion, comunicador).ver_participante(peticion)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes', methods=['POST'])
 def agregar_participante(body:ModeloNuevoParticipante):
-    sesion = autenticador.recuperar_sesion()
-    respuesta = Controlador(config, sesion).agregar_participante(body)
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    respuesta = Controlador(configuracion, comunicador).agregar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_201_CREADO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
 def actualizar_participante(id, body:ModeloEditarParticipante):
-    sesion = autenticador.recuperar_sesion()
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
     body.id = id
-    respuesta = Controlador(config, sesion).actualizar_participante(body)
+    respuesta = Controlador(configuracion, comunicador).actualizar_participante(body)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<int>', methods=['DELETE'])
 def eliminar_participante(id):
-    sesion = autenticador.recuperar_sesion()
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
     peticion = PeticionParticipante(id=id)
-    respuesta = Controlador(config, sesion).eliminar_participante(peticion)
+    respuesta = Controlador(configuracion, comunicador).eliminar_participante(peticion)
     return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
 
 
@@ -85,13 +94,12 @@ def eliminar_participante(id):
 @enrutador.route('/login', methods=['GET'])
 def get_login():
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma'))
-    #comunicador.asignar_idioma(request.headers.get('Accept-Language'))
-    info = comunicador.agregar_contexto({}, sesion)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
     respuesta = comunicador.transformar_contenido(
-        info,
+        comunicador.traspasar_info(),
         plantilla='login.html',
-        directorio=f'{config.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
     return Response(respuesta, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.HTML)
 
@@ -102,55 +110,62 @@ def post_login():
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)
-    #print(autenticador.id_sesion())
     return Response(autenticador.token, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.TXT)
 
 @enrutador.route('/pdf', methods=['GET'])
 @validate()
 def pdf(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
-    info = Controlador(config, sesion).buscar_participantes(query)
-    comunicador.agregar_contexto(info=info, sesion=sesion)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    info = Controlador(configuracion, comunicador).buscar_participantes(query)
+
+    info.update(comunicador.traspasar_info())
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'pdf')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.PDF, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.PDF, info=info, guardar=True)
-    return Response(response=documento, headers=encabezados)
+    contenido = comunicador.exportar_contenido(formato=C.FORMATO.PDF, info=info, guardar=True)
+    return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/docx', methods=['GET'])
 @validate()
 def docx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
-    info = Controlador(config, sesion).buscar_participantes(query)
-    comunicador.agregar_contexto(info=info, sesion=sesion)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    info = Controlador(configuracion, comunicador).buscar_participantes(query)
+
+    info.update(comunicador.traspasar_info())
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'docx')
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.DOCX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.WORD, info=info, guardar=True)
-    return Response(response=documento, headers=encabezados)
+    contenido = comunicador.exportar_contenido(formato=C.FORMATO.WORD, info=info, guardar=True)
+    return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/xlsx', methods=['GET'])
 @validate()
 def xlsx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    info = Controlador(config, sesion).buscar_participantes(query)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    info = Controlador(configuracion, comunicador).buscar_participantes(query)
+
+    info.update(comunicador.traspasar_info())
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'xlsx')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
-    comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.XLSX, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.EXCEL, info=info, guardar=True)
-    return Response(response=documento, headers=encabezados)
+    contenido = comunicador.exportar_contenido(formato=C.FORMATO.EXCEL, info=info, guardar=True)
+    return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/csv', methods=['GET'])
 @validate()
 def csv(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
-    info = Controlador(config, sesion).buscar_participantes(query)
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    info = Controlador(configuracion, comunicador).buscar_participantes(query)
+
+    info.update(comunicador.traspasar_info())
     nombre_archivo = comunicador.obtener_nombre_archivo(info, 'csv')
-    comunicador.asignar_idioma(sesion.get('idioma', request.headers.get('Accept-Language')))
-    comunicador.agregar_contexto(info=info, sesion=sesion)
     encabezados = comunicador.generar_encabezados(tipo_mime=C.MIME.CSV, nombre_archivo=nombre_archivo)
-    documento = comunicador.exportar_info(formato=C.FORMATO.CSV, info=info, guardar=True)
+    contenido = comunicador.exportar_contenido(formato=C.FORMATO.CSV, info=info, guardar=True)
     return Response(Json.codificar(info), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
-    #return Response(response=documento, headers=encabezados)
+    #return Response(response=contenido, headers=encabezados)
 

@@ -71,24 +71,31 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     @abstractmethod
     def conectar(mi, config:dict) -> bool:
         ...
+
     @abstractmethod
     def desconectar(mi):
         ...
+
     @abstractmethod
     def insertar(mi, instruccion:str, parametros:list) -> int:
         ...
+
     @abstractmethod
     def actualizar(mi, instruccion:str, parametros:list) -> int:
         ...
+
     @abstractmethod
     def eliminar(mi, instruccion:str, parametros:list) -> int:
         ...
+
     @abstractmethod
     def leer(mi, instruccion:str, parametros:list, contenido:int) -> tuple:
         ...
+
     @abstractmethod
     def obtener(mi, instruccion:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
         ...
+
     @abstractmethod
     def crear_filtro(mi, filtro:str) -> str:
         ...
@@ -161,6 +168,44 @@ class I_ConectorDisco(metaclass=ABCMeta):
 
     @abstractmethod
     def comprobar_ruta(mi, nombre:str, tipo:str) -> bool:
+        ...
+
+
+# --------------------------------------------------
+# Interface: I_Comunicador
+# --------------------------------------------------
+class I_Comunicador(metaclass=ABCMeta):
+    # Implementada en la capa de infraestructura web
+
+    # --------------------------------------------------
+    # Métodos obligatorios
+
+    @abstractmethod
+    def asignar_idioma(mi, idiomas_aceptados:str):
+        ...
+
+    @abstractmethod
+    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
+        ...
+
+    @abstractmethod
+    def exportar_contenido(mi, formato:str, info:dict={}, guardar:bool=False):
+        ...
+
+    @abstractmethod
+    def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
+        ...
+
+    @abstractmethod
+    def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
+        ...
+
+    @abstractmethod
+    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
+        ...
+
+    @abstractmethod
+    def traspasar_info(mi) -> dict:
         ...
 
 
@@ -322,9 +367,9 @@ class Configuracion(BaseSettings):
 # Clase: Operador
 # --------------------------------------------------
 class Operador:
-    def __init__(mi, config:Configuracion):
-        mi.config:Configuracion = config
-        mi.inyectar_conectores(mi.config)
+    def __init__(mi, configuracion:Configuracion):
+        mi.configuracion:Configuracion = configuracion
+        mi.inyectar_conectores(mi.configuracion)
 
     # --------------------------------------------------
     # Métodos privados
@@ -345,26 +390,26 @@ class Operador:
     # --------------------------------------------------
     # Métodos públicos
 
-    def inyectar_conectores(mi, config:Configuracion):
+    def inyectar_conectores(mi, configuracion:Configuracion):
         try:
-            if config.basedatos_clase:
-                conector_basedatos = mi._importar_conector(config=mi.config.basedatos())
+            if configuracion.basedatos_clase:
+                conector_basedatos = mi._importar_conector(mi.configuracion.basedatos())
                 if conector_basedatos:
                     mi.basedatos:I_ConectorBasedatos = conector_basedatos()
-            if config.almacen_clase:
-                conector_almacen = mi._importar_conector(mi.config.almacen())
+            if configuracion.almacen_clase:
+                conector_almacen = mi._importar_conector(mi.configuracion.almacen())
                 if conector_almacen:
                     mi.almacen:I_ConectorAlmacen = conector_almacen()
-            if config.disco_clase:
-                conector_disco = mi._importar_conector(mi.config.disco())
+            if configuracion.disco_clase:
+                conector_disco = mi._importar_conector(mi.configuracion.disco())
                 if conector_disco:
-                    mi.disco:I_ConectorDisco = conector_disco(mi.config.disco())
-            if config.llm_clase:
-                conector_llm = mi._importar_conector(mi.config.llm())
+                    mi.disco:I_ConectorDisco = conector_disco(mi.configuracion.disco())
+            if configuracion.llm_clase:
+                conector_llm = mi._importar_conector(mi.configuracion.llm())
                 if conector_llm:
                     mi.llm:I_ConectorLlm = conector_llm()
-            if config.spi_clase:
-                conector_spi = mi._importar_conector(mi.config.spi())
+            if configuracion.spi_clase:
+                conector_spi = mi._importar_conector(mi.configuracion.spi())
                 if conector_spi:
                     mi.spi:I_ConectorSpi = conector_spi()
         except Exception as e:
@@ -375,8 +420,11 @@ class Operador:
 # Clase: Controlador
 # --------------------------------------------------
 class Controlador:
-    def __init__(mi, config:Configuracion, sesion:dict):
-        mi.config:Configuracion = config
+    def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
+        mi.configuracion:Configuracion = configuracion
+        mi.comunicador:I_Comunicador = comunicador
+        info = mi.comunicador.traspasar_info()
+        sesion = info.get('sesion')
         mi.sesion:dict = sesion or {}
 
 
@@ -386,16 +434,17 @@ class Controlador:
 @lru_cache
 def obtener_config(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
     archivo_env = _Funciones.obtener_ruta_env(paquete, entorno)
-    config:Configuracion = modelo(_env_file=archivo_env)
-    config.reconocer_servicio(archivo_env, aplicacion)
-    return config
+    configuracion:Configuracion = modelo(_env_file=archivo_env)
+    configuracion.reconocer_servicio(archivo_env, aplicacion)
+    return configuracion
+
 
 # --------------------------------------------------
 # Función: conectar_disco
 # --------------------------------------------------
-def conectar_disco(config:Configuracion) -> I_ConectorDisco:
+def conectar_disco(configuracion:Configuracion) -> I_ConectorDisco:
     import importlib
-    modulo = f'pysinergia.conectores.{config.disco_fuente}'
-    componente = getattr(importlib.import_module(modulo), config.disco_clase)
-    return componente(config.disco())
+    modulo = f'pysinergia.conectores.{configuracion.disco_fuente}'
+    componente = getattr(importlib.import_module(modulo), configuracion.disco_clase)
+    return componente(configuracion.disco())
 

@@ -8,6 +8,7 @@ from fastapi import (
     Depends,
     Body,
     Header,
+    UploadFile,
 )
 from fastapi.responses import (
     JSONResponse,
