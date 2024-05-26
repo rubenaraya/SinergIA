@@ -1,7 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
-from typing import Dict
+from typing import Dict, BinaryIO, TextIO
 from functools import lru_cache
 import os
 
@@ -147,11 +147,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def escribir(mi, archivo, nombre:str, modo:str='t') -> str:
+    def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='t') -> str:
         ...
 
     @abstractmethod
-    def abrir(mi, nombre:str, modo:str='t'):
+    def abrir(mi, nombre:str, modo:str='t') -> BinaryIO | TextIO:
         ...
 
     @abstractmethod

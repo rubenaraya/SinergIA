@@ -3,6 +3,7 @@
 # --------------------------------------------------
 # Importaciones de Infraestructura de Datos
 from pathlib import Path
+from typing import BinaryIO, TextIO
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -85,7 +86,7 @@ class DiscoLocal(_Disco):
             print(e)
             return False
 
-    def escribir(mi, contenido, nombre:str, modo:str='') -> str:
+    def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
         try:
             ruta_archivo = mi._leer_ruta(nombre)
             modo_abrir = 'wb' if modo == 'b' else 'w'
@@ -101,7 +102,7 @@ class DiscoLocal(_Disco):
             print(e)
             return None
 
-    def abrir(mi, nombre:str, modo:str=''):
+    def abrir(mi, nombre:str, modo:str='') -> BinaryIO | TextIO:
         try:
             ruta_archivo = mi._leer_ruta(nombre)
             modo_abrir = 'rb' if modo == 'b' else 'r'
