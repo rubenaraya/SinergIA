@@ -1,6 +1,6 @@
 # pysinergia\web.py
 
-import time, jwt
+import time, jwt, importlib
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -8,18 +8,29 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
 )
-from pysinergia.adaptadores import I_ConectorDisco as _Disco
+from pysinergia.adaptadores import (
+    I_ConectorDisco as _Disco,
+)
 
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
 class Comunicador:
-    def __init__(mi, config:dict, disco:_Disco):
-        mi.config:dict = config or {}
-        mi.disco:_Disco = disco
+    def __init__(mi, config_contexto:dict, config_disco:dict):
+        mi.config:dict = config_contexto or {}
         mi.idioma = None
         mi.traductor = None
         mi.contexto:dict = {}
+        mi.disco:_Disco = mi._conectar_disco(config_disco)
+
+    # --------------------------------------------------
+    # Métodos privados
+
+    def _conectar_disco(mi, config_disco:dict) -> _Disco:
+        disco_fuente = config_disco.get('fuente','')
+        modulo = f'pysinergia.conectores.{disco_fuente}'
+        componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
+        return componente(config_disco)
 
     # --------------------------------------------------
     # Métodos públicos
@@ -67,7 +78,6 @@ class Comunicador:
                 if formato == _Constantes.FORMATO.HTML:
                     resultado = contenido
                 else:
-                    import importlib
                     from pysinergia.adaptadores import Exportador
                     modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
                     clase = f'Exportador{str(formato).capitalize()}'
@@ -117,12 +127,12 @@ class Comunicador:
 # Clase: Autenticador
 # --------------------------------------------------
 class Autenticador:
-    def __init__(mi, secreto:str, algoritmo:str='HS256', url_login:str='', api_keys:dict={}, ruta_temp:str=''):
-        mi.secreto = secreto
-        mi.algoritmo = algoritmo
+    def __init__(mi, config_autenticacion:dict, url_login:str=''):
+        mi.secret_key = config_autenticacion.get('secret_key','')
+        mi.algoritmo_jwt = config_autenticacion.get('algoritmo_jwt','')
+        mi.api_keys:dict = config_autenticacion.get('api_keys','')
+        mi.ruta_temp:str = config_autenticacion.get('ruta_temp','')
         mi.url_login:str = url_login
-        mi.api_keys:dict = api_keys
-        mi.ruta_temp:str = ruta_temp
         mi.token:str = None
 
     # --------------------------------------------------
@@ -142,7 +152,7 @@ class Autenticador:
         if not mi.token:
             return None
         try:
-            token_decodificado = jwt.decode(mi.token, mi.secreto, algorithms=[mi.algoritmo])
+            token_decodificado = jwt.decode(mi.token, mi.secret_key, algorithms=[mi.algoritmo_jwt])
             return token_decodificado if token_decodificado['caducidad'] >= time.time() else None
         except:
             return {}
@@ -161,7 +171,7 @@ class Autenticador:
             'id_sesion': id_sesion,
             'caducidad': time.time() + 60 * duracion
         }
-        mi.token = jwt.encode(payload, mi.secreto, algorithm=mi.algoritmo)
+        mi.token = jwt.encode(payload, mi.secret_key, algorithm=mi.algoritmo_jwt)
         return mi.token
 
     def recuperar_sesion(mi, id_sesion:str='') -> dict:

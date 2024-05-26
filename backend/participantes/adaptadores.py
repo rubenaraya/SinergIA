@@ -27,6 +27,8 @@ class ControladorParticipantes(Controlador):
 
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str='JSON', guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
+
+        """TODO: convertir peticion en dict para enviar a servicio"""
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         respuesta = RespuestaResultado(**resultado).diccionario()
         respuesta.update(mi.comunicador.traspasar_contexto())

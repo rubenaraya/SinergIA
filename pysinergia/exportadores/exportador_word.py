@@ -25,7 +25,6 @@ class ExportadorWord(_Exportador):
                 f.write(contenido)
             dir_pandoc = os.path.normpath(os.path.abspath(_Constantes.DIR_LIB_PANDOC))
             ruta_pandoc = os.path.join(dir_pandoc,'pandoc')
-            #os.environ["PATH"] = dir_pandoc + os.pathsep + os.getenv("PATH")
             subprocess.run([ruta_pandoc, ruta_html, '-o', ruta_docx])
             os.remove(ruta_html)
             with open(ruta_docx, 'rb') as f:
@@ -35,7 +34,7 @@ class ExportadorWord(_Exportador):
             return docx_io
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en ExportadorWord',
+                mensaje='Error en Exportador Word',
                 tipo=_Constantes.SALIDA.ERROR,
                 codigo=_Constantes.ESTADO.HTTP_500_ERROR,
                 detalles=[str(e)]

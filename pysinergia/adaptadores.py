@@ -240,6 +240,7 @@ class Configuracion(BaseSettings):
     idiomas: list = []
     api_keys: dict = {}
     secret_key: str = ''
+    algoritmo_jwt: str = ''
     ruta_servicio: str = ''
     nivel_registro: str = ''
     raiz_api: str = ''
@@ -359,8 +360,15 @@ class Configuracion(BaseSettings):
             'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend,
-            'disco_ruta': mi.disco_ruta,
+            #'disco_ruta': mi.disco_ruta,
         }
+    def autenticacion(mi) -> Dict:
+        return dict({
+            'algoritmo_jwt': mi.algoritmo_jwt,
+            'secret_key': mi.secret_key,
+            'api_keys': mi.api_keys,
+            'ruta_temp': mi.ruta_temp,
+        })
 
 
 # --------------------------------------------------
@@ -437,14 +445,4 @@ def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, ento
     configuracion:Configuracion = modelo(_env_file=archivo_env)
     configuracion.reconocer_servicio(archivo_env, aplicacion)
     return configuracion
-
-
-# --------------------------------------------------
-# Función: conectar_disco
-# --------------------------------------------------
-def conectar_disco(configuracion:Configuracion) -> I_ConectorDisco:
-    import importlib
-    modulo = f'pysinergia.conectores.{configuracion.disco_fuente}'
-    componente = getattr(importlib.import_module(modulo), configuracion.disco_clase)
-    return componente(configuracion.disco())
 

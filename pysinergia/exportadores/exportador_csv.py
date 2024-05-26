@@ -36,7 +36,7 @@ class ExportadorCsv(_Exportador):
             return csv_io
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en ExportadorCsv',
+                mensaje='Error en Exportador Csv',
                 tipo=_Constantes.SALIDA.ERROR,
                 codigo=_Constantes.ESTADO.HTTP_500_ERROR,
                 detalles=[str(e)]

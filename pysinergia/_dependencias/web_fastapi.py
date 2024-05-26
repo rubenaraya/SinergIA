@@ -30,7 +30,6 @@ from pysinergia import (
 )
 from pysinergia.adaptadores import (
     cargar_configuracion,
-    conectar_disco,
 )
 from pysinergia.interfaces.web_fastapi import (
     ComunicadorWeb,

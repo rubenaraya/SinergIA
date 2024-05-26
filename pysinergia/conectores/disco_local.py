@@ -17,7 +17,6 @@ class DiscoLocal(_Disco):
     def __init__(mi, config:dict):
         mi._config:dict = config or {}
         mi._path = Path(mi._config.get('ruta', ''))
-        mi._longitud_fragmento = 64 * 1024
 
     # --------------------------------------------------
     # Métodos privados

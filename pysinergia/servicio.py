@@ -16,7 +16,7 @@ class Servicio:
         mi.operador = operador
         mi.sesion:dict = sesion
 
-    def solicitar_accion(mi, accion:int, peticion):
+    def solicitar_accion(mi, accion:int, peticion:dict) -> dict:
         raise NotImplementedError()
 
     def autorizar_roles(mi, roles:str, rechazar:bool=False) -> bool:

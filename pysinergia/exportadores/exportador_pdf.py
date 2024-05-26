@@ -5,7 +5,6 @@
 from pysinergia.adaptadores import Exportador as _Exportador
 from pysinergia import (
     Constantes as _Constantes,
-    Funciones as _Funciones,
     ErrorPersonalizado as _ErrorPersonalizado,
 )
 
@@ -32,7 +31,7 @@ class ExportadorPdf(_Exportador):
             return io.BytesIO(pdf)
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en ExportadorPdf',
+                mensaje='Error en Exportador Pdf',
                 tipo=_Constantes.SALIDA.ERROR,
                 codigo=_Constantes.ESTADO.HTTP_500_ERROR,
                 detalles=[str(e)]

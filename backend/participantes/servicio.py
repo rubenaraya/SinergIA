@@ -63,7 +63,8 @@ class ServicioParticipantes(Servicio):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de adaptadores)
 
-    def solicitar_accion(mi, accion:ACCION, peticion:ModeloPeticion):
+    """TODO: Cambiar para que peticion recibida sea un dict"""
+    def solicitar_accion(mi, accion:ACCION, peticion:ModeloPeticion) -> dict:
         realizar = {
             ACCION.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
             ACCION.AGREGAR_PARTICIPANTE: mi._agregar_participante,

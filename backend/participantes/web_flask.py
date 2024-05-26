@@ -19,12 +19,10 @@ from .adaptadores import (
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 configuracion = cargar_configuracion(ConfigServicio, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(configuracion.contexto(), conectar_disco(configuracion))
+comunicador = ComunicadorWeb(configuracion.contexto(), configuracion.disco())
 autenticador = AutenticadorWeb(
-    secreto=configuracion.secret_key,
-    api_keys=configuracion.api_keys,
-    url_login=f'/{configuracion.app_web}/{aplicacion}/login',
-    ruta_temp=configuracion.ruta_temp
+    configuracion.autenticacion(),
+    url_login=f'/{configuracion.app_web}/{aplicacion}/login'
 )
 enrutador = Blueprint(
     name=configuracion.servicio,
