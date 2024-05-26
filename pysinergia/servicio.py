@@ -38,7 +38,7 @@ class Servicio:
             )
         return False
 
-    def establecer_opciones(mi, info:dict, opciones:dict) -> dict:
+    def establecer_opciones(mi, opciones:dict, info:dict=None) -> dict:
         requeridas = {
             'plantilla': 'tabla.html',
             'hoja_estilos': 'tabla.css',

@@ -27,9 +27,7 @@ class ControladorParticipantes(Controlador):
 
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str='JSON', guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
-
-        """TODO: convertir peticion en dict para enviar a servicio"""
-        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
+        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         respuesta = RespuestaResultado(**resultado).diccionario()
         respuesta.update(mi.comunicador.traspasar_contexto())
         entrega = Funciones.atributos_entrega(formato)
@@ -40,22 +38,22 @@ class ControladorParticipantes(Controlador):
 
     def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.AGREGAR_PARTICIPANTE, peticion)
+            ACCION.AGREGAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def ver_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.VER_PARTICIPANTE, peticion)
+            ACCION.VER_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def actualizar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.ACTUALIZAR_PARTICIPANTE, peticion)
+            ACCION.ACTUALIZAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def eliminar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.ELIMINAR_PARTICIPANTE, peticion)
+            ACCION.ELIMINAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
 
