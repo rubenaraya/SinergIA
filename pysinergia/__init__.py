@@ -109,6 +109,7 @@ class Constantes:
         CSV = 'CSV'
         HTML = 'HTML'
         JSON = 'JSON'
+        TEXTO = 'TEXTO'
 
 
 # --------------------------------------------------
@@ -239,6 +240,8 @@ class Funciones:
             return Portador(formato, 'html', 'text/html')
         def _json():
             return Portador(formato, 'json', 'application/json')
+        def _texto():
+            return Portador(formato, 'txt', 'text/plain')
         formatos = {
             'PDF': _pdf,
             'WORD': _word,
@@ -246,6 +249,7 @@ class Funciones:
             'CSV': _csv,
             'HTML': _html,
             'JSON': _json,
+            'TEXTO': _texto,
         }
         return formatos.get(formato)()
 

@@ -12,13 +12,13 @@ from .dominio import (
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
-    ConfigParticipantes as Config,
+    ConfigParticipantes as ConfigServicio,
 )
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
-configuracion = obtener_config(Config, __name__, aplicacion, None)
+configuracion = cargar_configuracion(ConfigServicio, __name__, aplicacion, None)
 comunicador = ComunicadorWeb(configuracion.contexto(), conectar_disco(configuracion))
 autenticador = AutenticadorWeb(
     secreto=configuracion.secret_key,
@@ -97,7 +97,7 @@ def get_login():
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
     respuesta = comunicador.transformar_contenido(
-        comunicador.traspasar_info(),
+        comunicador.traspasar_contexto(),
         plantilla='login.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )

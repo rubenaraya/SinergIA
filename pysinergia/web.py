@@ -4,7 +4,10 @@ import time, jwt
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import Json as _Json
+from pysinergia import (
+    Json as _Json,
+    Constantes as _Constantes,
+)
 from pysinergia.adaptadores import I_ConectorDisco as _Disco
 
 # --------------------------------------------------
@@ -16,7 +19,7 @@ class Comunicador:
         mi.disco:_Disco = disco
         mi.idioma = None
         mi.traductor = None
-        mi.info:dict = {}
+        mi.contexto:dict = {}
 
     # --------------------------------------------------
     # Métodos públicos
@@ -52,39 +55,40 @@ class Comunicador:
             raise e
 
     def exportar_contenido(mi, formato:str, info:dict={}, guardar:bool=False):
-        import importlib
-        from pysinergia.adaptadores import Exportador
         try:
-            op:dict = info['opciones']
-            op['idioma'] = mi.idioma
-            plantilla, ruta_plantillas = mi.comprobar_plantilla(op, 'plantilla')
-            op['ruta_plantillas'] = ruta_plantillas
-            contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
-
-            """Incorporar casos: JSON y HTML"""
-            modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
-            clase = f'Exportador{str(formato).capitalize()}'
-            componente = getattr(importlib.import_module(modulo), clase)
-            exportador:Exportador = componente(mi.config)
-            archivo = exportador.generar(contenido=contenido, opciones=op)
-
+            modo = 't'
+            opciones:dict = info['opciones']
+            opciones['idioma'] = mi.idioma
+            if formato == _Constantes.FORMATO.JSON or formato == _Constantes.FORMATO.TEXTO:
+                resultado = _Json.codificar(info)
+            else:
+                plantilla, ruta_plantillas = mi.comprobar_plantilla(opciones, 'plantilla')
+                contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
+                if formato == _Constantes.FORMATO.HTML:
+                    resultado = contenido
+                else:
+                    import importlib
+                    from pysinergia.adaptadores import Exportador
+                    modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
+                    clase = f'Exportador{str(formato).capitalize()}'
+                    componente = getattr(importlib.import_module(modulo), clase)
+                    exportador:Exportador = componente(mi.config)
+                    resultado = exportador.generar(contenido=contenido, opciones=opciones)
+                    modo = 'b'
             if guardar:
-                nombre_archivo = op.get('nombre_archivo', '')
-                carpeta_guardar = op.get('carpeta_guardar', '')
+                nombre_archivo = opciones.get('nombre_archivo', '')
+                carpeta_guardar = opciones.get('carpeta_guardar', '')
                 ruta_archivo = str(f'{carpeta_guardar}/{nombre_archivo}').strip('/')
-                mi.disco.escribir(archivo, ruta_archivo)
-            return archivo
+                mi.disco.escribir(resultado, ruta_archivo, modo)
+            return resultado
         except Exception as e:
             raise e
 
     def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'opciones' in info:
-            op:dict = info['opciones']
-            nombre = mi.disco.normalizar_nombre(op.get('nombre_archivo', ''), extension, largo, auto)
-            op['nombre_archivo'] = nombre
-            if not op.get('ruta_plantillas'):
-                ruta = mi.config.get('ruta_servicio', '.')
-                op['ruta_plantillas'] = f'{ruta}/plantillas'
+            opciones:dict = info['opciones']
+            nombre = mi.disco.normalizar_nombre(opciones.get('nombre_archivo', ''), extension, largo, auto)
+            opciones['nombre_archivo'] = nombre
         else:
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
@@ -92,17 +96,21 @@ class Comunicador:
     def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
         import os
         plantilla = opciones.get(tipo, '')
-        ruta_plantillas = opciones.get('ruta_plantillas', '')
-        if plantilla and ruta_plantillas:
+        ruta_plantillas = opciones.get('ruta_plantillas', None)
+        if not ruta_plantillas:
+            ruta = mi.config.get('ruta_servicio', '.')
+            ruta_plantillas = f'{ruta}/plantillas'
+        if plantilla:
             if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
                 ruta_plantillas = 'backend/plantillas'
                 if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
                     ruta_plantillas = ''
                     plantilla = ''
+        opciones['ruta_plantillas'] = ruta_plantillas
         return plantilla, ruta_plantillas
 
-    def traspasar_info(mi) -> dict:
-        return mi.info
+    def traspasar_contexto(mi) -> dict:
+        return mi.contexto
 
 
 # --------------------------------------------------

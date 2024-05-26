@@ -3,7 +3,6 @@
 # --------------------------------------------------
 # Importaciones de Infraestructura de Datos
 from pathlib import Path
-from typing import BinaryIO
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -86,27 +85,35 @@ class DiscoLocal(_Disco):
             print(e)
             return False
 
-    def escribir(mi, archivo:BinaryIO, nombre:str) -> str:
+    def escribir(mi, archivo, nombre:str, modo:str='t') -> str:
         try:
             ruta_archivo = mi._leer_ruta(nombre)
-            archivo.seek(0, 0)
-            with open(ruta_archivo, 'wb') as salida:
-                while True:
-                    fragmento = archivo.read(mi._longitud_fragmento)
-                    if not fragmento:
-                        break
-                    salida.write(fragmento)
-            archivo.seek(0, 0)
+            if modo == 'b':
+                archivo.seek(0, 0)
+                with open(ruta_archivo, mode='wb') as salida:
+                    while True:
+                        fragmento = archivo.read(mi._longitud_fragmento)
+                        if not fragmento:
+                            break
+                        salida.write(fragmento)
+                archivo.seek(0, 0)
+            else:
+                with open(ruta_archivo, mode='wt', encoding='utf-8') as salida:
+                    salida.write(archivo)
             return ruta_archivo
         except Exception as e:
             print(e)
             return None
 
-    def abrir(mi, nombre:str) -> BinaryIO:
+    def abrir(mi, nombre:str, modo:str='t'):
         try:
             ruta_archivo = mi._leer_ruta(nombre)
-            with open(ruta_archivo, 'rb') as f:
-                return f.read()
+            if modo == 'b':
+                with open(ruta_archivo, mode='rb') as f:
+                    return f.read()
+            else:
+                with open(ruta_archivo, mode='rt', encoding='utf-8') as f:
+                    return f.read()
         except Exception as e:
             print(e)
             return None

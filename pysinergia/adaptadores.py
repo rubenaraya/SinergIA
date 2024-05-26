@@ -1,7 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
-from typing import Dict, BinaryIO
+from typing import Dict
 from functools import lru_cache
 import os
 
@@ -147,11 +147,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def escribir(mi, archivo:BinaryIO, nombre:str) -> str:
+    def escribir(mi, archivo, nombre:str, modo:str='t') -> str:
         ...
 
     @abstractmethod
-    def abrir(mi, nombre:str) -> BinaryIO:
+    def abrir(mi, nombre:str, modo:str='t'):
         ...
 
     @abstractmethod
@@ -205,7 +205,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traspasar_info(mi) -> dict:
+    def traspasar_contexto(mi) -> dict:
         ...
 
 
@@ -423,16 +423,16 @@ class Controlador:
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
         mi.comunicador:I_Comunicador = comunicador
-        info = mi.comunicador.traspasar_info()
-        sesion = info.get('sesion')
+        contexto = mi.comunicador.traspasar_contexto()
+        sesion = contexto.get('sesion')
         mi.sesion:dict = sesion or {}
 
 
 # --------------------------------------------------
-# Función: obtener_config
+# Función: cargar_configuracion
 # --------------------------------------------------
 @lru_cache
-def obtener_config(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
+def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
     archivo_env = _Funciones.obtener_ruta_env(paquete, entorno)
     configuracion:Configuracion = modelo(_env_file=archivo_env)
     configuracion.reconocer_servicio(archivo_env, aplicacion)

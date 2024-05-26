@@ -23,7 +23,7 @@ from pysinergia import (
     ErrorPersonalizado,
 )
 from pysinergia.adaptadores import (
-    obtener_config,
+    cargar_configuracion,
     conectar_disco,
 )
 from pysinergia.interfaces.web_flask import (
