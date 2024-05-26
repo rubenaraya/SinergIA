@@ -85,35 +85,29 @@ class DiscoLocal(_Disco):
             print(e)
             return False
 
-    def escribir(mi, archivo, nombre:str, modo:str='t') -> str:
+    def escribir(mi, contenido, nombre:str, modo:str='') -> str:
         try:
             ruta_archivo = mi._leer_ruta(nombre)
-            if modo == 'b':
-                archivo.seek(0, 0)
-                with open(ruta_archivo, mode='wb') as salida:
-                    while True:
-                        fragmento = archivo.read(mi._longitud_fragmento)
-                        if not fragmento:
-                            break
-                        salida.write(fragmento)
-                archivo.seek(0, 0)
-            else:
-                with open(ruta_archivo, mode='wt', encoding='utf-8') as salida:
-                    salida.write(archivo)
+            modo_abrir = 'wb' if modo == 'b' else 'w'
+            codificacion = None if modo == 'b' else 'utf-8'
+            with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
+                if modo == 'b':
+                    archivo.write(contenido.read())
+                    contenido.seek(0)
+                else:
+                    archivo.write(contenido)
             return ruta_archivo
         except Exception as e:
             print(e)
             return None
 
-    def abrir(mi, nombre:str, modo:str='t'):
+    def abrir(mi, nombre:str, modo:str=''):
         try:
             ruta_archivo = mi._leer_ruta(nombre)
-            if modo == 'b':
-                with open(ruta_archivo, mode='rb') as f:
-                    return f.read()
-            else:
-                with open(ruta_archivo, mode='rt', encoding='utf-8') as f:
-                    return f.read()
+            modo_abrir = 'rb' if modo == 'b' else 'r'
+            codificacion = None if modo == 'b' else 'utf-8'
+            with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
+                return archivo.read()
         except Exception as e:
             print(e)
             return None
