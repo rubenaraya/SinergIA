@@ -25,11 +25,16 @@ class ControladorParticipantes(Controlador):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
-    def buscar_participantes(mi, peticion:ModeloPeticion) -> dict:
+    def buscar_participantes(mi, peticion:ModeloPeticion, formato:str='JSON', guardar:bool=True) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion)
         respuesta = RespuestaResultado(**resultado).diccionario()
-        return respuesta
+        respuesta.update(mi.comunicador.traspasar_info())
+        entrega = Funciones.atributos_entrega(formato)
+        nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, entrega.extension)
+        encabezados = mi.comunicador.generar_encabezados(tipo_mime=entrega.tipo_mime, nombre_archivo=nombre_archivo)
+        contenido = mi.comunicador.exportar_contenido(formato=entrega.exportar, info=respuesta, guardar=guardar)
+        return (contenido, encabezados)
 
     def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(

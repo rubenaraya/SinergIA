@@ -380,14 +380,14 @@ class CargadorArchivos():
     def __init__(mi):
         mi.peso_maximo:int = 25
         mi.extensiones:list = [
-            _C.EXT.PDF,
-            _C.EXT.DOCX,
-            _C.EXT.DOC,
-            _C.EXT.XLS,
-            _C.EXT.XLSX,
-            _C.EXT.PPT,
-            _C.EXT.PPTX,
-            _C.EXT.CSV,
+            _C.EXTENSION.PDF,
+            _C.EXTENSION.DOCX,
+            _C.EXTENSION.DOC,
+            _C.EXTENSION.XLS,
+            _C.EXTENSION.XLSX,
+            _C.EXTENSION.PPT,
+            _C.EXTENSION.PPTX,
+            _C.EXTENSION.CSV,
         ]
 
     # --------------------------------------------------

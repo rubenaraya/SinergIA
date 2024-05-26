@@ -60,11 +60,14 @@ class Comunicador:
             plantilla, ruta_plantillas = mi.comprobar_plantilla(op, 'plantilla')
             op['ruta_plantillas'] = ruta_plantillas
             contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
+
+            """Incorporar casos: JSON y HTML"""
             modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
             clase = f'Exportador{str(formato).capitalize()}'
             componente = getattr(importlib.import_module(modulo), clase)
             exportador:Exportador = componente(mi.config)
             archivo = exportador.generar(contenido=contenido, opciones=op)
+
             if guardar:
                 nombre_archivo = op.get('nombre_archivo', '')
                 carpeta_guardar = op.get('carpeta_guardar', '')

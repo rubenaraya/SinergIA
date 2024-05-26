@@ -41,18 +41,23 @@ class Constantes:
         ALERTA = "ALERTA"
         ERROR = "ERROR"
 
-    class ORIGEN:
-        AlmacenChroma = 'AlmacenChroma'
-        AlmacenFaiss = 'AlmacenFaiss'
-        BasedatosMysql = 'BasedatosMysql'
-        BasedatosSqlite = 'BasedatosSqlite'
-        LlmOpenai = 'LlmOpenai'
-    
-    class FORMATO:
-        CSV = "CSV"
-        EXCEL = "EXCEL"
-        PDF = "PDF"
-        WORD = "WORD"
+    class ESTADO:
+        HTTP_200_EXITO = 200
+        HTTP_201_CREADO = 201
+        HTTP_204_VACIO = 204
+        HTTP_300_AVISO = 300
+        HTTP_302_REDIRIGIDO = 302
+        HTTP_400_NO_VALIDO = 400
+        HTTP_401_NO_AUTENTICADO = 401
+        HTTP_403_NO_AUTORIZADO = 403
+        HTTP_404_NO_ENCONTRADO = 404
+        HTTP_405_NO_PERMITIDO = 405
+        HTTP_410_NO_CONTINUADO = 410
+        HTTP_415_NO_SOPORTADO = 415
+        HTTP_422_NO_PROCESABLE = 422
+        HTTP_429_NO_ATENDIDO = 429
+        HTTP_500_ERROR = 500
+        HTTP_503_NO_DISPONIBLE = 503
 
     class MIME:
         HTML = 'text/html'
@@ -83,7 +88,7 @@ class Constantes:
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
 
-    class EXT:
+    class EXTENSION:
         DOC = 'doc'
         DOCX = 'docx'
         XLS = 'xls'
@@ -97,23 +102,13 @@ class Constantes:
         CSV = 'csv'
         ZIP = 'zip'
 
-    class ESTADO:
-        HTTP_200_EXITO = 200
-        HTTP_201_CREADO = 201
-        HTTP_204_VACIO = 204
-        HTTP_300_AVISO = 300
-        HTTP_302_REDIRIGIDO = 302
-        HTTP_400_NO_VALIDO = 400
-        HTTP_401_NO_AUTENTICADO = 401
-        HTTP_403_NO_AUTORIZADO = 403
-        HTTP_404_NO_ENCONTRADO = 404
-        HTTP_405_NO_PERMITIDO = 405
-        HTTP_410_NO_CONTINUADO = 410
-        HTTP_415_NO_SOPORTADO = 415
-        HTTP_422_NO_PROCESABLE = 422
-        HTTP_429_NO_ATENDIDO = 429
-        HTTP_500_ERROR = 500
-        HTTP_503_NO_DISPONIBLE = 503
+    class FORMATO:
+        PDF = 'PDF'
+        WORD = 'WORD'
+        EXCEL = 'EXCEL'
+        CSV = 'CSV'
+        HTML = 'HTML'
+        JSON = 'JSON'
 
 
 # --------------------------------------------------
@@ -224,6 +219,35 @@ class Funciones:
             'mensaje': mensaje,
             'detalles': detalles
         })
+
+    @staticmethod
+    def atributos_entrega(formato:str):
+        class Portador:
+            def __init__(mi, formato:str, extension:str, tipo_mime:str):
+                mi.exportar = formato
+                mi.extension = extension
+                mi.tipo_mime = tipo_mime
+        def _pdf():
+            return Portador(formato, 'pdf', 'application/pdf')
+        def _word():
+            return Portador(formato, 'docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        def _excel():
+            return Portador(formato, 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        def _csv():
+            return Portador(formato, 'csv', 'text/csv')
+        def _html():
+            return Portador(formato, 'html', 'text/html')
+        def _json():
+            return Portador(formato, 'json', 'application/json')
+        formatos = {
+            'PDF': _pdf,
+            'WORD': _word,
+            'EXCEL': _excel,
+            'CSV': _csv,
+            'HTML': _html,
+            'JSON': _json,
+        }
+        return formatos.get(formato)()
 
 
 # --------------------------------------------------
