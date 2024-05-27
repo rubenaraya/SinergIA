@@ -92,7 +92,8 @@ class DiscoLocal(_Disco):
             codificacion = None if modo == 'b' else 'utf-8'
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 if modo == 'b':
-                    archivo.write(contenido.read())
+                    while fragmento := contenido.read(1024 * 1024):
+                        archivo.write(fragmento)
                     contenido.seek(0)
                 else:
                     archivo.write(contenido)

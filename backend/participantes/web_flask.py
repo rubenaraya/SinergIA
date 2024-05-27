@@ -45,7 +45,7 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.JSON, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.JSON)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
@@ -116,7 +116,7 @@ def pdf(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.PDF, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.PDF)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/docx', methods=['GET'])
@@ -125,7 +125,7 @@ def docx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.WORD, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.WORD)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/xlsx', methods=['GET'])
@@ -134,7 +134,7 @@ def xlsx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.EXCEL, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.EXCEL)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/csv', methods=['GET'])
@@ -143,7 +143,7 @@ def csv(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.CSV, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.CSV)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/html', methods=['GET'])
@@ -152,6 +152,21 @@ def html(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.HTML, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.HTML)
     return Response(response=contenido, headers=encabezados)
+
+# --------------------------------------------------
+
+@enrutador.route('/cargar', methods=['GET'])
+def get_cargar():
+    comunicador.procesar_peticion(request, 'es')
+    return comunicador.transformar_contenido(
+        comunicador.traspasar_contexto(),
+        plantilla='cargar.html',
+        directorio=f'{configuracion.ruta_servicio}/plantillas'
+    )
+
+@enrutador.route('/cargar', methods=['POST'])
+def post_cargar():
+    return ''
 

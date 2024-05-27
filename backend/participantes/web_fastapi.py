@@ -30,7 +30,7 @@ enrutador = APIRouter(prefix=f'{configuracion.raiz_api}/{aplicacion}')
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
-@enrutador.get('/')
+@enrutador.get('')
 def get_inicio():
     return RedirectResponse(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
 
@@ -43,7 +43,7 @@ def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=D
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.JSON, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.JSON)
     return Response(content=contenido, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',
@@ -127,7 +127,7 @@ def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.WORD, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.WORD)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/xlsx', status_code=C.ESTADO.HTTP_200_EXITO)
@@ -135,7 +135,7 @@ def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.EXCEL, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.EXCEL)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/csv', status_code=C.ESTADO.HTTP_200_EXITO)
@@ -143,7 +143,7 @@ def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.CSV, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.CSV)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/html', status_code=C.ESTADO.HTTP_200_EXITO)
@@ -151,16 +151,40 @@ def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.HTML, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.HTML)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 # --------------------------------------------------
+
 @enrutador.get('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
 def get_cargar(request:Request):
-    return ''
+    comunicador.procesar_peticion(request, 'es')
+    return comunicador.transformar_contenido(
+        comunicador.traspasar_contexto(),
+        plantilla='cargar.html',
+        directorio=f'{configuracion.ruta_servicio}/plantillas'
+    )
+
+"""
+Falta elegir dónde guardar el archivo / usar disco
+Pendiente probar carga con datos (form y json)
+Validaciones:
+- Que se reciba un archivo
+- Extensiones permitidas
+- Tamaño máximo (MB)
+- Nombre no repetido (sobreescribir|rechazar o normalizar)
+"""
 
 @enrutador.post('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
-def post_cargar(request:Request, file:UploadFile):
-    
-    return ''
+def post_cargar(request:Request, carga:UploadFile=File(...), datos:str=Form(...)):
+    destino = f'./tmp/prueba/archivos/{carga.filename}'
+    try:
+        with open(destino, mode='wb') as archivo:
+            while contenido := carga.file.read(1024 * 1024):
+                archivo.write(contenido)
+    except Exception:
+        return {'mensaje': 'Se produjo un error al cargar el archivo'}
+    finally:
+        carga.file.close()
+    return {'mensaje': f'Archivo cargado con éxito: {carga.filename}'}
 
