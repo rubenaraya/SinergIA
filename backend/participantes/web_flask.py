@@ -159,14 +159,39 @@ def html(query:PeticionBuscarParticipantes):
 
 @enrutador.route('/cargar', methods=['GET'])
 def get_cargar():
-    comunicador.procesar_peticion(request, 'es')
+    comunicador.procesar_peticion('es')
     return comunicador.transformar_contenido(
         comunicador.traspasar_contexto(),
         plantilla='cargar.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
 
+"""
+Pendiente probar carga con datos (form y json)
+"""
 @enrutador.route('/cargar', methods=['POST'])
 def post_cargar():
-    return ''
+    try:
+        comunicador.procesar_peticion('es')
+        if not 'carga' in request.files:
+            return Json.codificar({'mensaje': 'No-se-recibio-archivo'})
+        carga = request.files['carga']
+        if carga.filename == '':
+            return Json.codificar({'mensaje': 'No-se-especifico-archivo-para-cargar'})
+        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
+        if carga.content_type not in tipos_permitidos:
+            return {'mensaje': 'Tipo-de-archivo-no-permitido'}
+
+        """Validar peso máximo ¿cómo?"""
+        """Validar que el archivo no exista"""
+
+        nombre = comunicador.disco.generar_nombre(carga.filename)
+        destino = f'{configuracion.ruta_temp}/archivos/{nombre}'
+        carga.save(destino)
+
+    except Exception:
+        return Json.codificar({'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'})
+    finally:
+        ...
+    return Json.codificar({'mensaje': f'Archivo-cargado-con-exito: {carga.filename}'})
 

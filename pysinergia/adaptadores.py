@@ -143,7 +143,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_nombre(mi, nombre:str) -> str:
+    def generar_nombre(mi, nombre:str, unico:bool=True) -> str:
         ...
 
     @abstractmethod

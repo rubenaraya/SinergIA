@@ -33,15 +33,16 @@ class DiscoLocal(_Disco):
     # --------------------------------------------------
     # Métodos públicos
 
-    def generar_nombre(mi, nombre:str) -> str:
+    def generar_nombre(mi, nombre:str, unico:bool=True) -> str:
         try:
             contador = 0
             nombre = mi.normalizar_nombre(mi._leer_nombre(nombre))
             path = (mi._path / nombre)
             base, extension = path.stem, path.suffix
-            while path.exists():
-                contador += 1
-                path = (mi._path / f"{base}_{contador}{extension}")
+            if unico:
+                while path.exists():
+                    contador += 1
+                    path = (mi._path / f"{base}_{contador}{extension}")
             return path.name
         except Exception as e:
             print(e)

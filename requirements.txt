@@ -26,3 +26,5 @@ openai[datalib]
 langchain
 PyMuPDF
 docx2txt
+
+filetype

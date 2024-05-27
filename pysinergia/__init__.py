@@ -88,20 +88,6 @@ class Constantes:
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
 
-    class EXTENSION:
-        DOC = 'doc'
-        DOCX = 'docx'
-        XLS = 'xls'
-        XLSX = 'xlsx'
-        PPT = 'ppt'
-        PPTX = 'pptx'
-        PDF = 'pdf'
-        JPG = 'jpg'
-        JPEG = 'jpeg'
-        PNG = 'png'
-        CSV = 'csv'
-        ZIP = 'zip'
-
     class FORMATO:
         PDF = 'PDF'
         WORD = 'WORD'

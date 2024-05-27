@@ -156,7 +156,7 @@ def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 
 # --------------------------------------------------
 
-@enrutador.get('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/cargar', status_code=C.ESTADO.HTTP_200_EXITO, response_class=HTMLResponse)
 def get_cargar(request:Request):
     comunicador.procesar_peticion(request, 'es')
     return comunicador.transformar_contenido(
@@ -166,25 +166,49 @@ def get_cargar(request:Request):
     )
 
 """
-Falta elegir dónde guardar el archivo / usar disco
 Pendiente probar carga con datos (form y json)
-Validaciones:
-- Que se reciba un archivo
-- Extensiones permitidas
-- Tamaño máximo (MB)
-- Nombre no repetido (sobreescribir|rechazar o normalizar)
 """
-
 @enrutador.post('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
-def post_cargar(request:Request, carga:UploadFile=File(...), datos:str=Form(...)):
-    destino = f'./tmp/prueba/archivos/{carga.filename}'
+def post_cargar(request:Request, carga:UploadFile=File(...)):
     try:
+        comunicador.procesar_peticion(request, 'es')
+        if not carga:
+            return {'mensaje': 'No-se-recibio-archivo'}
+        if carga.filename == '':
+            return {'mensaje': 'No-se-especifico-archivo-para-cargar'}
+        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
+        if carga.content_type not in tipos_permitidos:
+            return {'mensaje': 'Tipo-de-archivo-no-permitido'}
+
+        """Validar peso máximo ¿usando carga.size?"""
+        """Validar que el archivo no exista"""
+
+        nombre = comunicador.disco.generar_nombre(carga.filename)
+        destino = f'{configuracion.ruta_temp}/archivos/{nombre}'
         with open(destino, mode='wb') as archivo:
             while contenido := carga.file.read(1024 * 1024):
                 archivo.write(contenido)
+
     except Exception:
-        return {'mensaje': 'Se produjo un error al cargar el archivo'}
+        return {'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'}
     finally:
         carga.file.close()
-    return {'mensaje': f'Archivo cargado con éxito: {carga.filename}'}
+    return {'mensaje': f'Archivo-cargado-con-exito: {nombre}'}
 
+"""
+    FILE_SIZE = 2097152  # 2MB
+
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.seek(0)
+    if file_size > FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File too large")
+
+    real_file_size = 0
+    for chunk in file.file:
+        real_file_size += len(chunk)
+        if real_file_size > FILE_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="Too large")
+    file.seek(0)
+"""
