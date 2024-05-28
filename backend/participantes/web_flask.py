@@ -172,24 +172,23 @@ Pendiente probar carga con datos (form y json)
 @enrutador.route('/cargar', methods=['POST'])
 def post_cargar():
     try:
-        #comunicador.procesar_peticion('es')
+        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
+        peso_maximo = 2 * 1024 * 1024
+
         if not 'carga' in request.files:
             return jsonify({'mensaje': 'No-se-recibio-carga'})
         carga = request.files['carga']
         if carga.filename == '':
             return jsonify({'mensaje': 'La-carga-no-contiene-archivos'})
-        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
         if carga.content_type not in tipos_permitidos:
             return {'mensaje': 'Tipo-de-archivo-no-permitido'}
 
         """Validar peso máximo ¿cómo?"""
-        """Validar que el archivo no exista"""
 
-        #nombre = comunicador.disco.generar_nombre(carga.filename)
-        nombre = carga.filename
-        destino = f'./tmp/prueba/archivos/{nombre}'
-        carga.save(destino)
-
+        nombre = comunicador.disco.generar_nombre(carga.filename)
+        if comunicador.disco.comprobar_ruta(nombre):
+            return {'mensaje': 'El-archivo-ya-existe'}
+        comunicador.disco.escribir(carga.stream, nombre, modo='b')
     except Exception:
         return jsonify({'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'})
     finally:

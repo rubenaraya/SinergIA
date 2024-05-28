@@ -171,25 +171,22 @@ Pendiente probar carga con datos (form y json)
 @enrutador.post('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
 def post_cargar(request:Request, carga:UploadFile=File(...)):
     try:
-        #comunicador.procesar_peticion(request, 'es')
+        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
+        peso_maximo = 2 * 1024 * 1024
+
         if not carga:
             return {'mensaje': 'No-se-recibio-carga'}
         if carga.filename == '':
             return {'mensaje': 'La-carga-no-contiene-archivos'}
-        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
         if carga.content_type not in tipos_permitidos:
             return {'mensaje': 'Tipo-de-archivo-no-permitido'}
 
         """Validar peso máximo ¿usando carga.size?"""
-        """Validar que el archivo no exista"""
 
-        #nombre = comunicador.disco.generar_nombre(carga.filename)
-        nombre = carga.filename
-        destino = f'./tmp/prueba/archivos/{nombre}'
-        with open(destino, mode='wb') as archivo:
-            while contenido := carga.file.read(1024 * 1024):
-                archivo.write(contenido)
-
+        nombre = comunicador.disco.generar_nombre(carga.filename, unico=False)
+        if comunicador.disco.comprobar_ruta(nombre):
+            return {'mensaje': 'El-archivo-ya-existe'}
+        comunicador.disco.escribir(carga.file, nombre, modo='b')
     except Exception:
         return {'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'}
     finally:

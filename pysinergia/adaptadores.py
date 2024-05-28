@@ -167,7 +167,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def comprobar_ruta(mi, nombre:str, tipo:str) -> bool:
+    def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
         ...
 
 

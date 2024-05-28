@@ -33,7 +33,7 @@ class DiscoLocal(_Disco):
     # --------------------------------------------------
     # Métodos públicos
 
-    def generar_nombre(mi, nombre:str, unico:bool=True) -> str:
+    def generar_nombre(mi, nombre:str, unico:bool=False) -> str:
         try:
             contador = 0
             nombre = mi.normalizar_nombre(mi._leer_nombre(nombre))
@@ -135,7 +135,7 @@ class DiscoLocal(_Disco):
             print(e)
             return False
 
-    def comprobar_ruta(mi, nombre:str, tipo:str='dir') -> bool:
+    def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
         try:
             path = (mi._path / Path(nombre))
             resultado = path.is_dir() if tipo == 'dir' else path.is_file()
