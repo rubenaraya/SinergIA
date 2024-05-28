@@ -172,12 +172,12 @@ Pendiente probar carga con datos (form y json)
 @enrutador.route('/cargar', methods=['POST'])
 def post_cargar():
     try:
-        comunicador.procesar_peticion('es')
+        #comunicador.procesar_peticion('es')
         if not 'carga' in request.files:
-            return Json.codificar({'mensaje': 'No-se-recibio-archivo'})
+            return jsonify({'mensaje': 'No-se-recibio-carga'})
         carga = request.files['carga']
         if carga.filename == '':
-            return Json.codificar({'mensaje': 'No-se-especifico-archivo-para-cargar'})
+            return jsonify({'mensaje': 'La-carga-no-contiene-archivos'})
         tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
         if carga.content_type not in tipos_permitidos:
             return {'mensaje': 'Tipo-de-archivo-no-permitido'}
@@ -185,13 +185,14 @@ def post_cargar():
         """Validar peso máximo ¿cómo?"""
         """Validar que el archivo no exista"""
 
-        nombre = comunicador.disco.generar_nombre(carga.filename)
-        destino = f'{configuracion.ruta_temp}/archivos/{nombre}'
+        #nombre = comunicador.disco.generar_nombre(carga.filename)
+        nombre = carga.filename
+        destino = f'./tmp/prueba/archivos/{nombre}'
         carga.save(destino)
 
     except Exception:
-        return Json.codificar({'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'})
+        return jsonify({'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'})
     finally:
         ...
-    return Json.codificar({'mensaje': f'Archivo-cargado-con-exito: {carga.filename}'})
+    return jsonify({'mensaje': f'Archivo-cargado-con-exito: {nombre}'})
 

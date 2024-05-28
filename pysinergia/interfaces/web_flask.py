@@ -109,6 +109,7 @@ class ServidorApi:
         mi.descripcion = descripcion
         mi.version = version
         mi.entorno = entorno
+        api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
         mi._configurar_cors(api, origenes_cors)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)

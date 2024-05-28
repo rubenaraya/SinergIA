@@ -9,6 +9,7 @@ from flask import (
     redirect,
     make_response,
     send_file,
+    jsonify
 )
 from flask_cors import cross_origin
 from flask_pydantic import validate

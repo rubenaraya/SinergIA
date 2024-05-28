@@ -171,11 +171,11 @@ Pendiente probar carga con datos (form y json)
 @enrutador.post('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
 def post_cargar(request:Request, carga:UploadFile=File(...)):
     try:
-        comunicador.procesar_peticion(request, 'es')
+        #comunicador.procesar_peticion(request, 'es')
         if not carga:
-            return {'mensaje': 'No-se-recibio-archivo'}
+            return {'mensaje': 'No-se-recibio-carga'}
         if carga.filename == '':
-            return {'mensaje': 'No-se-especifico-archivo-para-cargar'}
+            return {'mensaje': 'La-carga-no-contiene-archivos'}
         tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
         if carga.content_type not in tipos_permitidos:
             return {'mensaje': 'Tipo-de-archivo-no-permitido'}
@@ -183,8 +183,9 @@ def post_cargar(request:Request, carga:UploadFile=File(...)):
         """Validar peso máximo ¿usando carga.size?"""
         """Validar que el archivo no exista"""
 
-        nombre = comunicador.disco.generar_nombre(carga.filename)
-        destino = f'{configuracion.ruta_temp}/archivos/{nombre}'
+        #nombre = comunicador.disco.generar_nombre(carga.filename)
+        nombre = carga.filename
+        destino = f'./tmp/prueba/archivos/{nombre}'
         with open(destino, mode='wb') as archivo:
             while contenido := carga.file.read(1024 * 1024):
                 archivo.write(contenido)

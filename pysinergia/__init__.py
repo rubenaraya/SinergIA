@@ -215,27 +215,27 @@ class Funciones:
                 mi.extension = extension
                 mi.tipo_mime = tipo_mime
         def _pdf():
-            return Portador(formato, 'pdf', 'application/pdf')
+            return Portador(formato, 'pdf', Constantes.MIME.PDF)
         def _word():
-            return Portador(formato, 'docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            return Portador(formato, 'docx', Constantes.MIME.DOCX)
         def _excel():
-            return Portador(formato, 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            return Portador(formato, 'xlsx', Constantes.MIME.XLSX)
         def _csv():
-            return Portador(formato, 'csv', 'text/csv')
+            return Portador(formato, 'csv', Constantes.MIME.CSV)
         def _html():
-            return Portador(formato, 'html', 'text/html')
+            return Portador(formato, 'html', Constantes.MIME.HTML)
         def _json():
-            return Portador(formato, 'json', 'application/json')
+            return Portador(formato, 'json', Constantes.MIME.JSON)
         def _texto():
-            return Portador(formato, 'txt', 'text/plain')
+            return Portador(formato, 'txt', Constantes.MIME.TXT)
         formatos = {
-            'PDF': _pdf,
-            'WORD': _word,
-            'EXCEL': _excel,
-            'CSV': _csv,
-            'HTML': _html,
-            'JSON': _json,
-            'TEXTO': _texto,
+            Constantes.FORMATO.PDF: _pdf,
+            Constantes.FORMATO.WORD: _word,
+            Constantes.FORMATO.EXCEL: _excel,
+            Constantes.FORMATO.CSV: _csv,
+            Constantes.FORMATO.HTML: _html,
+            Constantes.FORMATO.JSON: _json,
+            Constantes.FORMATO.TEXTO: _texto,
         }
         return formatos.get(formato)()
 
