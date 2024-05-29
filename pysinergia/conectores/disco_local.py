@@ -102,6 +102,9 @@ class DiscoLocal(_Disco):
         except Exception as e:
             print(e)
             return None
+        finally:
+            if archivo:
+                archivo.close()
 
     def abrir(mi, nombre:str, modo:str='') -> BinaryIO | TextIO:
         try:

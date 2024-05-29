@@ -68,6 +68,8 @@ class CargaArchivo(BaseModel):
     origen: object
     contenido: object = None
     nombre: Optional[str] = ''
+    ruta: Optional[str] = ''
+    carpeta: Optional[str] = ''
     tipo_mime: Optional[str] = ''
     peso: Optional[int] = 0
     es_valido: Optional[bool] = False
@@ -109,6 +111,8 @@ class CargaArchivo(BaseModel):
 # ClaseModelo: CargaImagen
 # --------------------------------------------------
 class CargaImagen(CargaArchivo):
+    carpeta: Optional[str] = 'cargados'
+
     def tipos_permitidos() -> list:
         return [
             _Constantes.MIME.JPG,
@@ -121,6 +125,8 @@ class CargaImagen(CargaArchivo):
 # ClaseModelo: CargaDocumento
 # --------------------------------------------------
 class CargaDocumento(CargaArchivo):
+    carpeta: Optional[str] = 'cargados'
+
     def tipos_permitidos() -> list:
         return [
             _Constantes.MIME.DOCX,
@@ -135,6 +141,8 @@ class CargaDocumento(CargaArchivo):
 # ClaseModelo: CargaAudio
 # --------------------------------------------------
 class CargaAudio(CargaArchivo):
+    carpeta: Optional[str] = 'cargados'
+
     def tipos_permitidos() -> list:
         return [
             _Constantes.MIME.MP3,
@@ -149,6 +157,7 @@ class CargaAudio(CargaArchivo):
 # ClaseModelo: CargaVideo
 # --------------------------------------------------
 class CargaVideo(CargaArchivo):
+    carpeta: Optional[str] = 'cargados'
     def tipos_permitidos() -> list:
         return [
             _Constantes.MIME.MP4,

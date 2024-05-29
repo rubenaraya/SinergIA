@@ -208,26 +208,37 @@ class Funciones:
         })
 
     @staticmethod
-    def atributos_entrega(formato:str):
+    def atributos_archivo(formato:str=None, tipo_mime:str=None):
         class Portador:
             def __init__(mi, formato:str, extension:str, tipo_mime:str):
-                mi.exportar = formato
+                mi.formato = formato
                 mi.extension = extension
                 mi.tipo_mime = tipo_mime
         def _pdf():
-            return Portador(formato, 'pdf', Constantes.MIME.PDF)
+            return Portador(Constantes.FORMATO.PDF, 'pdf', Constantes.MIME.PDF)
         def _word():
-            return Portador(formato, 'docx', Constantes.MIME.DOCX)
+            return Portador(Constantes.FORMATO.WORD, 'docx', Constantes.MIME.DOCX)
         def _excel():
-            return Portador(formato, 'xlsx', Constantes.MIME.XLSX)
+            return Portador(Constantes.FORMATO.EXCEL, 'xlsx', Constantes.MIME.XLSX)
         def _csv():
-            return Portador(formato, 'csv', Constantes.MIME.CSV)
+            return Portador(Constantes.FORMATO.CSV, 'csv', Constantes.MIME.CSV)
         def _html():
-            return Portador(formato, 'html', Constantes.MIME.HTML)
+            return Portador(Constantes.FORMATO.HTML, 'html', Constantes.MIME.HTML)
         def _json():
-            return Portador(formato, 'json', Constantes.MIME.JSON)
+            return Portador(Constantes.FORMATO.JSON, 'json', Constantes.MIME.JSON)
         def _texto():
-            return Portador(formato, 'txt', Constantes.MIME.TXT)
+            return Portador(Constantes.FORMATO.TEXTO, 'txt', Constantes.MIME.TXT)
+        if tipo_mime:
+            tipos = {
+                Constantes.MIME.PDF: _pdf,
+                Constantes.MIME.DOCX: _word,
+                Constantes.MIME.XLSX: _excel,
+                Constantes.MIME.CSV: _csv,
+                Constantes.MIME.HTML: _html,
+                Constantes.MIME.JSON: _json,
+                Constantes.MIME.TXT: _texto,
+            }
+            return tipos.get(tipo_mime)()
         formatos = {
             Constantes.FORMATO.PDF: _pdf,
             Constantes.FORMATO.WORD: _word,

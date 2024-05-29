@@ -30,10 +30,10 @@ class ControladorParticipantes(Controlador):
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         respuesta = RespuestaResultado(**resultado).diccionario()
         respuesta.update(mi.comunicador.traspasar_contexto())
-        entrega = Funciones.atributos_entrega(formato)
-        nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, entrega.extension)
-        encabezados = mi.comunicador.generar_encabezados(tipo_mime=entrega.tipo_mime, nombre_archivo=nombre_archivo)
-        contenido = mi.comunicador.exportar_contenido(formato=entrega.exportar, info=respuesta, guardar=guardar)
+        archivo = Funciones.atributos_archivo(formato=formato)
+        nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)
+        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_archivo=nombre_archivo)
+        contenido = mi.comunicador.exportar_contenido(formato=archivo.formato, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
     def agregar_participante(mi, peticion:ModeloPeticion):

@@ -176,16 +176,12 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
         if not modelo_carga:
             return {'mensaje': f'Tipo-de-carga-no-valido'}
 
-        carga_archivo:CargaArchivo = modelo_carga(origen=carga)
+        carga_archivo = comunicador.cargar_archivo(modelo_carga(origen=carga))
         if not carga_archivo.es_valido:
             return {'mensaje': carga_archivo.mensaje_error}
-        nombre = comunicador.disco.generar_nombre(carga_archivo.nombre)
-        if comunicador.disco.comprobar_ruta(nombre):
-            return {'mensaje': 'El-archivo-ya-existe'}
-        comunicador.disco.escribir(carga_archivo.contenido, nombre, modo='b')
 
     except Exception as e:
         return {'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'}
     finally:
         await carga.close()
-    return {'mensaje': f'Archivo-cargado-con-exito: {nombre}'}
+    return {'mensaje': f'Archivo-cargado-con-exito: {carga_archivo.nombre}'}

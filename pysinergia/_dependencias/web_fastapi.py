@@ -35,7 +35,6 @@ from pysinergia.dominio import (
     CargaDocumento,
     CargaImagen,
     CargaVideo,
-    CargaArchivo,
 )
 from pysinergia.adaptadores import (
     cargar_configuracion,

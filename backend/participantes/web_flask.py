@@ -176,19 +176,15 @@ def post_cargar(tipo):
         modelo_carga = modelos.get(tipo)
         if not modelo_carga:
             return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
-
         if 'carga' not in request.files:
             return jsonify({'mensaje': 'No-se-recibio-carga'})
-        carga_archivo:CargaArchivo = modelo_carga(origen=request.files['carga'])
+
+        carga_archivo = comunicador.cargar_archivo(modelo_carga(origen=request.files['carga']))
         if not carga_archivo.es_valido:
             return jsonify({'mensaje': carga_archivo.mensaje_error})
-        nombre = comunicador.disco.generar_nombre(carga_archivo.nombre)
-        if comunicador.disco.comprobar_ruta(nombre):
-            return jsonify({'mensaje': 'El-archivo-ya-existe'})
-        comunicador.disco.escribir(carga_archivo.contenido, nombre, modo='b')
 
     except Exception as e:
         return jsonify({'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'})
     finally:
         request.files['carga'].close()
-    return jsonify({'mensaje': f'Archivo-cargado-con-exito: {nombre}'})
+    return jsonify({'mensaje': f'Archivo-cargado-con-exito: {carga_archivo.nombre}'})

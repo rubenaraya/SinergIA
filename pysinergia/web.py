@@ -8,6 +8,9 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
 )
+from pysinergia.dominio import (
+    CargaArchivo as _CargaArchivo,
+)
 from pysinergia.adaptadores import (
     I_ConectorDisco as _Disco,
 )
@@ -34,6 +37,9 @@ class Comunicador:
 
     # --------------------------------------------------
     # Métodos públicos
+
+    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
+        raise NotImplementedError()
 
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
@@ -121,6 +127,27 @@ class Comunicador:
 
     def traspasar_contexto(mi) -> dict:
         return mi.contexto
+
+    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
+        return {
+            'Content-Type': tipo_mime,
+            'Content-disposition': f'inline; filename={nombre_archivo}'
+        }
+
+    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
+        if portador and portador.es_valido:
+            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
+            ruta_guardar = f'{portador.carpeta}/{nombre}'
+            if mi.disco.comprobar_ruta(ruta_guardar):
+                portador.es_valido = False
+                portador.mensaje_error = 'El-archivo-ya-existe'
+            else:
+                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
+                if not ruta:
+                    portador.es_valido = False
+                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
+                portador.ruta = ruta
+        return portador
 
 
 # --------------------------------------------------

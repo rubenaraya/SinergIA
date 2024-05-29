@@ -297,15 +297,6 @@ class ComunicadorWeb(_Comunicador):
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
 
-    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
-        return {
-            'Content-Type': tipo_mime,
-            'Content-disposition': f'inline; filename={nombre_archivo}'
-        }
-
-    def cargar_archivo(mi):
-        ...
-
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb
