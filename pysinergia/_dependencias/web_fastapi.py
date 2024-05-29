@@ -30,6 +30,13 @@ from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
 )
+from pysinergia.dominio import (
+    CargaAudio,
+    CargaDocumento,
+    CargaImagen,
+    CargaVideo,
+    CargaArchivo,
+)
 from pysinergia.adaptadores import (
     cargar_configuracion,
 )

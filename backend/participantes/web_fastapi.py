@@ -156,8 +156,8 @@ def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 
 # --------------------------------------------------
 
-@enrutador.get('/cargar', status_code=C.ESTADO.HTTP_200_EXITO, response_class=HTMLResponse)
-def get_cargar(request:Request):
+@enrutador.get('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO, response_class=HTMLResponse)
+def get_cargar(request:Request, tipo:str):
     comunicador.procesar_peticion(request, 'es')
     return comunicador.transformar_contenido(
         comunicador.traspasar_contexto(),
@@ -166,47 +166,24 @@ def get_cargar(request:Request):
     )
 
 """
-Pendiente probar carga con datos (form y json)
++ Probar la traducción de textos
 """
-@enrutador.post('/cargar', status_code=C.ESTADO.HTTP_200_EXITO)
-def post_cargar(request:Request, carga:UploadFile=File(...)):
+@enrutador.post('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO)
+async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     try:
-        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
-        peso_maximo = 2 * 1024 * 1024
-
-        if not carga:
-            return {'mensaje': 'No-se-recibio-carga'}
-        if carga.filename == '':
-            return {'mensaje': 'La-carga-no-contiene-archivos'}
-        if carga.content_type not in tipos_permitidos:
-            return {'mensaje': 'Tipo-de-archivo-no-permitido'}
-
-        """Validar peso máximo ¿usando carga.size?"""
-
-        nombre = comunicador.disco.generar_nombre(carga.filename, unico=False)
+        modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+        modelo_carga = modelos.get(tipo)
+        if not modelo_carga:
+            return {'mensaje': f'Tipo-de-carga-no-valido'}
+        modelo = modelo_carga(carga.file, nombre=carga.filename, tipo_mime=carga.content_type)
+        if not modelo.validacion:
+            return {'mensaje': modelo.mensaje_error}
+        nombre = comunicador.disco.generar_nombre(modelo.nombre)
         if comunicador.disco.comprobar_ruta(nombre):
             return {'mensaje': 'El-archivo-ya-existe'}
         comunicador.disco.escribir(carga.file, nombre, modo='b')
-    except Exception:
-        return {'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'}
+    except Exception as e:
+        return {'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'}
     finally:
-        carga.file.close()
+        await carga.close()
     return {'mensaje': f'Archivo-cargado-con-exito: {nombre}'}
-
-"""
-    FILE_SIZE = 2097152  # 2MB
-
-    file.file.seek(0, 2)
-    file_size = file.file.tell()
-    file.seek(0)
-    if file_size > FILE_SIZE:
-        raise HTTPException(status_code=400, detail="File too large")
-
-    real_file_size = 0
-    for chunk in file.file:
-        real_file_size += len(chunk)
-        if real_file_size > FILE_SIZE:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="Too large")
-    file.seek(0)
-"""

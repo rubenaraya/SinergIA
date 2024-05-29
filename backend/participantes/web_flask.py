@@ -157,8 +157,8 @@ def html(query:PeticionBuscarParticipantes):
 
 # --------------------------------------------------
 
-@enrutador.route('/cargar', methods=['GET'])
-def get_cargar():
+@enrutador.route('/cargar/<tipo>', methods=['GET'])
+def get_cargar(tipo):
     comunicador.procesar_peticion('es')
     return comunicador.transformar_contenido(
         comunicador.traspasar_contexto(),
@@ -167,31 +167,27 @@ def get_cargar():
     )
 
 """
-Pendiente probar carga con datos (form y json)
++ Probar la traducción de textos
 """
-@enrutador.route('/cargar', methods=['POST'])
-def post_cargar():
+@enrutador.route('/cargar/<tipo>', methods=['POST'])
+def post_cargar(tipo):
     try:
-        tipos_permitidos = [C.MIME.DOCX, C.MIME.XLSX, C.MIME.PPTX, C.MIME.PDF]
-        peso_maximo = 2 * 1024 * 1024
-
-        if not 'carga' in request.files:
+        modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+        modelo_carga = modelos.get(tipo)
+        if not modelo_carga:
+            return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
+        if 'carga' not in request.files:
             return jsonify({'mensaje': 'No-se-recibio-carga'})
         carga = request.files['carga']
-        if carga.filename == '':
-            return jsonify({'mensaje': 'La-carga-no-contiene-archivos'})
-        if carga.content_type not in tipos_permitidos:
-            return {'mensaje': 'Tipo-de-archivo-no-permitido'}
-
-        """Validar peso máximo ¿cómo?"""
-
-        nombre = comunicador.disco.generar_nombre(carga.filename)
+        modelo = modelo_carga(carga.stream, nombre=carga.filename, tipo_mime=carga.content_type)
+        if not modelo.validacion:
+            return jsonify({'mensaje': modelo.mensaje_error})
+        nombre = comunicador.disco.generar_nombre(modelo.nombre)
         if comunicador.disco.comprobar_ruta(nombre):
-            return {'mensaje': 'El-archivo-ya-existe'}
+            return jsonify({'mensaje': 'El-archivo-ya-existe'})
         comunicador.disco.escribir(carga.stream, nombre, modo='b')
-    except Exception:
-        return jsonify({'mensaje': 'Se-produjo-un-error-al-cargar-el-archivo'})
+    except Exception as e:
+        return jsonify({'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'})
     finally:
-        ...
+        carga.close()
     return jsonify({'mensaje': f'Archivo-cargado-con-exito: {nombre}'})
-
