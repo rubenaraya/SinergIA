@@ -13,31 +13,79 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: web_flask.py:165
+#: web_flask.py:1
 msgid "Los-datos-recibidos-no-se-procesaron"
 msgstr "The data received was not processed correctly"
 
-#: web_flask.py:218
+#: web_flask.py:2
 msgid "Error-no-manejado"
 msgstr "Internal Server Error"
 
-#: web_flask.py:303
+#: web_flask.py:3
 msgid "API-key-invalida"
 msgstr "Invalid API key"
 
-#: web_flask.py:314
+#: web_flask.py:4
 msgid "Encabezado-de-autorizacion-invalido"
 msgstr "Invalid authorization header"
 
-#: web_flask.py:320
+#: web_flask.py:5
 msgid "Token-invalido"
 msgstr "Invalid or expired token"
 
-#: servicio.py:40
+#: servicio.py:1
 msgid "No-autorizado-para-acceder"
 msgstr "You do not have permissions to perform this action"
 
-#: web_fastapi.py:200
+#: web_fastapi.py:1
 msgid "Los-datos-recibidos-son-invalidos"
 msgstr "The data received is not valid"
+
+#: exportador_word.py:1
+msgid "Error-en-exportador-Word"
+msgstr "Error en exportador Word"
+
+#: exportador_pdf.py:1
+msgid "Error-en-exportador-PDF"
+msgstr "Error en exportador PDF"
+
+#: exportador_excel.py:1
+msgid "Error-en-exportador-Excel"
+msgstr "Error en exportador Excel"
+
+#: exportador_csv.py:1
+msgid "Error-en-exportador-CSV"
+msgstr "Error en exportador CSV"
+
+#: web.py:1
+msgid "El-archivo-ya-existe"
+msgstr "El archivo ya existe"
+
+#: web.py:2
+msgid "Error-al-guardar-el-archivo"
+msgstr "Error al guardar el archivo"
+
+#: adaptadores.py:1
+msgid "Archivo-cargado-con-exito"
+msgstr "Archivo cargado con éxito"
+
+#: web_fastapi.py:2
+msgid "Tipo-de-carga-no-valido"
+msgstr "Tipo de carga no válido"
+
+#: web_flask.py:6
+msgid "No-se-recibio-ninguna-carga"
+msgstr "No se recibió ninguna carga"
+
+#: dominio.py:1
+msgid "La-carga-recibida-no-contiene-archivo"
+msgstr "La carga recibida no contiene archivo"
+
+#: dominio.py:2
+msgid "El-tipo-de-archivo-no-esta-permitido"
+msgstr "El tipo de archivo no está permitido"
+
+#: dominio.py:3
+msgid "El-archivo-supera-el-peso-maximo-aceptado"
+msgstr "El archivo supera el peso máximo aceptado"
 

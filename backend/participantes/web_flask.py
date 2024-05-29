@@ -56,7 +56,7 @@ def ver_participante(id):
     comunicador.procesar_peticion(idiomas, sesion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(configuracion, comunicador).ver_participante(peticion)
-    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.JSON)
+    return Response(Json.codificar(respuesta), C.ESTADO._200_EXITO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes', methods=['POST'])
 def agregar_participante(body:ModeloNuevoParticipante):
@@ -64,7 +64,7 @@ def agregar_participante(body:ModeloNuevoParticipante):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
     respuesta = Controlador(configuracion, comunicador).agregar_participante(body)
-    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_201_CREADO, mimetype=C.MIME.JSON)
+    return Response(Json.codificar(respuesta), C.ESTADO._201_CREADO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
 def actualizar_participante(id, body:ModeloEditarParticipante):
@@ -73,7 +73,7 @@ def actualizar_participante(id, body:ModeloEditarParticipante):
     comunicador.procesar_peticion(idiomas, sesion)
     body.id = id
     respuesta = Controlador(configuracion, comunicador).actualizar_participante(body)
-    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
+    return Response(Json.codificar(respuesta), C.ESTADO._204_VACIO, mimetype=C.MIME.JSON)
 
 @enrutador.route('/participantes/<int>', methods=['DELETE'])
 def eliminar_participante(id):
@@ -82,7 +82,7 @@ def eliminar_participante(id):
     comunicador.procesar_peticion(idiomas, sesion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(configuracion, comunicador).eliminar_participante(peticion)
-    return Response(Json.codificar(respuesta), C.ESTADO.HTTP_204_VACIO, mimetype=C.MIME.JSON)
+    return Response(Json.codificar(respuesta), C.ESTADO._204_VACIO, mimetype=C.MIME.JSON)
 
 
 # --------------------------------------------------
@@ -99,7 +99,7 @@ def get_login():
         plantilla='login.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
-    return Response(respuesta, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.HTML)
+    return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
 @enrutador.route('/login', methods=['POST'])
 def post_login():
@@ -108,7 +108,7 @@ def post_login():
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):
     autenticador.firmar_token(email)
-    return Response(autenticador.token, C.ESTADO.HTTP_200_EXITO, mimetype=C.MIME.TXT)
+    return Response(autenticador.token, C.ESTADO._200_EXITO, mimetype=C.MIME.TXT)
 
 @enrutador.route('/pdf', methods=['GET'])
 @validate()
@@ -171,12 +171,14 @@ def post_cargar(tipo):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
+
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
     if 'carga' not in request.files:
-        return jsonify({'mensaje': 'No-se-recibio-carga'})
+        return jsonify({'mensaje': 'No-se-recibio-ninguna-carga'})
+
     contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
     return jsonify(contenido)
 

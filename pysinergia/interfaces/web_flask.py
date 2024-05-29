@@ -201,7 +201,7 @@ class ServidorApi:
                     'valor': error['input']
                 })
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                codigo=_C.ESTADO._422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_('Los-datos-recibidos-son-invalidos'),
                 detalles=detalles
@@ -210,7 +210,7 @@ class ServidorApi:
                 _RegistradorLogs.crear(registro_logs, 'DEBUG', f'{dir_logs}/{registro_logs}.log').debug(exc, exc_info=True)
             return Response(
                 _Json.codificar(salida),
-                status=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                status=_C.ESTADO._422_NO_PROCESABLE,
                 mimetype=_C.MIME.JSON
             )
 
@@ -242,8 +242,8 @@ class ServidorApi:
             if len(origen.args) > 0:
                 descripcion = origen.args[0]
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_500_ERROR,
-                tipo=_F.tipo_salida(_C.ESTADO.HTTP_500_ERROR),
+                codigo=_C.ESTADO._500_ERROR,
+                tipo=_F.tipo_salida(_C.ESTADO._500_ERROR),
                 mensaje=_(descripcion)
             )
             _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
@@ -251,7 +251,7 @@ class ServidorApi:
             )
             return Response(
                 _Json.codificar(salida),
-                status=_C.ESTADO.HTTP_500_ERROR,
+                status=_C.ESTADO._500_ERROR,
                 mimetype=_C.MIME.JSON
             )
 
@@ -264,7 +264,7 @@ class ServidorApi:
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'{texto} <{exception_name}: {exception_value}>'
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_500_ERROR,
+                codigo=_C.ESTADO._500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
@@ -275,7 +275,7 @@ class ServidorApi:
                 registrador.error(f'{mi._obtener_url()} | {mensaje}')
             return Response(
                 _Json.codificar(salida),
-                status=_C.ESTADO.HTTP_500_ERROR,
+                status=_C.ESTADO._500_ERROR,
                 mimetype=_C.MIME.JSON
             )
 
@@ -320,7 +320,7 @@ class AutenticadorWeb(_Autenticador):
         mensaje = 'API-key-invalida'
         raise _ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
+            codigo=_C.ESTADO._403_NO_AUTORIZADO,
         )
     
     def _validar_token(mi) -> str:
@@ -335,7 +335,7 @@ class AutenticadorWeb(_Autenticador):
                     return mi.token
         raise _ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
+            codigo=_C.ESTADO._401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
 

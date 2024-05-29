@@ -36,9 +36,9 @@ class ExportadorExcel(_Exportador):
             return xlsx_io
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en Exportador Excel',
+                mensaje='Error-en-exportador-Excel',
                 tipo=_Constantes.SALIDA.ERROR,
-                codigo=_Constantes.ESTADO.HTTP_500_ERROR,
+                codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

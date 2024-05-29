@@ -35,7 +35,7 @@ def get_inicio():
     return RedirectResponse(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
 
 @enrutador.get('/participantes',
-                status_code=C.ESTADO.HTTP_200_EXITO,
+                status_code=C.ESTADO._200_EXITO,
                 response_class=JSONResponse,
                 #dependencies=[Depends(autenticador.validar_token)]
             )
@@ -47,7 +47,7 @@ def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=D
     return Response(content=contenido, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',
-                status_code=C.ESTADO.HTTP_200_EXITO,
+                status_code=C.ESTADO._200_EXITO,
                 response_class=JSONResponse)
 def ver_participante(request:Request, peticion:PeticionParticipante=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
@@ -56,7 +56,7 @@ def ver_participante(request:Request, peticion:PeticionParticipante=Depends()):
     return Controlador(configuracion, comunicador).ver_participante(peticion)
 
 @enrutador.post('/participantes',
-                status_code=C.ESTADO.HTTP_201_CREADO,
+                status_code=C.ESTADO._201_CREADO,
                 response_class=JSONResponse)
 def agregar_participante(request:Request, peticion:ModeloNuevoParticipante=Body()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
@@ -65,7 +65,7 @@ def agregar_participante(request:Request, peticion:ModeloNuevoParticipante=Body(
     return Controlador(configuracion, comunicador).agregar_participante(peticion)
 
 @enrutador.put('/participantes/{id}',
-                status_code=C.ESTADO.HTTP_204_VACIO,
+                status_code=C.ESTADO._204_VACIO,
                 response_class=JSONResponse)
 def actualizar_participante(request:Request, peticion:ModeloEditarParticipante=Body()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
@@ -74,7 +74,7 @@ def actualizar_participante(request:Request, peticion:ModeloEditarParticipante=B
     return Controlador(configuracion, comunicador).actualizar_participante(peticion)
 
 @enrutador.delete('/participantes/{id}',
-                status_code=C.ESTADO.HTTP_204_VACIO,
+                status_code=C.ESTADO._204_VACIO,
                 response_class=JSONResponse)
 def eliminar_participante(request:Request, peticion:PeticionParticipante=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
@@ -88,14 +88,14 @@ def eliminar_participante(request:Request, peticion:PeticionParticipante=Depends
 # --------------------------------------------------
 
 @enrutador.get('/token/{email}',
-                status_code=C.ESTADO.HTTP_200_EXITO,
+                status_code=C.ESTADO._200_EXITO,
                 response_class=PlainTextResponse)
 def token(request:Request, email:str):
     autenticador.firmar_token(email)
     return autenticador.token
 
 @enrutador.get('/login',
-                status_code=C.ESTADO.HTTP_200_EXITO,
+                status_code=C.ESTADO._200_EXITO,
                 response_class=HTMLResponse)
 def get_login(request:Request):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
@@ -108,13 +108,13 @@ def get_login(request:Request):
     )
 
 @enrutador.post('/login',
-                status_code=C.ESTADO.HTTP_200_EXITO,
+                status_code=C.ESTADO._200_EXITO,
                 response_class=JSONResponse)
 def post_login(request:Request):
     respuesta = {}
     return respuesta
 
-@enrutador.get('/pdf', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/pdf', status_code=C.ESTADO._200_EXITO)
 def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
@@ -122,7 +122,7 @@ def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.PDF, guardar=True)
     return StreamingResponse(content=contenido, headers=encabezados)
 
-@enrutador.get('/docx', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/docx', status_code=C.ESTADO._200_EXITO)
 def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
@@ -130,7 +130,7 @@ def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.WORD)
     return StreamingResponse(content=contenido, headers=encabezados)
 
-@enrutador.get('/xlsx', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/xlsx', status_code=C.ESTADO._200_EXITO)
 def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
@@ -138,7 +138,7 @@ def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.EXCEL)
     return StreamingResponse(content=contenido, headers=encabezados)
 
-@enrutador.get('/csv', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/csv', status_code=C.ESTADO._200_EXITO)
 def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
@@ -146,7 +146,7 @@ def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.CSV)
     return StreamingResponse(content=contenido, headers=encabezados)
 
-@enrutador.get('/html', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.get('/html', status_code=C.ESTADO._200_EXITO)
 def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
@@ -156,7 +156,7 @@ def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 
 # --------------------------------------------------
 
-@enrutador.get('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO, response_class=HTMLResponse)
+@enrutador.get('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO, response_class=HTMLResponse)
 def get_cargar(request:Request, tipo:str):
     comunicador.procesar_peticion(request, 'es')
     return comunicador.transformar_contenido(
@@ -165,15 +165,17 @@ def get_cargar(request:Request, tipo:str):
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
 
-@enrutador.post('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO)
+@enrutador.post('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO)
 def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
+
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         return JSONResponse({'mensaje': f'Tipo-de-carga-no-valido'})
+
     contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
     return JSONResponse(contenido)
 

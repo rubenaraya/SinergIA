@@ -34,9 +34,9 @@ class ExportadorWord(_Exportador):
             return docx_io
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en Exportador Word',
+                mensaje='Error-en-exportador-Word',
                 tipo=_Constantes.SALIDA.ERROR,
-                codigo=_Constantes.ESTADO.HTTP_500_ERROR,
+                codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

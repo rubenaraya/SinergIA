@@ -200,13 +200,13 @@ class ServidorApi:
                     'valor': error['input']
                 })
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                codigo=_C.ESTADO._422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_('Los-datos-recibidos-son-invalidos'),
                 detalles=detalles
             )
             return JSONResponse(
-                status_code=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                status_code=_C.ESTADO._422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
             )
 
@@ -223,13 +223,13 @@ class ServidorApi:
                     'valor': error['input']
                 })
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                codigo=_C.ESTADO._422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_('Los-datos-recibidos-no-se-procesaron'),
                 detalles=detalles
             )
             return JSONResponse(
-                status_code=_C.ESTADO.HTTP_422_NO_PROCESABLE,
+                status_code=_C.ESTADO._422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
             )
 
@@ -259,7 +259,7 @@ class ServidorApi:
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'{texto} <{exception_name}: {exception_value}>'
             salida = _F.crear_salida(
-                codigo=_C.ESTADO.HTTP_500_ERROR,
+                codigo=_C.ESTADO._500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
             )
@@ -269,7 +269,7 @@ class ServidorApi:
             else:
                 registrador.error(f'{mi._obtener_url(request)} | {mensaje}')
             return JSONResponse(
-                status_code=_C.ESTADO.HTTP_500_ERROR,
+                status_code=_C.ESTADO._500_ERROR,
                 content=jsonable_encoder(salida)
             )
 
@@ -314,7 +314,7 @@ class AutenticadorWeb(_Autenticador):
         mensaje = 'API-key-invalida'
         raise _ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO.HTTP_403_NO_AUTORIZADO,
+            codigo=_C.ESTADO._403_NO_AUTORIZADO,
         )
 
     async def validar_token(mi, request:Request) -> str:
@@ -329,7 +329,7 @@ class AutenticadorWeb(_Autenticador):
                     return mi.token
         raise _ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO.HTTP_401_NO_AUTENTICADO,
+            codigo=_C.ESTADO._401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
 

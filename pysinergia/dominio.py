@@ -42,12 +42,11 @@ class ModeloRespuesta(BaseModel):
     def json(mi) -> str:
         return mi.model_dump_json()
 
-
 # --------------------------------------------------
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
-    codigo: int | None = _Constantes.ESTADO.HTTP_200_EXITO
+    codigo: int | None = _Constantes.ESTADO._200_EXITO
     tipo: str | None = _Constantes.SALIDA.EXITO
     mensaje: str | None = ''
     resultado: dict | None = {}

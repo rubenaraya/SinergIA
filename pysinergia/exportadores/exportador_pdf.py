@@ -31,9 +31,9 @@ class ExportadorPdf(_Exportador):
             return io.BytesIO(pdf)
         except Exception as e:
             raise _ErrorPersonalizado(
-                mensaje='Error en Exportador Pdf',
+                mensaje='Error-en-exportador-PDF',
                 tipo=_Constantes.SALIDA.ERROR,
-                codigo=_Constantes.ESTADO.HTTP_500_ERROR,
+                codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

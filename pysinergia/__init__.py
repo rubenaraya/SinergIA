@@ -42,22 +42,22 @@ class Constantes:
         ERROR = "ERROR"
 
     class ESTADO:
-        HTTP_200_EXITO = 200
-        HTTP_201_CREADO = 201
-        HTTP_204_VACIO = 204
-        HTTP_300_AVISO = 300
-        HTTP_302_REDIRIGIDO = 302
-        HTTP_400_NO_VALIDO = 400
-        HTTP_401_NO_AUTENTICADO = 401
-        HTTP_403_NO_AUTORIZADO = 403
-        HTTP_404_NO_ENCONTRADO = 404
-        HTTP_405_NO_PERMITIDO = 405
-        HTTP_410_NO_CONTINUADO = 410
-        HTTP_415_NO_SOPORTADO = 415
-        HTTP_422_NO_PROCESABLE = 422
-        HTTP_429_NO_ATENDIDO = 429
-        HTTP_500_ERROR = 500
-        HTTP_503_NO_DISPONIBLE = 503
+        _200_EXITO = 200
+        _201_CREADO = 201
+        _204_VACIO = 204
+        _300_AVISO = 300
+        _302_REDIRIGIDO = 302
+        _400_NO_VALIDO = 400
+        _401_NO_AUTENTICADO = 401
+        _403_NO_AUTORIZADO = 403
+        _404_NO_ENCONTRADO = 404
+        _405_NO_PERMITIDO = 405
+        _410_NO_CONTINUADO = 410
+        _415_NO_SOPORTADO = 415
+        _422_NO_PROCESABLE = 422
+        _429_NO_ATENDIDO = 429
+        _500_ERROR = 500
+        _503_NO_DISPONIBLE = 503
 
     class MIME:
         HTML = 'text/html'

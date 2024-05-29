@@ -34,7 +34,7 @@ class Servicio:
             raise _ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
                 tipo=_Constantes.SALIDA.ALERTA,
-                codigo=_Constantes.ESTADO.HTTP_403_NO_AUTORIZADO,
+                codigo=_Constantes.ESTADO._403_NO_AUTORIZADO,
             )
         return False
 

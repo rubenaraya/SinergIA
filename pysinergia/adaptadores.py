@@ -43,7 +43,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     # --------------------------------------------------
     # Constantes
 
-    class FORMATO:
+    class ESTRUCTURA:
         DICCIONARIO = 1
         TUPLA = 2
 
@@ -148,11 +148,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='t') -> str:
+    def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
         ...
 
     @abstractmethod
-    def abrir(mi, nombre:str, modo:str='t') -> BinaryIO | TextIO:
+    def abrir(mi, nombre:str, modo:str='') -> BinaryIO | TextIO:
         ...
 
     @abstractmethod
@@ -181,6 +181,10 @@ class I_Comunicador(metaclass=ABCMeta):
     # --------------------------------------------------
     # Métodos obligatorios
 
+    @abstractmethod
+    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
+        ...
+    
     @abstractmethod
     def asignar_idioma(mi, idiomas_aceptados:str):
         ...
@@ -212,24 +216,6 @@ class I_Comunicador(metaclass=ABCMeta):
     @abstractmethod
     def traspasar_contexto(mi) -> dict:
         ...
-
-
-# --------------------------------------------------
-# Clase: Exportador
-# --------------------------------------------------
-class Exportador:
-    def __init__(mi, config:dict):
-        mi.config:dict = config or {}
-
-    def obtener_ruta(mi):
-        ruta_temp = mi.config.get('ruta_temp', '')
-        ruta = os.path.abspath(f'{ruta_temp}/archivos').replace('\\', '/')
-        if not os.path.exists(ruta):
-            ruta = ''
-        return ruta
-
-    def generar(mi, contenido:str='', opciones:dict={}):
-        raise NotImplementedError()
 
 
 # --------------------------------------------------
@@ -365,7 +351,6 @@ class Configuracion(BaseSettings):
             'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend,
-            #'disco_ruta': mi.disco_ruta,
         }
     def autenticacion(mi) -> Dict:
         return dict({
@@ -374,6 +359,24 @@ class Configuracion(BaseSettings):
             'api_keys': mi.api_keys,
             'ruta_temp': mi.ruta_temp,
         })
+
+
+# --------------------------------------------------
+# Clase: Exportador
+# --------------------------------------------------
+class Exportador:
+    def __init__(mi, config:dict):
+        mi.config:dict = config or {}
+
+    def obtener_ruta(mi):
+        ruta_temp = mi.config.get('ruta_temp', '')
+        ruta = os.path.abspath(f'{ruta_temp}/archivos').replace('\\', '/')
+        if not os.path.exists(ruta):
+            ruta = ''
+        return ruta
+
+    def generar(mi, contenido:str='', opciones:dict={}):
+        raise NotImplementedError()
 
 
 # --------------------------------------------------
