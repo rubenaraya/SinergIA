@@ -171,20 +171,15 @@ def get_cargar(tipo):
 """
 @enrutador.route('/cargar/<tipo>', methods=['POST'])
 def post_cargar(tipo):
-    try:
-        modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
-        modelo_carga = modelos.get(tipo)
-        if not modelo_carga:
-            return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
-        if 'carga' not in request.files:
-            return jsonify({'mensaje': 'No-se-recibio-carga'})
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idiomas, sesion)
+    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    portador_archivo = modelos.get(tipo)
+    if not portador_archivo:
+        return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
+    if 'carga' not in request.files:
+        return jsonify({'mensaje': 'No-se-recibio-carga'})
+    contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
+    return jsonify(contenido)
 
-        carga_archivo = comunicador.cargar_archivo(modelo_carga(origen=request.files['carga']))
-        if not carga_archivo.es_valido:
-            return jsonify({'mensaje': carga_archivo.mensaje_error})
-
-    except Exception as e:
-        return jsonify({'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'})
-    finally:
-        request.files['carga'].close()
-    return jsonify({'mensaje': f'Archivo-cargado-con-exito: {carga_archivo.nombre}'})

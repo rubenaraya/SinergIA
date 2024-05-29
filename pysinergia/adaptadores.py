@@ -18,6 +18,7 @@ from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
 )
+from pysinergia.dominio import CargaArchivo as _CargaArchivo
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen
@@ -184,6 +185,10 @@ class I_Comunicador(metaclass=ABCMeta):
     def asignar_idioma(mi, idiomas_aceptados:str):
         ...
 
+    @abstractmethod
+    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
+        ...
+    
     @abstractmethod
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         ...

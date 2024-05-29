@@ -169,19 +169,14 @@ def get_cargar(request:Request, tipo:str):
 + Probar la traducción de textos
 """
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO)
-async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
-    try:
-        modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
-        modelo_carga = modelos.get(tipo)
-        if not modelo_carga:
-            return {'mensaje': f'Tipo-de-carga-no-valido'}
+def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(request, idiomas, sesion)
+    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    portador_archivo = modelos.get(tipo)
+    if not portador_archivo:
+        return JSONResponse({'mensaje': f'Tipo-de-carga-no-valido'})
+    contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
+    return JSONResponse(contenido)
 
-        carga_archivo = comunicador.cargar_archivo(modelo_carga(origen=carga))
-        if not carga_archivo.es_valido:
-            return {'mensaje': carga_archivo.mensaje_error}
-
-    except Exception as e:
-        return {'mensaje': f'Se-produjo-un-error-al-cargar-el-archivo: {str(e)}'}
-    finally:
-        await carga.close()
-    return {'mensaje': f'Archivo-cargado-con-exito: {carga_archivo.nombre}'}

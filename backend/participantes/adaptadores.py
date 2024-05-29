@@ -36,6 +36,14 @@ class ControladorParticipantes(Controlador):
         contenido = mi.comunicador.exportar_contenido(formato=archivo.formato, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
+    def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
+        resultado = mi.comunicador.cargar_archivo(peticion)
+        if resultado.es_valido:
+            contenido = {'mensaje': f'Archivo-cargado-con-exito: {resultado.nombre}'}
+        else:
+            contenido = {'mensaje': resultado.mensaje_error}
+        return contenido
+
     def agregar_participante(mi, peticion:ModeloPeticion):
         resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion.diccionario())

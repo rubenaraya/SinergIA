@@ -41,6 +41,21 @@ class Comunicador:
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         raise NotImplementedError()
 
+    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
+        if portador and portador.es_valido:
+            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
+            ruta_guardar = f'{portador.carpeta}/{nombre}'
+            if mi.disco.comprobar_ruta(ruta_guardar):
+                portador.es_valido = False
+                portador.mensaje_error = 'El-archivo-ya-existe'
+            else:
+                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
+                if not ruta:
+                    portador.es_valido = False
+                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
+                portador.ruta = ruta
+        return portador
+
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
         mi.idioma = negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
@@ -133,21 +148,6 @@ class Comunicador:
             'Content-Type': tipo_mime,
             'Content-disposition': f'inline; filename={nombre_archivo}'
         }
-
-    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
-        if portador and portador.es_valido:
-            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
-            ruta_guardar = f'{portador.carpeta}/{nombre}'
-            if mi.disco.comprobar_ruta(ruta_guardar):
-                portador.es_valido = False
-                portador.mensaje_error = 'El-archivo-ya-existe'
-            else:
-                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
-                if not ruta:
-                    portador.es_valido = False
-                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
-                portador.ruta = ruta
-        return portador
 
 
 # --------------------------------------------------

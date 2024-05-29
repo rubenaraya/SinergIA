@@ -2,7 +2,7 @@
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Self
 from pydantic import BaseModel, model_validator
 
 # --------------------------------------------------
@@ -75,15 +75,13 @@ class CargaArchivo(BaseModel):
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
 
-    class Config:
-        arbitrary_types_allowed = True
-    def tipos_permitidos() -> list:
+    def tipos_permitidos() -> List[str]:
         ...
     def peso_maximo() -> int:
         ...
 
     @model_validator(mode='after')
-    def validar_archivo(cls, valores):
+    def validar_archivo(cls, valores:Self):
         origen = valores.origen
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
@@ -111,9 +109,9 @@ class CargaArchivo(BaseModel):
 # ClaseModelo: CargaImagen
 # --------------------------------------------------
 class CargaImagen(CargaArchivo):
-    carpeta: Optional[str] = 'cargados'
+    carpeta: Optional[str] = 'imagenes'
 
-    def tipos_permitidos() -> list:
+    def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.JPG,
             _Constantes.MIME.PNG,
@@ -125,9 +123,9 @@ class CargaImagen(CargaArchivo):
 # ClaseModelo: CargaDocumento
 # --------------------------------------------------
 class CargaDocumento(CargaArchivo):
-    carpeta: Optional[str] = 'cargados'
+    carpeta: Optional[str] = 'documentos'
 
-    def tipos_permitidos() -> list:
+    def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.DOCX,
             _Constantes.MIME.XLSX,
@@ -141,9 +139,9 @@ class CargaDocumento(CargaArchivo):
 # ClaseModelo: CargaAudio
 # --------------------------------------------------
 class CargaAudio(CargaArchivo):
-    carpeta: Optional[str] = 'cargados'
+    carpeta: Optional[str] = 'audios'
 
-    def tipos_permitidos() -> list:
+    def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.MP3,
             _Constantes.MIME.WAV,
@@ -157,8 +155,8 @@ class CargaAudio(CargaArchivo):
 # ClaseModelo: CargaVideo
 # --------------------------------------------------
 class CargaVideo(CargaArchivo):
-    carpeta: Optional[str] = 'cargados'
-    def tipos_permitidos() -> list:
+    carpeta: Optional[str] = 'videos'
+    def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.MP4,
             _Constantes.MIME.WEBM,

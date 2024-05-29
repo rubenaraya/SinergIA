@@ -11,6 +11,7 @@ from pysinergia import (
 from pysinergia.dominio import (
     ModeloPeticion,
     RespuestaResultado,
+    CargaArchivo,
 )
 from pysinergia.adaptadores import (
     Controlador,
