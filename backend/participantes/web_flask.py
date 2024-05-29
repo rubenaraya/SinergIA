@@ -179,7 +179,7 @@ def post_cargar(tipo):
         if 'carga' not in request.files:
             return jsonify({'mensaje': 'No-se-recibio-carga'})
         carga = request.files['carga']
-        modelo = modelo_carga(carga.stream, nombre=carga.filename, tipo_mime=carga.content_type)
+        modelo:CargaArchivo = modelo_carga(carga=carga.stream, nombre=carga.filename, tipo_mime=carga.content_type)
         if not modelo.validacion:
             return jsonify({'mensaje': modelo.mensaje_error})
         nombre = comunicador.disco.generar_nombre(modelo.nombre)

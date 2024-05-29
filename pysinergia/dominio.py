@@ -2,7 +2,7 @@
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
-from typing import Dict, List, Optional, IO
+from typing import Dict, Optional
 from pydantic import BaseModel, model_validator
 
 # --------------------------------------------------
@@ -61,6 +61,9 @@ class RespuestaResultado(ModeloRespuesta):
             mi.mensaje = mensaje
 
 
+# --------------------------------------------------
+# ClaseModelo: CargaArchivo
+# --------------------------------------------------
 class CargaArchivo(BaseModel):
     carga: Optional[object]
     nombre: Optional[str]
@@ -100,6 +103,9 @@ class CargaArchivo(BaseModel):
         valores.validacion = True
         return valores
 
+# --------------------------------------------------
+# ClaseModelo: CargaImagen
+# --------------------------------------------------
 class CargaImagen(CargaArchivo):
     def tipos_permitidos() -> list:
         return [
@@ -109,6 +115,9 @@ class CargaImagen(CargaArchivo):
     def peso_maximo() -> int:
         return 5 * 1024 * 1024
 
+# --------------------------------------------------
+# ClaseModelo: CargaDocumento
+# --------------------------------------------------
 class CargaDocumento(CargaArchivo):
     def tipos_permitidos() -> list:
         return [
@@ -120,6 +129,9 @@ class CargaDocumento(CargaArchivo):
     def peso_maximo() -> int:
         return 2 * 1024 * 1024
 
+# --------------------------------------------------
+# ClaseModelo: CargaAudio
+# --------------------------------------------------
 class CargaAudio(CargaArchivo):
     def tipos_permitidos() -> list:
         return [
@@ -131,6 +143,9 @@ class CargaAudio(CargaArchivo):
     def peso_maximo() -> int:
         return 25 * 1024 * 1024
 
+# --------------------------------------------------
+# ClaseModelo: CargaVideo
+# --------------------------------------------------
 class CargaVideo(CargaArchivo):
     def tipos_permitidos() -> list:
         return [

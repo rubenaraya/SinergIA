@@ -175,7 +175,7 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
         modelo_carga = modelos.get(tipo)
         if not modelo_carga:
             return {'mensaje': f'Tipo-de-carga-no-valido'}
-        modelo = modelo_carga(carga.file, nombre=carga.filename, tipo_mime=carga.content_type)
+        modelo:CargaArchivo = modelo_carga(carga=carga.file, nombre=carga.filename, tipo_mime=carga.content_type)
         if not modelo.validacion:
             return {'mensaje': modelo.mensaje_error}
         nombre = comunicador.disco.generar_nombre(modelo.nombre)
