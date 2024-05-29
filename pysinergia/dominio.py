@@ -65,12 +65,13 @@ class RespuestaResultado(ModeloRespuesta):
 # ClaseModelo: CargaArchivo
 # --------------------------------------------------
 class CargaArchivo(BaseModel):
-    carga: Optional[object]
-    nombre: Optional[str]
-    tipo_mime: Optional[str]
-    peso: Optional[int] | None = 0
-    validacion: Optional[bool] | None = False
-    mensaje_error: Optional[str] | None = ''
+    origen: object
+    contenido: object = None
+    nombre: Optional[str] = ''
+    tipo_mime: Optional[str] = ''
+    peso: Optional[int] = 0
+    es_valido: Optional[bool] = False
+    mensaje_error: Optional[str] = ''
 
     class Config:
         arbitrary_types_allowed = True
@@ -81,26 +82,27 @@ class CargaArchivo(BaseModel):
 
     @model_validator(mode='after')
     def validar_archivo(cls, valores):
-        carga = valores.carga
-        if not carga:
-            valores.mensaje_error = 'No-se-recibio-carga'
+        origen = valores.origen
+        if not origen:
+            valores.mensaje_error = 'No-se-recibio-ninguna-carga'
             return valores
-        nombre = valores.nombre
-        if nombre == '':
-            valores.mensaje_error = 'La-carga-no-contiene-archivos'
+        if origen.filename == '':
+            valores.mensaje_error = 'La-carga-recibida-no-contiene-archivo'
             return valores
-        tipo_mime = valores.tipo_mime
-        if tipo_mime not in cls.tipos_permitidos():
-            valores.mensaje_error = 'Tipo-de-archivo-no-permitido'
+        valores.nombre = origen.filename
+        if origen.content_type not in cls.tipos_permitidos():
+            valores.mensaje_error = 'El-tipo-de-archivo-no-esta-permitido'
             return valores
-        carga.seek(0, 2)
-        peso = carga.tell()
-        carga.seek(0)
+        valores.tipo_mime = origen.content_type
+        valores.contenido = origen.file if hasattr(origen, 'file') else origen.stream
+        valores.contenido.seek(0, 2)
+        peso = valores.contenido.tell()
+        valores.contenido.seek(0)
         valores.peso = peso
         if peso > cls.peso_maximo():
-            valores.mensaje_error = 'El-archivo-supera-el-peso-maximo'
+            valores.mensaje_error = 'El-archivo-supera-el-peso-maximo-aceptado'
             return valores
-        valores.validacion = True
+        valores.es_valido = True
         return valores
 
 # --------------------------------------------------
