@@ -12,24 +12,26 @@ from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
 )
 from pysinergia.adaptadores import (
-    I_ConectorDisco as _Disco,
+    I_ConectorDisco as _I_Disco,
+    I_Comunicador as _I_Comunicador
 )
 
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
-class Comunicador:
+class Comunicador(_I_Comunicador):
+
     def __init__(mi, config_contexto:dict, config_disco:dict):
         mi.config:dict = config_contexto or {}
         mi.idioma = None
         mi.traductor = None
         mi.contexto:dict = {}
-        mi.disco:_Disco = mi._conectar_disco(config_disco)
+        mi.disco:_I_Disco = mi._conectar_disco(config_disco)
 
     # --------------------------------------------------
     # Métodos privados
 
-    def _conectar_disco(mi, config_disco:dict) -> _Disco:
+    def _conectar_disco(mi, config_disco:dict) -> _I_Disco:
         disco_fuente = config_disco.get('fuente','')
         modulo = f'pysinergia.conectores.{disco_fuente}'
         componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
@@ -40,21 +42,6 @@ class Comunicador:
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         raise NotImplementedError()
-
-    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
-        if portador and portador.es_valido:
-            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
-            ruta_guardar = f'{portador.carpeta}/{nombre}'
-            if mi.disco.comprobar_ruta(ruta_guardar):
-                portador.es_valido = False
-                portador.mensaje_error = 'El-archivo-ya-existe'
-            else:
-                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
-                if not ruta:
-                    portador.es_valido = False
-                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
-                portador.ruta = ruta
-        return portador
 
     def asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
@@ -148,6 +135,22 @@ class Comunicador:
             'Content-Type': tipo_mime,
             'Content-disposition': f'inline; filename={nombre_archivo}'
         }
+
+    def cargar_archivo(mi, portador:_CargaArchivo, si_existe:str='RECHAZAR') -> _CargaArchivo:
+        if portador and portador.es_valido:
+            unico = True if si_existe == portador.RENOMBRAR else False
+            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
+            ruta_guardar = f'{portador.carpeta}/{nombre}'
+            if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
+                portador.es_valido = False
+                portador.mensaje_error = 'El-archivo-ya-existe'
+            else:
+                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
+                if not ruta:
+                    portador.es_valido = False
+                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
+                portador.ruta = ruta
+        return portador
 
 
 # --------------------------------------------------

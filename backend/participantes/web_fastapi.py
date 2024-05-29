@@ -165,9 +165,6 @@ def get_cargar(request:Request, tipo:str):
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
 
-"""
-+ Probar la traducción de textos
-"""
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO.HTTP_200_EXITO)
 def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')

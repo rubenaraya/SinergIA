@@ -166,9 +166,6 @@ def get_cargar(tipo):
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
 
-"""
-+ Probar la traducción de textos
-"""
 @enrutador.route('/cargar/<tipo>', methods=['POST'])
 def post_cargar(tipo):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')

@@ -74,6 +74,9 @@ class CargaArchivo(BaseModel):
     peso: Optional[int] = 0
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
+    RECHAZAR: str = 'RECHAZAR'
+    SOBREESCRIBIR: str = 'SOBREESCRIBIR'
+    RENOMBRAR: str = 'RENOMBRAR'
 
     def tipos_permitidos() -> List[str]:
         ...
