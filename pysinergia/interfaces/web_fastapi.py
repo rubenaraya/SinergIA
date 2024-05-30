@@ -23,6 +23,7 @@ from pysinergia import (
     Funciones as _F,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
+    ErrorDisco as _ErrorDisco,
     RegistradorLogs as _RegistradorLogs,
 )
 from pysinergia.web import (
@@ -186,6 +187,23 @@ class ServidorApi:
                 status_code=exc.codigo,
                 content=jsonable_encoder(salida)
         )
+
+        @api.exception_handler(_ErrorDisco)
+        async def _error_disco(request:Request, exc:_ErrorDisco):
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            salida = _F.crear_salida(
+                codigo=exc.codigo,
+                tipo='ERROR',
+                mensaje=_(exc.mensaje),
+                detalles=exc.detalles
+            )
+            _RegistradorLogs.crear(f'{registro_logs}', 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
+                f'{mi._obtener_url(request)} | {salida.__str__()}'
+            )
+            return JSONResponse(
+                status_code=exc.codigo,
+                content=jsonable_encoder(salida)
+            )
 
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, exc:ValidationError):

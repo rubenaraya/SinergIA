@@ -22,6 +22,7 @@ from pysinergia import (
     Json as _Json,
     ErrorPersonalizado as _ErrorPersonalizado,
     ErrorAutenticacion as _ErrorAutenticacion,
+    ErrorDisco as _ErrorDisco,
     RegistradorLogs as _RegistradorLogs,
 )
 from pysinergia.web import (
@@ -181,6 +182,24 @@ class ServidorApi:
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_(exc.mensaje),
                 detalles=[]
+            )
+            return Response(
+                _Json.codificar(salida),
+                status=exc.codigo,
+                mimetype=_C.MIME.JSON
+            )
+
+        @api.errorhandler(_ErrorDisco)
+        def _error_disco(exc:_ErrorDisco):
+            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            salida = _F.crear_salida(
+                codigo=exc.codigo,
+                tipo='ERROR',
+                mensaje=_(exc.mensaje),
+                detalles=exc.detalles
+            )
+            _RegistradorLogs.crear(f'{registro_logs}', 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
+                f'{mi._obtener_url()} | {salida.__str__()}'
             )
             return Response(
                 _Json.codificar(salida),

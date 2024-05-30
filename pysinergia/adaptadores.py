@@ -3,7 +3,7 @@
 from abc import (ABCMeta, abstractmethod)
 from typing import (Dict, List, BinaryIO, TextIO)
 from functools import lru_cache
-import os
+from pathlib import Path
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -340,12 +340,12 @@ class Configuracion(BaseSettings):
             'apikey': mi.spi_apikey,
         })
     def reconocer_servicio(mi, ruta_archivo:str, aplicacion:str):
-        mi.ruta_servicio = os.path.dirname(ruta_archivo).replace('\\', '/')
+        import os
+        mi.ruta_servicio = Path(ruta_archivo).parent.as_posix()
         if mi.ruta_servicio:
-            ruta_normalizada = os.path.normpath(mi.ruta_servicio)
-            partes = ruta_normalizada.split(os.sep)
+            ruta = Path(mi.ruta_servicio)
+            mi.servicio = ruta.name if ruta.parts else ''
             mi.aplicacion = aplicacion
-            mi.servicio = partes[-1] if len(partes) > 0 else ''
             mi.app_web = os.getenv('APP_WEB', '')
             mi.raiz_api = os.getenv('RAIZ_API', '')
             mi.frontend = os.getenv('ALIAS_FRONTEND', '')
@@ -381,10 +381,11 @@ class Exportador:
 
     def obtener_ruta(mi):
         ruta_temp = mi.config.get('ruta_temp', '')
-        ruta = os.path.abspath(f'{ruta_temp}/archivos').replace('\\', '/')
-        if not os.path.exists(ruta):
-            ruta = ''
-        return ruta
+        ruta = Path(ruta_temp) / 'archivos'
+        ruta = ruta.resolve()
+        if not ruta.exists():
+            return ''
+        return ruta.as_posix()
 
     def generar(mi, contenido:str='', opciones:dict={}):
         raise NotImplementedError()

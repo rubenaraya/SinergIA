@@ -89,3 +89,51 @@ msgstr "El tipo de archivo no está permitido"
 msgid "El-archivo-supera-el-peso-maximo-aceptado"
 msgstr "El archivo supera el peso máximo aceptado"
 
+#: disco_local.py:1
+msgid "Archivo-no-encontrado"
+msgstr "El archivo no fue encontrado"
+
+#: disco_local.py:2
+msgid "Permiso-denegado-para-eliminar-el-archivo"
+msgstr "Permiso denegado para eliminar el archivo"
+
+#: disco_local.py:3
+msgid "Error-desconocido-al-acceder-al-archivo"
+msgstr "Error desconocido al acceder al archivo"
+
+#: disco_local.py:4
+msgid "Permiso-denegado-para-escribir-el-archivo"
+msgstr "Permiso denegado para escribir el archivo"
+
+#: disco_local.py:5
+msgid "Permiso-denegado-para-abrir-el-archivo"
+msgstr "Permiso denegado para abrir el archivo"
+
+#: disco_local.py:6
+msgid "Error-de-IO-al-escribir-el-archivo"
+msgstr "Error de I/O al escribir en el archivo"
+
+#: disco_local.py:7
+msgid "La-carpeta-no-existe"
+msgstr "La carpeta no existe"
+
+#: disco_local.py:8
+msgid "Permiso-denegado-para-eliminar-la-carpeta"
+msgstr "Permiso denegado para eliminar la carpeta"
+
+#: disco_local.py:9
+msgid "Error-del-sistema-operativo-al-eliminar-la-carpeta"
+msgstr "Error del sistema operativo al eliminar la carpeta"
+
+#: disco_local.py:10
+msgid "Permiso-denegado-para-crear-la-carpeta"
+msgstr "Permiso denegado para crear la carpeta"
+
+#: disco_local.py:11
+msgid "Error-del-sistema-operativo-al-crear-la-carpeta"
+msgstr "Error del sistema operativo al crear la carpeta"
+
+#: disco_local.py:12
+msgid "Error-desconocido-al-acceder-a-la-carpeta"
+msgstr "Error desconocido al acceder a la carpeta"
+

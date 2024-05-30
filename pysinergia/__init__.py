@@ -324,3 +324,21 @@ class ErrorAutenticacion(Exception):
     def __str__(mi):
         return f'{mi.mensaje}'
 
+
+# --------------------------------------------------
+# Clase: ErrorDisco
+# --------------------------------------------------
+class ErrorDisco(Exception):
+    def __init__(mi, mensaje:str, ruta:str='', codigo:int=500, detalles:list=[]):
+        mi.codigo = codigo
+        mi.ruta = ruta
+        mi.mensaje = mensaje
+        mi.detalles = detalles
+        super().__init__(mi.mensaje)
+
+    def __str__(mi):
+        return f'{mi.mensaje}'
+
+    def __repr__(mi):
+        return f'{mi.codigo}: {mi.mensaje} | {mi.ruta} | {mi.detalles.__str__()}'
+

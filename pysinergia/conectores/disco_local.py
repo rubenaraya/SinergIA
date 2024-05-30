@@ -7,6 +7,7 @@ from typing import (BinaryIO, TextIO, List)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
+from pysinergia import ErrorDisco
 from pysinergia.adaptadores import I_ConectorDisco as _Disco
 from pysinergia.dominio import Archivo as _Archivo
 
@@ -91,8 +92,14 @@ class DiscoLocal(_Disco):
             if path.exists() and path.is_file:
                 path.unlink()
                 return True
+            else:
+                return False
+        except FileNotFoundError as e:
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', ruta=nombre, detalles=[str(e)])
+        except PermissionError as e:
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-el-archivo', ruta=nombre, detalles=[str(e)])
         except Exception as e:
-            raise e
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', ruta=nombre, detalles=[str(e)])
 
     def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
         ruta_archivo = mi._leer_ruta(nombre)
@@ -107,8 +114,12 @@ class DiscoLocal(_Disco):
                 else:
                     archivo.write(contenido)
             return ruta_archivo
+        except PermissionError as e:
+            raise ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', ruta=nombre, detalles=[str(e)])
+        except IOError as e:
+            raise ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', ruta=nombre, detalles=[str(e)])
         except Exception as e:
-            raise e
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', ruta=nombre, detalles=[str(e)])
         finally:
             if archivo:
                 archivo.close()
@@ -120,8 +131,12 @@ class DiscoLocal(_Disco):
         try:
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 return archivo.read()
+        except FileNotFoundError as e:
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', ruta=nombre, detalles=[str(e)])
+        except PermissionError as e:
+            raise ErrorDisco(mensaje='Permiso-denegado-para-abrir-el-archivo', ruta=nombre, detalles=[str(e)])
         except Exception as e:
-            raise e
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', ruta=nombre, detalles=[str(e)])
 
     def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
         try:
@@ -130,8 +145,12 @@ class DiscoLocal(_Disco):
             if path.exists() and path.is_dir():
                 return str(path.resolve().as_posix())
             return ''
+        except PermissionError as e:
+            raise ErrorDisco(mensaje='Permiso-denegado-para-crear-la-carpeta', ruta=nombre, detalles=[str(e)])
+        except OSError as e:
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-crear-la-carpeta', ruta=nombre, detalles=[str(e)])
         except Exception as e:
-            raise e
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', ruta=nombre, detalles=[str(e)])
 
     def eliminar_carpeta(mi, nombre:str) -> bool:
         try:
@@ -139,8 +158,14 @@ class DiscoLocal(_Disco):
             if path.exists() and path.is_dir:
                 path.rmdir()
                 return True
+            else:
+                raise ErrorDisco(mensaje='La-carpeta-no-existe', ruta=nombre)
+        except PermissionError as e:
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-la-carpeta', ruta=nombre, detalles=[str(e)])
+        except OSError as e:
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-eliminar-la-carpeta', ruta=nombre, detalles=[str(e)])
         except Exception as e:
-            raise e
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', ruta=nombre, detalles=[str(e)])
 
     def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
         path = (mi._path / Path(nombre))
