@@ -14,13 +14,14 @@ from pysinergia import (
 class ExportadorExcel(_Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):
-        import pandas as pd
-        import io, os
+        from pathlib import Path
         from uuid import uuid4
+        import pandas as pd
+        import io
         uuid = str(uuid4())
+        ruta_aux = Path(mi.obtener_ruta())
+        ruta_xlsx = ruta_aux / f'{uuid}.xlsx'
         tabla_datos = opciones.get('tabla_datos', 'Hoja1')
-        ruta_aux = mi.obtener_ruta()
-        ruta_xlsx = f'{ruta_aux}/{uuid}.xlsx'
         try:
             tabla = pd.read_html(io.StringIO(contenido), encoding='utf-8')[0]
             tabla.to_excel(
@@ -29,10 +30,9 @@ class ExportadorExcel(_Exportador):
                 header=True,
                 index=False,
             )
-            with open(ruta_xlsx, 'rb') as f:
-                xlsx_bytes = f.read()
-                xlsx_io = io.BytesIO(xlsx_bytes)
-            os.remove(ruta_xlsx)
+            xlsx_bytes = ruta_xlsx.read_bytes()
+            xlsx_io = io.BytesIO(xlsx_bytes)
+            ruta_xlsx.unlink()
             return xlsx_io
         except Exception as e:
             raise _ErrorPersonalizado(

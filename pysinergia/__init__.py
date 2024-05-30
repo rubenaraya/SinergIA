@@ -1,6 +1,7 @@
 # pysinergia\__init__.py
 
-import os, json
+import json
+from pathlib import Path
 
 # --------------------------------------------------
 # Componentes Globales de PySinergIA
@@ -18,9 +19,9 @@ class Constantes:
 
     RUTA_CONECTORES = 'pysinergia.conectores'
     RUTA_EXPORTADORES = 'pysinergia.exportadores'
-    DIR_LIB_SQLEAN = './_lib/sqlean'
-    DIR_LIB_FFMPEG = './_lib/ffmpeg'
-    DIR_LIB_PANDOC = './_lib/pandoc/bin'
+    DIR_LIB_SQLEAN = '_lib/sqlean'
+    DIR_LIB_FFMPEG = '_lib/ffmpeg'
+    DIR_LIB_PANDOC = '_lib/pandoc/bin'
 
     class ENTORNO:
         PRODUCCION = 'PRODUCCION'
@@ -59,6 +60,7 @@ class Constantes:
         _429_NO_ATENDIDO = 429
         _500_ERROR = 500
         _503_NO_DISPONIBLE = 503
+        _504_NO_RESPONDIDO = 504
 
     class MIME:
         HTML = 'text/html'
@@ -120,7 +122,7 @@ class Json:
     def leer(archivo:str):
         data = None
         try:
-            if archivo and os.path.isfile(archivo):
+            if archivo and Path(archivo).is_file():
                 with open(archivo, 'r', encoding='utf-8') as f:
                     data = json.load(f)
         except:
@@ -189,12 +191,12 @@ class Funciones:
         if entorno:
             nombre_archivo = f".{entorno.lower()}.env"
         partes = nombre_modulo.split('.')[:-1]
-        ruta = os.path.join(*partes)
-        return os.path.join(ruta, nombre_archivo)
+        ruta = Path(*partes)
+        return (ruta / nombre_archivo).as_posix()
 
     @staticmethod
     def obtener_ruta_raiz() -> str:
-        return os.path.abspath('.').replace('\\','/')
+        return Path('.').resolve().as_posix()
 
     @staticmethod
     def tipo_salida(estado:int) -> str:

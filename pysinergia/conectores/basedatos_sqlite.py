@@ -36,7 +36,7 @@ class BasedatosSqlite(_Basedatos):
     # Métodos públicos
 
     def conectar(mi, config:dict) -> bool:
-        import os
+        from pathlib import Path
         if mi.conexion and mi.basedatos == config.get('nombre'):
             return True
         if mi.conexion:
@@ -44,12 +44,12 @@ class BasedatosSqlite(_Basedatos):
         mi.basedatos = config.get('nombre')
         mi.ruta = config.get('ruta')
         if mi.basedatos and mi.ruta:
-            ruta_basedatos = f"{mi.ruta}/{mi.basedatos}.db"
-            if os.path.isfile(ruta_basedatos):
-                mi.conexion = sqlite3.connect(ruta_basedatos)
+            ruta_basedatos = Path(f"{mi.ruta}/{mi.basedatos}.db")
+            if ruta_basedatos.is_file():
+                mi.conexion = sqlite3.connect(str(ruta_basedatos.resolve()))
                 mi.conexion.enable_load_extension(True)
-                extension = os.path.normpath(os.path.abspath(f"{_Constantes.DIR_LIB_SQLEAN}/regexp"))
-                mi.conexion.load_extension(extension)
+                extension = Path(f'{_Constantes.DIR_LIB_SQLEAN}/regexp')
+                mi.conexion.load_extension(str(extension.resolve()))
                 return True
         return False
 
