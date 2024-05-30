@@ -221,7 +221,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
+    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='', disposicion:str='inline') -> dict:
         ...
 
     @abstractmethod
@@ -232,6 +232,9 @@ class I_Comunicador(metaclass=ABCMeta):
     def traspasar_traductor(mi):
         ...
 
+    @abstractmethod
+    def recibir_datos(mi, datos) -> dict:
+        ...
 
 # --------------------------------------------------
 # ClaseModelo: Configuracion

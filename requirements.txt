@@ -27,4 +27,3 @@ langchain
 PyMuPDF
 docx2txt
 
-filetype

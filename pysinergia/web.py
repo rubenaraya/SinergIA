@@ -130,10 +130,10 @@ class Comunicador(_I_Comunicador):
     def traspasar_contexto(mi) -> dict:
         return mi.contexto
 
-    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='') -> dict:
+    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='', disposicion:str='inline') -> dict:
         return {
             'Content-Type': tipo_mime,
-            'Content-disposition': f'inline; filename={nombre_archivo}'
+            'Content-disposition': f'{disposicion}; filename={nombre_archivo}'
         }
 
     def cargar_archivo(mi, portador:_CargaArchivo, si_existe:str='RECHAZAR') -> _CargaArchivo:

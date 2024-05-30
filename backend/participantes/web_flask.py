@@ -172,8 +172,7 @@ def post_cargar(tipo):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
 
-    texto = request.form.get('texto')
-    print(texto)
+    formulario = comunicador.recibir_datos(request.form)
 
     _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}

@@ -304,6 +304,17 @@ class ComunicadorWeb(_Comunicador):
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
 
+    def recibir_datos(mi, datos) -> dict:
+        from typing import Dict, Any
+        formulario: Dict[str, Any] = {}
+        for key in datos:
+            value = datos.getlist(key)
+            if len(value) > 1:
+                formulario[key] = value
+            else:
+                formulario[key] = value[0]
+        return formulario
+
 
 # --------------------------------------------------
 # Clase: AutenticadorWeb

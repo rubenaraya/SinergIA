@@ -165,12 +165,13 @@ def get_cargar(request:Request, tipo:str):
     )
 
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO)
-def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...), texto:str=Form(...)):
+async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
 
-    print(texto)
+    datos = await request.form()
+    formulario = comunicador.recibir_datos(datos)
  
     _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
