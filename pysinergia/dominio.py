@@ -2,8 +2,23 @@
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
-from typing import Dict, List, Optional, Self
-from pydantic import BaseModel, model_validator
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Self,
+    Tuple,
+    Any,
+    Literal,
+)
+from enum import Enum
+from pydantic import (
+    BaseModel,
+    create_model,
+    model_validator,
+    field_validator,
+    Field,
+)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -85,7 +100,7 @@ class CargaArchivo(BaseModel):
         ...
 
     @model_validator(mode='after')
-    def validar_archivo(cls, valores:Self):
+    def validate_model(cls, valores:Self) -> 'CargaArchivo':
         origen = valores.origen
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
@@ -190,3 +205,11 @@ class Archivo(BaseModel):
     base: Optional[str] = ''
     extension: Optional[str] = ''
     peso: Optional[int] = 0
+
+
+# --------------------------------------------------
+# Funcion: crear_modelo
+# --------------------------------------------------
+def crear_modelo(nombre:str, campos:dict[str, Any]) -> BaseModel:
+    return create_model(nombre, **campos)
+

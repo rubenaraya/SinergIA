@@ -460,7 +460,7 @@ class Controlador:
 
 
 # --------------------------------------------------
-# Función: cargar_configuracion
+# Funcion: cargar_configuracion
 # --------------------------------------------------
 @lru_cache
 def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
