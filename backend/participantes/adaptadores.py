@@ -41,7 +41,7 @@ class ControladorParticipantes(Controlador):
         _ = mi.comunicador.traspasar_traductor()
         resultado = mi.comunicador.cargar_archivo(peticion)
         if resultado.es_valido:
-            contenido = {'mensaje': _('Archivo-cargado-con-exito') + f'{resultado.nombre}'}
+            contenido = {'mensaje': _('Archivo-cargado-con-exito') + f': {resultado.nombre}'}
         else:
             contenido = {'error': _(resultado.mensaje_error)}
         return contenido

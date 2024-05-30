@@ -149,8 +149,8 @@ class Comunicador(_I_Comunicador):
     def cargar_archivo(mi, portador:_CargaArchivo, si_existe:str='RECHAZAR') -> _CargaArchivo:
         if portador and portador.es_valido:
             unico = True if si_existe == portador.RENOMBRAR else False
-            nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
-            ruta_guardar = f'{portador.carpeta}/{nombre}'
+            portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
+            ruta_guardar = f'{portador.carpeta}/{portador.nombre}'
             if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
                 portador.es_valido = False
                 portador.mensaje_error = 'El-archivo-ya-existe'

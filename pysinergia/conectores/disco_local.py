@@ -48,17 +48,6 @@ class DiscoLocal(_Disco):
     def normalizar_nombre(mi, nombre:str, extension:str=None, largo:int=100, auto:bool=False) -> str:
         import re, unicodedata
         from uuid import uuid4
-        if not nombre and auto:
-            nombre = str(uuid4())
-        path = Path(nombre)
-        extension_actual = path.suffix
-        nombre_base = path.stem
-        nombre_base = unicodedata.normalize('NFD', nombre_base).encode('ascii', 'ignore').decode('utf-8')
-        nombre_base = re.sub(r"[^\w\s-]", "", nombre_base).strip().replace(" ", "-")
-        extension_final = extension or extension_actual
-        nombre_normalizado = f"{nombre_base[:largo-len(extension_final)]}{extension_final}"
-        return nombre_normalizado
-        """
         if not nombre:
             if not auto:
                 return ''
@@ -84,7 +73,6 @@ class DiscoLocal(_Disco):
             nombre_base = nombre_base[:recorte]
             nombre_normalizado = f"{nombre_base}{extension_actual}"
         return nombre_normalizado
-        """
 
     def eliminar(mi, nombre:str) -> bool:
         try:
