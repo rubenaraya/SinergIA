@@ -174,14 +174,14 @@ def post_cargar(tipo):
 
     print(str(comunicador.datos))
 
-    _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        return jsonify({'mensaje': _('Tipo-de-carga-no-valido')})
-    if 'carga' not in request.files:
-        return jsonify({'mensaje': _('No-se-recibio-ninguna-carga')})
-
-    contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
-    return jsonify(contenido)
+        contenido = {'mensaje': 'Tipo-de-carga-no-valido'}
+    elif 'carga' not in request.files:
+        contenido = {'mensaje': 'No-se-recibio-ninguna-carga'}
+    else:
+        contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
+    comunicador.traducir_textos(contenido)
+    return Response(response=Json.codificar(contenido), mimetype=C.MIME.JSON)
 

@@ -193,7 +193,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def determinar_formato(mi) -> str:
+    def determinar_formato(mi, formato:str=None) -> str:
         ...
 
     @abstractmethod
@@ -217,7 +217,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='', disposicion:str='inline') -> dict:
+    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:
         ...
 
     @abstractmethod
@@ -228,6 +228,9 @@ class I_Comunicador(metaclass=ABCMeta):
     def traspasar_traductor(mi):
         ...
 
+    @abstractmethod
+    def traducir_textos(mi, informacion:dict={}) -> dict:
+        ...
 
 # --------------------------------------------------
 # ClaseModelo: Configuracion

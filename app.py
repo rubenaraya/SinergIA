@@ -21,8 +21,8 @@ version = '0.1.0'
 
 ubicacion_enrutadores = 'backend'
 alias_frontend = 'web'
-dir_frontend = './frontend'
-dir_logs = './logs'
+dir_frontend = 'frontend'
+dir_logs = 'logs'
 registro_logs = 'api_demo'
 idiomas = ['es','en']
 origenes_cors = ['*']

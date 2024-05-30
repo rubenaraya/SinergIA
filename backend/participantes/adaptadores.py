@@ -30,20 +30,19 @@ class ControladorParticipantes(Controlador):
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         respuesta = RespuestaResultado(**resultado).diccionario()
         respuesta.update(mi.comunicador.traspasar_contexto())
-        if not formato: formato = mi.comunicador.determinar_formato()
+        formato = mi.comunicador.determinar_formato(formato)
         archivo = Funciones.atributos_archivo(formato=formato)
         nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)
-        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_archivo=nombre_archivo)
+        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_archivo=nombre_archivo, charset='utf-8')
         contenido = mi.comunicador.exportar_contenido(formato=archivo.formato, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
     def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
-        _ = mi.comunicador.traspasar_traductor()
         resultado = mi.comunicador.cargar_archivo(peticion)
         if resultado.es_valido:
-            contenido = {'mensaje': _('Archivo-cargado-con-exito') + f': {resultado.nombre}'}
+            contenido = {'mensaje': 'Archivo-cargado-con-exito', 'archivo': resultado.nombre}
         else:
-            contenido = {'error': _(resultado.mensaje_error)}
+            contenido = {'error': resultado.mensaje_error, 'archivo': resultado.nombre}
         return contenido
 
     def agregar_participante(mi, peticion:ModeloPeticion):

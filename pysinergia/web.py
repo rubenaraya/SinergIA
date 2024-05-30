@@ -139,11 +139,14 @@ class Comunicador(_I_Comunicador):
     def traspasar_contexto(mi) -> dict:
         return mi.contexto
 
-    def generar_encabezados(mi, tipo_mime:str, nombre_archivo:str='', disposicion:str='inline') -> dict:
-        return {
-            'Content-Type': tipo_mime,
-            'Content-disposition': f'{disposicion}; filename={nombre_archivo}'
-        }
+    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:
+        content_type = f"{tipo_mime}; charset={charset}" if charset else tipo_mime
+        encabezados = {'Content-Type': content_type}
+        if nombre_archivo:
+            encabezados['Content-disposition'] = f'{disposicion}; filename="{nombre_archivo}"'
+        else:
+            encabezados['Content-disposition'] = disposicion
+        return encabezados
 
     def cargar_archivo(mi, portador:_CargaArchivo, si_existe:str='RECHAZAR') -> _CargaArchivo:
         if portador and portador.es_valido:
@@ -166,13 +169,23 @@ class Comunicador(_I_Comunicador):
             return mi.traductor.gettext
         return None
 
-    def determinar_formato(mi) -> str:
+    def determinar_formato(mi, formato:str=None) -> str:
+        if formato:
+            return formato
         config:dict = mi.contexto.get('config')
         if config:
             acepta = config.get('acepta', '')
             if 'application/json' in acepta:
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
+
+    def traducir_textos(mi, informacion:dict={}) -> dict:
+        if informacion:
+            seleccion = ['mensaje','error','titulo','descripcion','nombre']
+            for clave, valor in informacion.items():
+                if clave in seleccion:
+                    informacion[clave] = mi.traductor.gettext(valor)
+        return informacion
 
 
 # --------------------------------------------------

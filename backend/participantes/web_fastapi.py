@@ -172,12 +172,12 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
 
     print(str(comunicador.datos))
  
-    _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        return JSONResponse({'mensaje': _('Tipo-de-carga-no-valido')})
-
-    contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
+        contenido = {'mensaje': 'Tipo-de-carga-no-valido'}
+    else:
+        contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
+    comunicador.traducir_textos(contenido)
     return JSONResponse(contenido)
 
