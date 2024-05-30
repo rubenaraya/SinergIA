@@ -1,6 +1,7 @@
 # pysinergia\web.py
 
 import time, jwt, importlib
+from pathlib import Path
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -68,10 +69,9 @@ class Comunicador(_I_Comunicador):
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
-        import os
         resultado = ''
         try:
-            if os.path.exists(f'{directorio}/{plantilla}'):
+            if Path(f'{directorio}/{plantilla}').exists():
                 cargador = FileSystemLoader(directorio)
                 entorno = Environment(loader=cargador)
                 entorno.add_extension('jinja2.ext.i18n')
@@ -122,16 +122,15 @@ class Comunicador(_I_Comunicador):
         return nombre
 
     def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
-        import os
         plantilla = opciones.get(tipo, '')
         ruta_plantillas = opciones.get('ruta_plantillas', None)
         if not ruta_plantillas:
             ruta = mi.config.get('ruta_servicio', '.')
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
-            if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+            if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                 ruta_plantillas = 'backend/plantillas'
-                if not os.path.exists(f'{ruta_plantillas}/{plantilla}'):
+                if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                     ruta_plantillas = ''
                     plantilla = ''
         opciones['ruta_plantillas'] = ruta_plantillas

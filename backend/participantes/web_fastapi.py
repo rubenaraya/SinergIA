@@ -30,7 +30,7 @@ enrutador = APIRouter(prefix=f'{configuracion.raiz_api}/{aplicacion}')
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
-@enrutador.get('')
+@enrutador.get('/')
 def get_inicio():
     return RedirectResponse(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
 

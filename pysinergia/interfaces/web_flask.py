@@ -1,7 +1,8 @@
 # pysinergia\interfaces\web_flask.py
 
-import os
+from pathlib import Path
 from functools import wraps
+import os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -100,11 +101,11 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> Flask:
-        mi.dir_frontend = os.path.abspath(dir_frontend)
+        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         api = Flask(__name__,
             static_url_path=f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}",
-            static_folder=mi.dir_frontend,
+            static_folder=mi.dir_frontend.as_posix(),
         )
         mi.titulo = titulo
         mi.descripcion = descripcion
@@ -119,11 +120,17 @@ class ServidorApi:
 
     def mapear_enrutadores(mi, api:Flask, ubicacion:str):
         import importlib
-        servicios = os.listdir(ubicacion)
+        ruta_ubicacion = Path(ubicacion)
         modulo_base = 'web_flask'
-        for servicio in servicios:
+        try:
+            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+        except Exception as e:
+            print(e)
+            return
+        for directorio in directorios:
             try:
-                enrutador = importlib.import_module(f'{ubicacion}.{servicio}.{modulo_base}')
+                nombre_servicio = directorio.name
+                enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
                 api.register_blueprint(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
@@ -131,8 +138,8 @@ class ServidorApi:
 
     def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
         if mi.entorno == _C.ENTORNO.DESARROLLO or mi.entorno == _C.ENTORNO.LOCAL:
-            ssl_cert=os.path.join(os.path.abspath('.'), 'cert.pem')
-            ssl_key=os.path.join(os.path.abspath('.'), 'key.pem')
+            ssl_cert=Path('cert.pem')
+            ssl_key=Path('key.pem')
             app.config['TEMPLATES_AUTO_RELOAD'] = True
             app.config['EXPLAIN_TEMPLATE_LOADING'] = True
             app.app_context().push()

@@ -1,6 +1,7 @@
 # pysinergia\interfaces\web_fastapi.py
 
 import os
+from pathlib import Path
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -67,7 +68,8 @@ class ServidorApi:
 
         @api.get('/favicon.ico', include_in_schema=False)
         def favicon():
-            return FileResponse(os.path.join(mi.dir_frontend, 'favicon.ico'))
+            ruta_favicon = Path(mi.dir_frontend) / 'favicon.ico'
+            return FileResponse(str(ruta_favicon))
 
     def _configurar_cors(mi, api:FastAPI, origenes_cors:list):
         from fastapi.middleware.cors import CORSMiddleware
@@ -99,7 +101,7 @@ class ServidorApi:
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> FastAPI:
         from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = os.path.abspath(dir_frontend)
+        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None
@@ -114,7 +116,7 @@ class ServidorApi:
         mi.descripcion = descripcion
         mi.version = version
         mi.entorno = entorno
-        api.mount(f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}", StaticFiles(directory=f'{dir_frontend}'), name='frontend')
+        api.mount(f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
         mi._configurar_cors(api, origenes_cors)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -122,11 +124,17 @@ class ServidorApi:
 
     def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
         import importlib
-        servicios = os.listdir(ubicacion)
+        ruta_ubicacion = Path(ubicacion)
         modulo_base = 'web_fastapi'
-        for servicio in servicios:
+        try:
+            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+        except Exception as e:
+            print(e)
+            return
+        for directorio in directorios:
             try:
-                enrutador = importlib.import_module(f'{ubicacion}.{servicio}.{modulo_base}')
+                nombre_servicio = directorio.name
+                enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
                 api.include_router(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
@@ -139,8 +147,8 @@ class ServidorApi:
                 app,
                 host=host,
                 port=puerto,
-                ssl_keyfile='./key.pem',
-                ssl_certfile='./cert.pem',
+                ssl_keyfile='key.pem',
+                ssl_certfile='cert.pem',
                 reload=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
             )
 

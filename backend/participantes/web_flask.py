@@ -34,7 +34,7 @@ enrutador = Blueprint(
 # Rutas del Servicio personalizado
 # --------------------------------------------------
 
-@enrutador.route('', methods=['GET'])
+@enrutador.route('/', methods=['GET'])
 def get_inicio():
     return redirect(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
 
