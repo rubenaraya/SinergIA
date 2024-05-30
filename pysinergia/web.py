@@ -7,6 +7,7 @@ import time, jwt, importlib
 from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
+    Funciones as _Funciones,
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
@@ -15,6 +16,7 @@ from pysinergia.adaptadores import (
     I_ConectorDisco as _I_Disco,
     I_Comunicador as _I_Comunicador
 )
+from pysinergia import __version__ as api_motor
 
 # --------------------------------------------------
 # Clase: Comunicador
@@ -27,6 +29,7 @@ class Comunicador(_I_Comunicador):
         mi.traductor = None
         mi.contexto:dict = {}
         mi.disco:_I_Disco = mi._conectar_disco(config_disco)
+        mi.datos:dict = {}
 
     # --------------------------------------------------
     # Métodos privados
@@ -37,13 +40,7 @@ class Comunicador(_I_Comunicador):
         componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
         return componente(config_disco)
 
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        raise NotImplementedError()
-
-    def asignar_idioma(mi, idiomas_aceptados:str):
+    def _asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
         mi.idioma = negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
         try:
@@ -55,6 +52,19 @@ class Comunicador(_I_Comunicador):
             )
         except Exception as e:
             raise e
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
+        global api_motor
+        mi._asignar_idioma(idiomas_aceptados)
+        mi.contexto['sesion'] = sesion or {}
+        mi.contexto['config'] = mi.config
+        mi.contexto['config']['idioma'] = mi.idioma
+        mi.contexto['config']['api_motor'] = api_motor
+        mi.contexto['config']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
+        mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)

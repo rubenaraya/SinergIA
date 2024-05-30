@@ -280,37 +280,49 @@ class ServidorApi:
 class ComunicadorWeb(_Comunicador):
 
     # --------------------------------------------------
+    # Métodos privados
+
+    async def _recibir_datos(mi, request:Request):
+        mi.datos = {}
+        form_data = await request.form()
+        for key, value in form_data.multi_items():
+            if hasattr(value, 'file'):
+                continue
+            if key in mi.datos:
+                mi.datos[key].append(value)
+            else:
+                mi.datos[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
+        try:
+            json_data = await request.json()
+            for key, value in json_data.items():
+                if key in mi.datos:
+                    if not isinstance(mi.datos[key], list):
+                        mi.datos[key] = [mi.datos[key]]
+                    mi.datos[key].append(value)
+                else:
+                    mi.datos[key] = value
+        except Exception:
+            pass
+        for key, value in request.query_params.multi_items():
+            if key in mi.datos:
+                if not isinstance(mi.datos[key], list):
+                    mi.datos[key] = [mi.datos[key]]
+                mi.datos[key].append(value)
+            else:
+                mi.datos[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
+
+    # --------------------------------------------------
     # Métodos públicos
 
-    def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
-        global api_motor
-        mi.asignar_idioma(idiomas_aceptados)
+    async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
+        super().procesar_peticion(idiomas_aceptados, sesion)
         mi.contexto['url'] = {
             'absoluta': str(request.url).split('?')[0],
             'base': str(request.base_url).strip('/'),
             'relativa': request.url.path,
         }
-        mi.contexto['config'] = mi.config
-        mi.contexto['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
-        mi.contexto['config']['idioma'] = mi.idioma
-        mi.contexto['config']['api_motor'] = api_motor
         mi.contexto['config']['acepta'] = request.headers.get('accept', '')
-        mi.contexto['sesion'] = sesion or {}
-        mi.contexto['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
-
-    def recibir_datos(mi, datos) -> dict:
-        from typing import Dict, Any
-        formulario: Dict[str, Any] = {}
-        for key, value in datos.multi_items():
-            if not hasattr(value, 'file'):
-                if key in formulario:
-                    if isinstance(formulario[key], list):
-                        formulario[key].append(value)
-                    else:
-                        formulario[key] = [formulario[key], value]
-                else:
-                    formulario[key] = value
-        return formulario
+        await mi._recibir_datos(request)
 
 
 # --------------------------------------------------

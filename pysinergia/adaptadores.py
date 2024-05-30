@@ -1,7 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
-from typing import Dict, List, BinaryIO, TextIO
+from typing import (Dict, List, BinaryIO, TextIO)
 from functools import lru_cache
 import os
 
@@ -197,10 +197,6 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def asignar_idioma(mi, idiomas_aceptados:str):
-        ...
-
-    @abstractmethod
     def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
         ...
     
@@ -232,9 +228,6 @@ class I_Comunicador(metaclass=ABCMeta):
     def traspasar_traductor(mi):
         ...
 
-    @abstractmethod
-    def recibir_datos(mi, datos) -> dict:
-        ...
 
 # --------------------------------------------------
 # ClaseModelo: Configuracion

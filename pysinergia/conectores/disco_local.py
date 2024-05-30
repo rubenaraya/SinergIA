@@ -3,7 +3,7 @@
 # --------------------------------------------------
 # Importaciones de Infraestructura de Datos
 from pathlib import Path
-from typing import BinaryIO, TextIO, List
+from typing import (BinaryIO, TextIO, List)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -35,22 +35,29 @@ class DiscoLocal(_Disco):
     # Métodos públicos
 
     def generar_nombre(mi, nombre:str, unico:bool=False) -> str:
-        try:
-            contador = 0
-            nombre = mi.normalizar_nombre(mi._leer_nombre(nombre))
-            path = (mi._path / nombre)
+        path = (mi._path / mi.normalizar_nombre(nombre))
+        if unico and path.exists():
             base, extension = path.stem, path.suffix
-            if unico:
-                while path.exists():
-                    contador += 1
-                    path = (mi._path / f"{base}_{contador}{extension}")
-            return path.name
-        except Exception as e:
-            print(e)
+            contador = 1
+            while (mi._path / f"{base}_{contador}{extension}").exists():
+                contador += 1
+            return f"{base}_{contador}{extension}"
+        return path.name
 
     def normalizar_nombre(mi, nombre:str, extension:str=None, largo:int=100, auto:bool=False) -> str:
         import re, unicodedata
         from uuid import uuid4
+        if not nombre and auto:
+            nombre = str(uuid4())
+        path = Path(nombre)
+        extension_actual = path.suffix
+        nombre_base = path.stem
+        nombre_base = unicodedata.normalize('NFD', nombre_base).encode('ascii', 'ignore').decode('utf-8')
+        nombre_base = re.sub(r"[^\w\s-]", "", nombre_base).strip().replace(" ", "-")
+        extension_final = extension or extension_actual
+        nombre_normalizado = f"{nombre_base[:largo-len(extension_final)]}{extension_final}"
+        return nombre_normalizado
+        """
         if not nombre:
             if not auto:
                 return ''
@@ -76,6 +83,7 @@ class DiscoLocal(_Disco):
             nombre_base = nombre_base[:recorte]
             nombre_normalizado = f"{nombre_base}{extension_actual}"
         return nombre_normalizado
+        """
 
     def eliminar(mi, nombre:str) -> bool:
         try:
@@ -84,14 +92,13 @@ class DiscoLocal(_Disco):
                 path.unlink()
                 return True
         except Exception as e:
-            print(e)
-            return False
+            raise e
 
     def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
+        ruta_archivo = mi._leer_ruta(nombre)
+        modo_abrir = 'wb' if 'b' in modo else 'w'
+        codificacion = None if 'b' in modo else 'utf-8'
         try:
-            ruta_archivo = mi._leer_ruta(nombre)
-            modo_abrir = 'wb' if modo == 'b' else 'w'
-            codificacion = None if modo == 'b' else 'utf-8'
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 if modo == 'b':
                     while fragmento := contenido.read(1024 * 1024):
@@ -101,22 +108,20 @@ class DiscoLocal(_Disco):
                     archivo.write(contenido)
             return ruta_archivo
         except Exception as e:
-            print(e)
-            return None
+            raise e
         finally:
             if archivo:
                 archivo.close()
 
     def abrir(mi, nombre:str, modo:str='') -> BinaryIO | TextIO:
+        ruta_archivo = mi._leer_ruta(nombre)
+        modo_abrir = 'rb' if 'b' in modo else 'r'
+        codificacion = None if 'b' in modo else 'utf-8'
         try:
-            ruta_archivo = mi._leer_ruta(nombre)
-            modo_abrir = 'rb' if modo == 'b' else 'r'
-            codificacion = None if modo == 'b' else 'utf-8'
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 return archivo.read()
         except Exception as e:
-            print(e)
-            return None
+            raise e
 
     def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
         try:
@@ -126,8 +131,7 @@ class DiscoLocal(_Disco):
                 return str(path.resolve().as_posix())
             return ''
         except Exception as e:
-            print(e)
-            return ''
+            raise e
 
     def eliminar_carpeta(mi, nombre:str) -> bool:
         try:
@@ -136,19 +140,14 @@ class DiscoLocal(_Disco):
                 path.rmdir()
                 return True
         except Exception as e:
-            print(e)
-            return False
+            raise e
 
     def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
-        try:
-            path = (mi._path / Path(nombre))
-            resultado = path.is_dir() if tipo == 'dir' else path.is_file()
-            if resultado is None:
-                resultado = False
-            return resultado
-        except Exception as e:
-            print(e)
-            return False
+        path = (mi._path / Path(nombre))
+        resultado = path.is_dir() if tipo == 'dir' else path.is_file()
+        if resultado is None:
+            resultado = False
+        return resultado
 
     def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
         lista = []

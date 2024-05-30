@@ -286,34 +286,35 @@ class ServidorApi:
 class ComunicadorWeb(_Comunicador):
 
     # --------------------------------------------------
+    # Métodos privados
+
+    def _recibir_datos(mi):
+        mi.datos = {}
+        if request.form:
+            for key in request.form:
+                if request.files and key in request.files:
+                    continue
+                mi.datos[key] = request.form.getlist(key) if len(request.form.getlist(key)) > 1 else request.form[key]
+        if request.is_json:
+            json = request.get_json(silent=True) or {}
+            for key, value in json.items():
+                mi.datos[key] = value
+        if request.args:
+            for key in request.args:
+                mi.datos[key] = request.args.getlist(key) if len(request.args.getlist(key)) > 1 else request.args[key]
+
+    # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        global api_motor
-        mi.asignar_idioma(idiomas_aceptados)
+        super().procesar_peticion(idiomas_aceptados, sesion)
         mi.contexto['url'] = {
             'absoluta': request.base_url,
             'base': str(request.url_root).strip('/'),
             'relativa': request.path,
         }
-        mi.contexto['config'] = mi.config
-        mi.contexto['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
-        mi.contexto['config']['idioma'] = mi.idioma
-        mi.contexto['config']['api_motor'] = api_motor
         mi.contexto['config']['acepta'] = request.headers.get('accept', '')
-        mi.contexto['sesion'] = sesion or {}
-        mi.contexto['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
-
-    def recibir_datos(mi, datos) -> dict:
-        from typing import Dict, Any
-        formulario: Dict[str, Any] = {}
-        for key in datos:
-            value = datos.getlist(key)
-            if len(value) > 1:
-                formulario[key] = value
-            else:
-                formulario[key] = value[0]
-        return formulario
+        mi._recibir_datos()
 
 
 # --------------------------------------------------
