@@ -53,6 +53,7 @@ class Constantes:
         _404_NO_ENCONTRADO = 404
         _405_NO_PERMITIDO = 405
         _410_NO_CONTINUADO = 410
+        _413_NO_CARGADO = 413
         _415_NO_SOPORTADO = 415
         _422_NO_PROCESABLE = 422
         _429_NO_ATENDIDO = 429
@@ -66,7 +67,8 @@ class Constantes:
         TXT = 'text/plain'
         BIN = 'application/octet-stream'
         CSV = 'text/csv'
-        JPG = 'image/jpeg'
+        JPG = 'image/jpg'
+        JPEG = 'image/jpeg'
         PNG = 'image/png'
         JS = 'text/javascript'
         PDF = 'application/pdf'
@@ -84,6 +86,8 @@ class Constantes:
         OPUS = 'audio/opus'
         WEBM = 'video/webm'
         WEBA = 'audio/webm'
+        WMA = 'audio/x-ms-wma'
+        WMV = 'video/x-ms-wmv'
         OGG = 'audio/ogg'
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
@@ -96,6 +100,12 @@ class Constantes:
         HTML = 'HTML'
         JSON = 'JSON'
         TEXTO = 'TEXTO'
+
+    class PESO:
+        KB = 1024
+        MB = 1024 * KB
+        GB = 1024 * MB
+        TB = 1024 * GB
 
 
 # --------------------------------------------------

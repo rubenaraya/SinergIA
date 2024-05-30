@@ -67,12 +67,14 @@ class CargaArchivo(BaseModel):
     origen: object
     contenido: object = None
     nombre: Optional[str] = ''
+    extension: Optional[str] = ''
     ruta: Optional[str] = ''
     carpeta: Optional[str] = ''
     tipo_mime: Optional[str] = ''
     peso: Optional[int] = 0
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
+
     RECHAZAR: str = 'RECHAZAR'
     SOBREESCRIBIR: str = 'SOBREESCRIBIR'
     RENOMBRAR: str = 'RENOMBRAR'
@@ -92,6 +94,7 @@ class CargaArchivo(BaseModel):
             valores.mensaje_error = 'La-carga-recibida-no-contiene-archivo'
             return valores
         valores.nombre = origen.filename
+        valores.extension = valores.nombre.rsplit('.', 1)[1].lower()
         if origen.content_type not in cls.tipos_permitidos():
             valores.mensaje_error = 'El-tipo-de-archivo-no-esta-permitido'
             return valores
@@ -112,10 +115,13 @@ class CargaArchivo(BaseModel):
 # --------------------------------------------------
 class CargaImagen(CargaArchivo):
     carpeta: Optional[str] = 'imagenes'
+    ancho: Optional[int] = 0
+    altura: Optional[int] = 0
 
     def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.JPG,
+            _Constantes.MIME.JPEG,
             _Constantes.MIME.PNG,
         ]
     def peso_maximo() -> int:
@@ -130,9 +136,13 @@ class CargaDocumento(CargaArchivo):
     def tipos_permitidos() -> List[str]:
         return [
             _Constantes.MIME.DOCX,
+            _Constantes.MIME.DOC,
             _Constantes.MIME.XLSX,
+            _Constantes.MIME.XLS,
             _Constantes.MIME.PPTX,
+            _Constantes.MIME.PPT,
             _Constantes.MIME.PDF,
+            _Constantes.MIME.CSV,
         ]
     def peso_maximo() -> int:
         return 2 * 1024 * 1024
@@ -147,7 +157,9 @@ class CargaAudio(CargaArchivo):
         return [
             _Constantes.MIME.MP3,
             _Constantes.MIME.WAV,
+            _Constantes.MIME.OGG,
             _Constantes.MIME.OPUS,
+            _Constantes.MIME.WMA,
             _Constantes.MIME.WEBA,
         ]
     def peso_maximo() -> int:
@@ -162,7 +174,19 @@ class CargaVideo(CargaArchivo):
         return [
             _Constantes.MIME.MP4,
             _Constantes.MIME.WEBM,
+            _Constantes.MIME.WMV,
         ]
     def peso_maximo() -> int:
         return 25 * 1024 * 1024
 
+
+# --------------------------------------------------
+# ClaseModelo: Archivo
+# --------------------------------------------------
+class Archivo(BaseModel):
+    nombre: Optional[str] = ''
+    ruta: Optional[str] = ''
+    ubicacion: Optional[str] = ''
+    base: Optional[str] = ''
+    extension: Optional[str] = ''
+    peso: Optional[int] = 0

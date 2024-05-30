@@ -3,11 +3,12 @@
 # --------------------------------------------------
 # Importaciones de Infraestructura de Datos
 from pathlib import Path
-from typing import BinaryIO, TextIO
+from typing import BinaryIO, TextIO, List
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.adaptadores import I_ConectorDisco as _Disco
+from pysinergia.dominio import Archivo as _Archivo
 
 # --------------------------------------------------
 # Clase: DiscoLocal
@@ -25,7 +26,7 @@ class DiscoLocal(_Disco):
         return Path(nombre).name
 
     def _leer_ruta(mi, nombre:str) -> str:
-        return str(mi._path / Path(nombre))
+        return (mi._path / Path(nombre)).as_posix()
 
     def _leer_peso(mi, nombre:str) -> int:
         return (mi._path / Path(nombre)).stat().st_size
@@ -59,7 +60,7 @@ class DiscoLocal(_Disco):
         nombre_base = path.stem
         nombre_base = unicodedata.normalize('NFD', nombre_base).encode('ascii', 'ignore').decode('utf-8')
         nombre_base = re.sub(r"[ _]+", "-", nombre_base)
-        nombre_base = re.sub(r'[\\/:"*?<>|°ºª~!#$%&=¿¡+{};@^`…(),\[\]\']', "", nombre_base)
+        nombre_base = re.sub(r'[\\/:"*?<>|°ºª~!#$%&=¿¡+{};@^`…(),\.\[\]\']', "", nombre_base)
         nombre_base = re.sub(r"-+", "-", nombre_base).strip("-")
         if extension:
             extension = f'.{extension.strip(".")}'
@@ -122,7 +123,7 @@ class DiscoLocal(_Disco):
             path = (mi._path / Path(nombre))
             path.mkdir(parents=antecesores, exist_ok=True)
             if path.exists() and path.is_dir():
-                return str(path.resolve())
+                return str(path.resolve().as_posix())
             return ''
         except Exception as e:
             print(e)
@@ -148,4 +149,20 @@ class DiscoLocal(_Disco):
         except Exception as e:
             print(e)
             return False
+
+    def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
+        lista = []
+        path = (mi._path / Path(nombre))
+        if path.exists() and path.is_dir():
+            for archivo in path.rglob(f'*.{extension}'):
+                if archivo.is_file:
+                    lista.append(_Archivo(
+                        nombre=archivo.name,
+                        ruta=archivo.as_posix(),
+                        ubicacion=archivo.parent.as_posix(),
+                        base=archivo.stem,
+                        extension=str(archivo.suffix).strip('.'),
+                        peso=archivo.stat().st_size
+                    ))
+        return lista
 

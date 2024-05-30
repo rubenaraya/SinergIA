@@ -25,11 +25,12 @@ class ControladorParticipantes(Controlador):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
-    def buscar_participantes(mi, peticion:ModeloPeticion, formato:str='JSON', guardar:bool=False) -> tuple:
+    def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         respuesta = RespuestaResultado(**resultado).diccionario()
         respuesta.update(mi.comunicador.traspasar_contexto())
+        if not formato: formato = mi.comunicador.determinar_formato()
         archivo = Funciones.atributos_archivo(formato=formato)
         nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)
         encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_archivo=nombre_archivo)
@@ -37,11 +38,12 @@ class ControladorParticipantes(Controlador):
         return (contenido, encabezados)
 
     def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
+        _ = mi.comunicador.traspasar_traductor()
         resultado = mi.comunicador.cargar_archivo(peticion)
         if resultado.es_valido:
-            contenido = {'mensaje': f'Archivo-cargado-con-exito: {resultado.nombre}'}
+            contenido = {'mensaje': _('Archivo-cargado-con-exito') + f'{resultado.nombre}'}
         else:
-            contenido = {'mensaje': resultado.mensaje_error}
+            contenido = {'error': _(resultado.mensaje_error)}
         return contenido
 
     def agregar_participante(mi, peticion:ModeloPeticion):

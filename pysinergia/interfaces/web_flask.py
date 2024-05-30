@@ -300,6 +300,7 @@ class ComunicadorWeb(_Comunicador):
         mi.contexto['config']['ruta_raiz'] = _F.obtener_ruta_raiz()
         mi.contexto['config']['idioma'] = mi.idioma
         mi.contexto['config']['api_motor'] = api_motor
+        mi.contexto['config']['acepta'] = request.headers.get('accept', '')
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['fecha'] = _F.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
 

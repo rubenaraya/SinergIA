@@ -152,6 +152,19 @@ class Comunicador(_I_Comunicador):
                 portador.ruta = ruta
         return portador
 
+    def traspasar_traductor(mi):
+        if mi.traductor:
+            return mi.traductor.gettext
+        return None
+
+    def determinar_formato(mi) -> str:
+        config:dict = mi.contexto.get('config')
+        if config:
+            acepta = config.get('acepta', '')
+            if 'application/json' in acepta:
+                return _Constantes.FORMATO.JSON
+        return _Constantes.FORMATO.HTML
+
 
 # --------------------------------------------------
 # Clase: Autenticador

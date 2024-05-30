@@ -1,7 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABCMeta, abstractmethod)
-from typing import Dict, BinaryIO, TextIO
+from typing import Dict, List, BinaryIO, TextIO
 from functools import lru_cache
 import os
 
@@ -18,7 +18,10 @@ from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
 )
-from pysinergia.dominio import CargaArchivo as _CargaArchivo
+from pysinergia.dominio import (
+    CargaArchivo as _CargaArchivo,
+    Archivo as _Archivo,
+)
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen
@@ -171,6 +174,10 @@ class I_ConectorDisco(metaclass=ABCMeta):
     def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
         ...
 
+    @abstractmethod
+    def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
+        ...
+
 
 # --------------------------------------------------
 # Interface: I_Comunicador
@@ -184,7 +191,11 @@ class I_Comunicador(metaclass=ABCMeta):
     @abstractmethod
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         ...
-    
+
+    @abstractmethod
+    def determinar_formato(mi) -> str:
+        ...
+
     @abstractmethod
     def asignar_idioma(mi, idiomas_aceptados:str):
         ...
@@ -215,6 +226,10 @@ class I_Comunicador(metaclass=ABCMeta):
 
     @abstractmethod
     def traspasar_contexto(mi) -> dict:
+        ...
+
+    @abstractmethod
+    def traspasar_traductor(mi):
         ...
 
 

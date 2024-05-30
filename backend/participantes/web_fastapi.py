@@ -36,14 +36,13 @@ def get_inicio():
 
 @enrutador.get('/participantes',
                 status_code=C.ESTADO._200_EXITO,
-                response_class=JSONResponse,
                 #dependencies=[Depends(autenticador.validar_token)]
             )
 def buscar_participantes(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.JSON)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion)
     return Response(content=contenido, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',
@@ -171,10 +170,11 @@ def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(request, idiomas, sesion)
 
+    _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        return JSONResponse({'mensaje': f'Tipo-de-carga-no-valido'})
+        return JSONResponse({'mensaje': _('Tipo-de-carga-no-valido')})
 
     contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
     return JSONResponse(contenido)

@@ -45,7 +45,7 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.JSON)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
@@ -172,12 +172,13 @@ def post_cargar(tipo):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
 
+    _ = comunicador.traspasar_traductor()
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        return jsonify({'mensaje': 'Tipo-de-carga-no-valido'})
+        return jsonify({'mensaje': _('Tipo-de-carga-no-valido')})
     if 'carga' not in request.files:
-        return jsonify({'mensaje': 'No-se-recibio-ninguna-carga'})
+        return jsonify({'mensaje': _('No-se-recibio-ninguna-carga')})
 
     contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
     return jsonify(contenido)
