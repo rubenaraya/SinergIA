@@ -101,7 +101,7 @@ class ServidorApi:
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> FastAPI:
         from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
+        mi.dir_frontend = (Path(_F.obtener_ruta_raiz()) / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None
@@ -347,7 +347,7 @@ class ComunicadorWeb(_Comunicador):
             'base': str(request.base_url).strip('/'),
             'relativa': request.url.path,
         }
-        mi.contexto['config_web']['acepta'] = request.headers.get('accept', '')
+        mi.contexto['web']['acepta'] = request.headers.get('accept', '')
         await mi._recibir_datos(request)
 
 

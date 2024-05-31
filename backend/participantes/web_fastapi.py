@@ -101,7 +101,7 @@ async def get_login(request:Request):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idiomas, sesion)
     return comunicador.transformar_contenido(
-        comunicador.traspasar_contexto(),
+        comunicador.transferir_contexto(),
         plantilla='login.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
@@ -159,7 +159,7 @@ async def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 async def get_cargar(request:Request, tipo:str):
     await comunicador.procesar_peticion(request, 'es')
     return comunicador.transformar_contenido(
-        comunicador.traspasar_contexto(),
+        comunicador.transferir_contexto(),
         plantilla='cargar.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )

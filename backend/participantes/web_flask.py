@@ -95,7 +95,7 @@ def get_login():
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
     respuesta = comunicador.transformar_contenido(
-        comunicador.traspasar_contexto(),
+        comunicador.transferir_contexto(),
         plantilla='login.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )
@@ -161,7 +161,7 @@ def html(query:PeticionBuscarParticipantes):
 def get_cargar(tipo):
     comunicador.procesar_peticion('es')
     return comunicador.transformar_contenido(
-        comunicador.traspasar_contexto(),
+        comunicador.transferir_contexto(),
         plantilla='cargar.html',
         directorio=f'{configuracion.ruta_servicio}/plantillas'
     )

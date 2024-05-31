@@ -29,7 +29,7 @@ class ControladorParticipantes(Controlador):
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         respuesta = RespuestaResultado(**resultado).diccionario()
-        respuesta.update(mi.comunicador.traspasar_contexto())
+        respuesta.update(mi.comunicador.transferir_contexto())
         formato = mi.comunicador.determinar_formato(formato)
         archivo = Funciones.atributos_archivo(formato=formato)
         nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)

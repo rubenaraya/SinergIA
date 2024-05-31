@@ -221,7 +221,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traspasar_contexto(mi) -> dict:
+    def transferir_contexto(mi) -> dict:
         ...
 
     @abstractmethod
@@ -454,7 +454,7 @@ class Controlador:
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
         mi.comunicador:I_Comunicador = comunicador
-        contexto = mi.comunicador.traspasar_contexto()
+        contexto = mi.comunicador.transferir_contexto()
         sesion = contexto.get('sesion')
         mi.sesion:dict = sesion or {}
 

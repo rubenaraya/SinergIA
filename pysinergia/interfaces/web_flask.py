@@ -101,7 +101,7 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> Flask:
-        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
+        mi.dir_frontend = (Path(_F.obtener_ruta_raiz()) / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         api = Flask(__name__,
             static_url_path=f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}",
@@ -339,7 +339,7 @@ class ComunicadorWeb(_Comunicador):
             'base': str(request.url_root).strip('/'),
             'relativa': request.path,
         }
-        mi.contexto['config_web']['acepta'] = request.headers.get('accept', '')
+        mi.contexto['web']['acepta'] = request.headers.get('accept', '')
         mi._recibir_datos()
 
 

@@ -61,10 +61,10 @@ class Comunicador(_I_Comunicador):
         global api_motor
         mi._asignar_idioma(idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
-        mi.contexto['config_web'] = mi.config_web
-        mi.contexto['config_web']['idioma'] = mi.idioma
-        mi.contexto['config_web']['api_motor'] = api_motor
-        mi.contexto['config_web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
+        mi.contexto['web'] = mi.config_web
+        mi.contexto['web']['idioma'] = mi.idioma
+        mi.contexto['web']['api_motor'] = api_motor
+        mi.contexto['web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
         mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config_web.get('zona_horaria'))
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
@@ -136,7 +136,7 @@ class Comunicador(_I_Comunicador):
         opciones['ruta_plantillas'] = ruta_plantillas
         return (plantilla, ruta_plantillas)
 
-    def traspasar_contexto(mi) -> dict:
+    def transferir_contexto(mi) -> dict:
         return mi.contexto
 
     def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:
@@ -172,7 +172,7 @@ class Comunicador(_I_Comunicador):
     def determinar_formato(mi, formato:str=None) -> str:
         if formato:
             return formato
-        config_web:dict = mi.contexto.get('config_web')
+        config_web:dict = mi.contexto.get('web')
         if config_web:
             acepta = config_web.get('acepta', '')
             if 'application/json' in acepta:

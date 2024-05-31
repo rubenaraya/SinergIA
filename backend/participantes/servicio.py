@@ -79,7 +79,7 @@ class ServicioParticipantes(Servicio):
     def _buscar_participantes(mi, peticion:dict):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
         resultado = mi.operador.recuperar_lista_participantes_todos()
-        opciones = mi.establecer_opciones({
+        opciones = mi.adjuntar_opciones({
             'nombre_archivo': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
             'carpeta_guardar': 'creados'
