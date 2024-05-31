@@ -211,15 +211,6 @@ class Funciones:
         return Constantes.SALIDA.ERROR
 
     @staticmethod
-    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
-        return dict({
-            'codigo': str(codigo),
-            'tipo': tipo,
-            'mensaje': mensaje,
-            'detalles': detalles
-        })
-
-    @staticmethod
     def atributos_archivo(formato:str=None, tipo_mime:str=None):
         class Portador:
             def __init__(mi, formato:str, extension:str, tipo_mime:str):
@@ -261,6 +252,84 @@ class Funciones:
             Constantes.FORMATO.TEXTO: _texto,
         }
         return formatos.get(formato)()
+
+    @staticmethod
+    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
+        return dict({
+            'codigo': str(codigo),
+            'tipo': tipo,
+            'mensaje': mensaje,
+            'detalles': detalles
+        })
+
+
+# --------------------------------------------------
+# Clase: ErrorPersonalizado
+# --------------------------------------------------
+class Traductor:
+    def __init__():
+        ...
+
+"""
+    ServidorApi:
+    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', dir_locales:str='./locales'):
+        import gettext
+        idioma = negociar_idioma(idiomas_aceptados, idiomas_disponibles)
+        t = gettext.translation(
+            domain=traduccion,
+            localedir=dir_locales,
+            languages=[idioma],
+            fallback=False,
+        )
+        return t.gettext
+
+    Comunicador:
+    def traspasar_traductor(mi):
+        if mi.traductor:
+            return mi.traductor.gettext
+        return None
+
+    def traducir_textos(mi, info:dict={}) -> dict:
+        if info:
+            seleccion = ['mensaje','error','titulo','descripcion','nombre']
+            for clave, valor in info.items():
+                if clave in seleccion:
+                    info[clave] = mi.traductor.gettext(valor)
+        return info
+
+    def _asignar_idioma(mi, idiomas_aceptados:str):
+        import gettext
+        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config_web.get('idiomas'))
+        try:
+            mi.traductor = gettext.translation(
+                domain=mi.config_web.get('traduccion'),
+                localedir=mi.config_web.get('dir_locales'),
+                languages=[mi.idioma],
+                fallback=False,
+            )
+        except Exception as e:
+            raise e
+
+def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
+    if not idiomas_aceptados:
+        idiomas_aceptados = ''
+    idiomas = idiomas_aceptados.split(',')
+    lista_idiomas = []
+    for idioma in idiomas:
+        partes = idioma.split(';')
+        codigo = partes[0].split('-')[0].strip()
+        q = 1.0
+        if len(partes) > 1 and partes[1].startswith('q='):
+            q = float(partes[1].split('=')[1])
+        lista_idiomas.append((codigo, q))
+    idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
+    idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
+    for idioma_preferido in idiomas_preferidos:
+        if idioma_preferido in idiomas_disponibles:
+            return idioma_preferido
+    return idiomas_disponibles[0]
+
+"""
 
 
 # --------------------------------------------------

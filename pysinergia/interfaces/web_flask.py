@@ -315,34 +315,41 @@ class ComunicadorWeb(_Comunicador):
     # --------------------------------------------------
     # Métodos privados
 
-    def _recibir_datos(mi):
-        mi.peticion = {}
+    def _recibir_peticion(mi) -> dict:
+        peticion = {}
         if request.form:
             for key in request.form:
                 if request.files and key in request.files:
                     continue
-                mi.peticion[key] = request.form.getlist(key) if len(request.form.getlist(key)) > 1 else request.form[key]
+                peticion[key] = request.form.getlist(key) if len(request.form.getlist(key)) > 1 else request.form[key]
         if request.is_json:
             json = request.get_json(silent=True) or {}
             for key, value in json.items():
-                mi.peticion[key] = value
+                peticion[key] = value
         if request.args:
             for key in request.args:
-                mi.peticion[key] = request.args.getlist(key) if len(request.args.getlist(key)) > 1 else request.args[key]
-        mi.contexto['peticion'] = mi.peticion
+                peticion[key] = request.args.getlist(key) if len(request.args.getlist(key)) > 1 else request.args[key]
+        return peticion
 
     # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         super().procesar_peticion(idiomas_aceptados, sesion)
+        from urllib.parse import urlparse
+        url_actual = str(request.base_url)
+        url_analizada = urlparse(url_actual)
+        raiz_api = mi.config_web.get('raiz_api')
+        dir_frontend = mi.config_web.get('frontend')
         mi.contexto['url'] = {
-            'absoluta': request.base_url,
-            'base': str(request.url_root).strip('/'),
-            'relativa': request.path,
+            'absoluta': url_actual,
+            'relativa': url_analizada.path,
+            'app': str(request.url_root).strip('/'),
+            'puntofinal': request.path,
+            'frontend': f'{raiz_api}/{dir_frontend}',
         }
         mi.contexto['web']['acepta'] = request.headers.get('accept', '')
-        mi._recibir_datos()
+        mi.contexto['peticion'] = mi._recibir_peticion()
 
 
 # --------------------------------------------------

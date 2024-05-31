@@ -30,7 +30,6 @@ class Comunicador(_I_Comunicador):
         mi.traductor = None
         mi.contexto:dict = {}
         mi.disco:_I_Disco = mi._conectar_disco(config_disco)
-        mi.peticion:dict = {}
 
     # --------------------------------------------------
     # Métodos privados
@@ -66,6 +65,7 @@ class Comunicador(_I_Comunicador):
         mi.contexto['web']['api_motor'] = api_motor
         mi.contexto['web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
         mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config_web.get('zona_horaria'))
+        mi.contexto['peticion'] = {}
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -164,11 +164,6 @@ class Comunicador(_I_Comunicador):
                 portador.ruta = ruta
         return portador
 
-    def traspasar_traductor(mi):
-        if mi.traductor:
-            return mi.traductor.gettext
-        return None
-
     def determinar_formato(mi, formato:str=None) -> str:
         if formato:
             return formato
@@ -178,6 +173,13 @@ class Comunicador(_I_Comunicador):
             if 'application/json' in acepta:
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
+
+    # --------------------------------------------------
+
+    def traspasar_traductor(mi):
+        if mi.traductor:
+            return mi.traductor.gettext
+        return None
 
     def traducir_textos(mi, info:dict={}) -> dict:
         if info:

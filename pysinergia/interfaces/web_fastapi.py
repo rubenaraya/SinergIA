@@ -309,48 +309,55 @@ class ComunicadorWeb(_Comunicador):
     # --------------------------------------------------
     # Métodos privados
 
-    async def _recibir_datos(mi, request:Request):
-        mi.peticion = {}
+    async def _recibir_peticion(mi, request:Request) -> dict:
+        peticion = {}
         form_data = await request.form()
         for key, value in form_data.multi_items():
             if hasattr(value, 'file'):
                 continue
-            if key in mi.peticion:
-                mi.peticion[key].append(value)
+            if key in peticion:
+                peticion[key].append(value)
             else:
-                mi.peticion[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
+                peticion[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
         try:
             json_data = await request.json()
             for key, value in json_data.items():
-                if key in mi.peticion:
-                    if not isinstance(mi.peticion[key], list):
-                        mi.peticion[key] = [mi.peticion[key]]
-                    mi.peticion[key].append(value)
+                if key in peticion:
+                    if not isinstance(peticion[key], list):
+                        peticion[key] = [peticion[key]]
+                    peticion[key].append(value)
                 else:
-                    mi.peticion[key] = value
+                    peticion[key] = value
         except Exception:
             pass
         for key, value in request.query_params.multi_items():
-            if key in mi.peticion:
-                if not isinstance(mi.peticion[key], list):
-                    mi.peticion[key] = [mi.peticion[key]]
-                mi.peticion[key].append(value)
+            if key in peticion:
+                if not isinstance(peticion[key], list):
+                    peticion[key] = [peticion[key]]
+                peticion[key].append(value)
             else:
-                mi.peticion[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
-        mi.contexto['peticion'] = mi.peticion
+                peticion[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
+        return peticion
 
     # --------------------------------------------------
     # Métodos públicos
 
     async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
         super().procesar_peticion(idiomas_aceptados, sesion)
+        from urllib.parse import urlparse
+        url_actual = str(request.url)
+        url_analizada = urlparse(url_actual)
+        raiz_api = mi.config_web.get('raiz_api')
+        dir_frontend = mi.config_web.get('frontend')
         mi.contexto['url'] = {
-            'absoluta': str(request.url).split('?')[0],
-            'base': str(request.base_url).strip('/'),
-            'relativa': request.url.path,
+            'absoluta': url_actual.split('?')[0],
+            'relativa': url_analizada.path,
+            'app': str(request.base_url).strip('/'),
+            'puntofinal': request.url.path,
+            'frontend': f'{raiz_api}/{dir_frontend}',
         }
         mi.contexto['web']['acepta'] = request.headers.get('accept', '')
-        await mi._recibir_datos(request)
+        mi.contexto['peticion'] = await mi._recibir_peticion(request)
 
 
 # --------------------------------------------------
