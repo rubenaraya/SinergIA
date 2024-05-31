@@ -19,7 +19,7 @@ from .adaptadores import (
 # Configuración del Servicio personalizado
 aplicacion = 'prueba'
 configuracion = cargar_configuracion(ConfigServicio, __name__, aplicacion, None)
-comunicador = ComunicadorWeb(configuracion.contexto(), configuracion.disco())
+comunicador = ComunicadorWeb(configuracion.web(), configuracion.disco())
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
     url_login=f'/{configuracion.app_web}/{aplicacion}/login'

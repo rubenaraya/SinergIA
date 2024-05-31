@@ -347,7 +347,7 @@ class ComunicadorWeb(_Comunicador):
             'base': str(request.base_url).strip('/'),
             'relativa': request.url.path,
         }
-        mi.contexto['config']['acepta'] = request.headers.get('accept', '')
+        mi.contexto['config_web']['acepta'] = request.headers.get('accept', '')
         await mi._recibir_datos(request)
 
 

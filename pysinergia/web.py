@@ -24,8 +24,8 @@ from pysinergia import __version__ as api_motor
 # --------------------------------------------------
 class Comunicador(_I_Comunicador):
 
-    def __init__(mi, config_contexto:dict, config_disco:dict):
-        mi.config:dict = config_contexto or {}
+    def __init__(mi, config_web:dict, config_disco:dict):
+        mi.config_web:dict = config_web or {}
         mi.idioma = None
         mi.traductor = None
         mi.contexto:dict = {}
@@ -43,11 +43,11 @@ class Comunicador(_I_Comunicador):
 
     def _asignar_idioma(mi, idiomas_aceptados:str):
         import gettext
-        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config.get('idiomas'))
+        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config_web.get('idiomas'))
         try:
             mi.traductor = gettext.translation(
-                domain=mi.config.get('traduccion'),
-                localedir=mi.config.get('dir_locales'),
+                domain=mi.config_web.get('traduccion'),
+                localedir=mi.config_web.get('dir_locales'),
                 languages=[mi.idioma],
                 fallback=False,
             )
@@ -61,11 +61,11 @@ class Comunicador(_I_Comunicador):
         global api_motor
         mi._asignar_idioma(idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
-        mi.contexto['config'] = mi.config
-        mi.contexto['config']['idioma'] = mi.idioma
-        mi.contexto['config']['api_motor'] = api_motor
-        mi.contexto['config']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
-        mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config.get('zona_horaria'))
+        mi.contexto['config_web'] = mi.config_web
+        mi.contexto['config_web']['idioma'] = mi.idioma
+        mi.contexto['config_web']['api_motor'] = api_motor
+        mi.contexto['config_web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
+        mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config_web.get('zona_horaria'))
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -100,7 +100,7 @@ class Comunicador(_I_Comunicador):
                     modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
                     clase = f'Exportador{str(formato).capitalize()}'
                     componente = getattr(importlib.import_module(modulo), clase)
-                    exportador:Exportador = componente(mi.config)
+                    exportador:Exportador = componente(mi.config_web)
                     resultado = exportador.generar(contenido=contenido, opciones=opciones)
                     modo = 'b'
             if guardar:
@@ -125,7 +125,7 @@ class Comunicador(_I_Comunicador):
         plantilla = opciones.get(tipo, '')
         ruta_plantillas = opciones.get('ruta_plantillas', None)
         if not ruta_plantillas:
-            ruta = mi.config.get('ruta_servicio', '.')
+            ruta = mi.config_web.get('ruta_servicio', '.')
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():
@@ -134,7 +134,7 @@ class Comunicador(_I_Comunicador):
                     ruta_plantillas = ''
                     plantilla = ''
         opciones['ruta_plantillas'] = ruta_plantillas
-        return plantilla, ruta_plantillas
+        return (plantilla, ruta_plantillas)
 
     def traspasar_contexto(mi) -> dict:
         return mi.contexto
@@ -172,20 +172,20 @@ class Comunicador(_I_Comunicador):
     def determinar_formato(mi, formato:str=None) -> str:
         if formato:
             return formato
-        config:dict = mi.contexto.get('config')
-        if config:
-            acepta = config.get('acepta', '')
+        config_web:dict = mi.contexto.get('config_web')
+        if config_web:
+            acepta = config_web.get('acepta', '')
             if 'application/json' in acepta:
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
 
-    def traducir_textos(mi, informacion:dict={}) -> dict:
-        if informacion:
+    def traducir_textos(mi, info:dict={}) -> dict:
+        if info:
             seleccion = ['mensaje','error','titulo','descripcion','nombre']
-            for clave, valor in informacion.items():
+            for clave, valor in info.items():
                 if clave in seleccion:
-                    informacion[clave] = mi.traductor.gettext(valor)
-        return informacion
+                    info[clave] = mi.traductor.gettext(valor)
+        return info
 
 
 # --------------------------------------------------

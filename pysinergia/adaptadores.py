@@ -229,7 +229,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traducir_textos(mi, informacion:dict={}) -> dict:
+    def traducir_textos(mi, info:dict={}) -> dict:
         ...
 
 # --------------------------------------------------
@@ -342,7 +342,7 @@ class Configuracion(BaseSettings):
             'url': mi.spi_url,
             'apikey': mi.spi_apikey,
         })
-    def reconocer_servicio(mi, ruta_archivo:str, aplicacion:str):
+    def iniciar(mi, ruta_archivo:str, aplicacion:str):
         import os
         mi.ruta_servicio = Path(ruta_archivo).parent.as_posix()
         if mi.ruta_servicio:
@@ -352,7 +352,7 @@ class Configuracion(BaseSettings):
             mi.app_web = os.getenv('APP_WEB', '')
             mi.raiz_api = os.getenv('RAIZ_API', '')
             mi.frontend = os.getenv('ALIAS_FRONTEND', '')
-    def contexto(mi) -> Dict:
+    def web(mi) -> Dict:
         return {
             'aplicacion': mi.aplicacion,
             'servicio': mi.servicio,
@@ -379,11 +379,11 @@ class Configuracion(BaseSettings):
 # Clase: Exportador
 # --------------------------------------------------
 class Exportador:
-    def __init__(mi, config:dict):
-        mi.config:dict = config or {}
+    def __init__(mi, config_web:dict):
+        mi.config_web:dict = config_web or {}
 
     def obtener_ruta(mi):
-        ruta_temp = mi.config.get('ruta_temp', '')
+        ruta_temp = mi.config_web.get('ruta_temp', '')
         ruta = Path(ruta_temp) / 'archivos'
         ruta = ruta.resolve()
         if not ruta.exists():
@@ -466,6 +466,6 @@ class Controlador:
 def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
     archivo_env = _Funciones.obtener_ruta_env(paquete, entorno)
     configuracion:Configuracion = modelo(_env_file=archivo_env)
-    configuracion.reconocer_servicio(archivo_env, aplicacion)
+    configuracion.iniciar(archivo_env, aplicacion)
     return configuracion
 

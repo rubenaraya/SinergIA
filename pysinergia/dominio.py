@@ -68,7 +68,7 @@ class RespuestaResultado(ModeloRespuesta):
     esquemas: dict | None = {}
     opciones: dict | None = {}
 
-    def asignar_contexto(mi, estado:int, mensaje:str=''):
+    def asignar_datos(mi, estado:int, mensaje:str=''):
         mi.codigo = estado
         mi.tipo = _Funciones.tipo_salida(estado)
         if mensaje:

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ config.idioma }}">
+<html lang="{{ config_web.idioma }}">
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -11,12 +11,12 @@
 </head>
 <body>
 <p>
-    <img src="/api/{{config.frontend}}/{{config.aplicacion}}/img/icon-128x128.png" alt="">
+    <img src="/api/{{config_web.frontend}}/{{config_web.aplicacion}}/img/icon-128x128.png" alt="">
 
-    <div>idioma: {{ config.idioma }}</div>
+    <div>idioma: {{ config_web.idioma }}</div>
     <div>url: {{ url }}</div>
     <div>sesion: {{ sesion }}</div>
-    <div>config: {{ config }}</div>
+    <div>config_web: {{ config_web }}</div>
 
 </p>
 </body>
