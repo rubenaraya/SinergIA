@@ -9,6 +9,7 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
     Funciones as _Funciones,
+    Traductor as _Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
@@ -24,12 +25,12 @@ from pysinergia import __version__ as api_motor
 # --------------------------------------------------
 class Comunicador(_I_Comunicador):
 
-    def __init__(mi, config_web:dict, config_disco:dict):
+    def __init__(mi, config_web:dict, config_disco:dict, traductor:_Traductor=None):
         mi.config_web:dict = config_web or {}
         mi.idioma = None
-        mi.traductor = None
         mi.contexto:dict = {}
         mi.disco:_I_Disco = mi._conectar_disco(config_disco)
+        mi.traductor = traductor or _Traductor()
 
     # --------------------------------------------------
     # Métodos privados
@@ -40,30 +41,17 @@ class Comunicador(_I_Comunicador):
         componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
         return componente(config_disco)
 
-    def _asignar_idioma(mi, idiomas_aceptados:str):
-        import gettext
-        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config_web.get('idiomas'))
-        try:
-            mi.traductor = gettext.translation(
-                domain=mi.config_web.get('traduccion'),
-                localedir=mi.config_web.get('dir_locales'),
-                languages=[mi.idioma],
-                fallback=False,
-            )
-        except Exception as e:
-            raise e
-
     # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         global api_motor
-        mi._asignar_idioma(idiomas_aceptados)
+        mi.idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['idioma'] = mi.idioma
-        mi.contexto['web']['api_motor'] = api_motor
         mi.contexto['web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
+        mi.contexto['web']['api_motor'] = api_motor
         mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config_web.get('zona_horaria'))
         mi.contexto['peticion'] = {}
 
@@ -75,8 +63,8 @@ class Comunicador(_I_Comunicador):
                 cargador = FileSystemLoader(directorio)
                 entorno = Environment(loader=cargador)
                 entorno.add_extension('jinja2.ext.i18n')
-                if mi.traductor:
-                    entorno.install_gettext_translations(mi.traductor, newstyle=True)
+                if mi.traductor.traduccion:
+                    entorno.install_gettext_translations(mi.traductor.traduccion, newstyle=True)
                 template = entorno.get_template(plantilla)
                 resultado = template.render(info)
             return resultado
@@ -174,21 +162,6 @@ class Comunicador(_I_Comunicador):
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
 
-    # --------------------------------------------------
-
-    def traspasar_traductor(mi):
-        if mi.traductor:
-            return mi.traductor.gettext
-        return None
-
-    def traducir_textos(mi, info:dict={}) -> dict:
-        if info:
-            seleccion = ['mensaje','error','titulo','descripcion','nombre']
-            for clave, valor in info.items():
-                if clave in seleccion:
-                    info[clave] = mi.traductor.gettext(valor)
-        return info
-
 
 # --------------------------------------------------
 # Clase: Autenticador
@@ -253,27 +226,4 @@ class Autenticador:
         id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
         return _Json.guardar(datos, archivo)
-
-
-# --------------------------------------------------
-# Funcion: negociar_idioma
-# --------------------------------------------------
-def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
-    if not idiomas_aceptados:
-        idiomas_aceptados = ''
-    idiomas = idiomas_aceptados.split(',')
-    lista_idiomas = []
-    for idioma in idiomas:
-        partes = idioma.split(';')
-        codigo = partes[0].split('-')[0].strip()
-        q = 1.0
-        if len(partes) > 1 and partes[1].startswith('q='):
-            q = float(partes[1].split('=')[1])
-        lista_idiomas.append((codigo, q))
-    idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
-    idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
-    for idioma_preferido in idiomas_preferidos:
-        if idioma_preferido in idiomas_disponibles:
-            return idioma_preferido
-    return idiomas_disponibles[0]
 

@@ -1,6 +1,6 @@
 # pysinergia\__init__.py
 
-import json
+import json, gettext
 from pathlib import Path
 
 # --------------------------------------------------
@@ -264,72 +264,86 @@ class Funciones:
 
 
 # --------------------------------------------------
-# Clase: ErrorPersonalizado
+# Clase: Traductor
 # --------------------------------------------------
 class Traductor:
-    def __init__():
-        ...
+    def __init__(mi, config:dict={}):
+        mi.dominio:str = config.get('dominio', 'base')
+        mi.dir_locales:str = config.get('dir_locales', 'locales')
+        mi.zona_horaria:str = config.get('zona_horaria', '')
+        mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
+        mi.idioma = ''
+        mi.traduccion = None
 
-"""
-    ServidorApi:
-    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', dir_locales:str='./locales'):
-        import gettext
-        idioma = negociar_idioma(idiomas_aceptados, idiomas_disponibles)
-        t = gettext.translation(
-            domain=traduccion,
-            localedir=dir_locales,
-            languages=[idioma],
-            fallback=False,
-        )
-        return t.gettext
+    # --------------------------------------------------
+    # Métodos privados
 
-    Comunicador:
-    def traspasar_traductor(mi):
-        if mi.traductor:
-            return mi.traductor.gettext
-        return None
+    def _negociar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None) -> str:
+        if not idiomas_aceptados:
+            idiomas_aceptados = ''
+        if not idiomas_disponibles:
+            idiomas_disponibles = mi.idiomas_disponibles
+        mi.idiomas_disponibles = idiomas_disponibles
+        idiomas = idiomas_aceptados.split(',')
+        lista_idiomas = []
+        for idioma in idiomas:
+            partes = idioma.split(';')
+            codigo = partes[0].split('-')[0].strip()
+            q = 1.0
+            if len(partes) > 1 and partes[1].startswith('q='):
+                q = float(partes[1].split('=')[1])
+            lista_idiomas.append((codigo, q))
+        idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
+        idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
+        for idioma_preferido in idiomas_preferidos:
+            if idioma_preferido in idiomas_disponibles:
+                mi.idioma = idioma_preferido
+                return idioma_preferido
+        mi.idioma = idiomas_disponibles[0]
+        return mi.idioma
 
-    def traducir_textos(mi, info:dict={}) -> dict:
-        if info:
-            seleccion = ['mensaje','error','titulo','descripcion','nombre']
-            for clave, valor in info.items():
-                if clave in seleccion:
-                    info[clave] = mi.traductor.gettext(valor)
-        return info
+    # --------------------------------------------------
+    # Métodos públicos
 
-    def _asignar_idioma(mi, idiomas_aceptados:str):
-        import gettext
-        mi.idioma = negociar_idioma(idiomas_aceptados, mi.config_web.get('idiomas'))
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+        mi._negociar_idioma(idiomas_aceptados, idiomas_disponibles)
+        if not dominio:
+            dominio = mi.dominio
+        mi.dominio = dominio
+        if not dir_locales:
+            dir_locales = mi.dir_locales
+        mi.dir_locales = dir_locales
         try:
-            mi.traductor = gettext.translation(
-                domain=mi.config_web.get('traduccion'),
-                localedir=mi.config_web.get('dir_locales'),
+            mi.traduccion = gettext.translation(
+                domain=mi.dominio,
+                localedir=mi.dir_locales,
                 languages=[mi.idioma],
                 fallback=False,
             )
         except Exception as e:
             raise e
+        return mi.idioma
 
-def negociar_idioma(idiomas_aceptados:str, idiomas_disponibles:list) -> str:
-    if not idiomas_aceptados:
-        idiomas_aceptados = ''
-    idiomas = idiomas_aceptados.split(',')
-    lista_idiomas = []
-    for idioma in idiomas:
-        partes = idioma.split(';')
-        codigo = partes[0].split('-')[0].strip()
-        q = 1.0
-        if len(partes) > 1 and partes[1].startswith('q='):
-            q = float(partes[1].split('=')[1])
-        lista_idiomas.append((codigo, q))
-    idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
-    idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
-    for idioma_preferido in idiomas_preferidos:
-        if idioma_preferido in idiomas_disponibles:
-            return idioma_preferido
-    return idiomas_disponibles[0]
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> gettext.GNUTranslations:
+        if not mi.traduccion:
+            mi.asignar_idioma(
+                idiomas_aceptados=idiomas_aceptados,
+                idiomas_disponibles=idiomas_disponibles,
+                dominio=dominio,
+                dir_locales=dir_locales
+            )
+        return mi.traduccion.gettext
 
-"""
+    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
+        if info and mi.traduccion:
+            seleccion = ['mensaje','error','titulo','descripcion','nombre']
+            for clave, valor in info.items():
+                if clave in seleccion or clave in claves:
+                    info[clave] = mi.traduccion.gettext(valor)
+        return info
+    
+    def _(mi, texto:str='') -> str:
+        return  mi.traduccion.gettext(texto)
 
 
 # --------------------------------------------------
@@ -366,13 +380,14 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str=''):
+    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', traduccion:str='base'):
         mi.codigo = codigo
         mi.tipo = tipo
         mi.mensaje = mensaje
         mi.detalles = detalles
         mi.aplicacion = aplicacion
         mi.servicio = servicio
+        mi.traduccion = traduccion
         super().__init__(mi.mensaje)
 
     def __str__(mi):

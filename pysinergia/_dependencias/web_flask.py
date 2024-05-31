@@ -21,6 +21,7 @@ from pysinergia import (
     Constantes as C,
     Json,
     ErrorPersonalizado,
+    Traductor,
 )
 from pysinergia.dominio import (
     CargaAudio,

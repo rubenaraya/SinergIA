@@ -25,11 +25,11 @@ from pysinergia import (
     ErrorAutenticacion as _ErrorAutenticacion,
     ErrorDisco as _ErrorDisco,
     RegistradorLogs as _RegistradorLogs,
+    Traductor as _Traductor,
 )
 from pysinergia.web import (
     Comunicador as _Comunicador,
     Autenticador as _Autenticador,
-    negociar_idioma,
 )
 from pysinergia import __version__ as api_motor
 
@@ -86,17 +86,6 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
-    def _traspasar_traductor(mi, idiomas_aceptados:str, idiomas_disponibles:list, traduccion:str='base', dir_locales:str='./locales'):
-        import gettext
-        idioma = negociar_idioma(idiomas_aceptados, idiomas_disponibles)
-        t = gettext.translation(
-            domain=traduccion,
-            localedir=dir_locales,
-            languages=[idioma],
-            fallback=False,
-        )
-        return t.gettext
-
     # --------------------------------------------------
     # Métodos públicos
 
@@ -151,7 +140,7 @@ class ServidorApi:
                 debug=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
             )
 
-    def manejar_errores(mi, api:Flask, dir_logs:str, registro_logs:str, idiomas:list):
+    def manejar_errores(mi, api:Flask, dir_logs:str, registro_logs:str, idiomas_disponibles:list):
         from werkzeug.exceptions import (
             HTTPException,
             InternalServerError,
@@ -160,7 +149,8 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado(exc:_ErrorPersonalizado):
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'dominio': exc.traduccion, 'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
@@ -184,7 +174,8 @@ class ServidorApi:
         def _error_autenticacion(exc:_ErrorAutenticacion):
             if exc.url_login:
                 return redirect(exc.url_login)
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
@@ -199,7 +190,8 @@ class ServidorApi:
 
         @api.errorhandler(_ErrorDisco)
         def _error_disco(exc:_ErrorDisco):
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             salida = _F.crear_salida(
                 codigo=exc.codigo,
                 tipo='ERROR',
@@ -217,7 +209,8 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validacion(exc:ValidationError):
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -243,7 +236,8 @@ class ServidorApi:
 
         @api.errorhandler(HTTPException)
         def _error_http(exc:HTTPException):
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             salida = _F.crear_salida(
                 codigo=exc.code,
                 tipo=_F.tipo_salida(exc.code),
@@ -261,7 +255,8 @@ class ServidorApi:
 
         @api.errorhandler(InternalServerError)
         def _error_interno(exc:InternalServerError):
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             descripcion = ''
             origen = exc.original_exception
             if origen.__doc__:
@@ -285,7 +280,8 @@ class ServidorApi:
         @api.errorhandler(Exception)
         def _error_nomanejado(exc:Exception):
             import sys
-            _ = mi._traspasar_traductor(request.headers.get('Accept-Language'), idiomas)
+            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
             texto = _('Error-no-manejado')
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
@@ -341,13 +337,17 @@ class ComunicadorWeb(_Comunicador):
         url_analizada = urlparse(url_actual)
         raiz_api = mi.config_web.get('raiz_api')
         dir_frontend = mi.config_web.get('frontend')
+        servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         mi.contexto['url'] = {
+            'servidor': servidor,
             'absoluta': url_actual,
             'relativa': url_analizada.path,
             'app': str(request.url_root).strip('/'),
             'puntofinal': request.path,
             'frontend': f'{raiz_api}/{dir_frontend}',
         }
+        mi.contexto['web']['api_marco'] = 'Flask'
+        mi.contexto['web']['dominio'] = url_analizada.hostname
         mi.contexto['web']['acepta'] = request.headers.get('accept', '')
         mi.contexto['peticion'] = mi._recibir_peticion()
 

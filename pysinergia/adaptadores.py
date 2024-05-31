@@ -224,13 +224,6 @@ class I_Comunicador(metaclass=ABCMeta):
     def transferir_contexto(mi) -> dict:
         ...
 
-    @abstractmethod
-    def traspasar_traductor(mi):
-        ...
-
-    @abstractmethod
-    def traducir_textos(mi, info:dict={}) -> dict:
-        ...
 
 # --------------------------------------------------
 # ClaseModelo: Configuracion
@@ -239,10 +232,10 @@ class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
     zona_horaria: str = ''
-    traduccion: str = ''
+    dominio: str = ''
     dir_locales: str = ''
     ruta_temp: str = ''
-    idiomas: list = []
+    idiomas_disponibles: list = []
     api_keys: dict = {}
     secret_key: str = ''
     algoritmo_jwt: str = ''
@@ -356,12 +349,12 @@ class Configuracion(BaseSettings):
         return {
             'aplicacion': mi.aplicacion,
             'servicio': mi.servicio,
-            'traduccion': mi.traduccion,
+            'dominio': mi.dominio,
             'dir_locales': mi.dir_locales,
             'ruta_temp': mi.ruta_temp,
             'ruta_servicio': mi.ruta_servicio,
             'zona_horaria': mi.zona_horaria,
-            'idiomas': mi.idiomas,
+            'idiomas_disponibles': mi.idiomas_disponibles,
             'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend,
@@ -372,6 +365,13 @@ class Configuracion(BaseSettings):
             'secret_key': mi.secret_key,
             'api_keys': mi.api_keys,
             'ruta_temp': mi.ruta_temp,
+        })
+    def traductor(mi) -> Dict:
+        return dict({
+            'dominio': mi.dominio,
+            'dir_locales': mi.dir_locales,
+            'idiomas_disponibles': mi.idiomas_disponibles,
+            'zona_horaria': mi.zona_horaria,
         })
 
 
