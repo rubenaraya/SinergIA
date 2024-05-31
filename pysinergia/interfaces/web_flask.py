@@ -130,8 +130,9 @@ class ServidorApi:
         for directorio in directorios:
             try:
                 nombre_servicio = directorio.name
-                enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
-                api.register_blueprint(getattr(enrutador, 'enrutador'))
+                if (directorio / f'{modulo_base}.py').is_file():
+                    enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
+                    api.register_blueprint(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
                 continue
@@ -315,19 +316,20 @@ class ComunicadorWeb(_Comunicador):
     # Métodos privados
 
     def _recibir_datos(mi):
-        mi.datos = {}
+        mi.peticion = {}
         if request.form:
             for key in request.form:
                 if request.files and key in request.files:
                     continue
-                mi.datos[key] = request.form.getlist(key) if len(request.form.getlist(key)) > 1 else request.form[key]
+                mi.peticion[key] = request.form.getlist(key) if len(request.form.getlist(key)) > 1 else request.form[key]
         if request.is_json:
             json = request.get_json(silent=True) or {}
             for key, value in json.items():
-                mi.datos[key] = value
+                mi.peticion[key] = value
         if request.args:
             for key in request.args:
-                mi.datos[key] = request.args.getlist(key) if len(request.args.getlist(key)) > 1 else request.args[key]
+                mi.peticion[key] = request.args.getlist(key) if len(request.args.getlist(key)) > 1 else request.args[key]
+        mi.contexto['peticion'] = mi.peticion
 
     # --------------------------------------------------
     # Métodos públicos

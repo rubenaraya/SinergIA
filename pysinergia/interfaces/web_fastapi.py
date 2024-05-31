@@ -134,8 +134,9 @@ class ServidorApi:
         for directorio in directorios:
             try:
                 nombre_servicio = directorio.name
-                enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
-                api.include_router(getattr(enrutador, 'enrutador'))
+                if (directorio / f'{modulo_base}.py').is_file():
+                    enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
+                    api.include_router(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
                 continue
@@ -309,33 +310,34 @@ class ComunicadorWeb(_Comunicador):
     # Métodos privados
 
     async def _recibir_datos(mi, request:Request):
-        mi.datos = {}
+        mi.peticion = {}
         form_data = await request.form()
         for key, value in form_data.multi_items():
             if hasattr(value, 'file'):
                 continue
-            if key in mi.datos:
-                mi.datos[key].append(value)
+            if key in mi.peticion:
+                mi.peticion[key].append(value)
             else:
-                mi.datos[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
+                mi.peticion[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
         try:
             json_data = await request.json()
             for key, value in json_data.items():
-                if key in mi.datos:
-                    if not isinstance(mi.datos[key], list):
-                        mi.datos[key] = [mi.datos[key]]
-                    mi.datos[key].append(value)
+                if key in mi.peticion:
+                    if not isinstance(mi.peticion[key], list):
+                        mi.peticion[key] = [mi.peticion[key]]
+                    mi.peticion[key].append(value)
                 else:
-                    mi.datos[key] = value
+                    mi.peticion[key] = value
         except Exception:
             pass
         for key, value in request.query_params.multi_items():
-            if key in mi.datos:
-                if not isinstance(mi.datos[key], list):
-                    mi.datos[key] = [mi.datos[key]]
-                mi.datos[key].append(value)
+            if key in mi.peticion:
+                if not isinstance(mi.peticion[key], list):
+                    mi.peticion[key] = [mi.peticion[key]]
+                mi.peticion[key].append(value)
             else:
-                mi.datos[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
+                mi.peticion[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
+        mi.contexto['peticion'] = mi.peticion
 
     # --------------------------------------------------
     # Métodos públicos

@@ -11,12 +11,15 @@
 </head>
 <body>
 
-<form action="{{ url.relativa }}" method="post" enctype="multipart/form-data">
+<form action="{{ url.absoluta }}" method="post" enctype="multipart/form-data">
     <div><input type="file" name="carga"></div>
     <div><input type="text" name="texto" value="Texto en formulario"></div>
     <div><input type="text" name="otro" value="Otro texto"></div>
     <div><button type="submit">Cargar</button></div>
 </form>
+<div>url: {{ url }}</div>
+<div>web: {{ web }}</div>
+<div>peticion: {{ peticion }}</div>
 
 </body>
 </html>

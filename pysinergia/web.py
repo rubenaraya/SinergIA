@@ -30,7 +30,7 @@ class Comunicador(_I_Comunicador):
         mi.traductor = None
         mi.contexto:dict = {}
         mi.disco:_I_Disco = mi._conectar_disco(config_disco)
-        mi.datos:dict = {}
+        mi.peticion:dict = {}
 
     # --------------------------------------------------
     # Métodos privados

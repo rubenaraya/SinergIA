@@ -172,7 +172,7 @@ def post_cargar(tipo):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idiomas, sesion)
 
-    print(str(comunicador.datos))
+    print(str(comunicador.peticion))
 
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)

@@ -170,7 +170,7 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     idiomas = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idiomas, sesion)
 
-    print(str(comunicador.datos))
+    print(str(comunicador.peticion))
  
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
