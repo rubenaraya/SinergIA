@@ -28,11 +28,11 @@ class ControladorParticipantes(Controlador):
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
+        resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
             titulo='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()
         ).diccionario()
-        respuesta.update(mi.comunicador.transferir_contexto())
         formato = mi.comunicador.determinar_formato(formato)
         archivo = Funciones.atributos_archivo(formato=formato)
         nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)

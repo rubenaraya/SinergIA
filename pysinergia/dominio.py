@@ -59,24 +59,27 @@ class ModeloRespuesta(BaseModel):
     idioma:str = ''
     detalles: list = []
     resultado: dict | None = {}
+    sesion: dict | None = {}
+    fecha: dict | None = {}
+    url: dict | None = {}
 
     @model_validator(mode='after')
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
         if valores.T:
+            from collections import ChainMap
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
             valores.hora_actual = fechahora.get('hora')
             valores.idioma = valores.T.idioma
             _:gettext.GNUTranslations = valores.T.abrir_traduccion()
-            valores.mensaje = _(valores.mensaje) if valores.mensaje else ''
-            valores.titulo = _(valores.titulo) if valores.titulo else ''
-            valores.descripcion = _(valores.descripcion) if valores.descripcion else ''
-            if valores.resultado:
-                for clave, valor in valores.resultado.items():
-                    valores.mensaje = valores.mensaje.replace('{' + clave + '}', str(valor))
-                    valores.titulo = valores.titulo.replace('{' + clave + '}', str(valor))
-                    valores.descripcion = valores.descripcion.replace('{' + clave + '}', str(valor))
+            datos = ChainMap(cls._filtrar_diccionario(valores.resultado), valores.sesion, valores.url, valores.fecha)
+            valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
+            valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
+            valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
         return valores
+
+    def _filtrar_diccionario(diccionario:dict):
+        return {k: v for k, v in diccionario.items() if isinstance(v, (str, int, float, bool))}
 
     def diccionario(mi) -> Dict:
         mi.T = None
