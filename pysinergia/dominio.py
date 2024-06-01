@@ -61,6 +61,7 @@ class ModeloRespuesta(BaseModel):
     opciones: dict | None = {}
 
     @model_validator(mode='after')
+    @classmethod
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
         from collections import ChainMap
 
@@ -124,12 +125,15 @@ class CargaArchivo(BaseModel):
     SOBREESCRIBIR: str = 'SOBREESCRIBIR'
     RENOMBRAR: str = 'RENOMBRAR'
 
-    def tipos_permitidos() -> List[str]:
+    @classmethod
+    def tipos_permitidos(cls) -> List[str]:
         ...
-    def peso_maximo() -> int:
+    @classmethod
+    def peso_maximo(cls) -> int:
         ...
 
     @model_validator(mode='after')
+    @classmethod
     def validate_model(cls, valores:Self) -> 'CargaArchivo':
         origen = valores.origen
         if not origen:
@@ -171,13 +175,15 @@ class CargaImagen(CargaArchivo):
     ancho: Optional[int] = 0
     altura: Optional[int] = 0
 
-    def tipos_permitidos() -> List[str]:
+    @classmethod
+    def tipos_permitidos(cls) -> List[str]:
         return [
             _Constantes.MIME.JPG,
             _Constantes.MIME.JPEG,
             _Constantes.MIME.PNG,
         ]
-    def peso_maximo() -> int:
+    @classmethod
+    def peso_maximo(cls) -> int:
         return 5 * 1024 * 1024
 
 # --------------------------------------------------
@@ -186,7 +192,8 @@ class CargaImagen(CargaArchivo):
 class CargaDocumento(CargaArchivo):
     carpeta: Optional[str] = 'documentos'
 
-    def tipos_permitidos() -> List[str]:
+    @classmethod
+    def tipos_permitidos(cls) -> List[str]:
         return [
             _Constantes.MIME.DOCX,
             _Constantes.MIME.DOC,
@@ -197,7 +204,8 @@ class CargaDocumento(CargaArchivo):
             _Constantes.MIME.PDF,
             _Constantes.MIME.CSV,
         ]
-    def peso_maximo() -> int:
+    @classmethod
+    def peso_maximo(cls) -> int:
         return 2 * 1024 * 1024
 
 # --------------------------------------------------
@@ -206,7 +214,8 @@ class CargaDocumento(CargaArchivo):
 class CargaAudio(CargaArchivo):
     carpeta: Optional[str] = 'audios'
 
-    def tipos_permitidos() -> List[str]:
+    @classmethod
+    def tipos_permitidos(cls) -> List[str]:
         return [
             _Constantes.MIME.MP3,
             _Constantes.MIME.WAV,
@@ -215,7 +224,8 @@ class CargaAudio(CargaArchivo):
             _Constantes.MIME.WMA,
             _Constantes.MIME.WEBA,
         ]
-    def peso_maximo() -> int:
+    @classmethod
+    def peso_maximo(cls) -> int:
         return 25 * 1024 * 1024
 
 # --------------------------------------------------
@@ -223,13 +233,15 @@ class CargaAudio(CargaArchivo):
 # --------------------------------------------------
 class CargaVideo(CargaArchivo):
     carpeta: Optional[str] = 'videos'
-    def tipos_permitidos() -> List[str]:
+    @classmethod
+    def tipos_permitidos(cls) -> List[str]:
         return [
             _Constantes.MIME.MP4,
             _Constantes.MIME.WEBM,
             _Constantes.MIME.WMV,
         ]
-    def peso_maximo() -> int:
+    @classmethod
+    def peso_maximo(cls) -> int:
         return 25 * 1024 * 1024
 
 # --------------------------------------------------
