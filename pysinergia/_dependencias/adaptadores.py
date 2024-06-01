@@ -10,9 +10,9 @@ from pysinergia import (
 )
 from pysinergia.dominio import (
     ModeloPeticion,
+    ModeloRespuesta,
     RespuestaResultado,
     CargaArchivo,
-    ModeloRespuesta,
 )
 from pysinergia.adaptadores import (
     Controlador,

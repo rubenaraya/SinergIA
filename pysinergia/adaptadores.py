@@ -4,7 +4,6 @@ from abc import (ABCMeta, abstractmethod)
 from typing import (Dict, List, BinaryIO, TextIO)
 from functools import lru_cache
 from pathlib import Path
-import gettext
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -18,6 +17,7 @@ from pydantic_settings import (
 from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
+    Traductor as _Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
@@ -226,7 +226,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traspasar_traduccion(mi) -> gettext.GNUTranslations:
+    def traspasar_traductor(mi) -> _Traductor:
         ...
 
 

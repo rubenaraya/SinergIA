@@ -59,7 +59,7 @@ msgstr "Error en exportador CSV"
 
 #: web.py:1
 msgid "El-archivo-ya-existe"
-msgstr "Ya existe un archivo con ese nombre"
+msgstr "Ya existe un archivo llamado {nombre}"
 
 #: web.py:2
 msgid "Error-al-guardar-el-archivo"

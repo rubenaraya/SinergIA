@@ -23,7 +23,7 @@ ubicacion_enrutadores = 'backend'
 alias_frontend = 'web'
 dir_frontend = 'frontend'
 dir_logs = 'logs'
-registro_logs = 'api_demo'
+archivo_logs = 'api_demo'
 idiomas_disponibles = ['es','en']
 origenes_cors = ['*']
 
@@ -39,5 +39,5 @@ else:
 servidor = ServidorApi(app_web, raiz_api)
 api = servidor.crear_api(dir_frontend, alias_frontend, origenes_cors, titulo, descripcion, version, doc=False, entorno=entorno)
 servidor.mapear_enrutadores(api, ubicacion_enrutadores)
-servidor.manejar_errores(api, dir_logs, registro_logs, idiomas_disponibles)
+servidor.manejar_errores(api, dir_logs, archivo_logs, idiomas_disponibles)
 

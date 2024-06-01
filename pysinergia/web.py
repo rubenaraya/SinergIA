@@ -1,6 +1,6 @@
 # pysinergia\web.py
 
-import time, jwt, importlib, gettext
+import time, jwt, importlib
 from pathlib import Path
 
 # --------------------------------------------------
@@ -166,9 +166,9 @@ class Comunicador(_I_Comunicador):
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
 
-    def traspasar_traduccion(mi) -> gettext.GNUTranslations:
+    def traspasar_traductor(mi) -> _Traductor:
         if mi.traductor:
-            return mi.traductor.abrir_traduccion()
+            return mi.traductor
         return None
 
 

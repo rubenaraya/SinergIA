@@ -143,7 +143,7 @@ class ServidorApi:
                 reload=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
             )
 
-    def manejar_errores(mi, api:FastAPI, dir_logs:str, registro_logs:str, idiomas_disponibles:list):
+    def manejar_errores(mi, api:FastAPI, dir_logs:str, archivo_logs:str, idiomas_disponibles:list):
         from fastapi.exceptions import (
             RequestValidationError,
             HTTPException,
@@ -153,15 +153,16 @@ class ServidorApi:
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado(request:Request, exc:_ErrorPersonalizado):
             traductor = _Traductor({'dominio': exc.traduccion, 'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
                 mensaje=exc.mensaje,
                 detalles=exc.detalles,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
             if exc.tipo == _C.SALIDA.ERROR:
-                nombre = registro_logs
+                nombre = archivo_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
                 _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'{dir_logs}/{nombre}.log').error(
@@ -177,12 +178,13 @@ class ServidorApi:
             if exc.url_login:
                 return RedirectResponse(url=exc.url_login)
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=exc.mensaje,
                 detalles=[],
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
             return JSONResponse(
                 status_code=exc.codigo,
@@ -192,14 +194,15 @@ class ServidorApi:
         @api.exception_handler(_ErrorDisco)
         async def _error_disco(request:Request, exc:_ErrorDisco):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
                 codigo=exc.codigo,
                 tipo='ERROR',
                 mensaje=exc.mensaje,
                 detalles=exc.detalles,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
-            _RegistradorLogs.crear(f'{registro_logs}', 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
+            _RegistradorLogs.crear(f'{archivo_logs}', 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__str__()}'
             )
             return JSONResponse(
@@ -210,6 +213,7 @@ class ServidorApi:
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, exc:ValidationError):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -224,7 +228,7 @@ class ServidorApi:
                 tipo=_C.SALIDA.ALERTA,
                 mensaje='Los-datos-recibidos-son-invalidos',
                 detalles=detalles,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
             return JSONResponse(
                 status_code=_C.ESTADO._422_NO_PROCESABLE,
@@ -234,6 +238,7 @@ class ServidorApi:
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, exc:RequestValidationError):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             errores = exc.errors()
             detalles = []
             for error in errores:
@@ -248,7 +253,7 @@ class ServidorApi:
                 tipo=_C.SALIDA.ALERTA,
                 mensaje='Los-datos-recibidos-no-se-procesaron',
                 detalles=detalles,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
             return JSONResponse(
                 status_code=_C.ESTADO._422_NO_PROCESABLE,
@@ -258,14 +263,15 @@ class ServidorApi:
         @api.exception_handler(HTTPException)
         async def _error_http(request:Request, exc:HTTPException):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
                 codigo=exc.status_code,
                 tipo=_F.tipo_salida(exc.status_code),
                 mensaje=exc.detail,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
             if exc.status_code >= 500:
-                _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
+                _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
                 )
             return JSONResponse(
@@ -277,6 +283,7 @@ class ServidorApi:
         async def _error_nomanejado(request:Request, exc:Exception):
             import sys
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             descripcion = f'<{exception_name}: {exception_value}>'
@@ -285,9 +292,9 @@ class ServidorApi:
                 tipo=_C.SALIDA.ERROR,
                 mensaje='Error-no-manejado',
                 descripcion=descripcion,
-                _=traductor.abrir_traduccion(request.headers.get('Accept-Language'))
+                T=traductor
             ).diccionario()
-            registrador = _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log')
+            registrador = _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log')
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 registrador.error(exc, exc_info=True)
             else:
@@ -342,17 +349,22 @@ class ComunicadorWeb(_Comunicador):
     async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
-        url_actual = str(request.url)
-        url_analizada = urlparse(url_actual)
+        url_analizada = urlparse(str(request.url))
         raiz_api = mi.config_web.get('raiz_api')
         dir_frontend = mi.config_web.get('frontend')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
+        partes = url_analizada.path.lstrip('/').split('/')
+        raiz_api = '/' + partes[0] if len(partes) > 0 else ''
+        aplicacion = '/' + partes[1] if len(partes) > 1 else ''
+        recurso = '/' + '/'.join(partes[2:]) if len(partes) > 2 else '/'
         mi.contexto['url'] = {
             'servidor': servidor,
-            'absoluta': url_actual.split('?')[0],
+            'absoluta': f'{servidor}{url_analizada.path}',
             'relativa': url_analizada.path,
-            'app': str(request.base_url).strip('/'),
-            'puntofinal': request.url.path,
+            'puntoentrada': f'{servidor}{raiz_api}',
+            'puntofinal': f'{aplicacion}{recurso}',
+            'app': f'{raiz_api}{aplicacion}',
+            'recurso': recurso,
             'frontend': f'{raiz_api}/{dir_frontend}',
         }
         mi.contexto['web']['api_marco'] = 'FastAPI'

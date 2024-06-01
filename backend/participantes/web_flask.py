@@ -49,7 +49,7 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, formato=C.FORMATO.JSON)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
@@ -170,13 +170,14 @@ def get_cargar(tipo):
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
+        codigo = C.ESTADO._415_NO_SOPORTADO
         salida = ModeloRespuesta(
-            codigo=C.ESTADO._415_NO_SOPORTADO,
+            codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
-            _=comunicador.traspasar_traduccion()
+            T=comunicador.traspasar_traductor()
         ).diccionario()
-        return jsonify(salida)
+        return Response(response=Json.codificar(salida), status=codigo, mimetype=C.MIME.JSON)
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -198,7 +199,7 @@ def post_cargar(tipo):
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
-            _=comunicador.traspasar_traduccion()
+            T=comunicador.traspasar_traductor()
         ).diccionario()
     elif 'carga' not in request.files:
         codigo = C.ESTADO._422_NO_PROCESABLE
@@ -206,7 +207,7 @@ def post_cargar(tipo):
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='No-se-recibio-ninguna-carga',
-            _=comunicador.traspasar_traduccion()
+            T=comunicador.traspasar_traductor()
         ).diccionario()
     else:
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))

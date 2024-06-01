@@ -161,17 +161,21 @@ async def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 
 @enrutador.get('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO, response_class=HTMLResponse)
 async def get_cargar(request:Request, tipo:str):
-    await comunicador.procesar_peticion(request, 'es')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
+    await comunicador.procesar_peticion(request, idioma, sesion)
 
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
+        codigo = C.ESTADO._415_NO_SOPORTADO
         salida = ModeloRespuesta(
-            codigo=C.ESTADO._415_NO_SOPORTADO,
+            codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
-            _=comunicador.traspasar_traduccion())
-        return JSONResponse(salida.diccionario())
+            T=comunicador.traspasar_traductor()
+        ).diccionario()
+        return JSONResponse(salida, status_code=codigo)
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -193,7 +197,8 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
-            _=comunicador.traspasar_traduccion()).diccionario()
+            T=comunicador.traspasar_traductor()
+        ).diccionario()
     else:
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
         codigo = contenido.get('codigo', C.ESTADO._200_EXITO)

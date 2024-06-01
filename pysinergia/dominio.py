@@ -27,6 +27,7 @@ import gettext
 from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
+    Traductor as _Traductor,
 )
 
 # --------------------------------------------------
@@ -47,29 +48,38 @@ class ModeloPeticion(BaseModel):
 class ModeloRespuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    _:object | None = None
+    T:_Traductor | None = None
     codigo: int | None = _Constantes.ESTADO._200_EXITO
     tipo:str | None = _Constantes.SALIDA.EXITO
     mensaje:str | None = ''
     titulo:str = ''
     descripcion:str = ''
+    fecha_actual:str = ''
+    hora_actual:str = ''
+    idioma:str = ''
     detalles: list = []
 
     @model_validator(mode='after')
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
-        if valores._:
-            _ = valores._
+        if valores.T:
+            _ = valores.T.abrir_traduccion()
             valores.mensaje = _(valores.mensaje) if valores.mensaje else ''
             valores.titulo = _(valores.titulo) if valores.titulo else ''
             valores.descripcion = _(valores.descripcion) if valores.descripcion else ''
+            valores.idioma = valores.T.idioma
+            fechahora = valores.T.fecha_hora()
+            valores.fecha_actual = fechahora.get('fecha')
+            valores.hora_actual = fechahora.get('hora')
         return valores
 
     def diccionario(mi) -> Dict:
-        mi._ = None
-        return mi.model_dump()
+        mi.T = None
+        diccionario = mi.model_dump()
+        diccionario.pop('T')
+        return diccionario
 
     def json(mi) -> str:
-        mi._ = None
+        mi.T = None
         return mi.model_dump_json()
 
     def asignar_datos(mi, codigo:int=None, mensaje:str=None, titulo:str=None, descripcion:str=None):
