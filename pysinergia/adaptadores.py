@@ -4,6 +4,7 @@ from abc import (ABCMeta, abstractmethod)
 from typing import (Dict, List, BinaryIO, TextIO)
 from functools import lru_cache
 from pathlib import Path
+import gettext
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -222,6 +223,10 @@ class I_Comunicador(metaclass=ABCMeta):
 
     @abstractmethod
     def transferir_contexto(mi) -> dict:
+        ...
+
+    @abstractmethod
+    def traspasar_traduccion(mi) -> gettext.GNUTranslations:
         ...
 
 

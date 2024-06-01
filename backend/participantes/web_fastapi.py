@@ -162,6 +162,17 @@ async def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
 @enrutador.get('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO, response_class=HTMLResponse)
 async def get_cargar(request:Request, tipo:str):
     await comunicador.procesar_peticion(request, 'es')
+
+    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    portador_archivo = modelos.get(tipo)
+    if not portador_archivo:
+        salida = ModeloRespuesta(
+            codigo=C.ESTADO._415_NO_SOPORTADO,
+            tipo=C.SALIDA.ALERTA,
+            mensaje='Tipo-de-carga-no-valido',
+            _=comunicador.traspasar_traduccion())
+        return JSONResponse(salida.diccionario())
+
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
@@ -177,8 +188,14 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        contenido = {'mensaje': 'Tipo-de-carga-no-valido'}
+        codigo = C.ESTADO._415_NO_SOPORTADO
+        contenido = ModeloRespuesta(
+            codigo=codigo,
+            tipo=C.SALIDA.ALERTA,
+            mensaje='Tipo-de-carga-no-valido',
+            _=comunicador.traspasar_traduccion()).diccionario()
     else:
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
-    return JSONResponse(contenido)
+        codigo = contenido.get('codigo', C.ESTADO._200_EXITO)
+    return JSONResponse(contenido, status_code=codigo)
 

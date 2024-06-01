@@ -54,10 +54,10 @@ class Constantes:
         _404_NO_ENCONTRADO = 404
         _405_NO_PERMITIDO = 405
         _410_NO_CONTINUADO = 410
-        _413_NO_CARGADO = 413
-        _415_NO_SOPORTADO = 415
-        _422_NO_PROCESABLE = 422
-        _429_NO_ATENDIDO = 429
+        _413_NO_CARGADO = 413 # Request Entity Too Large
+        _415_NO_SOPORTADO = 415 # Unsupported Media Type
+        _422_NO_PROCESABLE = 422 # Unprocessable Entity
+        _429_NO_ATENDIDO = 429 # Too Many Requests
         _500_ERROR = 500
         _503_NO_DISPONIBLE = 503
         _504_NO_RESPONDIDO = 504
@@ -299,7 +299,7 @@ class Traductor:
 
     def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
         if info and mi.traduccion:
-            seleccion = ['mensaje','error','titulo','descripcion','nombre']
+            seleccion = ['mensaje','titulo','descripcion']
             for clave, valor in info.items():
                 if clave in seleccion or clave in claves:
                     info[clave] = mi.traduccion.gettext(valor)

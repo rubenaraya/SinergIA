@@ -40,9 +40,18 @@ class ControladorParticipantes(Controlador):
     def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
         resultado = mi.comunicador.cargar_archivo(peticion)
         if resultado.es_valido:
-            contenido = {'mensaje': 'Archivo-cargado-con-exito', 'archivo': resultado.nombre}
+            contenido = ModeloRespuesta(
+                mensaje='Archivo-cargado-con-exito',
+                descripcion=resultado.nombre,
+                _=mi.comunicador.traspasar_traduccion()
+            ).diccionario()
         else:
-            contenido = {'error': resultado.mensaje_error, 'archivo': resultado.nombre}
+            contenido = ModeloRespuesta(
+                codigo=resultado.codigo,
+                tipo=resultado.resultado,
+                mensaje=resultado.mensaje_error,
+                _=mi.comunicador.traspasar_traduccion()
+            ).diccionario()
         return contenido
 
     def agregar_participante(mi, peticion:ModeloPeticion):

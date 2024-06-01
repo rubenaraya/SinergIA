@@ -170,8 +170,13 @@ def get_cargar(tipo):
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        salida = ModeloSalida(codigo=C.ESTADO._415_NO_SOPORTADO, tipo=C.SALIDA.ALERTA, mensaje='Tipo-de-carga-no-valido')
-        return jsonify(salida.diccionario())
+        salida = ModeloRespuesta(
+            codigo=C.ESTADO._415_NO_SOPORTADO,
+            tipo=C.SALIDA.ALERTA,
+            mensaje='Tipo-de-carga-no-valido',
+            _=comunicador.traspasar_traduccion()
+        ).diccionario()
+        return jsonify(salida)
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -188,13 +193,23 @@ def post_cargar(tipo):
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        estado = C.ESTADO._415_NO_SOPORTADO
-        contenido = ModeloSalida(codigo=estado, tipo=C.SALIDA.ALERTA, mensaje='Tipo-de-carga-no-valido').diccionario()
+        codigo = C.ESTADO._415_NO_SOPORTADO
+        contenido = ModeloRespuesta(
+            codigo=codigo,
+            tipo=C.SALIDA.ALERTA,
+            mensaje='Tipo-de-carga-no-valido',
+            _=comunicador.traspasar_traduccion()
+        ).diccionario()
     elif 'carga' not in request.files:
-        estado = C.ESTADO._422_NO_PROCESABLE
-        contenido = ModeloSalida(codigo=estado, tipo=C.SALIDA.ALERTA, mensaje='No-se-recibio-ninguna-carga').diccionario()
+        codigo = C.ESTADO._422_NO_PROCESABLE
+        contenido = ModeloRespuesta(
+            codigo=codigo,
+            tipo=C.SALIDA.ALERTA,
+            mensaje='No-se-recibio-ninguna-carga',
+            _=comunicador.traspasar_traduccion()
+        ).diccionario()
     else:
-        estado = C.ESTADO._200_EXITO
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
-    return Response(response=Json.codificar(contenido), status=estado, mimetype=C.MIME.JSON)
+        codigo = contenido.get('codigo', C.ESTADO._200_EXITO)
+    return Response(response=Json.codificar(contenido), status=codigo, mimetype=C.MIME.JSON)
 

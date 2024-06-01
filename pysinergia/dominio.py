@@ -14,11 +14,13 @@ from typing import (
 from enum import Enum
 from pydantic import (
     BaseModel,
+    ConfigDict,
     create_model,
     model_validator,
     field_validator,
     Field,
 )
+import gettext
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -43,15 +45,43 @@ class ModeloPeticion(BaseModel):
 # ClaseModelo: ModeloRespuesta
 # --------------------------------------------------
 class ModeloRespuesta(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    _:object | None = None
     codigo: int | None = _Constantes.ESTADO._200_EXITO
-    tipo: str | None = _Constantes.SALIDA.EXITO
-    mensaje: str | None = ''
+    tipo:str | None = _Constantes.SALIDA.EXITO
+    mensaje:str | None = ''
+    titulo:str = ''
+    descripcion:str = ''
+    detalles: list = []
+
+    @model_validator(mode='after')
+    def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
+        if valores._:
+            _ = valores._
+            valores.mensaje = _(valores.mensaje) if valores.mensaje else ''
+            valores.titulo = _(valores.titulo) if valores.titulo else ''
+            valores.descripcion = _(valores.descripcion) if valores.descripcion else ''
+        return valores
 
     def diccionario(mi) -> Dict:
+        mi._ = None
         return mi.model_dump()
 
     def json(mi) -> str:
+        mi._ = None
         return mi.model_dump_json()
+
+    def asignar_datos(mi, codigo:int=None, mensaje:str=None, titulo:str=None, descripcion:str=None):
+        if codigo:
+            mi.codigo = codigo
+            mi.tipo = _Funciones.tipo_salida(codigo)
+        if mensaje:
+            mi.mensaje = mensaje
+        if titulo:
+            mi.titulo = titulo
+        if descripcion:
+            mi.descripcion = descripcion
 
 # --------------------------------------------------
 # ClaseModelo: RespuestaResultado
@@ -61,21 +91,6 @@ class RespuestaResultado(ModeloRespuesta):
     esquemas: dict | None = {}
     opciones: dict | None = {}
 
-    def asignar_datos(mi, estado:int, mensaje:str=''):
-        mi.codigo = estado
-        mi.tipo = _Funciones.tipo_salida(estado)
-        if mensaje:
-            mi.mensaje = mensaje
-
-# --------------------------------------------------
-# ClaseModelo: RespuestaSalida
-# --------------------------------------------------
-class ModeloSalida(ModeloRespuesta):
-    detalles: list = []
-
-    """
-    Evaluar si se puede integrar la traducción al generar la salida, o agregar una función _() en el modelo para traducir ¿trasladar Comunicador.traducir_textos?
-    """
 
 # --------------------------------------------------
 # ClaseModelo: CargaArchivo
@@ -89,6 +104,8 @@ class CargaArchivo(BaseModel):
     carpeta: Optional[str] = ''
     tipo_mime: Optional[str] = ''
     peso: Optional[int] = 0
+    codigo: Optional[int] = _Constantes.ESTADO._200_EXITO
+    resultado: Optional[str] = _Constantes.SALIDA.EXITO
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
 
@@ -106,14 +123,20 @@ class CargaArchivo(BaseModel):
         origen = valores.origen
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
+            valores.codigo = _Constantes.ESTADO._422_NO_PROCESABLE
+            valores.resultado = _Constantes.SALIDA.ALERTA
             return valores
         if origen.filename == '':
             valores.mensaje_error = 'La-carga-recibida-no-contiene-archivo'
+            valores.codigo = _Constantes.ESTADO._400_NO_VALIDO
+            valores.resultado = _Constantes.SALIDA.ALERTA
             return valores
         valores.nombre = origen.filename
         valores.extension = valores.nombre.rsplit('.', 1)[1].lower()
         if origen.content_type not in cls.tipos_permitidos():
             valores.mensaje_error = 'El-tipo-de-archivo-no-esta-permitido'
+            valores.codigo = _Constantes.ESTADO._415_NO_SOPORTADO
+            valores.resultado = _Constantes.SALIDA.ALERTA
             return valores
         valores.tipo_mime = origen.content_type
         valores.contenido = origen.file if hasattr(origen, 'file') else origen.stream
@@ -123,6 +146,8 @@ class CargaArchivo(BaseModel):
         valores.peso = peso
         if peso > cls.peso_maximo():
             valores.mensaje_error = 'El-archivo-supera-el-peso-maximo-aceptado'
+            valores.codigo = _Constantes.ESTADO._413_NO_CARGADO
+            valores.resultado = _Constantes.SALIDA.ALERTA
             return valores
         valores.es_valido = True
         return valores

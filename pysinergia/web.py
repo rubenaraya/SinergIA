@@ -1,6 +1,6 @@
 # pysinergia\web.py
 
-import time, jwt, importlib
+import time, jwt, importlib, gettext
 from pathlib import Path
 
 # --------------------------------------------------
@@ -144,11 +144,15 @@ class Comunicador(_I_Comunicador):
             if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
                 portador.es_valido = False
                 portador.mensaje_error = 'El-archivo-ya-existe'
+                portador.codigo = _Constantes.ESTADO._413_NO_CARGADO
+                portador.resultado = _Constantes.SALIDA.ALERTA
             else:
                 ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
                 if not ruta:
                     portador.es_valido = False
                     portador.mensaje_error = 'Error-al-guardar-el-archivo'
+                    portador.codigo = _Constantes.ESTADO._500_ERROR
+                    portador.resultado = _Constantes.SALIDA.ERROR
                 portador.ruta = ruta
         return portador
 
@@ -161,6 +165,11 @@ class Comunicador(_I_Comunicador):
             if 'application/json' in acepta:
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
+
+    def traspasar_traduccion(mi) -> gettext.GNUTranslations:
+        if mi.traductor:
+            return mi.traductor.abrir_traduccion()
+        return None
 
 
 # --------------------------------------------------

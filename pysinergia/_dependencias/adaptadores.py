@@ -12,7 +12,7 @@ from pysinergia.dominio import (
     ModeloPeticion,
     RespuestaResultado,
     CargaArchivo,
-    ModeloSalida,
+    ModeloRespuesta,
 )
 from pysinergia.adaptadores import (
     Controlador,
