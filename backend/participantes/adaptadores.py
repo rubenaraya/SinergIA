@@ -30,7 +30,8 @@ class ControladorParticipantes(Controlador):
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
         resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
-            titulo='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
+            titulo='{titulo}',
+            descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()
         ).diccionario()
         formato = mi.comunicador.determinar_formato(formato)

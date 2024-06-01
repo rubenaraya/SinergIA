@@ -59,9 +59,7 @@ class ModeloRespuesta(BaseModel):
     idioma:str = ''
     detalles: list = []
     resultado: dict | None = {}
-    sesion: dict | None = {}
-    fecha: dict | None = {}
-    url: dict | None = {}
+    opciones: dict | None = {}
 
     @model_validator(mode='after')
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
@@ -72,7 +70,7 @@ class ModeloRespuesta(BaseModel):
             valores.hora_actual = fechahora.get('hora')
             valores.idioma = valores.T.idioma
             _:gettext.GNUTranslations = valores.T.abrir_traduccion()
-            datos = ChainMap(cls._filtrar_diccionario(valores.resultado), valores.sesion, valores.url, valores.fecha)
+            datos = ChainMap(cls._filtrar_diccionario(valores.resultado), valores.opciones, valores.T.fecha_hora())
             valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
             valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
             valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
@@ -107,7 +105,6 @@ class ModeloRespuesta(BaseModel):
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
     esquemas: dict | None = {}
-    opciones: dict | None = {}
 
 
 # --------------------------------------------------

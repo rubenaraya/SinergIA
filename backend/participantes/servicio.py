@@ -88,7 +88,6 @@ class ServicioParticipantes(Servicio):
             "accion": "_buscar_participantes",
             "operacion": "recuperar_lista_participantes_todos",
             "modelo": "PeticionBuscarParticipantes",
-            "peticion": peticion,
             "resultado": resultado,
             "opciones": opciones
         }
