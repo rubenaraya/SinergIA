@@ -52,7 +52,7 @@ class Comunicador(_I_Comunicador):
         mi.contexto['web']['idioma'] = mi.idioma
         mi.contexto['web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
         mi.contexto['web']['api_motor'] = api_motor
-        mi.contexto['fecha'] = _Funciones.fecha_hora(zona_horaria=mi.config_web.get('zona_horaria'))
+        mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
     def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:

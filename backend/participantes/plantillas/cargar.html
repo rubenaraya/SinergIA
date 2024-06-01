@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<img src="{{url.frontend}}/{{web.aplicacion}}/img/icon-128x128.png" alt="">
+
 <form action="{{ url.relativa }}" method="post" enctype="multipart/form-data">
     <div><input type="file" name="carga"></div>
     <div><input type="text" name="texto" value="Texto en formulario"></div>
@@ -22,6 +24,7 @@
 <div>fecha: {{ fecha }}</div>
 <div>sesion: {{ sesion }}</div>
 <div>peticion: {{ peticion }}</div>
+<p>{{ _('Token-invalido') }}</p>
 
 </body>
 </html>

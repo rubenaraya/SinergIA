@@ -28,6 +28,7 @@ from pysinergia.dominio import (
     CargaDocumento,
     CargaImagen,
     CargaVideo,
+    ModeloSalida,
 )
 from pysinergia.adaptadores import (
     cargar_configuracion,

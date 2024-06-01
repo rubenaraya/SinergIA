@@ -158,34 +158,6 @@ class Funciones:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def fecha_hora(zona_horaria:str) -> dict:
-        import pytz
-        from datetime import datetime
-        fechahora = {}
-        if not zona_horaria:
-            zona_horaria = 'Etc/GMT'
-        ist = pytz.timezone(zona_horaria)
-        local = ist.localize(datetime.now())
-        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
-        fechahora['hora'] = local.strftime( "%H:%M" )
-        fechahora['hms'] = local.strftime( "%H:%M:%S" )
-        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
-        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
-        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
-        fechahora['dm'] = local.strftime( "%d-%m" )
-        fechahora['md'] = local.strftime( "%m-%d" )
-        fechahora['ma'] = local.strftime( "%m-%Y" )
-        fechahora['am'] = local.strftime( "%Y-%m" )
-        fechahora['dia'] = local.strftime( "%d" )
-        fechahora['mes'] = local.strftime( "%m" )
-        fechahora['ano'] = local.strftime( "%Y" )
-        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
-        fechahora['iso8601'] = local.isoformat(timespec='seconds')
-        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
-        fechahora['p_am'] = local.strftime( "%Y%m%d" )
-        return fechahora
-
-    @staticmethod
     def obtener_ruta_env(nombre_modulo:str, entorno:str) -> str:
         nombre_archivo = '.config.env'
         if entorno:
@@ -253,15 +225,6 @@ class Funciones:
         }
         return formatos.get(formato)()
 
-    @staticmethod
-    def crear_salida(codigo:int, tipo:str, mensaje:str='', detalles:list=[]) -> dict:
-        return dict({
-            'codigo': str(codigo),
-            'tipo': tipo,
-            'mensaje': mensaje,
-            'detalles': detalles
-        })
-
 
 # --------------------------------------------------
 # Clase: Traductor
@@ -270,7 +233,7 @@ class Traductor:
     def __init__(mi, config:dict={}):
         mi.dominio:str = config.get('dominio', 'base')
         mi.dir_locales:str = config.get('dir_locales', 'locales')
-        mi.zona_horaria:str = config.get('zona_horaria', '')
+        mi.zona_horaria:str = config.get('zona_horaria', 'Etc/GMT')
         mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
         mi.idioma = ''
         mi.traduccion = None
@@ -344,6 +307,33 @@ class Traductor:
     
     def _(mi, texto:str='') -> str:
         return  mi.traduccion.gettext(texto)
+
+    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+        import pytz
+        from datetime import datetime
+        fechahora = {}
+        if not zona_horaria:
+            zona_horaria = mi.zona_horaria
+        ist = pytz.timezone(zona_horaria)
+        local = ist.localize(datetime.now())
+        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
+        fechahora['hora'] = local.strftime( "%H:%M" )
+        fechahora['hms'] = local.strftime( "%H:%M:%S" )
+        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
+        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
+        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
+        fechahora['dm'] = local.strftime( "%d-%m" )
+        fechahora['md'] = local.strftime( "%m-%d" )
+        fechahora['ma'] = local.strftime( "%m-%Y" )
+        fechahora['am'] = local.strftime( "%Y-%m" )
+        fechahora['dia'] = local.strftime( "%d" )
+        fechahora['mes'] = local.strftime( "%m" )
+        fechahora['ano'] = local.strftime( "%Y" )
+        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
+        fechahora['iso8601'] = local.isoformat(timespec='seconds')
+        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
+        fechahora['p_am'] = local.strftime( "%Y%m%d" )
+        return fechahora
 
 
 # --------------------------------------------------

@@ -163,7 +163,16 @@ def html(query:PeticionBuscarParticipantes):
 
 @enrutador.route('/cargar/<tipo>', methods=['GET'])
 def get_cargar(tipo):
-    comunicador.procesar_peticion('es')
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idioma, sesion)
+
+    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    portador_archivo = modelos.get(tipo)
+    if not portador_archivo:
+        salida = ModeloSalida(codigo=C.ESTADO._415_NO_SOPORTADO, tipo=C.SALIDA.ALERTA, mensaje='Tipo-de-carga-no-valido')
+        return jsonify(salida.diccionario())
+
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
@@ -179,10 +188,13 @@ def post_cargar(tipo):
     modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
-        contenido = {'mensaje': 'Tipo-de-carga-no-valido'}
+        estado = C.ESTADO._415_NO_SOPORTADO
+        contenido = ModeloSalida(codigo=estado, tipo=C.SALIDA.ALERTA, mensaje='Tipo-de-carga-no-valido').diccionario()
     elif 'carga' not in request.files:
-        contenido = {'mensaje': 'No-se-recibio-ninguna-carga'}
+        estado = C.ESTADO._422_NO_PROCESABLE
+        contenido = ModeloSalida(codigo=estado, tipo=C.SALIDA.ALERTA, mensaje='No-se-recibio-ninguna-carga').diccionario()
     else:
+        estado = C.ESTADO._200_EXITO
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
-    return Response(response=Json.codificar(contenido), mimetype=C.MIME.JSON)
+    return Response(response=Json.codificar(contenido), status=estado, mimetype=C.MIME.JSON)
 

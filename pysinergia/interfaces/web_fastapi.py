@@ -28,6 +28,7 @@ from pysinergia import (
     RegistradorLogs as _RegistradorLogs,
     Traductor as _Traductor,
 )
+from pysinergia.dominio import ModeloSalida
 from pysinergia.web import (
     Comunicador as _Comunicador,
     Autenticador as _Autenticador,
@@ -153,12 +154,12 @@ class ServidorApi:
         async def _error_personalizado(request:Request, exc:_ErrorPersonalizado):
             traductor = _Traductor({'dominio': exc.traduccion, 'idiomas_disponibles': idiomas_disponibles})
             _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=exc.codigo,
                 tipo=exc.tipo,
                 mensaje=_(exc.mensaje),
                 detalles=exc.detalles
-            )
+            ).diccionario()
             if exc.tipo == _C.SALIDA.ERROR:
                 nombre = registro_logs
                 if exc.aplicacion and exc.servicio:
@@ -177,12 +178,12 @@ class ServidorApi:
                 return RedirectResponse(url=exc.url_login)
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=exc.codigo,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_(exc.mensaje),
                 detalles=[]
-            )
+            ).diccionario()
             return JSONResponse(
                 status_code=exc.codigo,
                 content=jsonable_encoder(salida)
@@ -192,12 +193,12 @@ class ServidorApi:
         async def _error_disco(request:Request, exc:_ErrorDisco):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=exc.codigo,
                 tipo='ERROR',
                 mensaje=_(exc.mensaje),
                 detalles=exc.detalles
-            )
+            ).diccionario()
             _RegistradorLogs.crear(f'{registro_logs}', 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__str__()}'
             )
@@ -219,12 +220,12 @@ class ServidorApi:
                     'origen': error['loc'],
                     'valor': error['input']
                 })
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=_C.ESTADO._422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_('Los-datos-recibidos-son-invalidos'),
                 detalles=detalles
-            )
+            ).diccionario()
             return JSONResponse(
                 status_code=_C.ESTADO._422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
@@ -243,12 +244,12 @@ class ServidorApi:
                     'origen': error['loc'],
                     'valor': error['input']
                 })
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=_C.ESTADO._422_NO_PROCESABLE,
                 tipo=_C.SALIDA.ALERTA,
                 mensaje=_('Los-datos-recibidos-no-se-procesaron'),
                 detalles=detalles
-            )
+            ).diccionario()
             return JSONResponse(
                 status_code=_C.ESTADO._422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
@@ -258,11 +259,11 @@ class ServidorApi:
         async def _error_http(request:Request, exc:HTTPException):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             _ = traductor.abrir_traduccion(request.headers.get('Accept-Language'))
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=exc.status_code,
                 tipo=_F.tipo_salida(exc.status_code),
                 mensaje=_(exc.detail)
-            )
+            ).diccionario()
             if exc.status_code >= 500:
                 _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
@@ -281,11 +282,11 @@ class ServidorApi:
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'{texto} <{exception_name}: {exception_value}>'
-            salida = _F.crear_salida(
+            salida = ModeloSalida(
                 codigo=_C.ESTADO._500_ERROR,
                 tipo=_C.SALIDA.ERROR,
                 mensaje=mensaje
-            )
+            ).diccionario()
             registrador = _RegistradorLogs.crear(registro_logs, 'ERROR', f'{dir_logs}/{registro_logs}.log')
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 registrador.error(exc, exc_info=True)

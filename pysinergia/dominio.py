@@ -28,13 +28,6 @@ from pysinergia import (
 )
 
 # --------------------------------------------------
-# Clase: Entidad
-# --------------------------------------------------
-class Entidad:
-    ...
-
-
-# --------------------------------------------------
 # ClaseModelo: ModeloPeticion
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
@@ -50,6 +43,9 @@ class ModeloPeticion(BaseModel):
 # ClaseModelo: ModeloRespuesta
 # --------------------------------------------------
 class ModeloRespuesta(BaseModel):
+    codigo: int | None = _Constantes.ESTADO._200_EXITO
+    tipo: str | None = _Constantes.SALIDA.EXITO
+    mensaje: str | None = ''
 
     def diccionario(mi) -> Dict:
         return mi.model_dump()
@@ -61,9 +57,6 @@ class ModeloRespuesta(BaseModel):
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
-    codigo: int | None = _Constantes.ESTADO._200_EXITO
-    tipo: str | None = _Constantes.SALIDA.EXITO
-    mensaje: str | None = ''
     resultado: dict | None = {}
     esquemas: dict | None = {}
     opciones: dict | None = {}
@@ -74,6 +67,15 @@ class RespuestaResultado(ModeloRespuesta):
         if mensaje:
             mi.mensaje = mensaje
 
+# --------------------------------------------------
+# ClaseModelo: RespuestaSalida
+# --------------------------------------------------
+class ModeloSalida(ModeloRespuesta):
+    detalles: list = []
+
+    """
+    Evaluar si se puede integrar la traducción al generar la salida, o agregar una función _() en el modelo para traducir ¿trasladar Comunicador.traducir_textos?
+    """
 
 # --------------------------------------------------
 # ClaseModelo: CargaArchivo
@@ -193,7 +195,6 @@ class CargaVideo(CargaArchivo):
         ]
     def peso_maximo() -> int:
         return 25 * 1024 * 1024
-
 
 # --------------------------------------------------
 # ClaseModelo: Archivo

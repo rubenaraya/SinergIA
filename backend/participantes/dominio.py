@@ -3,12 +3,6 @@
 from pysinergia._dependencias.dominio import *
 
 # --------------------------------------------------
-# Clase: EntidadParticipante
-# --------------------------------------------------
-class EntidadParticipante(Entidad):
-        ...
-
-# --------------------------------------------------
 # Clase: EstadoParticipante
 # --------------------------------------------------
 class EstadoParticipante(str, Enum):

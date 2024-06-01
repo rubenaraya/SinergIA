@@ -71,7 +71,7 @@ class ControladorParticipantes(Controlador):
 # --------------------------------------------------
 """
 Falta recibir la petición procesada
-Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite) -> ¿Debería usar Entidad?
+Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite)
 Falta probar Modelos iniciales para insertar y actualizar participantes
 """
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
