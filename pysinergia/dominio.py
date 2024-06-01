@@ -20,7 +20,6 @@ from pydantic import (
     field_validator,
     Field,
 )
-import gettext
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -60,25 +59,28 @@ class ModeloRespuesta(BaseModel):
     detalles: list = []
     resultado: dict | None = {}
     opciones: dict | None = {}
-    fecha: dict | None = {}
 
     @model_validator(mode='after')
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
+        from collections import ChainMap
+
+        def _filtrar_diccionario(diccionario:dict):
+            if diccionario and isinstance(diccionario, dict):
+                return {k: v for k, v in diccionario.items() if isinstance(v, (str, int, float, bool))}
+            return {}
+
         if valores.T:
-            from collections import ChainMap
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
             valores.hora_actual = fechahora.get('hora')
             valores.idioma = valores.T.idioma
-            _:gettext.GNUTranslations = valores.T.abrir_traduccion()
-            datos = ChainMap(cls._filtrar_diccionario(valores.resultado), valores.opciones, valores.fecha)
-            valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
-            valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
-            valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
+            _ = valores.T.abrir_traduccion()
+            if _:
+                datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.opciones), valores.T.fecha_hora())
+                valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
+                valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
+                valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
         return valores
-
-    def _filtrar_diccionario(diccionario:dict):
-        return {k: v for k, v in diccionario.items() if isinstance(v, (str, int, float, bool))}
 
     def diccionario(mi) -> Dict:
         mi.T = None
@@ -90,21 +92,14 @@ class ModeloRespuesta(BaseModel):
         mi.T = None
         return mi.model_dump_json()
 
-    def asignar_datos(mi, codigo:int=None, mensaje:str=None, titulo:str=None, descripcion:str=None):
-        if codigo:
-            mi.codigo = codigo
-            mi.tipo = _Funciones.tipo_salida(codigo)
-        if mensaje:
-            mi.mensaje = mensaje
-        if titulo:
-            mi.titulo = titulo
-        if descripcion:
-            mi.descripcion = descripcion
-
 # --------------------------------------------------
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
+    fecha: dict | None = {}
+    web: dict | None = {}
+    url: dict | None = {}
+    sesion: dict | None = {}
     esquemas: dict | None = {}
 
 
