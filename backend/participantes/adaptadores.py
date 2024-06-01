@@ -28,7 +28,10 @@ class ControladorParticipantes(Controlador):
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
-        respuesta = RespuestaResultado(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        respuesta = RespuestaResultado(**resultado,
+            titulo='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
+            T=mi.comunicador.traspasar_traductor()
+        ).diccionario()
         respuesta.update(mi.comunicador.transferir_contexto())
         formato = mi.comunicador.determinar_formato(formato)
         archivo = Funciones.atributos_archivo(formato=formato)
@@ -42,7 +45,7 @@ class ControladorParticipantes(Controlador):
         if resultado.es_valido:
             contenido = ModeloRespuesta(
                 mensaje='Archivo-cargado-con-exito',
-                descripcion=resultado.nombre,
+                resultado={'nombre': resultado.nombre},
                 T=mi.comunicador.traspasar_traductor()
             ).diccionario()
         else:
@@ -50,6 +53,7 @@ class ControladorParticipantes(Controlador):
                 codigo=resultado.codigo,
                 tipo=resultado.resultado,
                 mensaje=resultado.mensaje_error,
+                resultado={'nombre': resultado.nombre},
                 T=mi.comunicador.traspasar_traductor()
             ).diccionario()
         return contenido

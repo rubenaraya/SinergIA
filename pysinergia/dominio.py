@@ -58,18 +58,24 @@ class ModeloRespuesta(BaseModel):
     hora_actual:str = ''
     idioma:str = ''
     detalles: list = []
+    resultado: dict | None = {}
 
     @model_validator(mode='after')
     def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
         if valores.T:
-            _ = valores.T.abrir_traduccion()
-            valores.mensaje = _(valores.mensaje) if valores.mensaje else ''
-            valores.titulo = _(valores.titulo) if valores.titulo else ''
-            valores.descripcion = _(valores.descripcion) if valores.descripcion else ''
-            valores.idioma = valores.T.idioma
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
             valores.hora_actual = fechahora.get('hora')
+            valores.idioma = valores.T.idioma
+            _:gettext.GNUTranslations = valores.T.abrir_traduccion()
+            valores.mensaje = _(valores.mensaje) if valores.mensaje else ''
+            valores.titulo = _(valores.titulo) if valores.titulo else ''
+            valores.descripcion = _(valores.descripcion) if valores.descripcion else ''
+            if valores.resultado:
+                for clave, valor in valores.resultado.items():
+                    valores.mensaje = valores.mensaje.replace('{' + clave + '}', str(valor))
+                    valores.titulo = valores.titulo.replace('{' + clave + '}', str(valor))
+                    valores.descripcion = valores.descripcion.replace('{' + clave + '}', str(valor))
         return valores
 
     def diccionario(mi) -> Dict:
@@ -97,7 +103,6 @@ class ModeloRespuesta(BaseModel):
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
 class RespuestaResultado(ModeloRespuesta):
-    resultado: dict | None = {}
     esquemas: dict | None = {}
     opciones: dict | None = {}
 

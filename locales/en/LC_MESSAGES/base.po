@@ -59,7 +59,7 @@ msgstr "Error in CSV exporter"
 
 #: web.py:1
 msgid "El-archivo-ya-existe"
-msgstr "A file named {nombre} already exists"
+msgstr "A file named '{nombre}' already exists"
 
 #: web.py:2
 msgid "Error-al-guardar-el-archivo"
@@ -67,7 +67,7 @@ msgstr "Error saving file"
 
 #: adaptadores.py:1
 msgid "Archivo-cargado-con-exito"
-msgstr "The file was uploaded successfully"
+msgstr "The file '{nombre}' was uploaded successfully"
 
 #: web_fastapi.py:2
 msgid "Tipo-de-carga-no-valido"
@@ -91,7 +91,7 @@ msgstr "The file exceeds the maximum accepted size"
 
 #: disco_local.py:1
 msgid "Archivo-no-encontrado"
-msgstr "The file was not found"
+msgstr "The file '{nombre}' was not found"
 
 #: disco_local.py:2
 msgid "Permiso-denegado-para-eliminar-el-archivo"
@@ -136,4 +136,8 @@ msgstr "Operating system error creating folder"
 #: disco_local.py:12
 msgid "Error-desconocido-al-acceder-a-la-carpeta"
 msgstr "Unknown error accessing folder"
+
+#: dominio.py:4
+msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
+msgstr "There are {total} cases. List from {primero} to {ultimo}"
 

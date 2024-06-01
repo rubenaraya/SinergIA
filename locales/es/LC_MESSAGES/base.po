@@ -59,7 +59,7 @@ msgstr "Error en exportador CSV"
 
 #: web.py:1
 msgid "El-archivo-ya-existe"
-msgstr "Ya existe un archivo llamado {nombre}"
+msgstr "Ya existe un archivo llamado '{nombre}'"
 
 #: web.py:2
 msgid "Error-al-guardar-el-archivo"
@@ -67,7 +67,7 @@ msgstr "Error al guardar el archivo"
 
 #: adaptadores.py:1
 msgid "Archivo-cargado-con-exito"
-msgstr "El archivo fue cargado con éxito"
+msgstr "El archivo '{nombre}' fue cargado con éxito"
 
 #: web_fastapi.py:2
 msgid "Tipo-de-carga-no-valido"
@@ -91,7 +91,7 @@ msgstr "El archivo supera el peso máximo aceptado"
 
 #: disco_local.py:1
 msgid "Archivo-no-encontrado"
-msgstr "El archivo no fue encontrado"
+msgstr "El archivo '{nombre}' no fue encontrado"
 
 #: disco_local.py:2
 msgid "Permiso-denegado-para-eliminar-el-archivo"
@@ -136,4 +136,8 @@ msgstr "Error del sistema operativo al crear la carpeta"
 #: disco_local.py:12
 msgid "Error-desconocido-al-acceder-a-la-carpeta"
 msgstr "Error desconocido al acceder a la carpeta"
+
+#: dominio.py:4
+msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
+msgstr "Hay {total} casos. Lista del {primero} al {ultimo}"
 
