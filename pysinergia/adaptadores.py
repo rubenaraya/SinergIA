@@ -188,7 +188,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def convertir_imagen(ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
+    def convertir_imagen(mi, ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
         ...
 
 

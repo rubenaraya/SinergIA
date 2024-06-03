@@ -142,7 +142,9 @@ class Json:
 
     @staticmethod
     def codificar(objeto) -> str:
-        return json.dumps(dict(objeto), ensure_ascii=False)
+        if isinstance(objeto, dict) or isinstance(objeto, list):
+            return json.dumps(objeto, ensure_ascii=False)
+        return None
 
     @staticmethod
     def decodificar(texto:str):

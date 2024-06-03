@@ -178,12 +178,11 @@ class DiscoLocal(_Disco):
                     ))
         return lista
 
-
     def empaquetar_zip(mi, dir_origen:str, ruta_archivo_zip:str) -> bool:
         from zipfile import ZipFile, ZIP_DEFLATED
         try:
-            dir_origen_path = Path(dir_origen)
-            ruta_archivo_zip_path = Path(ruta_archivo_zip)
+            dir_origen_path = (mi._path / Path(dir_origen))
+            ruta_archivo_zip_path = (mi._path / Path(ruta_archivo_zip))
             with ZipFile(ruta_archivo_zip_path, 'w', ZIP_DEFLATED) as zipf:
                 for archivo in dir_origen_path.rglob('*'):
                     if archivo.is_file():
@@ -197,8 +196,8 @@ class DiscoLocal(_Disco):
     def extraer_zip(mi, ruta_archivo_zip:str, dir_destino:str) -> bool:
         from zipfile import ZipFile
         try:
-            ruta_archivo_zip_path = Path(ruta_archivo_zip)
-            dir_destino_path = Path(dir_destino)
+            ruta_archivo_zip_path = (mi._path / Path(ruta_archivo_zip))
+            dir_destino_path = (mi._path / Path(dir_destino))
             dir_destino_path.mkdir(parents=True, exist_ok=True)
             with ZipFile(ruta_archivo_zip_path, 'r') as zipf:
                 zipf.extractall(dir_destino_path)
@@ -207,13 +206,13 @@ class DiscoLocal(_Disco):
             print(e)
             return False
 
-    def convertir_imagen(ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
+    def convertir_imagen(mi, ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
         from PIL import Image
         try:
-            ruta_imagen_path = Path(ruta_imagen)
-            dir_destino_path = Path(dir_destino)
+            ruta_imagen_path = (mi._path / Path(ruta_imagen))
+            dir_destino_path = (mi._path / Path(dir_destino))
             dir_destino_path.mkdir(parents=True, exist_ok=True)
-            resultado = []
+            resultado:list = []
             with Image.open(ruta_imagen_path) as img:
                 for salida in lista_salidas:
                     try:
@@ -221,10 +220,10 @@ class DiscoLocal(_Disco):
                         alto = salida.get('alto')
                         formato = salida.get('formato')
                         nombre = salida.get('nombre')
-                        ruta_salida = dir_destino_path / nombre
+                        ruta_salida = (dir_destino_path / Path(nombre))
                         imagen = img.resize((ancho, alto), Image.Resampling.LANCZOS)
                         imagen.save(ruta_salida, format=formato)
-                        resultado.append(str(ruta_salida))
+                        resultado.append(ruta_salida.as_posix())
                     except Exception as e:
                         print(e)
             return resultado
