@@ -204,3 +204,20 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
         codigo = contenido.get('codigo', C.ESTADO._200_EXITO)
     return JSONResponse(contenido, status_code=codigo)
 
+@enrutador.get('/manifest.json', status_code=C.ESTADO._200_EXITO)
+async def manifest(request:Request):
+    idioma = request.headers.get('Accept-Language')
+    await comunicador.procesar_peticion(request, idioma)
+    datos = {
+        'name': 'Aplicación Web SinergIA',
+        'short_name': 'App SinergIA',
+        'id': 'App-prueba',
+        'description': ''
+    }
+    respuesta = comunicador.transformar_contenido(
+        comunicador.transferir_contexto(datos),
+        plantilla='manifest.json',
+        directorio=f'{configuracion.ruta_servicio}/plantillas'
+    )
+    return Response(content=respuesta, media_type=C.MIME.MANIFEST)
+

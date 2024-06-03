@@ -124,7 +124,12 @@ class Comunicador(_I_Comunicador):
         opciones['ruta_plantillas'] = ruta_plantillas
         return (plantilla, ruta_plantillas)
 
-    def transferir_contexto(mi) -> dict:
+    def transferir_contexto(mi, datos:dict=None) -> dict:
+        if mi.contexto.get('datos', None) is None:
+            mi.contexto['datos'] = {}
+        if datos is not None:
+            for clave, valor in datos.items():
+                mi.contexto['datos'][clave] = valor
         return mi.contexto
 
     def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:

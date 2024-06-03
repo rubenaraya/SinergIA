@@ -222,7 +222,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def transferir_contexto(mi) -> dict:
+    def transferir_contexto(mi, datos:dict=None) -> dict:
         ...
 
     @abstractmethod
