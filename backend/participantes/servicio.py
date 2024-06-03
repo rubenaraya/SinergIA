@@ -80,7 +80,7 @@ class ServicioParticipantes(Servicio):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
         resultado = mi.operador.recuperar_lista_participantes_todos()
         opciones = mi.adjuntar_opciones({
-            'nombre_archivo': 'documento de prueba',
+            'nombre_descarga': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
             'carpeta_guardar': 'creados'
         })

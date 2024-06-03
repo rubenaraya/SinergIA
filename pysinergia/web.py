@@ -76,12 +76,12 @@ class Comunicador(_I_Comunicador):
             modo = 't'
             opciones:dict = info['opciones']
             opciones['idioma'] = mi.idioma
-            if formato == _Constantes.FORMATO.JSON or formato == _Constantes.FORMATO.TEXTO:
+            if formato == _Constantes.FORMATO.JSON:
                 resultado = _Json.codificar(info)
             else:
                 plantilla, ruta_plantillas = mi.comprobar_plantilla(opciones, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
-                if formato == _Constantes.FORMATO.HTML:
+                if formato == _Constantes.FORMATO.HTML or formato == _Constantes.FORMATO.TEXTO:
                     resultado = contenido
                 else:
                     from pysinergia.adaptadores import Exportador
@@ -92,19 +92,19 @@ class Comunicador(_I_Comunicador):
                     resultado = exportador.generar(contenido=contenido, opciones=opciones)
                     modo = 'b'
             if guardar:
-                nombre_archivo = opciones.get('nombre_archivo', '')
+                nombre_descarga = opciones.get('nombre_descarga', '')
                 carpeta_guardar = opciones.get('carpeta_guardar', '')
-                ruta_archivo = str(f'{carpeta_guardar}/{nombre_archivo}').strip('/')
+                ruta_archivo = str(f'{carpeta_guardar}/{nombre_descarga}').strip('/')
                 mi.disco.escribir(resultado, ruta_archivo, modo)
             return resultado
         except Exception as e:
             raise e
 
-    def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
+    def obtener_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'opciones' in info:
             opciones:dict = info['opciones']
-            nombre = mi.disco.normalizar_nombre(opciones.get('nombre_archivo', ''), extension, largo, auto)
-            opciones['nombre_archivo'] = nombre
+            nombre = mi.disco.normalizar_nombre(opciones.get('nombre_descarga', ''), extension, largo, auto)
+            opciones['nombre_descarga'] = nombre
         else:
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
@@ -132,11 +132,11 @@ class Comunicador(_I_Comunicador):
                 mi.contexto['datos'][clave] = valor
         return mi.contexto
 
-    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:
+    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         content_type = f"{tipo_mime}; charset={charset}" if charset else tipo_mime
         encabezados = {'Content-Type': content_type}
-        if nombre_archivo:
-            encabezados['Content-disposition'] = f'{disposicion}; filename="{nombre_archivo}"'
+        if nombre_descarga:
+            encabezados['Content-disposition'] = f'{disposicion}; filename="{nombre_descarga}"'
         else:
             encabezados['Content-disposition'] = disposicion
         return encabezados
@@ -161,7 +161,7 @@ class Comunicador(_I_Comunicador):
                 portador.ruta = ruta
         return portador
 
-    def determinar_formato(mi, formato:str=None) -> str:
+    def elegir_formato(mi, formato:str=None) -> str:
         if formato:
             return formato
         config_web:dict = mi.contexto.get('web')

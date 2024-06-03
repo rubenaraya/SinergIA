@@ -173,7 +173,8 @@ class CargaArchivo(BaseModel):
 class CargaImagen(CargaArchivo):
     carpeta: Optional[str] = 'imagenes'
     ancho: Optional[int] = 0
-    altura: Optional[int] = 0
+    alto: Optional[int] = 0
+    formato: Optional[str] = ''
 
     @classmethod
     def tipos_permitidos(cls) -> List[str]:

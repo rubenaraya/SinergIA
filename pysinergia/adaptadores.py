@@ -179,6 +179,18 @@ class I_ConectorDisco(metaclass=ABCMeta):
     def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
         ...
 
+    @abstractmethod
+    def empaquetar_zip(mi, dir_origen:str, ruta_archivo_zip:str) -> bool:
+        ...
+
+    @abstractmethod
+    def extraer_zip(mi, ruta_archivo_zip:str, dir_destino:str) -> bool:
+        ...
+
+    @abstractmethod
+    def convertir_imagen(ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
+        ...
+
 
 # --------------------------------------------------
 # Interface: I_Comunicador
@@ -194,7 +206,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def determinar_formato(mi, formato:str=None) -> str:
+    def elegir_formato(mi, formato:str=None) -> str:
         ...
 
     @abstractmethod
@@ -210,7 +222,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def obtener_nombre_archivo(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
+    def obtener_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         ...
 
     @abstractmethod
@@ -218,7 +230,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_archivo:str='') -> dict:
+    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         ...
 
     @abstractmethod

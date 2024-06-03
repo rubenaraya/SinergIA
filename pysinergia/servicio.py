@@ -45,7 +45,7 @@ class Servicio:
             'tabla_datos': 'Hoja1',
             'ruta_plantillas': '',
             'carpeta_guardar': '',
-            'nombre_archivo': '',
+            'nombre_descarga': '',
             'titulo': '',
             'autor': '',
             'descripcion': '',

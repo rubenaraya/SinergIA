@@ -34,10 +34,10 @@ class ControladorParticipantes(Controlador):
             descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()
         ).diccionario()
-        formato = mi.comunicador.determinar_formato(formato)
+        formato = mi.comunicador.elegir_formato(formato)
         archivo = Funciones.atributos_archivo(formato=formato)
-        nombre_archivo = mi.comunicador.obtener_nombre_archivo(respuesta, archivo.extension)
-        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_archivo=nombre_archivo, charset='utf-8')
+        nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, archivo.extension)
+        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
         contenido = mi.comunicador.exportar_contenido(formato=archivo.formato, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
