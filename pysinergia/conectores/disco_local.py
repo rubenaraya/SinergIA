@@ -126,6 +126,24 @@ class DiscoLocal(_Disco):
         except Exception as e:
             raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', ruta=nombre, detalles=[str(e)])
 
+    def copiar(mi, nombre:str, dir_destino:str, mover:bool=False) -> bool:
+        import shutil
+        try:
+            ruta_archivo_path = (mi._path / Path(nombre))
+            dir_destino_path = (mi._path / Path(dir_destino))
+            if not ruta_archivo_path.is_file():
+                return False
+            dir_destino_path.mkdir(parents=True, exist_ok=True)
+            archivo_destino_path = (dir_destino_path / ruta_archivo_path.name)
+            if mover:
+                shutil.move(str(ruta_archivo_path), str(archivo_destino_path))
+            else:
+                shutil.copy(str(ruta_archivo_path), str(archivo_destino_path))
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
     def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
         try:
             path = (mi._path / Path(nombre))

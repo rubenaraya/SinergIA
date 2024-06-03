@@ -164,6 +164,10 @@ class I_ConectorDisco(metaclass=ABCMeta):
         ...
 
     @abstractmethod
+    def copiar(mi, nombre:str, dir_destino:str, mover:bool=False) -> bool:
+        ...
+
+    @abstractmethod
     def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
         ...
 
