@@ -221,3 +221,12 @@ async def manifest(request:Request):
     )
     return Response(content=respuesta, media_type=C.MIME.MANIFEST)
 
+@enrutador.get('/audio', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse)
+async def audio(request:Request):
+    from pysinergia.exportadores.convertidor_audio import ConvertidorAudio
+    idioma = request.headers.get('Accept-Language')
+    await comunicador.procesar_peticion(request, idioma)
+    convertidor = ConvertidorAudio(configuracion.disco_ruta)
+    respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
+    return JSONResponse(respuesta, status_code=C.ESTADO._200_EXITO)
+

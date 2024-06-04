@@ -49,7 +49,7 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, formato=C.FORMATO.JSON)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])

@@ -19,6 +19,9 @@ pandoc
 weasyprint
 pydub
 
+# Bases de datos
+mysql-connector-python
+
 # Vectores + Cargadores +LLM
 chromadb
 faiss-cpu

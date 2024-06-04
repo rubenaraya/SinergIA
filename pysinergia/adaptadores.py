@@ -269,7 +269,6 @@ class Configuracion(BaseSettings):
     basedatos_clase: str = ''
     basedatos_nombre: str = ''
     basedatos_ruta: str = ''
-    basedatos_url: str = ''
     basedatos_usuario: str = ''
     basedatos_password: str = ''
     almacen_fuente: str = ''
@@ -312,7 +311,6 @@ class Configuracion(BaseSettings):
             'clase': mi.basedatos_clase,
             'nombre': mi.basedatos_nombre,
             'ruta': mi.basedatos_ruta,
-            'url': mi.basedatos_url,
             'usuario': mi.basedatos_usuario,
             'password': mi.basedatos_password
         })
