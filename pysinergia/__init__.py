@@ -109,6 +109,12 @@ class Constantes:
         GB = 1024 * MB
         TB = 1024 * GB
 
+    class TIEMPO:
+        SEG = 1000
+        MIN = 60 * SEG
+        HOR = 60 * MIN
+        DIA = 24 * HOR
+
 
 # --------------------------------------------------
 # Clase estática: Json

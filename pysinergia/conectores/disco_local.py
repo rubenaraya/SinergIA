@@ -173,12 +173,12 @@ class DiscoLocal(_Disco):
         except Exception as e:
             raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', ruta=nombre, detalles=[str(e)])
 
-    def comprobar_ruta(mi, nombre:str, tipo:str='') -> bool:
+    def comprobar_ruta(mi, nombre:str, tipo:str='') -> str:
         path = (mi._path / Path(nombre))
         resultado = path.is_dir() if tipo == 'dir' else path.is_file()
-        if resultado is None:
-            resultado = False
-        return resultado
+        if resultado:
+            return path.as_posix()
+        return None
 
     def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
         lista = []

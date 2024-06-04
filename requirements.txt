@@ -17,6 +17,7 @@ openpyxl
 pandas
 pandoc
 weasyprint
+pydub
 
 # Vectores + Cargadores +LLM
 chromadb
