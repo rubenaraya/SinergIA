@@ -141,3 +141,7 @@ msgstr "Error desconocido al acceder a la carpeta"
 msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
 msgstr "Hay {total} casos. Lista del {primero} al {ultimo}"
 
+#: convertidor_audio.py:1
+msgid "Error-en-exportador-Audio"
+msgstr "Error en exportador de Audio"
+

@@ -1,6 +1,6 @@
 # pysinergia\__init__.py
 
-import json, gettext
+import json, gettext, os
 from pathlib import Path
 
 # --------------------------------------------------
@@ -114,6 +114,24 @@ class Constantes:
         MIN = 60 * SEG
         HOR = 60 * MIN
         DIA = 24 * HOR
+
+    class AUDIO:
+        WAV = 'wav'
+        MP3 = 'mp3'
+        MP4 = 'mp4'
+        M4A = 'm4a'
+        OGG = 'ogg'
+        OPUS = 'opus'
+        WMA = 'wma'
+        WEBA = 'weba'
+        WEBM = 'webm'
+
+    class BITRATE:
+        _64KBPS = '64'
+        _96KBPS = '96'
+        _128KBPS = '128'
+        _192KBPS = '192'
+        _256KBPS = '256'
 
 
 # --------------------------------------------------
@@ -425,4 +443,9 @@ class ErrorDisco(Exception):
 
     def __repr__(mi):
         return f'{mi.codigo}: {mi.mensaje} | {mi.ruta} | {mi.detalles.__str__()}'
+
+
+# --------------------------------------------------
+# Configuracion de FFMPEG
+os.environ["PATH"] = str(Path(f'{Constantes.DIR_LIB_FFMPEG}').resolve()) + os.pathsep + os.getenv("PATH")
 

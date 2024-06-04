@@ -141,3 +141,7 @@ msgstr "Unknown error accessing folder"
 msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
 msgstr "There are {total} cases. List from {primero} to {ultimo}"
 
+#: convertidor_audio.py:1
+msgid "Error-en-exportador-Audio"
+msgstr "Audio exporter error"
+
