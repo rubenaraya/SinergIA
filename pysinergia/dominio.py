@@ -44,7 +44,7 @@ class ModeloPeticion(BaseModel):
     def exportar(mi) -> dict:
         resultado = {}
         origen_datos = 'origen_datos'
-        datos = mi.model_dump(mode='json')
+        datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
             if field_name != origen_datos:
                 campo = field.serialization_alias
