@@ -21,9 +21,40 @@ class RolParticipante(str, Enum):
 # ClaseModelo: PeticionBuscarParticipantes
 # --------------------------------------------------
 class PeticionBuscarParticipantes(ModeloPeticion):
-    alias: str | None = Field('', title='Alias', description='Nombre del participante', max_length=25)
-    email: str | None = Field('', title='E-Mail', description='Correo-e del participante', max_length=50)
-    estado: Optional[EstadoParticipante] | None = Field(None, title='Estado', description='Estado del participante', max_length=10)
+    origen_datos: Optional[str] = Field('participantes')
+    alias: Optional[str] = Field(
+        default='',
+        title='Alias',
+        description='Nombre del participante',
+        max_length=25,
+        validation_alias='nombre',
+        serialization_alias='alias',
+        json_schema_extra={'formato': 'text', 'filtro': 'CONTIENE', 'orden': '', 'entidad': 'participantes', 'visible': True}
+    )
+    email: Optional[str] = Field(
+        default='',
+        title='E-Mail',
+        description='Correo-e del participante',
+        max_length=50,
+        validation_alias='email',
+        serialization_alias='email',
+        json_schema_extra={'formato': 'email', 'filtro': 'CONTIENE', 'orden': '', 'entidad': '', 'visible': True}
+    )
+    estado: Optional[EstadoParticipante] | None = Field(
+        default='',
+        title='Estado',
+        description='Estado del participante',
+        max_length=10,
+        validation_alias='estado',
+        serialization_alias='estado',
+        json_schema_extra={'formato': 'text', 'filtro': 'COINCIDE', 'orden': '', 'entidad': '', 'visible': False}
+    )
+    id: Optional[str] | None = Field(
+        default='',
+        serialization_alias='id',
+        validation_alias='id',
+        json_schema_extra={'formato': 'integer', 'orden': 'DESC', 'entidad': 'participantes', 'visible': True}
+    )
 
 # --------------------------------------------------
 # ClaseModelo: PeticionParticipante

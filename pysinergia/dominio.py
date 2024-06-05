@@ -33,12 +33,39 @@ from pysinergia import (
 # ClaseModelo: ModeloPeticion
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
+    model_config = ConfigDict(extra='allow')
 
-    def diccionario(mi) -> Dict:
-        return mi.model_dump()
+    def diccionario(mi) -> dict:
+        return mi.model_dump(by_alias=True, mode='json')
 
     def json(mi) -> str:
-        return mi.model_dump_json()
+        return mi.model_dump_json(by_alias=True)
+
+    def exportar(mi) -> dict:
+        resultado = {}
+        origen_datos = 'origen_datos'
+        datos = mi.model_dump(mode='json')
+        for field_name, field in mi.model_fields.items():
+            if field_name != origen_datos:
+                campo = field.serialization_alias
+                valor = datos.get(field_name)
+                resultado[campo] = {
+                    'campo': campo,
+                    'entrada': field.validation_alias,
+                    'etiqueta': field.title,
+                    'formato': field.json_schema_extra.get('formato', 'text'),
+                    'filtro': field.json_schema_extra.get('filtro', ''),
+                    'orden': field.json_schema_extra.get('orden', ''),
+                    'entidad': field.json_schema_extra.get('entidad', ''),
+                    'visible': field.json_schema_extra.get('visible', False),
+                    'valor': valor
+                }
+            else:
+                resultado[f'_{origen_datos}'] = datos.get(field_name)
+        for field_name, field_value in mi.model_extra.items():
+            if field_name != origen_datos:
+                resultado[field_name] = str(field_value)
+        return resultado
 
 
 # --------------------------------------------------
@@ -85,7 +112,7 @@ class ModeloRespuesta(BaseModel):
 
     def diccionario(mi) -> Dict:
         mi.T = None
-        diccionario = mi.model_dump()
+        diccionario = mi.model_dump(mode='json')
         diccionario.pop('T')
         return diccionario
 

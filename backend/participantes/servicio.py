@@ -28,22 +28,22 @@ class ACCION:
 class I_OperadorParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por OperadorParticipantes
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi) -> Dict:
+    def recuperar_lista_participantes_todos(mi, peticion:dict) -> Dict:
         ...
     @abstractmethod
-    def recuperar_lista_participantes_filtrados(mi) -> Dict:
+    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> Dict:
         ...
     @abstractmethod
-    def recuperar_participante_por_id(mi) -> Dict:
+    def recuperar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
     @abstractmethod
-    def insertar_nuevo_participante(mi) -> Dict:
+    def insertar_nuevo_participante(mi, peticion:dict) -> Dict:
         ...
     @abstractmethod
-    def actualizar_participante_por_id(mi) -> Dict:
+    def actualizar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
     @abstractmethod
-    def eliminar_participante_por_id(mi) -> Dict:
+    def eliminar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
 
 
@@ -78,7 +78,7 @@ class ServicioParticipantes(Servicio):
 
     def _buscar_participantes(mi, peticion:dict):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
-        resultado = mi.operador.recuperar_lista_participantes_todos()
+        resultado = mi.operador.recuperar_lista_participantes_todos(peticion)
         opciones = mi.adjuntar_opciones({
             'nombre_descarga': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
@@ -93,18 +93,18 @@ class ServicioParticipantes(Servicio):
         }
 
     def _agregar_participante(mi, peticion:dict):
-        mi.operador.insertar_nuevo_participante()
+        mi.operador.insertar_nuevo_participante(peticion)
         return {"accion": "_agregar_participante", "operacion": "insertar_nuevo_participante", "modelo": "ModeloNuevoParticipante", "peticion": peticion.diccionario()}
 
     def _actualizar_participante(mi, peticion:dict):
-        mi.operador.actualizar_participante_por_id()
+        mi.operador.actualizar_participante_por_id(peticion)
         return {"accion": "_actualizar_participante", "operacion": "actualizar_participante_por_id", "modelo": "ModeloEditarParticipante", "peticion": peticion.diccionario()}
 
     def _eliminar_participante(mi, peticion:dict):
-        mi.operador.eliminar_participante_por_id()
+        mi.operador.eliminar_participante_por_id(peticion)
         return {"accion": "_eliminar_participante", "operacion": "eliminar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 
     def _ver_participante(mi, peticion:dict):
-        mi.operador.recuperar_participante_por_id()
+        mi.operador.recuperar_participante_por_id(peticion)
         return {"accion": "_ver_participante", "operacion": "recuperar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 

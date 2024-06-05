@@ -96,7 +96,7 @@ class BasedatosSqlite(_Basedatos):
         elif contenido == _Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, instruccion:str, parametros:list, contenido:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def leer(mi, instruccion:str, parametros:list=[], contenido:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         if contenido == _Basedatos.ESTRUCTURA.DICCIONARIO:
@@ -106,19 +106,19 @@ class BasedatosSqlite(_Basedatos):
         elif contenido == _Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchone(), 1)
 
-    def insertar(mi, instruccion:str, parametros:list) -> int:
+    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.lastrowid
 
-    def actualizar(mi, instruccion:str, parametros:list) -> int:
+    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.rowcount
 
-    def eliminar(mi, instruccion:str, parametros:list) -> int:
+    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         sql_total = instruccion.replace('DELETE FROM ', 'SELECT COUNT(*) FROM ')
         cursor.execute(sql_total, parametros)
@@ -130,6 +130,50 @@ class BasedatosSqlite(_Basedatos):
 
     def crear_filtro(mi, filtro:str) -> str:
         return mi.filtros.get(filtro)
+
+    def generar_consulta(mi, modelo:str, peticion:dict) -> str:
+        if not modelo or not peticion:
+            return None
+        mostrar:list[str] = []
+        filtrar:list[str] = []
+        ordenar:list[str] = []
+        pagina = int(peticion.get('pagina', 1))
+        maximo = int(peticion.get('maximo', 25))
+        origen_datos = str(peticion.get('_origen_datos', ''))
+        modelo = modelo.replace('{origen_datos}', origen_datos)
+        for clave, contenido in peticion.items():
+            if isinstance(contenido, dict):
+                campo = contenido.get('campo', clave)
+                entrada = contenido.get('entrada', '')
+                entidad = contenido.get('entidad', '')
+                formato = contenido.get('formato', '')
+                filtro = contenido.get('filtro', '')
+                orden = contenido.get('orden', '')
+                visible = contenido.get('visible', False)
+                valor = contenido.get('valor', '')
+                if isinstance(valor, list):
+                    valor = ','.join(valor)
+                if entidad:
+                    campo = f'{entidad}.{campo}'
+                campo_mostrar = f'{campo} as {entrada}' if entrada and campo != entrada else campo
+                if visible:
+                    mostrar.append(campo_mostrar)
+                if orden:
+                    ordenar.append(f'{campo} {orden}')
+                if filtro and valor:
+                    filtrado = mi.crear_filtro(filtro)(campo, valor)
+                    if filtrado:
+                        filtrar.append(filtrado)
+        mostrar_texto = ', '.join(mostrar) if mostrar else '*'
+        filtrar_texto = ' AND '.join(filtrar) if filtrar else '1'
+        ordenar_texto = ' ORDER BY ' + ', '.join(ordenar) if ordenar else ''
+        modelo = modelo.replace('{mostrar}', mostrar_texto)
+        modelo = modelo.replace('{filtrar}', filtrar_texto)
+        modelo = modelo.replace('{ordenar}', ordenar_texto)
+        return (modelo, pagina, maximo)
+
+    def generar_instruccion(mi, modelo:str, entidad:str, uid:str=None) -> tuple:
+        ...
 
     # --------------------------------------------------
     # Métodos privados
@@ -211,11 +255,11 @@ class BasedatosSqlite(_Basedatos):
 
     def _filtro_COINCIDE(mi, campo:str, valor:str) -> str:
         valor = mi._limpiar_texto(valor)
-        if valor == "F_NULO":
+        if valor == _Basedatos.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == "F_VACIO":
+        elif valor == _Basedatos.VALOR.VACIO:
             expresion = f"( {campo} = '' )"
-        elif valor == "F_NONULO":
+        elif valor == _Basedatos.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = valor.lower()
@@ -248,11 +292,11 @@ class BasedatosSqlite(_Basedatos):
 
     def _filtro_INCLUYE(mi, campo:str, valor:str) -> str:
         valor = mi._limpiar_texto(valor)
-        if valor == "F_NULO":
+        if valor == _Basedatos.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == "F_VACIO":
+        elif valor == _Basedatos.VALOR.VACIO:
             expresion = f"( {campo} = '' )"
-        elif valor == "F_NONULO":
+        elif valor == _Basedatos.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = valor.upper()
@@ -263,9 +307,9 @@ class BasedatosSqlite(_Basedatos):
         valor = mi._limpiar_texto(valor)
         expresion = ""
         valor = valor.strip()
-        if valor == "F_NULO":
+        if valor == _Basedatos.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == "F_NONULO":
+        elif valor == _Basedatos.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = mi._limpiar_numero(valor)
@@ -298,7 +342,7 @@ class BasedatosSqlite(_Basedatos):
         return expresion
 
     def _filtro_LISTA_DATOS(mi, campo:str, valor:str) -> str:
-        valor = mi.__limpiar_texto(valor)
+        valor = mi._limpiar_texto(valor)
         valor = valor.strip()
         valor = valor.replace('\n', '\r').replace('\r', ',').replace(' ', ',').replace(',,', ',')
         lista = [f"'{palabra.strip()}'" for palabra in valor.split(',') if len(palabra.strip()) > 0]
@@ -312,7 +356,7 @@ class BasedatosSqlite(_Basedatos):
         valor = mi._limpiar_texto(valor)
         expresion = ""
         valor = valor.strip()
-        if valor == "F_HOY":
+        if valor == _Basedatos.VALOR.HOY:
             expresion = f"( {campo} = '{datetime.today().strftime('%Y-%m-%d')}' )"
         else:
             valor = mi._limpiar_fecha(valor, '%Y-%m-%d')
@@ -414,20 +458,20 @@ class BasedatosSqlite(_Basedatos):
             return f"(strftime('%Y', {campo}) = '{ano}')"
 
         periodos = {
-            "F_HOY": __periodo_hoy,
-            "F_AYER": __periodo_ayer,
-            "F_ESTA_SEMANA": __periodo_esta_semana,
-            "F_ESTE_MES": __periodo_este_mes,
-            "F_ESTE_ANO": __periodo_este_ano,
-            "F_ULT_SEMANA": __periodo_ult_semana,
-            "F_ULT_MES": __periodo_ult_mes,
-            "F_ULT_ANO": __periodo_ult_ano,
-            "F_SIG_SEMANA": __periodo_sig_semana,
-            "F_SIG_MES": __periodo_sig_mes,
-            "F_SIG_ANO": __periodo_sig_ano,
-            "F_ANT_SEMANA": __periodo_ant_semana,
-            "F_ANT_MES": __periodo_ant_mes,
-            "F_ANT_ANO": __periodo_ant_ano
+            _Basedatos.VALOR.HOY: __periodo_hoy,
+            _Basedatos.VALOR.AYER: __periodo_ayer,
+            _Basedatos.VALOR.ESTA_SEMANA: __periodo_esta_semana,
+            _Basedatos.VALOR.ESTE_MES: __periodo_este_mes,
+            _Basedatos.VALOR.ESTE_ANO: __periodo_este_ano,
+            _Basedatos.VALOR.ULTIMA_SEMANA: __periodo_ult_semana,
+            _Basedatos.VALOR.ULTIMO_MES: __periodo_ult_mes,
+            _Basedatos.VALOR.ULTIMO_ANO: __periodo_ult_ano,
+            _Basedatos.VALOR.SIGUIENTE_SEMANA: __periodo_sig_semana,
+            _Basedatos.VALOR.SIGUIENTE_MES: __periodo_sig_mes,
+            _Basedatos.VALOR.SIGUIENTE_ANO: __periodo_sig_ano,
+            _Basedatos.VALOR.ANTERIOR_SEMANA: __periodo_ant_semana,
+            _Basedatos.VALOR.ANTERIOR_MES: __periodo_ant_mes,
+            _Basedatos.VALOR.ANTERIOR_ANO: __periodo_ant_ano
         }
         exp = ''
         valor = mi._limpiar_texto(valor)

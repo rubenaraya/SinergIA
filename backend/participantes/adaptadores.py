@@ -27,7 +27,7 @@ class ControladorParticipantes(Controlador):
 
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
         servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
-        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.diccionario())
+        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.exportar())
         resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
             titulo='{titulo}',
@@ -93,27 +93,28 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi) -> dict:
+    def recuperar_lista_participantes_todos(mi, peticion:dict) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-
-        instruccion = "SELECT * FROM participantes WHERE 1 ORDER BY id DESC"
-
-        datos, total = mi.basedatos.obtener(instruccion, parametros=[])
+        instruccion, pagina, maximo = mi.basedatos.generar_consulta(
+            modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
+            peticion=peticion
+        )
+        datos, total = mi.basedatos.obtener(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
-    def recuperar_lista_participantes_filtrados(mi) -> Dict:
+    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> Dict:
         ...
 
-    def recuperar_participante_por_id(mi) -> Dict:
+    def recuperar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
 
-    def insertar_nuevo_participante(mi) -> Dict:
+    def insertar_nuevo_participante(mi, peticion:dict) -> Dict:
         ...
 
-    def actualizar_participante_por_id(mi) -> Dict:
+    def actualizar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
 
-    def eliminar_participante_por_id(mi) -> Dict:
+    def eliminar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
 

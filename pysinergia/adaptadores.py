@@ -51,12 +51,6 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         DICCIONARIO = 1
         TUPLA = 2
 
-    class INSTRUCCION:
-        INSERT = "INSERT"
-        UPDATE = "UPDATE"
-        DELETE = "DELETE"
-        SELECT = "SELECT"
-
     class FILTRO:
         CONTIENE = "CONTIENE"
         COINCIDE = "COINCIDE"
@@ -70,6 +64,32 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         LISTA_DATOS = "LISTA_DATOS"
         NUMERO = "NUMERO"
 
+    class INSTRUCCION:
+        SELECT_POR_ID = 'SELECT {lista_campos} FROM {origen_datos} WHERE id={id}'
+        SELECT_CON_FILTROS = 'SELECT {mostrar} FROM {origen_datos} WHERE {filtrar} {ordenar}'
+        INSERT_FILA = 'INSERT INTO {origen_datos} ({lista_campos}) VALUES ({lista_marcas})'
+        UPDATE_POR_ID = 'UPDATE {origen_datos} SET {lista_campos} WHERE id={id}'
+        DELETE_POR_ID = 'DELETE FROM {origen_datos} WHERE id={id}'
+
+    class VALOR:
+        NULO = 'F_NULO'
+        VACIO = 'F_VACIO'
+        NO_NULO = 'F_NO_NULO'
+        HOY = 'F_HOY'
+        AYER = 'F_AYER'
+        ESTA_SEMANA = 'F_ESTA_SEMANA'
+        ESTE_MES = 'F_ESTE_MES'
+        ESTE_ANO = 'F_ESTE_ANO'
+        ULTIMA_SEMANA = 'F_ULTIMA_SEMANA'
+        ULTIMO_MES = 'F_ULTIMO_MES'
+        ULTIMO_ANO = 'F_ULTIMO_ANO'
+        SIGUIENTE_SEMANA = 'F_SIGUIENTE_SEMANA'
+        SIGUIENTE_MES = 'F_SIGUIENTE_MES'
+        SIGUIENTE_ANO = 'F_SIGUIENTE_ANO'
+        ANTERIOR_SEMANA = 'F_ANTERIOR_SEMANA'
+        ANTERIOR_MES = 'F_ANTERIOR_MES'
+        ANTERIOR_ANO = 'F_ANTERIOR_ANO'
+
     # --------------------------------------------------
     # Métodos obligatorios
 
@@ -82,27 +102,35 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def insertar(mi, instruccion:str, parametros:list) -> int:
+    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def actualizar(mi, instruccion:str, parametros:list) -> int:
+    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def eliminar(mi, instruccion:str, parametros:list) -> int:
+    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def leer(mi, instruccion:str, parametros:list, contenido:int) -> tuple:
+    def leer(mi, instruccion:str, parametros:list=[], contenido:int=ESTRUCTURA.DICCIONARIO) -> tuple:
         ...
 
     @abstractmethod
-    def obtener(mi, instruccion:str, parametros:list, pagina:int, maximo:int, contenido:int) -> tuple:
+    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=ESTRUCTURA.DICCIONARIO) -> tuple:
         ...
 
     @abstractmethod
     def crear_filtro(mi, filtro:str) -> str:
+        ...
+
+    @abstractmethod
+    def generar_instruccion(mi, modelo:str, peticion:dict={}, entidad:str=None, uid:str=None) -> tuple:
+        ...
+
+    @abstractmethod
+    def generar_consulta(mi, modelo:str, peticion:dict={}) -> tuple:
         ...
 
 
