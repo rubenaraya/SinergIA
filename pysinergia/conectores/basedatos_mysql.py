@@ -50,7 +50,7 @@ class BasedatosMysql(_Basedatos):
                     )
                     return True
                 except Error as e:
-                    print(e)
+                    raise e
         return False
 
     def desconectar(mi):
@@ -234,7 +234,7 @@ class BasedatosMysql(_Basedatos):
         aux = re.sub('[ñ]', '(n|ñ)', aux)
         aux = re.sub('[ç]', '(c|ç)', aux)
         valor = valor.upper()
-        expresion = f"( LOWER({campo}) regexp '[[:space:][:blank:]\",;:(+/¿¡=.-]{aux}[[:space:][:blank:]\",;:)+/?!=.-]' OR LOWER({campo}) regexp '^{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) regexp '[[:space:][:blank:]\",;:())+/?!=.-]{aux}$' OR LOWER({campo}) regexp '^{aux}$' OR UPPER({campo}) LIKE '{valor}' )"
+        expresion = f"( LOWER({campo}) REGEXP '[[:space:][:blank:]\",;:(+/¿¡=.-]{aux}[[:space:][:blank:]\",;:)+/?!=.-]' OR LOWER({campo}) REGEXP '^{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) REGEXP '[[:space:][:blank:]\",;:())+/?!=.-]{aux}$' OR LOWER({campo}) REGEXP '^{aux}$' OR UPPER({campo}) LIKE '{valor}' )"
         return expresion
 
     def _filtro_PALABRAS(mi, campo:str, valor:str) -> str:
@@ -255,7 +255,7 @@ class BasedatosMysql(_Basedatos):
             aux = re.sub('[uúüùû]', '(u|ú|ù|ü|û)', aux)
             aux = re.sub('[ñ]', '(n|ñ)', aux)
             aux = re.sub('[ç]', '(c|ç)', aux)
-            exp.append(f"( LOWER({campo}) regexp '[[:space:][:blank:]\",;:()+/¿¡=.-]{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) regexp '^{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) regexp '[[:space:][:blank:]\",;:())+/?!=.-]{aux}$' OR LOWER({campo}) regexp '^{aux}$' )")
+            exp.append(f"( LOWER({campo}) REGEXP '[[:space:][:blank:]\",;:()+/¿¡=.-]{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) REGEXP '^{aux}[[:space:][:blank:]\",;:())+/?!=.-]' OR LOWER({campo}) REGEXP '[[:space:][:blank:]\",;:())+/?!=.-]{aux}$' OR LOWER({campo}) REGEXP '^{aux}$' )")
         expresion = ' AND '.join(exp)
         return expresion
 
@@ -279,7 +279,7 @@ class BasedatosMysql(_Basedatos):
             aux = re.sub('[ñ]', '(n|ñ)', aux)
             aux = re.sub('[ç]', '(c|ç)', aux)
             valor = valor.upper()
-            expresion = f"( LOWER({campo}) regexp '^{aux}$' OR UPPER({campo}) LIKE '{valor}' )"
+            expresion = f"( LOWER({campo}) REGEXP '^{aux}$' OR UPPER({campo}) LIKE '{valor}' )"
         return expresion
 
     def _filtro_CONTIENE(mi, campo:str, valor:str) -> str:
@@ -293,7 +293,7 @@ class BasedatosMysql(_Basedatos):
         aux = re.sub(r'[ñ]', '(n|ñ)', aux)
         aux = re.sub(r'[ç]', '(c|ç)', aux)
         valor = valor.upper()
-        expresion = f"( LOWER({campo}) regexp '{aux}' OR UPPER({campo}) LIKE '%{valor}%' )"
+        expresion = f"( LOWER({campo}) REGEXP '{aux}' OR UPPER({campo}) LIKE '%{valor}%' )"
         return expresion
 
     def _filtro_INCLUYE(mi, campo:str, valor:str) -> str:
