@@ -84,8 +84,6 @@ class ControladorParticipantes(Controlador):
 # Clase: OperadorParticipantes
 # --------------------------------------------------
 """
-Falta recibir la petición procesada
-Falta crear generar_instruccion y generar_consulta en I_ConectorBasedatos y BasedatosSqlite)
 Falta probar Modelos iniciales para insertar y actualizar participantes
 """
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
@@ -99,6 +97,18 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
             modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             peticion=peticion
         )
+        """
+        sql, parametros = mi.basedatos.generar_instruccion(
+            modelo=mi.basedatos.INSTRUCCION.INSERT_FILA,
+            peticion=peticion,
+            id=2
+        )
+        print()
+        print(sql)
+        print(parametros)
+        print()
+        """
+
         datos, total = mi.basedatos.obtener(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
