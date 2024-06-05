@@ -38,7 +38,7 @@ class PeticionBuscarParticipantes(ModeloPeticion):
         max_length=50,
         validation_alias='email',
         serialization_alias='email',
-        json_schema_extra={'formato': 'email', 'filtro': 'CONTIENE', 'orden': '', 'entidad': '', 'visible': True}
+        json_schema_extra={'formato': 'text', 'filtro': 'CONTIENE', 'orden': '', 'entidad': '', 'visible': True}
     )
     estado: Optional[EstadoParticipante] | None = Field(
         default='',

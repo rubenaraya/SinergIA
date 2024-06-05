@@ -142,15 +142,15 @@ class BasedatosSqlite(_Basedatos):
         origen_datos = str(peticion.get('_origen_datos', ''))
         modelo = modelo.replace('{origen_datos}', origen_datos)
         for clave, contenido in peticion.items():
-            if isinstance(contenido, dict):
+            if isinstance(contenido, dict) and origen_datos:
                 campo = contenido.get('campo', clave)
                 entrada = contenido.get('entrada', '')
                 entidad = contenido.get('entidad', '')
-                formato = contenido.get('formato', '')
                 filtro = contenido.get('filtro', '')
                 orden = contenido.get('orden', '')
                 visible = contenido.get('visible', False)
                 valor = contenido.get('valor', '')
+                #formato = contenido.get('formato', '')
                 if isinstance(valor, list):
                     valor = ','.join(valor)
                 if entidad:
@@ -172,8 +172,78 @@ class BasedatosSqlite(_Basedatos):
         modelo = modelo.replace('{ordenar}', ordenar_texto)
         return (modelo, pagina, maximo)
 
-    def generar_instruccion(mi, modelo:str, entidad:str, uid:str=None) -> tuple:
-        ...
+    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
+        if not modelo or not peticion:
+            return None
+
+        def _formato_text(valor):
+            return str(valor)
+        def _formato_integer(valor):
+            return int(valor)
+        def _formato_rounded(valor):
+            return round(valor, None)
+        def _formato_path(valor):
+            return re.sub(r'\\', '/', valor)
+        def _formato_strip(valor):
+            return re.sub(r'-', ' ', valor).strip()
+        def _formato_cleaned(valor):
+            r = re.sub(r'\n', '|', valor)
+            r = re.sub(r'\r', '', r)
+            r = re.sub(r'"', "`", r)
+            r = re.sub(r"'", "`", r)
+            return r
+        def _formato_sha256(valor):
+            import hashlib
+            if valor:
+                sha256 = hashlib.sha256()
+                sha256.update(str(valor).encode())
+                hash_hex = sha256.hexdigest()
+                return hash_hex
+            return valor
+        def _formato_decimal(valor):
+            return valor
+        formatos = {
+            "text": _formato_text,
+            "integer": _formato_integer,
+            "rounded": _formato_rounded,
+            "path": _formato_path,
+            "strip": _formato_strip,
+            "cleaned": _formato_cleaned,
+            "sha256": _formato_sha256,
+            "decimal": _formato_decimal
+        }
+        parametros:list = []
+        campos:list[str] = []
+        marcas:list[str] = []
+        origen_datos = str(peticion.get('_origen_datos', ''))
+        modelo = modelo.replace('{origen_datos}', origen_datos)
+        modelo = modelo.replace('{id}', str(id))
+        for clave, contenido in peticion.items():
+            if isinstance(contenido, dict) and clave != 'id' and origen_datos:
+                campo = contenido.get('campo', clave)
+                entidad = contenido.get('entidad', '')
+                formato = contenido.get('formato', '')
+                visible = contenido.get('visible', False)
+                valor = contenido.get('valor', '')
+                if isinstance(valor, list):
+                    valor = ','.join(valor)
+                if not entidad or entidad == origen_datos:
+                    if valor and formato:
+                        valor = formatos.get(formato)(valor)
+                if modelo.startswith('SELECT ') and visible:
+                    campos.append(campo)
+                elif modelo.startswith('UPDATE '):
+                    campos.append(f'{campo} = ?')
+                    parametros.append(valor)
+                elif modelo.startswith('INSERT '):
+                    campos.append(campo)
+                    marcas.append(' ?')
+                    parametros.append(valor)
+        lista_campos = ', '.join(campos) if campos else ''
+        lista_marcas = ','.join(marcas) if marcas else ''
+        modelo = modelo.replace('{lista_campos}', lista_campos)
+        modelo = modelo.replace('{lista_marcas}', lista_marcas)
+        return (modelo, parametros)
 
     # --------------------------------------------------
     # Métodos privados

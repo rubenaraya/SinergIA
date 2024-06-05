@@ -126,7 +126,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_instruccion(mi, modelo:str, peticion:dict={}, entidad:str=None, uid:str=None) -> tuple:
+    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
         ...
 
     @abstractmethod
