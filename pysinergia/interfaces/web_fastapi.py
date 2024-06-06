@@ -21,7 +21,6 @@ from fastapi.encoders import jsonable_encoder
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _C,
-    Funciones as _F,
     ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import ModeloRespuesta
@@ -89,7 +88,7 @@ class ServidorApi:
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> FastAPI:
         from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = (Path(_F.obtener_ruta_raiz()) / f'{dir_frontend}').resolve()
+        mi.dir_frontend = ( Path('.') / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         docs_url = '/docs' if doc else None
         redoc_url = '/redoc' if doc else None

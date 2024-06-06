@@ -279,6 +279,91 @@ class Archivo(BaseModel):
     extension: Optional[str] = ''
     peso: Optional[int] = 0
 
+# --------------------------------------------------
+# ClaseModelo: Recurso
+# --------------------------------------------------
+class Recurso(BaseModel):
+    formato: Optional[str] = ''
+    tipo_mime: Optional[str] = ''
+    extension: Optional[str] = ''
+
+    @model_validator(mode='after')
+    @classmethod
+    def validate_model(cls, valores:Self) -> 'Recurso':
+        if valores.formato:
+            formatos = {
+                _Constantes.FORMATO.PDF: cls._pdf,
+                _Constantes.FORMATO.WORD: cls._word,
+                _Constantes.FORMATO.EXCEL: cls._excel,
+                _Constantes.FORMATO.CSV: cls._csv,
+                _Constantes.FORMATO.HTML: cls._html,
+                _Constantes.FORMATO.JSON: cls._json,
+                _Constantes.FORMATO.TEXTO: cls._texto,
+            }
+            formatos.get(valores.formato)(valores)
+        elif valores.tipo_mime:
+            tipos = {
+                _Constantes.MIME.PDF: cls._pdf,
+                _Constantes.MIME.DOCX: cls._word,
+                _Constantes.MIME.XLSX: cls._excel,
+                _Constantes.MIME.CSV: cls._csv,
+                _Constantes.MIME.HTML: cls._html,
+                _Constantes.MIME.JSON: cls._json,
+                _Constantes.MIME.TXT: cls._texto,
+            }
+            tipos.get(valores.tipo_mime)(valores)
+        elif valores.extension:
+            extensiones = {
+                'pdf': cls._pdf,
+                'docx': cls._word,
+                'xlsx': cls._excel,
+                'csv': cls._csv,
+                'html': cls._html,
+                'json': cls._json,
+                'txt': cls._texto,
+            }
+            extensiones.get(valores.extension)(valores)
+        return valores
+
+    @classmethod
+    def _pdf(cls, valores:Self):
+        valores.extension = 'pdf'
+        valores.formato = _Constantes.FORMATO.PDF
+        valores.tipo_mime = _Constantes.MIME.PDF
+    @classmethod
+    def _word(cls, valores:Self):
+        valores.extension = 'docx'
+        valores.formato = _Constantes.FORMATO.WORD
+        valores.tipo_mime = _Constantes.MIME.DOCX
+    @classmethod
+    def _excel(cls, valores:Self):
+        valores.extension = 'xlsx'
+        valores.formato = _Constantes.FORMATO.EXCEL
+        valores.tipo_mime = _Constantes.MIME.XLSX
+    @classmethod
+    def _csv(cls, valores:Self):
+        valores.extension = 'csv'
+        valores.formato = _Constantes.FORMATO.CSV
+        valores.tipo_mime = _Constantes.MIME.CSV
+    @classmethod
+    def _html(cls, valores:Self):
+        valores.extension = 'html'
+        valores.formato = _Constantes.FORMATO.HTML
+        valores.tipo_mime = _Constantes.MIME.HTML
+    @classmethod
+    def _json(cls, valores:Self):
+        valores.extension = 'json'
+        valores.formato = _Constantes.FORMATO.JSON
+        valores.tipo_mime = _Constantes.MIME.JSON
+    @classmethod
+    def _texto(cls, valores:Self):
+        valores.extension = 'txt'
+        valores.formato = _Constantes.FORMATO.TEXTO
+        valores.tipo_mime = _Constantes.MIME.TXT
+
+    def diccionario(mi) -> dict:
+        return mi.model_dump(by_alias=True, mode='json')
+
 
 # --------------------------------------------------
 # Funcion: crear_modelo

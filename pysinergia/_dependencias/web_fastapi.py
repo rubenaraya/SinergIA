@@ -25,7 +25,6 @@ from fastapi.responses import (
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Funciones as F,
     Constantes as C,
     ErrorPersonalizado,
 )

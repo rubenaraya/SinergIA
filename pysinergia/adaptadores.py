@@ -15,7 +15,6 @@ from pydantic_settings import (
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _Constantes,
-    Funciones as _Funciones,
     I_Traductor as _I_Traductor
 )
 from pysinergia.dominio import (
@@ -246,25 +245,30 @@ class Operador(ABC):
     def inyectar_conectores(mi, configuracion:Configuracion):
         try:
             if configuracion.basedatos_clase:
+                from pysinergia.conectores.basedatos import Basedatos
                 conector_basedatos = mi._importar_conector(mi.configuracion.basedatos())
                 if conector_basedatos:
-                    mi.basedatos = conector_basedatos()
+                    mi.basedatos:Basedatos = conector_basedatos()
             if configuracion.almacen_clase:
+                from pysinergia.conectores.almacen import Almacen
                 conector_almacen = mi._importar_conector(mi.configuracion.almacen())
                 if conector_almacen:
-                    mi.almacen = conector_almacen()
+                    mi.almacen:Almacen = conector_almacen()
             if configuracion.disco_clase:
+                from pysinergia.conectores.disco import Disco
                 conector_disco = mi._importar_conector(mi.configuracion.disco())
                 if conector_disco:
-                    mi.disco = conector_disco(mi.configuracion.disco())
+                    mi.disco:Disco = conector_disco(mi.configuracion.disco())
             if configuracion.llm_clase:
+                from pysinergia.conectores.llm import Llm
                 conector_llm = mi._importar_conector(mi.configuracion.llm())
                 if conector_llm:
-                    mi.llm = conector_llm()
+                    mi.llm:Llm = conector_llm()
             if configuracion.spi_clase:
+                from pysinergia.conectores.spi import Spi
                 conector_spi = mi._importar_conector(mi.configuracion.spi())
                 if conector_spi:
-                    mi.spi = conector_spi()
+                    mi.spi:Spi = conector_spi()
         except Exception as e:
             print(e)
 
@@ -286,7 +290,10 @@ class Controlador(ABC):
 # --------------------------------------------------
 @lru_cache
 def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
-    archivo_env = _Funciones.obtener_ruta_env(paquete, entorno)
+    nombre_archivo = f".{entorno.lower()}.env" if entorno else '.config.env'
+    partes = paquete.split('.')[:-1]
+    ruta = Path(*partes)
+    archivo_env = (ruta / nombre_archivo).as_posix()
     configuracion:Configuracion = modelo(_env_file=archivo_env)
     configuracion.iniciar(archivo_env, aplicacion)
     return configuracion

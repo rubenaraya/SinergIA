@@ -8,7 +8,6 @@ from pathlib import Path
 from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
-    Funciones as _Funciones,
     ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import (
@@ -163,7 +162,7 @@ class Comunicador(_I_Comunicador):
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['idioma'] = mi.idioma
-        mi.contexto['web']['ruta_raiz'] = _Funciones.obtener_ruta_raiz()
+        mi.contexto['web']['ruta_raiz'] = Path('.').resolve().as_posix()
         mi.contexto['web']['api_motor'] = api_motor
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}

@@ -19,7 +19,6 @@ from flask import (
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _C,
-    Funciones as _F,
     ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import ModeloRespuesta
@@ -88,7 +87,7 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> Flask:
-        mi.dir_frontend = (Path(_F.obtener_ruta_raiz()) / f'{dir_frontend}').resolve()
+        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         os.environ['ALIAS_FRONTEND'] = alias_frontend
         api = Flask(__name__,
             static_url_path=f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}",

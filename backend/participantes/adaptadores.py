@@ -34,11 +34,10 @@ class ControladorParticipantes(Controlador):
             descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()
         ).diccionario()
-        formato = mi.comunicador.elegir_formato(formato)
-        archivo = Funciones.atributos_archivo(formato=formato)
-        nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, archivo.extension)
-        encabezados = mi.comunicador.generar_encabezados(tipo_mime=archivo.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
-        contenido = mi.comunicador.exportar_contenido(formato=archivo.formato, info=respuesta, guardar=guardar)
+        recurso = Recurso(formato=mi.comunicador.elegir_formato(formato))
+        nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, recurso.extension)
+        encabezados = mi.comunicador.generar_encabezados(tipo_mime=recurso.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
+        contenido = mi.comunicador.exportar_contenido(formato=recurso.formato, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
     def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
@@ -94,18 +93,6 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
             modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             peticion=peticion
         )
-        """
-        sql, parametros = mi.basedatos.generar_instruccion(
-            modelo=mi.basedatos.INSTRUCCION.INSERT_FILA,
-            peticion=peticion,
-            id=2
-        )
-        print()
-        print(sql)
-        print(parametros)
-        print()
-        """
-
         datos, total = mi.basedatos.obtener(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
