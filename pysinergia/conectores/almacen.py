@@ -3,6 +3,10 @@
 from abc import (ABC, ABCMeta, abstractmethod)
 
 # --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+
+# --------------------------------------------------
 # Interface: I_ConectorAlmacen
 # --------------------------------------------------
 class I_ConectorAlmacen(metaclass=ABCMeta):
@@ -15,18 +19,8 @@ class I_ConectorAlmacen(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorAlmacen
 # --------------------------------------------------
-class ErrorAlmacen(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.detalles.__str__()}'
+class ErrorAlmacen(_ErrorPersonalizado):
+    ...
 
 
 # --------------------------------------------------

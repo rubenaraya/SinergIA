@@ -198,18 +198,6 @@ class Funciones:
         return Path('.').resolve().as_posix()
 
     @staticmethod
-    def tipo_salida(estado:int) -> str:
-        if estado < 200:
-            return Constantes.SALIDA.ERROR
-        if estado < 300:
-            return Constantes.SALIDA.EXITO
-        if estado < 400:
-            return Constantes.SALIDA.AVISO
-        if estado < 500:
-            return Constantes.SALIDA.ALERTA
-        return Constantes.SALIDA.ERROR
-
-    @staticmethod
     def atributos_archivo(formato:str=None, tipo_mime:str=None):
         class Portador:
             def __init__(mi, formato:str, extension:str, tipo_mime:str):
@@ -262,14 +250,14 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, archivo:str, nivel:str='ERROR'):
+    def crear(nombre:str, dir_logs='logs', nivel:str='ERROR'):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
         registrador.setLevel(nivel)
         registrador.propagate = False
         manejador = RotatingFileHandler(
-            filename = archivo,
+            filename = f'{dir_logs}/{nombre}.log',
             maxBytes = (10 * (1048576)),
             backupCount = 9,
             encoding = 'utf-8'
@@ -287,21 +275,77 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, tipo:str='ERROR', codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', traduccion:str='base'):
+    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', traduccion:str='base'):
         mi.codigo = codigo
-        mi.tipo = tipo
         mi.mensaje = mensaje
         mi.detalles = detalles
         mi.aplicacion = aplicacion
         mi.servicio = servicio
+        mi.recurso = recurso
         mi.traduccion = traduccion
+        mi.tipo = mi.tipo_salida(mi.codigo)
         super().__init__(mi.mensaje)
 
     def __str__(mi):
-        return f'{mi.mensaje}'
+        return f'{mi.tipo} {mi.codigo}: {mi.mensaje}'
 
     def __repr__(mi):
-        return f'{mi.aplicacion}.{mi.servicio} | {mi.tipo} {mi.codigo}: {mi.mensaje}. {mi.detalles.__str__()}'
+        contenido = f'{mi.tipo} {mi.codigo}: {mi.mensaje}'
+        if mi.aplicacion and mi.servicio:
+            contenido = f'{mi.aplicacion}/{mi.servicio} | {contenido}'
+        if mi.recurso:
+            contenido = f'{contenido} | {mi.recurso}'
+        if mi.detalles:
+            contenido = f'{contenido}. {str(mi.detalles)}'
+        return contenido
+
+    def tipo_salida(mi, estado:int) -> str:
+        if estado < 200:
+            return Constantes.SALIDA.ERROR
+        if estado < 300:
+            return Constantes.SALIDA.EXITO
+        if estado < 400:
+            return Constantes.SALIDA.AVISO
+        if estado < 500:
+            return Constantes.SALIDA.ALERTA
+        return Constantes.SALIDA.ERROR
+
+    def registrar(mi, nombre:str, texto_extra:str='', nivel:str=Constantes.REGISTRO.ERROR, dir_logs:str='logs') -> str:
+        registrador = RegistradorLogs.crear(nombre=nombre, dir_logs=dir_logs, nivel=nivel)
+        registro = mi.__repr__()
+        if texto_extra:
+            registro = f'{texto_extra} | {registro}'
+        if nivel == Constantes.REGISTRO.ERROR:
+            registrador.error(registro)
+        elif nivel == Constantes.REGISTRO.WARNING:
+            registrador.warning(registro)
+        elif nivel == Constantes.REGISTRO.DEBUG:
+            registrador.debug(registro)
+        elif nivel == Constantes.REGISTRO.INFO:
+            registrador.info(registro)
+        elif nivel == Constantes.REGISTRO.CRITICAL:
+            registrador.critical(registro)
+        return registro
+    
+    def serializar(mi) -> dict:
+        return dict({
+            'codigo': mi.codigo,
+            'tipo': mi.tipo,
+            'mensaje': mi.mensaje,
+            'detalles': mi.detalles,
+            'titulo': f'{mi.tipo} {mi.codigo}',
+            'descripcion': mi.__repr__()
+        })
+
+    def agregar_detalles(mi, errores:list) -> list:
+        if errores and isinstance(errores, list):
+            for error in errores:
+                type = error['type'] if hasattr(error, 'type') else ''
+                msg = error['msg'] if hasattr(error, 'msg') else ''
+                loc = error['loc'] if hasattr(error, 'loc') else ''
+                input = error['input'] if hasattr(error, 'input') else ''
+                mi.detalles.append({'tipo': type, 'error': msg, 'origen': loc, 'valor': input})
+        return mi.detalles
 
 
 # --------------------------------------------------
@@ -309,24 +353,26 @@ class ErrorPersonalizado(Exception):
 # --------------------------------------------------
 class I_Traductor(metaclass=ABCMeta):
 
-    # --------------------------------------------------
-    # Métodos obligatorios
-
     @abstractmethod
     def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
         ...
+
     @abstractmethod
     def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None):
         ...
+
     @abstractmethod
     def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
         ...
+
     @abstractmethod
     def _(mi, texto:str='') -> str:
         ...
+
     @abstractmethod
     def idioma_actual(mi) -> str:
         ...
+
     @abstractmethod
     def fecha_hora(mi, zona_horaria:str=None) -> dict:
         ...

@@ -9,6 +9,7 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
     Funciones as _Funciones,
+    ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
@@ -357,13 +358,10 @@ class Autenticador:
 # --------------------------------------------------
 # Clase: ErrorAutenticacion
 # --------------------------------------------------
-class ErrorAutenticacion(Exception):
+class ErrorAutenticacion(_ErrorPersonalizado):
     def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
         mi.codigo = codigo
         mi.mensaje = mensaje
         mi.url_login = url_login
         super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
 

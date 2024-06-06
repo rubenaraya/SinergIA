@@ -3,6 +3,10 @@
 from abc import (ABC, ABCMeta, abstractmethod)
 
 # --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+
+# --------------------------------------------------
 # Interface: I_ConectorLlm
 # --------------------------------------------------
 class I_ConectorLlm(metaclass=ABCMeta):
@@ -15,19 +19,8 @@ class I_ConectorLlm(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorLlm
 # --------------------------------------------------
-class ErrorLlm(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.detalles.__str__()}'
-
+class ErrorLlm(_ErrorPersonalizado):
+    ...
 
 # --------------------------------------------------
 # Clase: Llm

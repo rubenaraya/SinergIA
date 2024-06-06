@@ -4,6 +4,10 @@ from abc import (ABC, ABCMeta, abstractmethod)
 from typing import (List, BinaryIO, TextIO)
 
 # --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+
+# --------------------------------------------------
 # Interface: I_ConectorDisco
 # --------------------------------------------------
 class I_ConectorDisco(metaclass=ABCMeta):
@@ -64,20 +68,8 @@ class I_ConectorDisco(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorDisco
 # --------------------------------------------------
-class ErrorDisco(Exception):
-    def __init__(mi, mensaje:str, ruta:str='', codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.ruta = ruta
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.ruta} | {mi.detalles.__str__()}'
-
+class ErrorDisco(_ErrorPersonalizado):
+    ...
 
 # --------------------------------------------------
 # Clase: Disco

@@ -5,6 +5,10 @@ from abc import (ABC, ABCMeta, abstractmethod)
 from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+
+# --------------------------------------------------
 # Interface: I_ConectorBasedatos
 # --------------------------------------------------
 class I_ConectorBasedatos(metaclass=ABCMeta):
@@ -53,19 +57,8 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorBasedatos
 # --------------------------------------------------
-class ErrorBasedatos(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.detalles.__str__()}'
-
+class ErrorBasedatos(_ErrorPersonalizado):
+    ...
 
 # --------------------------------------------------
 # Clase: Basedatos

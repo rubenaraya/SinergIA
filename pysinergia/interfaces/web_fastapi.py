@@ -22,7 +22,6 @@ from fastapi.encoders import jsonable_encoder
 from pysinergia import (
     Constantes as _C,
     Funciones as _F,
-    RegistradorLogs as _RegistradorLogs,
     ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import ModeloRespuesta
@@ -148,167 +147,69 @@ class ServidorApi:
             HTTPException,
         )
         from pydantic import ValidationError
-        from pysinergia.conectores.disco import ErrorDisco
-        from pysinergia.conectores.basedatos import ErrorBasedatos
-        from pysinergia.conectores.almacen import ErrorAlmacen
-        from pysinergia.conectores.llm import ErrorLlm
-        from pysinergia.conectores.spi import ErrorSpi
-
-        @api.exception_handler(_ErrorPersonalizado)
-        async def _error_personalizado(request:Request, exc:_ErrorPersonalizado):
-            traductor = _Traductor({'dominio': exc.traduccion, 'idiomas_disponibles': idiomas_disponibles})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(
-                codigo=exc.codigo,
-                tipo=exc.tipo,
-                mensaje=exc.mensaje,
-                detalles=exc.detalles,
-                T=traductor
-            ).diccionario()
-            if exc.tipo == _C.SALIDA.ERROR:
-                nombre = archivo_logs
-                if exc.aplicacion and exc.servicio:
-                    nombre = f'{exc.aplicacion}_{exc.servicio}'
-                _RegistradorLogs.crear(f'{nombre}', f'{dir_logs}/{nombre}.log').error(
-                    f'{mi._obtener_url(request)} | {salida.__str__()}'
-                )
-            return JSONResponse(
-                status_code=exc.codigo,
-                content=jsonable_encoder(salida)
-            )
 
         @api.exception_handler(_ErrorAutenticacion)
-        async def _error_autenticacion(request:Request, exc:_ErrorAutenticacion):
-            if exc.url_login:
-                return RedirectResponse(url=exc.url_login)
+        async def _error_autenticacion(request:Request, err:_ErrorAutenticacion):
+            if err.url_login:
+                return RedirectResponse(url=err.url_login)
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(
-                codigo=exc.codigo,
-                tipo=_C.SALIDA.ALERTA,
-                mensaje=exc.mensaje,
-                detalles=[],
-                T=traductor
-            ).diccionario()
-            return JSONResponse(
-                status_code=exc.codigo,
-                content=jsonable_encoder(salida)
-        )
+            salida = ModeloRespuesta(**err.serializar(), T=traductor)
+            return JSONResponse(content=salida.json(), status_code=err.codigo)
 
-        @api.exception_handler(ErrorDisco)
-        async def _error_disco(request:Request, exc:ErrorDisco):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+        @api.exception_handler(_ErrorPersonalizado)
+        async def _error_personalizado(request:Request, err:_ErrorPersonalizado):
+            traductor = _Traductor({'dominio': err.traduccion, 'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(
-                codigo=exc.codigo,
-                tipo='ERROR',
-                mensaje=exc.mensaje,
-                detalles=exc.detalles,
-                T=traductor
-            ).diccionario()
-            _RegistradorLogs.crear(f'{archivo_logs}', f'{dir_logs}/{archivo_logs}.log').error(
-                f'{mi._obtener_url(request)} | {salida.__str__()}'
-            )
-            return JSONResponse(
-                status_code=exc.codigo,
-                content=jsonable_encoder(salida)
-            )
+            salida = ModeloRespuesta(**err.serializar(), T=traductor)
+            if err.tipo == _C.SALIDA.ERROR:
+                err.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            return JSONResponse(content=salida.json(), status_code=err.codigo)
 
         @api.exception_handler(ValidationError)
-        async def _error_validacion(request:Request, exc:ValidationError):
+        async def _error_validacion(request:Request, err:ValidationError):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            errores = exc.errors()
-            detalles = []
-            for error in errores:
-                detalles.append({
-                    'tipo': error['type'],
-                    'error': error['msg'],
-                    'origen': error['loc'],
-                    'valor': error['input']
-                })
-            salida = ModeloRespuesta(
-                codigo=_C.ESTADO._422_NO_PROCESABLE,
-                tipo=_C.SALIDA.ALERTA,
-                mensaje='Los-datos-recibidos-son-invalidos',
-                detalles=detalles,
-                T=traductor
-            ).diccionario()
+            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE)
+            error.agregar_detalles(err.errors())
+            salida = ModeloRespuesta(**error.serializar(), T=traductor)
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(exc, exc_info=True)
-            return JSONResponse(
-                status_code=_C.ESTADO._422_NO_PROCESABLE,
-                content=jsonable_encoder(salida)
-            )
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            return JSONResponse(content=salida.json(), status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(RequestValidationError)
-        async def _error_procesar_peticion(request:Request, exc:RequestValidationError):
+        async def _error_procesar_peticion(request:Request, err:RequestValidationError):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            errores = exc.errors()
-            detalles = []
-            for error in errores:
-                detalles.append({
-                    'tipo': error['type'],
-                    'error': error['msg'],
-                    'origen': error['loc'],
-                    'valor': error['input']
-                })
-            salida = ModeloRespuesta(
-                codigo=_C.ESTADO._422_NO_PROCESABLE,
-                tipo=_C.SALIDA.ALERTA,
-                mensaje='Los-datos-recibidos-no-se-procesaron',
-                detalles=detalles,
-                T=traductor
-            ).diccionario()
-            return JSONResponse(
-                status_code=_C.ESTADO._422_NO_PROCESABLE,
-                content=jsonable_encoder(salida)
-            )
+            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE)
+            error.agregar_detalles(err.errors())
+            salida = ModeloRespuesta(**error.serializar(), T=traductor)
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            return JSONResponse(content=salida.json(), status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(HTTPException)
-        async def _error_http(request:Request, exc:HTTPException):
+        async def _error_http(request:Request, err:HTTPException):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(
-                codigo=exc.status_code,
-                tipo=_F.tipo_salida(exc.status_code),
-                mensaje=exc.detail,
-                T=traductor
-            ).diccionario()
-            if exc.status_code >= 500:
-                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(
-                    f'{mi._obtener_url(request)} | {salida.__str__()}'
-                )
-            return JSONResponse(
-                status_code=exc.status_code,
-                content=jsonable_encoder(salida)
-            )
+            error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code)
+            salida = ModeloRespuesta(**error.serializar(), T=traductor)
+            if err.status_code >= 500:
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            return JSONResponse(content=salida.json(), status_code=err.status_code)
 
         @api.exception_handler(Exception)
-        async def _error_nomanejado(request:Request, exc:Exception):
+        async def _error_nomanejado(request:Request, err:Exception):
             import sys
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            descripcion = f'<{exception_name}: {exception_value}>'
-            salida = ModeloRespuesta(
-                codigo=_C.ESTADO._500_ERROR,
-                tipo=_C.SALIDA.ERROR,
-                mensaje='Error-no-manejado',
-                descripcion=descripcion,
-                T=traductor
-            ).diccionario()
-            registrador = _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log')
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
-                registrador.error(exc, exc_info=True)
-            else:
-                registrador.error(f'{mi._obtener_url(request)} | {descripcion}')
-            return JSONResponse(
-                status_code=_C.ESTADO._500_ERROR,
-                content=jsonable_encoder(salida)
-            )
+            descripcion = f'{exception_name}: {exception_value}'
+            error = _ErrorPersonalizado(mensaje=descripcion, codigo=_C.ESTADO._500_ERROR)
+            salida = ModeloRespuesta(**error.serializar(), T=traductor)
+            error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            return JSONResponse(content=salida.json(), status_code=_C.ESTADO._500_ERROR)
 
 
 # --------------------------------------------------

@@ -4,6 +4,10 @@ from abc import (ABC, ABCMeta, abstractmethod)
 from pathlib import Path
 
 # --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+
+# --------------------------------------------------
 # Interface: I_Exportador
 # --------------------------------------------------
 class I_Exportador(metaclass=ABCMeta):
@@ -20,18 +24,8 @@ class I_Exportador(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorExportador
 # --------------------------------------------------
-class ErrorExportador(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.detalles.__str__()}'
+class ErrorExportador(_ErrorPersonalizado):
+    ...
 
 
 # --------------------------------------------------
