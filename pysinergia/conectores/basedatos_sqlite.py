@@ -7,7 +7,10 @@ import sqlite3
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import Constantes as _Constantes
-from pysinergia.conectores.basedatos import Basedatos as _Basedatos
+from pysinergia.conectores.basedatos import (
+    Basedatos as _Basedatos,
+    ErrorBasedatos as _ErrorBasedatos
+)
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
@@ -39,7 +42,7 @@ class BasedatosSqlite(_Basedatos):
                 return True
         return False
 
-    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
         cursor.execute(sql_total, parametros)
@@ -55,7 +58,7 @@ class BasedatosSqlite(_Basedatos):
             instruccion += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
         cursor.execute(instruccion, parametros)
-        if contenido == _Basedatos.ESTRUCTURA.DICCIONARIO:
+        if estructura == _Basedatos.ESTRUCTURA.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             columnas = list(map(lambda x: x[0], cursor.description))
@@ -74,16 +77,16 @@ class BasedatosSqlite(_Basedatos):
                 "paginador": paginador
             }
             return datos, total
-        elif contenido == _Basedatos.ESTRUCTURA.TUPLA:
+        elif estructura == _Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, instruccion:str, parametros:list=[], contenido:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def leer(mi, instruccion:str, parametros:list=[], estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
-        if contenido == _Basedatos.ESTRUCTURA.DICCIONARIO:
+        if estructura == _Basedatos.ESTRUCTURA.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             return lista[0], 1
-        elif contenido == _Basedatos.ESTRUCTURA.TUPLA:
+        elif estructura == _Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchone(), 1)
 

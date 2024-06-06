@@ -1,7 +1,8 @@
 # pysinergia\__init__.py
 
-import json, gettext, os
+import json, os
 from pathlib import Path
+from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Componentes Globales de PySinergIA
@@ -253,116 +254,6 @@ class Funciones:
 
 
 # --------------------------------------------------
-# Clase: Traductor
-# --------------------------------------------------
-class Traductor:
-    def __init__(mi, config:dict={}):
-        mi.dominio:str = config.get('dominio', 'base')
-        mi.dir_locales:str = config.get('dir_locales', 'locales')
-        mi.zona_horaria:str = config.get('zona_horaria', 'Etc/GMT')
-        mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
-        mi.idioma = ''
-        mi.traduccion = None
-
-    # --------------------------------------------------
-    # Métodos privados
-
-    def _negociar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None) -> str:
-        if not idiomas_aceptados:
-            idiomas_aceptados = ''
-        if not idiomas_disponibles:
-            idiomas_disponibles = mi.idiomas_disponibles
-        mi.idiomas_disponibles = idiomas_disponibles
-        idiomas = idiomas_aceptados.split(',')
-        lista_idiomas = []
-        for idioma in idiomas:
-            partes = idioma.split(';')
-            codigo = partes[0].split('-')[0].strip()
-            q = 1.0
-            if len(partes) > 1 and partes[1].startswith('q='):
-                q = float(partes[1].split('=')[1])
-            lista_idiomas.append((codigo, q))
-        idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
-        idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
-        for idioma_preferido in idiomas_preferidos:
-            if idioma_preferido in idiomas_disponibles:
-                mi.idioma = idioma_preferido
-                return idioma_preferido
-        mi.idioma = idiomas_disponibles[0]
-        return mi.idioma
-
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
-        mi._negociar_idioma(idiomas_aceptados, idiomas_disponibles)
-        if not dominio:
-            dominio = mi.dominio
-        mi.dominio = dominio
-        if not dir_locales:
-            dir_locales = mi.dir_locales
-        mi.dir_locales = dir_locales
-        try:
-            mi.traduccion = gettext.translation(
-                domain=mi.dominio,
-                localedir=mi.dir_locales,
-                languages=[mi.idioma],
-                fallback=False,
-            )
-        except Exception as e:
-            raise e
-        return mi.idioma
-
-    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> gettext.GNUTranslations:
-        if not mi.traduccion:
-            mi.asignar_idioma(
-                idiomas_aceptados=idiomas_aceptados,
-                idiomas_disponibles=idiomas_disponibles,
-                dominio=dominio,
-                dir_locales=dir_locales
-            )
-        return mi.traduccion.gettext
-
-    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
-        if info and mi.traduccion:
-            seleccion = ['mensaje','titulo','descripcion']
-            for clave, valor in info.items():
-                if clave in seleccion or clave in claves:
-                    info[clave] = mi.traduccion.gettext(valor)
-        return info
-    
-    def _(mi, texto:str='') -> str:
-        return  mi.traduccion.gettext(texto)
-
-    def fecha_hora(mi, zona_horaria:str=None) -> dict:
-        import pytz
-        from datetime import datetime
-        fechahora = {}
-        if not zona_horaria:
-            zona_horaria = mi.zona_horaria
-        ist = pytz.timezone(zona_horaria)
-        local = ist.localize(datetime.now())
-        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
-        fechahora['hora'] = local.strftime( "%H:%M" )
-        fechahora['hms'] = local.strftime( "%H:%M:%S" )
-        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
-        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
-        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
-        fechahora['dm'] = local.strftime( "%d-%m" )
-        fechahora['md'] = local.strftime( "%m-%d" )
-        fechahora['ma'] = local.strftime( "%m-%Y" )
-        fechahora['am'] = local.strftime( "%Y-%m" )
-        fechahora['dia'] = local.strftime( "%d" )
-        fechahora['mes'] = local.strftime( "%m" )
-        fechahora['ano'] = local.strftime( "%Y" )
-        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
-        fechahora['iso8601'] = local.isoformat(timespec='seconds')
-        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
-        fechahora['p_am'] = local.strftime( "%Y%m%d" )
-        return fechahora
-
-
-# --------------------------------------------------
 # Clase estática: RegistradorLogs
 # --------------------------------------------------
 class RegistradorLogs:
@@ -371,7 +262,7 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, nivel:str, archivo:str):
+    def crear(nombre:str, archivo:str, nivel:str='ERROR'):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
@@ -414,35 +305,31 @@ class ErrorPersonalizado(Exception):
 
 
 # --------------------------------------------------
-# Clase: ErrorAutenticacion
+# Interface: I_Traductor
 # --------------------------------------------------
-class ErrorAutenticacion(Exception):
-    def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
-        mi.url_login = url_login
-        super().__init__(mi.mensaje)
+class I_Traductor(metaclass=ABCMeta):
 
-    def __str__(mi):
-        return f'{mi.mensaje}'
+    # --------------------------------------------------
+    # Métodos obligatorios
 
-
-# --------------------------------------------------
-# Clase: ErrorDisco
-# --------------------------------------------------
-class ErrorDisco(Exception):
-    def __init__(mi, mensaje:str, ruta:str='', codigo:int=500, detalles:list=[]):
-        mi.codigo = codigo
-        mi.ruta = ruta
-        mi.mensaje = mensaje
-        mi.detalles = detalles
-        super().__init__(mi.mensaje)
-
-    def __str__(mi):
-        return f'{mi.mensaje}'
-
-    def __repr__(mi):
-        return f'{mi.codigo}: {mi.mensaje} | {mi.ruta} | {mi.detalles.__str__()}'
+    @abstractmethod
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+        ...
+    @abstractmethod
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None):
+        ...
+    @abstractmethod
+    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
+        ...
+    @abstractmethod
+    def _(mi, texto:str='') -> str:
+        ...
+    @abstractmethod
+    def idioma_actual(mi) -> str:
+        ...
+    @abstractmethod
+    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+        ...
 
 
 # --------------------------------------------------

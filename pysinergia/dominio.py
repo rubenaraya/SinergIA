@@ -25,8 +25,7 @@ from pydantic import (
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _Constantes,
-    Funciones as _Funciones,
-    Traductor as _Traductor,
+    I_Traductor as _I_Traductor
 )
 
 # --------------------------------------------------
@@ -74,7 +73,7 @@ class ModeloPeticion(BaseModel):
 class ModeloRespuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    T:_Traductor | None = None
+    T:_I_Traductor | None = None
     codigo: int | None = _Constantes.ESTADO._200_EXITO
     tipo:str | None = _Constantes.SALIDA.EXITO
     mensaje:str | None = ''
@@ -101,10 +100,10 @@ class ModeloRespuesta(BaseModel):
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
             valores.hora_actual = fechahora.get('hora')
-            valores.idioma = valores.T.idioma
+            valores.idioma = valores.T.idioma_actual()
             _ = valores.T.abrir_traduccion()
             if _:
-                datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.opciones), valores.T.fecha_hora())
+                datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.opciones), fechahora)
                 valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
                 valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
                 valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''

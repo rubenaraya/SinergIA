@@ -8,7 +8,9 @@ from pydub import AudioSegment
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _Constantes,
-    ErrorPersonalizado as _ErrorPersonalizado,
+)
+from pysinergia.exportadores.exportador import (
+    ErrorExportador as _ErrorExportador,
 )
 
 # --------------------------------------------------
@@ -61,9 +63,8 @@ class ConvertidorAudio:
                 else:
                     resultado.append(ruta_guardar)
         except Exception as e:
-            raise _ErrorPersonalizado(
+            raise _ErrorExportador(
                 mensaje='Error-en-exportador-Audio',
-                tipo=_Constantes.SALIDA.ERROR,
                 codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )

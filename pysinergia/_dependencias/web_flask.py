@@ -21,7 +21,6 @@ from pysinergia import (
     Constantes as C,
     Json,
     ErrorPersonalizado,
-    Traductor,
 )
 from pysinergia.dominio import (
     CargaAudio,
@@ -33,6 +32,7 @@ from pysinergia.dominio import (
 from pysinergia.adaptadores import (
     cargar_configuracion,
 )
+from pysinergia.web import Traductor
 from pysinergia.interfaces.web_flask import (
     ComunicadorWeb,
     AutenticadorWeb,

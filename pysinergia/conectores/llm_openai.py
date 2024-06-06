@@ -1,17 +1,20 @@
 # pysinergia\conectores\llm_openai.py
 
 # --------------------------------------------------
-# Importaciones de Infraestructura de Datos
-
-# --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import I_ConectorLlm as _Llm
+from pysinergia.conectores.llm import (
+    Llm as _Llm,
+    ErrorLlm as _ErrorLlm
+)
 
 # --------------------------------------------------
 # Clase: LlmOpenai
 # --------------------------------------------------
 class LlmOpenai(_Llm):
     def __init__(mi):
+        super().__init__()
         ...
+
     def conectar(mi, config:dict) -> bool:
         return True
+

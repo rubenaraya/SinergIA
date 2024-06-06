@@ -1,6 +1,6 @@
 # pysinergia\web.py
 
-import time, jwt, importlib
+import time, jwt, importlib, gettext
 from pathlib import Path
 
 # --------------------------------------------------
@@ -9,33 +9,145 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
     Funciones as _Funciones,
-    Traductor as _Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
 )
 from pysinergia.adaptadores import (
-    I_ConectorDisco as _I_Disco,
     I_Comunicador as _I_Comunicador
 )
+from pysinergia.conectores.disco import Disco as _Disco
 from pysinergia import __version__ as api_motor
+
+# --------------------------------------------------
+# Clase: Traductor
+# --------------------------------------------------
+class Traductor:
+    def __init__(mi, config:dict={}):
+        mi.dominio:str = config.get('dominio', 'base')
+        mi.dir_locales:str = config.get('dir_locales', 'locales')
+        mi.zona_horaria:str = config.get('zona_horaria', 'Etc/GMT')
+        mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
+        mi.idioma = ''
+        mi.traduccion = None
+
+    # --------------------------------------------------
+    # Métodos privados
+
+    def _negociar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None) -> str:
+        if not idiomas_aceptados:
+            idiomas_aceptados = ''
+        if not idiomas_disponibles:
+            idiomas_disponibles = mi.idiomas_disponibles
+        mi.idiomas_disponibles = idiomas_disponibles
+        idiomas = idiomas_aceptados.split(',')
+        lista_idiomas = []
+        for idioma in idiomas:
+            partes = idioma.split(';')
+            codigo = partes[0].split('-')[0].strip()
+            q = 1.0
+            if len(partes) > 1 and partes[1].startswith('q='):
+                q = float(partes[1].split('=')[1])
+            lista_idiomas.append((codigo, q))
+        idiomas_ordenados = sorted(lista_idiomas, key=lambda x: x[1], reverse=True)
+        idiomas_preferidos = [lang[0] for lang in idiomas_ordenados]
+        for idioma_preferido in idiomas_preferidos:
+            if idioma_preferido in idiomas_disponibles:
+                mi.idioma = idioma_preferido
+                return idioma_preferido
+        mi.idioma = idiomas_disponibles[0]
+        return mi.idioma
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+        mi._negociar_idioma(idiomas_aceptados, idiomas_disponibles)
+        if not dominio:
+            dominio = mi.dominio
+        mi.dominio = dominio
+        if not dir_locales:
+            dir_locales = mi.dir_locales
+        mi.dir_locales = dir_locales
+        try:
+            mi.traduccion = gettext.translation(
+                domain=mi.dominio,
+                localedir=mi.dir_locales,
+                languages=[mi.idioma],
+                fallback=False,
+            )
+        except Exception as e:
+            raise e
+        return mi.idioma
+
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> gettext.GNUTranslations:
+        if not mi.traduccion:
+            mi.asignar_idioma(
+                idiomas_aceptados=idiomas_aceptados,
+                idiomas_disponibles=idiomas_disponibles,
+                dominio=dominio,
+                dir_locales=dir_locales
+            )
+        return mi.traduccion.gettext
+
+    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
+        if info and mi.traduccion:
+            seleccion = ['mensaje','titulo','descripcion']
+            for clave, valor in info.items():
+                if clave in seleccion or clave in claves:
+                    info[clave] = mi.traduccion.gettext(valor)
+        return info
+    
+    def _(mi, texto:str='') -> str:
+        return  mi.traduccion.gettext(texto)
+
+    def idioma_actual(mi) -> str:
+        return mi.idioma
+
+    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+        import pytz
+        from datetime import datetime
+        fechahora = {}
+        if not zona_horaria:
+            zona_horaria = mi.zona_horaria
+        ist = pytz.timezone(zona_horaria)
+        local = ist.localize(datetime.now())
+        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
+        fechahora['hora'] = local.strftime( "%H:%M" )
+        fechahora['hms'] = local.strftime( "%H:%M:%S" )
+        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
+        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
+        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
+        fechahora['dm'] = local.strftime( "%d-%m" )
+        fechahora['md'] = local.strftime( "%m-%d" )
+        fechahora['ma'] = local.strftime( "%m-%Y" )
+        fechahora['am'] = local.strftime( "%Y-%m" )
+        fechahora['dia'] = local.strftime( "%d" )
+        fechahora['mes'] = local.strftime( "%m" )
+        fechahora['ano'] = local.strftime( "%Y" )
+        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
+        fechahora['iso8601'] = local.isoformat(timespec='seconds')
+        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
+        fechahora['p_am'] = local.strftime( "%Y%m%d" )
+        return fechahora
+
 
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
 class Comunicador(_I_Comunicador):
 
-    def __init__(mi, config_web:dict, config_disco:dict, traductor:_Traductor=None):
+    def __init__(mi, config_web:dict, config_disco:dict, traductor:Traductor=None):
         mi.config_web:dict = config_web or {}
         mi.idioma = None
         mi.contexto:dict = {}
-        mi.disco:_I_Disco = mi._conectar_disco(config_disco)
-        mi.traductor = traductor or _Traductor()
+        mi.disco:_Disco = mi._conectar_disco(config_disco)
+        mi.traductor = traductor or Traductor()
 
     # --------------------------------------------------
     # Métodos privados
 
-    def _conectar_disco(mi, config_disco:dict) -> _I_Disco:
+    def _conectar_disco(mi, config_disco:dict) -> _Disco:
         disco_fuente = config_disco.get('fuente','')
         modulo = f'pysinergia.conectores.{disco_fuente}'
         componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
@@ -171,7 +283,7 @@ class Comunicador(_I_Comunicador):
                 return _Constantes.FORMATO.JSON
         return _Constantes.FORMATO.HTML
 
-    def traspasar_traductor(mi) -> _Traductor:
+    def traspasar_traductor(mi) -> Traductor:
         if mi.traductor:
             return mi.traductor
         return None
@@ -240,4 +352,18 @@ class Autenticador:
         id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
         return _Json.guardar(datos, archivo)
+
+
+# --------------------------------------------------
+# Clase: ErrorAutenticacion
+# --------------------------------------------------
+class ErrorAutenticacion(Exception):
+    def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
+        mi.codigo = codigo
+        mi.mensaje = mensaje
+        mi.url_login = url_login
+        super().__init__(mi.mensaje)
+
+    def __str__(mi):
+        return f'{mi.mensaje}'
 

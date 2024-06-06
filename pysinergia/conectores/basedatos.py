@@ -1,34 +1,140 @@
 # pysinergia\conectores\basedatos.py
 
-# --------------------------------------------------
-# Importaciones de Infraestructura de Datos
 import re
-from abc import ABC
+from abc import (ABC, ABCMeta, abstractmethod)
 from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
-# Importaciones de PySinergIA
-from pysinergia.adaptadores import I_ConectorBasedatos as _Basedatos
+# Interface: I_ConectorBasedatos
+# --------------------------------------------------
+class I_ConectorBasedatos(metaclass=ABCMeta):
 
-class Basedatos(ABC, _Basedatos):
+    @abstractmethod
+    def conectar(mi, config:dict) -> bool:
+        ...
+
+    @abstractmethod
+    def desconectar(mi):
+        ...
+
+    @abstractmethod
+    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
+        ...
+
+    @abstractmethod
+    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
+        ...
+
+    @abstractmethod
+    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
+        ...
+
+    @abstractmethod
+    def leer(mi, instruccion:str, parametros:list=[], estructura:int=1) -> tuple:
+        ...
+
+    @abstractmethod
+    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=1) -> tuple:
+        ...
+
+    @abstractmethod
+    def crear_filtro(mi, filtro:str) -> str:
+        ...
+
+    @abstractmethod
+    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
+        ...
+
+    @abstractmethod
+    def generar_consulta(mi, modelo:str, peticion:dict={}) -> tuple:
+        ...
+
+
+# --------------------------------------------------
+# Clase: ErrorBasedatos
+# --------------------------------------------------
+class ErrorBasedatos(Exception):
+    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[]):
+        mi.codigo = codigo
+        mi.mensaje = mensaje
+        mi.detalles = detalles
+        super().__init__(mi.mensaje)
+
+    def __str__(mi):
+        return f'{mi.mensaje}'
+
+    def __repr__(mi):
+        return f'{mi.codigo}: {mi.mensaje} | {mi.detalles.__str__()}'
+
+
+# --------------------------------------------------
+# Clase: Basedatos
+# --------------------------------------------------
+class Basedatos(ABC, I_ConectorBasedatos):
     def __init__(mi):
         mi.conexion = None
         mi.basedatos:str = None
         mi.ruta:str
         mi.marca:str
         mi.filtros = {
-            _Basedatos.FILTRO.CONTIENE: mi._filtro_CONTIENE,
-            _Basedatos.FILTRO.COINCIDE: mi._filtro_COINCIDE,
-            _Basedatos.FILTRO.PALABRAS: mi._filtro_PALABRAS,
-            _Basedatos.FILTRO.FRASE: mi._filtro_FRASE,
-            _Basedatos.FILTRO.INCLUYE: mi._filtro_INCLUYE,
-            _Basedatos.FILTRO.FECHA: mi._filtro_FECHA,
-            _Basedatos.FILTRO.RANGO_FECHAS: mi._filtro_RANGO_FECHAS,
-            _Basedatos.FILTRO.RANGO_NUMEROS: mi._filtro_RANGO_NUMEROS,
-            _Basedatos.FILTRO.PERIODO: mi._filtro_PERIODO,
-            _Basedatos.FILTRO.LISTA_DATOS: mi._filtro_LISTA_DATOS,
-            _Basedatos.FILTRO.NUMERO: mi._filtro_NUMERO
+            mi.FILTRO.CONTIENE: mi._filtro_CONTIENE,
+            mi.FILTRO.COINCIDE: mi._filtro_COINCIDE,
+            mi.FILTRO.PALABRAS: mi._filtro_PALABRAS,
+            mi.FILTRO.FRASE: mi._filtro_FRASE,
+            mi.FILTRO.INCLUYE: mi._filtro_INCLUYE,
+            mi.FILTRO.FECHA: mi._filtro_FECHA,
+            mi.FILTRO.RANGO_FECHAS: mi._filtro_RANGO_FECHAS,
+            mi.FILTRO.RANGO_NUMEROS: mi._filtro_RANGO_NUMEROS,
+            mi.FILTRO.PERIODO: mi._filtro_PERIODO,
+            mi.FILTRO.LISTA_DATOS: mi._filtro_LISTA_DATOS,
+            mi.FILTRO.NUMERO: mi._filtro_NUMERO
         }
+
+    # --------------------------------------------------
+    # Clases de constantes
+
+    class ESTRUCTURA:
+        DICCIONARIO = 1
+        TUPLA = 2
+
+    class FILTRO:
+        CONTIENE = "CONTIENE"
+        COINCIDE = "COINCIDE"
+        PALABRAS = "PALABRAS"
+        FRASE = "FRASE"
+        INCLUYE = "INCLUYE"
+        FECHA = "FECHA"
+        RANGO_FECHAS = "RANGO_FECHAS"
+        RANGO_NUMEROS = "RANGO_NUMEROS"
+        PERIODO = "PERIODO"
+        LISTA_DATOS = "LISTA_DATOS"
+        NUMERO = "NUMERO"
+
+    class INSTRUCCION:
+        SELECT_POR_ID = 'SELECT {lista_campos} FROM {origen_datos} WHERE id={id}'
+        SELECT_CON_FILTROS = 'SELECT {mostrar} FROM {origen_datos} WHERE {filtrar} {ordenar}'
+        INSERT_FILA = 'INSERT INTO {origen_datos} ({lista_campos}) VALUES ({lista_marcas})'
+        UPDATE_POR_ID = 'UPDATE {origen_datos} SET {lista_campos} WHERE id={id}'
+        DELETE_POR_ID = 'DELETE FROM {origen_datos} WHERE id={id}'
+
+    class VALOR:
+        NULO = 'F_NULO'
+        VACIO = 'F_VACIO'
+        NO_NULO = 'F_NO_NULO'
+        HOY = 'F_HOY'
+        AYER = 'F_AYER'
+        ESTA_SEMANA = 'F_ESTA_SEMANA'
+        ESTE_MES = 'F_ESTE_MES'
+        ESTE_ANO = 'F_ESTE_ANO'
+        ULTIMA_SEMANA = 'F_ULTIMA_SEMANA'
+        ULTIMO_MES = 'F_ULTIMO_MES'
+        ULTIMO_ANO = 'F_ULTIMO_ANO'
+        SIGUIENTE_SEMANA = 'F_SIGUIENTE_SEMANA'
+        SIGUIENTE_MES = 'F_SIGUIENTE_MES'
+        SIGUIENTE_ANO = 'F_SIGUIENTE_ANO'
+        ANTERIOR_SEMANA = 'F_ANTERIOR_SEMANA'
+        ANTERIOR_MES = 'F_ANTERIOR_MES'
+        ANTERIOR_ANO = 'F_ANTERIOR_ANO'
 
     # --------------------------------------------------
     # Métodos privados
@@ -110,11 +216,11 @@ class Basedatos(ABC, _Basedatos):
 
     def _filtro_COINCIDE(mi, campo:str, valor:str) -> str:
         valor = mi._limpiar_texto(valor)
-        if valor == _Basedatos.VALOR.NULO:
+        if valor == mi.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == _Basedatos.VALOR.VACIO:
+        elif valor == mi.VALOR.VACIO:
             expresion = f"( {campo} = '' )"
-        elif valor == _Basedatos.VALOR.NO_NULO:
+        elif valor == mi.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = valor.lower()
@@ -147,11 +253,11 @@ class Basedatos(ABC, _Basedatos):
 
     def _filtro_INCLUYE(mi, campo:str, valor:str) -> str:
         valor = mi._limpiar_texto(valor)
-        if valor == _Basedatos.VALOR.NULO:
+        if valor == mi.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == _Basedatos.VALOR.VACIO:
+        elif valor == mi.VALOR.VACIO:
             expresion = f"( {campo} = '' )"
-        elif valor == _Basedatos.VALOR.NO_NULO:
+        elif valor == mi.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = valor.upper()
@@ -162,9 +268,9 @@ class Basedatos(ABC, _Basedatos):
         valor = mi._limpiar_texto(valor)
         expresion = ""
         valor = valor.strip()
-        if valor == _Basedatos.VALOR.NULO:
+        if valor == mi.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
-        elif valor == _Basedatos.VALOR.NO_NULO:
+        elif valor == mi.VALOR.NO_NULO:
             expresion = f"( {campo} IS NOT NULL )"
         else:
             valor = mi._limpiar_numero(valor)
@@ -211,7 +317,7 @@ class Basedatos(ABC, _Basedatos):
         valor = mi._limpiar_texto(valor)
         expresion = ""
         valor = valor.strip()
-        if valor == _Basedatos.VALOR.HOY:
+        if valor == mi.VALOR.HOY:
             expresion = f"( {campo} = '{datetime.today().strftime('%Y-%m-%d')}' )"
         else:
             valor = mi._limpiar_fecha(valor, '%Y-%m-%d')
@@ -313,20 +419,20 @@ class Basedatos(ABC, _Basedatos):
             return f"(strftime('%Y', {campo}) = '{ano}')"
 
         periodos = {
-            _Basedatos.VALOR.HOY: __periodo_hoy,
-            _Basedatos.VALOR.AYER: __periodo_ayer,
-            _Basedatos.VALOR.ESTA_SEMANA: __periodo_esta_semana,
-            _Basedatos.VALOR.ESTE_MES: __periodo_este_mes,
-            _Basedatos.VALOR.ESTE_ANO: __periodo_este_ano,
-            _Basedatos.VALOR.ULTIMA_SEMANA: __periodo_ult_semana,
-            _Basedatos.VALOR.ULTIMO_MES: __periodo_ult_mes,
-            _Basedatos.VALOR.ULTIMO_ANO: __periodo_ult_ano,
-            _Basedatos.VALOR.SIGUIENTE_SEMANA: __periodo_sig_semana,
-            _Basedatos.VALOR.SIGUIENTE_MES: __periodo_sig_mes,
-            _Basedatos.VALOR.SIGUIENTE_ANO: __periodo_sig_ano,
-            _Basedatos.VALOR.ANTERIOR_SEMANA: __periodo_ant_semana,
-            _Basedatos.VALOR.ANTERIOR_MES: __periodo_ant_mes,
-            _Basedatos.VALOR.ANTERIOR_ANO: __periodo_ant_ano
+            mi.VALOR.HOY: __periodo_hoy,
+            mi.VALOR.AYER: __periodo_ayer,
+            mi.VALOR.ESTA_SEMANA: __periodo_esta_semana,
+            mi.VALOR.ESTE_MES: __periodo_este_mes,
+            mi.VALOR.ESTE_ANO: __periodo_este_ano,
+            mi.VALOR.ULTIMA_SEMANA: __periodo_ult_semana,
+            mi.VALOR.ULTIMO_MES: __periodo_ult_mes,
+            mi.VALOR.ULTIMO_ANO: __periodo_ult_ano,
+            mi.VALOR.SIGUIENTE_SEMANA: __periodo_sig_semana,
+            mi.VALOR.SIGUIENTE_MES: __periodo_sig_mes,
+            mi.VALOR.SIGUIENTE_ANO: __periodo_sig_ano,
+            mi.VALOR.ANTERIOR_SEMANA: __periodo_ant_semana,
+            mi.VALOR.ANTERIOR_MES: __periodo_ant_mes,
+            mi.VALOR.ANTERIOR_ANO: __periodo_ant_ano
         }
         exp = ''
         valor = mi._limpiar_texto(valor)

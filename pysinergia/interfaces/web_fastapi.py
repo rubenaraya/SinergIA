@@ -22,16 +22,15 @@ from fastapi.encoders import jsonable_encoder
 from pysinergia import (
     Constantes as _C,
     Funciones as _F,
-    ErrorPersonalizado as _ErrorPersonalizado,
-    ErrorAutenticacion as _ErrorAutenticacion,
-    ErrorDisco as _ErrorDisco,
     RegistradorLogs as _RegistradorLogs,
-    Traductor as _Traductor,
+    ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import ModeloRespuesta
 from pysinergia.web import (
     Comunicador as _Comunicador,
     Autenticador as _Autenticador,
+    ErrorAutenticacion as _ErrorAutenticacion,
+    Traductor as _Traductor,
 )
 from pysinergia import __version__ as api_motor
 
@@ -149,6 +148,11 @@ class ServidorApi:
             HTTPException,
         )
         from pydantic import ValidationError
+        from pysinergia.conectores.disco import ErrorDisco
+        from pysinergia.conectores.basedatos import ErrorBasedatos
+        from pysinergia.conectores.almacen import ErrorAlmacen
+        from pysinergia.conectores.llm import ErrorLlm
+        from pysinergia.conectores.spi import ErrorSpi
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado(request:Request, exc:_ErrorPersonalizado):
@@ -165,7 +169,7 @@ class ServidorApi:
                 nombre = archivo_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
-                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'{dir_logs}/{nombre}.log').error(
+                _RegistradorLogs.crear(f'{nombre}', f'{dir_logs}/{nombre}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
                 )
             return JSONResponse(
@@ -191,8 +195,8 @@ class ServidorApi:
                 content=jsonable_encoder(salida)
         )
 
-        @api.exception_handler(_ErrorDisco)
-        async def _error_disco(request:Request, exc:_ErrorDisco):
+        @api.exception_handler(ErrorDisco)
+        async def _error_disco(request:Request, exc:ErrorDisco):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
@@ -202,7 +206,7 @@ class ServidorApi:
                 detalles=exc.detalles,
                 T=traductor
             ).diccionario()
-            _RegistradorLogs.crear(f'{archivo_logs}', 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
+            _RegistradorLogs.crear(f'{archivo_logs}', f'{dir_logs}/{archivo_logs}.log').error(
                 f'{mi._obtener_url(request)} | {salida.__str__()}'
             )
             return JSONResponse(
@@ -230,6 +234,8 @@ class ServidorApi:
                 detalles=detalles,
                 T=traductor
             ).diccionario()
+            if mi.entorno == _C.ENTORNO.DESARROLLO:
+                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(exc, exc_info=True)
             return JSONResponse(
                 status_code=_C.ESTADO._422_NO_PROCESABLE,
                 content=jsonable_encoder(salida)
@@ -271,7 +277,7 @@ class ServidorApi:
                 T=traductor
             ).diccionario()
             if exc.status_code >= 500:
-                _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
+                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(
                     f'{mi._obtener_url(request)} | {salida.__str__()}'
                 )
             return JSONResponse(
@@ -294,7 +300,7 @@ class ServidorApi:
                 descripcion=descripcion,
                 T=traductor
             ).diccionario()
-            registrador = _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log')
+            registrador = _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log')
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 registrador.error(exc, exc_info=True)
             else:

@@ -28,7 +28,6 @@ from pysinergia import (
     Funciones as F,
     Constantes as C,
     ErrorPersonalizado,
-    Traductor,
 )
 from pysinergia.dominio import (
     CargaAudio,
@@ -40,6 +39,7 @@ from pysinergia.dominio import (
 from pysinergia.adaptadores import (
     cargar_configuracion,
 )
+from pysinergia.web import Traductor
 from pysinergia.interfaces.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,

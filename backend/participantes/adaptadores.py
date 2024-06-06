@@ -83,9 +83,6 @@ class ControladorParticipantes(Controlador):
 # --------------------------------------------------
 # Clase: OperadorParticipantes
 # --------------------------------------------------
-"""
-Falta probar Modelos iniciales para insertar y actualizar participantes
-"""
 class OperadorParticipantes(Operador, I_OperadorParticipantes):
 
     # --------------------------------------------------

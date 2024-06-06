@@ -21,16 +21,15 @@ from pysinergia import (
     Constantes as _C,
     Funciones as _F,
     Json as _Json,
-    ErrorPersonalizado as _ErrorPersonalizado,
-    ErrorAutenticacion as _ErrorAutenticacion,
-    ErrorDisco as _ErrorDisco,
     RegistradorLogs as _RegistradorLogs,
-    Traductor as _Traductor,
+    ErrorPersonalizado as _ErrorPersonalizado
 )
 from pysinergia.dominio import ModeloRespuesta
 from pysinergia.web import (
     Comunicador as _Comunicador,
     Autenticador as _Autenticador,
+    ErrorAutenticacion as _ErrorAutenticacion,
+    Traductor as _Traductor,
 )
 from pysinergia import __version__ as api_motor
 
@@ -147,6 +146,11 @@ class ServidorApi:
             InternalServerError,
         )
         from pydantic import ValidationError
+        from pysinergia.conectores.disco import ErrorDisco
+        from pysinergia.conectores.basedatos import ErrorBasedatos
+        from pysinergia.conectores.almacen import ErrorAlmacen
+        from pysinergia.conectores.llm import ErrorLlm
+        from pysinergia.conectores.spi import ErrorSpi
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado(exc:_ErrorPersonalizado):
@@ -163,7 +167,7 @@ class ServidorApi:
                 nombre = archivo_logs
                 if exc.aplicacion and exc.servicio:
                     nombre = f'{exc.aplicacion}_{exc.servicio}'
-                _RegistradorLogs.crear(f'{nombre}', 'ERROR', f'{dir_logs}/{nombre}.log').error(
+                _RegistradorLogs.crear(f'{nombre}', f'{dir_logs}/{nombre}.log').error(
                     f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
@@ -191,8 +195,8 @@ class ServidorApi:
                 mimetype=_C.MIME.JSON
             )
 
-        @api.errorhandler(_ErrorDisco)
-        def _error_disco(exc:_ErrorDisco):
+        @api.errorhandler(ErrorDisco)
+        def _error_disco(exc:ErrorDisco):
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             salida = ModeloRespuesta(
@@ -202,7 +206,7 @@ class ServidorApi:
                 detalles=exc.detalles,
                 T=traductor
             ).diccionario()
-            _RegistradorLogs.crear(f'{archivo_logs}', 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
+            _RegistradorLogs.crear(f'{archivo_logs}', f'{dir_logs}/{archivo_logs}.log').error(
                 f'{mi._obtener_url()} | {salida.__str__()}'
             )
             return Response(
@@ -232,7 +236,7 @@ class ServidorApi:
                 T=traductor
             ).diccionario()
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                _RegistradorLogs.crear(archivo_logs, 'DEBUG', f'{dir_logs}/{archivo_logs}.log').debug(exc, exc_info=True)
+                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(exc, exc_info=True)
             return Response(
                 _Json.codificar(salida),
                 status=_C.ESTADO._422_NO_PROCESABLE,
@@ -250,7 +254,7 @@ class ServidorApi:
                 T=traductor
             ).diccionario()
             if exc.code >= 500:
-                _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
+                _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(
                     f'{mi._obtener_url()} | {salida.__str__()}'
                 )
             return Response(
@@ -275,7 +279,7 @@ class ServidorApi:
                 mensaje=descripcion,
                 T=traductor
             ).diccionario()
-            _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log').error(
+            _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log').error(
                 f'{mi._obtener_url()} | {salida.__str__()}'
             )
             return Response(
@@ -299,7 +303,7 @@ class ServidorApi:
                 descripcion=descripcion,
                 T=traductor
             ).diccionario()
-            registrador = _RegistradorLogs.crear(archivo_logs, 'ERROR', f'{dir_logs}/{archivo_logs}.log')
+            registrador = _RegistradorLogs.crear(archivo_logs, f'{dir_logs}/{archivo_logs}.log')
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 registrador.error(exc, exc_info=True)
             else:

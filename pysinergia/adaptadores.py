@@ -1,7 +1,6 @@
 # pysinergia\adaptadores.py
 
-from abc import (ABCMeta, abstractmethod)
-from typing import (Dict, List, BinaryIO, TextIO)
+from abc import (ABC, ABCMeta, abstractmethod)
 from functools import lru_cache
 from pathlib import Path
 
@@ -17,221 +16,16 @@ from pydantic_settings import (
 from pysinergia import (
     Constantes as _Constantes,
     Funciones as _Funciones,
-    Traductor as _Traductor
+    I_Traductor as _I_Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
-    Archivo as _Archivo,
 )
-
-# --------------------------------------------------
-# Interface: I_ConectorAlmacen
-# --------------------------------------------------
-class I_ConectorAlmacen(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los conectores
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_ConectorBasedatos
-# --------------------------------------------------
-class I_ConectorBasedatos(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los conectores
-
-    # --------------------------------------------------
-    # Constantes
-
-    class ESTRUCTURA:
-        DICCIONARIO = 1
-        TUPLA = 2
-
-    class FILTRO:
-        CONTIENE = "CONTIENE"
-        COINCIDE = "COINCIDE"
-        PALABRAS = "PALABRAS"
-        FRASE = "FRASE"
-        INCLUYE = "INCLUYE"
-        FECHA = "FECHA"
-        RANGO_FECHAS = "RANGO_FECHAS"
-        RANGO_NUMEROS = "RANGO_NUMEROS"
-        PERIODO = "PERIODO"
-        LISTA_DATOS = "LISTA_DATOS"
-        NUMERO = "NUMERO"
-
-    class INSTRUCCION:
-        SELECT_POR_ID = 'SELECT {lista_campos} FROM {origen_datos} WHERE id={id}'
-        SELECT_CON_FILTROS = 'SELECT {mostrar} FROM {origen_datos} WHERE {filtrar} {ordenar}'
-        INSERT_FILA = 'INSERT INTO {origen_datos} ({lista_campos}) VALUES ({lista_marcas})'
-        UPDATE_POR_ID = 'UPDATE {origen_datos} SET {lista_campos} WHERE id={id}'
-        DELETE_POR_ID = 'DELETE FROM {origen_datos} WHERE id={id}'
-
-    class VALOR:
-        NULO = 'F_NULO'
-        VACIO = 'F_VACIO'
-        NO_NULO = 'F_NO_NULO'
-        HOY = 'F_HOY'
-        AYER = 'F_AYER'
-        ESTA_SEMANA = 'F_ESTA_SEMANA'
-        ESTE_MES = 'F_ESTE_MES'
-        ESTE_ANO = 'F_ESTE_ANO'
-        ULTIMA_SEMANA = 'F_ULTIMA_SEMANA'
-        ULTIMO_MES = 'F_ULTIMO_MES'
-        ULTIMO_ANO = 'F_ULTIMO_ANO'
-        SIGUIENTE_SEMANA = 'F_SIGUIENTE_SEMANA'
-        SIGUIENTE_MES = 'F_SIGUIENTE_MES'
-        SIGUIENTE_ANO = 'F_SIGUIENTE_ANO'
-        ANTERIOR_SEMANA = 'F_ANTERIOR_SEMANA'
-        ANTERIOR_MES = 'F_ANTERIOR_MES'
-        ANTERIOR_ANO = 'F_ANTERIOR_ANO'
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-    @abstractmethod
-    def desconectar(mi):
-        ...
-
-    @abstractmethod
-    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
-        ...
-
-    @abstractmethod
-    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
-        ...
-
-    @abstractmethod
-    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
-        ...
-
-    @abstractmethod
-    def leer(mi, instruccion:str, parametros:list=[], contenido:int=ESTRUCTURA.DICCIONARIO) -> tuple:
-        ...
-
-    @abstractmethod
-    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, contenido:int=ESTRUCTURA.DICCIONARIO) -> tuple:
-        ...
-
-    @abstractmethod
-    def crear_filtro(mi, filtro:str) -> str:
-        ...
-
-    @abstractmethod
-    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
-        ...
-
-    @abstractmethod
-    def generar_consulta(mi, modelo:str, peticion:dict={}) -> tuple:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_ConectorLlm
-# --------------------------------------------------
-class I_ConectorLlm(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los conectores
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_ConectorSpi
-# --------------------------------------------------
-class I_ConectorSpi(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura por los conectores
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def conectar(mi, config:dict) -> bool:
-        ...
-
-
-# --------------------------------------------------
-# Interface: I_ConectorDisco
-# --------------------------------------------------
-class I_ConectorDisco(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura
-
-    # --------------------------------------------------
-    # Métodos obligatorios
-
-    @abstractmethod
-    def normalizar_nombre(mi, nombre:str, extension:str=None, largo:int=100, auto:bool=False) -> str:
-        ...
-
-    @abstractmethod
-    def generar_nombre(mi, nombre:str, unico:bool=True) -> str:
-        ...
-
-    @abstractmethod
-    def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
-        ...
-
-    @abstractmethod
-    def abrir(mi, nombre:str, modo:str='') -> BinaryIO | TextIO:
-        ...
-
-    @abstractmethod
-    def eliminar(mi, nombre:str) -> bool:
-        ...
-
-    @abstractmethod
-    def copiar(mi, nombre:str, dir_destino:str, mover:bool=False) -> bool:
-        ...
-
-    @abstractmethod
-    def crear_carpeta(mi, nombre:str, antecesores:bool=False) -> str:
-        ...
-
-    @abstractmethod
-    def eliminar_carpeta(mi, nombre:str) ->bool:
-        ...
-
-    @abstractmethod
-    def comprobar_ruta(mi, nombre:str, tipo:str='') -> str:
-        ...
-
-    @abstractmethod
-    def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
-        ...
-
-    @abstractmethod
-    def empaquetar_zip(mi, dir_origen:str, ruta_archivo_zip:str) -> bool:
-        ...
-
-    @abstractmethod
-    def extraer_zip(mi, ruta_archivo_zip:str, dir_destino:str) -> bool:
-        ...
-
-    @abstractmethod
-    def convertir_imagen(mi, ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
-        ...
-
 
 # --------------------------------------------------
 # Interface: I_Comunicador
 # --------------------------------------------------
 class I_Comunicador(metaclass=ABCMeta):
-    # Implementada en la capa de infraestructura web
-
-    # --------------------------------------------------
-    # Métodos obligatorios
 
     @abstractmethod
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
@@ -270,7 +64,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traspasar_traductor(mi) -> _Traductor:
+    def traspasar_traductor(mi) -> _I_Traductor:
         ...
 
 
@@ -333,7 +127,7 @@ class Configuracion(BaseSettings):
         env_prefix='',
         extra='ignore',
     )
-    def basedatos(mi) -> Dict:
+    def basedatos(mi) -> dict:
         return dict({
             'fuente': mi.basedatos_fuente,
             'clase': mi.basedatos_clase,
@@ -342,7 +136,7 @@ class Configuracion(BaseSettings):
             'usuario': mi.basedatos_usuario,
             'password': mi.basedatos_password
         })
-    def disco(mi) -> Dict:
+    def disco(mi) -> dict:
         return dict({
             'fuente': mi.disco_fuente,
             'clase': mi.disco_clase,
@@ -353,7 +147,7 @@ class Configuracion(BaseSettings):
             'key': mi.disco_key,
             'secret': mi.disco_secret
         })
-    def almacen(mi) -> Dict:
+    def almacen(mi) -> dict:
         return dict({
             'fuente': mi.almacen_fuente,
             'clase': mi.almacen_clase,
@@ -364,7 +158,7 @@ class Configuracion(BaseSettings):
             'usuario': mi.almacen_usuario,
             'password': mi.almacen_password
         })
-    def llm(mi) -> Dict:
+    def llm(mi) -> dict:
         return dict({
             'fuente': mi.llm_fuente,
             'clase': mi.llm_clase,
@@ -373,7 +167,7 @@ class Configuracion(BaseSettings):
             'url': mi.llm_url,
             'apikey': mi.llm_apikey,
         })
-    def spi(mi) -> Dict:
+    def spi(mi) -> dict:
         return dict({
             'fuente': mi.spi_fuente,
             'clase': mi.spi_clase,
@@ -392,7 +186,7 @@ class Configuracion(BaseSettings):
             mi.app_web = os.getenv('APP_WEB', '')
             mi.raiz_api = os.getenv('RAIZ_API', '')
             mi.frontend = os.getenv('ALIAS_FRONTEND', '')
-    def web(mi) -> Dict:
+    def web(mi) -> dict:
         return {
             'aplicacion': mi.aplicacion,
             'servicio': mi.servicio,
@@ -406,14 +200,14 @@ class Configuracion(BaseSettings):
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend,
         }
-    def autenticacion(mi) -> Dict:
+    def autenticacion(mi) -> dict:
         return dict({
             'algoritmo_jwt': mi.algoritmo_jwt,
             'secret_key': mi.secret_key,
             'api_keys': mi.api_keys,
             'ruta_temp': mi.ruta_temp,
         })
-    def traductor(mi) -> Dict:
+    def traductor(mi) -> dict:
         return dict({
             'dominio': mi.dominio,
             'dir_locales': mi.dir_locales,
@@ -423,28 +217,9 @@ class Configuracion(BaseSettings):
 
 
 # --------------------------------------------------
-# Clase: Exportador
-# --------------------------------------------------
-class Exportador:
-    def __init__(mi, config_web:dict):
-        mi.config_web:dict = config_web or {}
-
-    def obtener_ruta(mi):
-        ruta_temp = mi.config_web.get('ruta_temp', '')
-        ruta = Path(ruta_temp) / 'archivos'
-        ruta = ruta.resolve()
-        if not ruta.exists():
-            return ''
-        return ruta.as_posix()
-
-    def generar(mi, contenido:str='', opciones:dict={}):
-        raise NotImplementedError()
-
-
-# --------------------------------------------------
 # Clase: Operador
 # --------------------------------------------------
-class Operador:
+class Operador(ABC):
     def __init__(mi, configuracion:Configuracion):
         mi.configuracion:Configuracion = configuracion
         mi.inyectar_conectores(mi.configuracion)
@@ -473,23 +248,23 @@ class Operador:
             if configuracion.basedatos_clase:
                 conector_basedatos = mi._importar_conector(mi.configuracion.basedatos())
                 if conector_basedatos:
-                    mi.basedatos:I_ConectorBasedatos = conector_basedatos()
+                    mi.basedatos = conector_basedatos()
             if configuracion.almacen_clase:
                 conector_almacen = mi._importar_conector(mi.configuracion.almacen())
                 if conector_almacen:
-                    mi.almacen:I_ConectorAlmacen = conector_almacen()
+                    mi.almacen = conector_almacen()
             if configuracion.disco_clase:
                 conector_disco = mi._importar_conector(mi.configuracion.disco())
                 if conector_disco:
-                    mi.disco:I_ConectorDisco = conector_disco(mi.configuracion.disco())
+                    mi.disco = conector_disco(mi.configuracion.disco())
             if configuracion.llm_clase:
                 conector_llm = mi._importar_conector(mi.configuracion.llm())
                 if conector_llm:
-                    mi.llm:I_ConectorLlm = conector_llm()
+                    mi.llm = conector_llm()
             if configuracion.spi_clase:
                 conector_spi = mi._importar_conector(mi.configuracion.spi())
                 if conector_spi:
-                    mi.spi:I_ConectorSpi = conector_spi()
+                    mi.spi = conector_spi()
         except Exception as e:
             print(e)
 
@@ -497,7 +272,7 @@ class Operador:
 # --------------------------------------------------
 # Clase: Controlador
 # --------------------------------------------------
-class Controlador:
+class Controlador(ABC):
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
         mi.comunicador:I_Comunicador = comunicador

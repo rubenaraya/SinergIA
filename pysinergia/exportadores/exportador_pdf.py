@@ -2,10 +2,12 @@
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.adaptadores import Exportador as _Exportador
+from pysinergia.exportadores.exportador import (
+    Exportador as _Exportador,
+    ErrorExportador as _ErrorExportador,
+)
 from pysinergia import (
     Constantes as _Constantes,
-    ErrorPersonalizado as _ErrorPersonalizado,
 )
 
 # --------------------------------------------------
@@ -31,9 +33,8 @@ class ExportadorPdf(_Exportador):
             pdf = HTML(string=contenido).write_pdf(stylesheets=[css] if css else None)
             return io.BytesIO(pdf)
         except Exception as e:
-            raise _ErrorPersonalizado(
+            raise _ErrorExportador(
                 mensaje='Error-en-exportador-PDF',
-                tipo=_Constantes.SALIDA.ERROR,
                 codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )

@@ -50,10 +50,6 @@ class I_OperadorParticipantes(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ServicioParticipantes
 # --------------------------------------------------
-"""
-Falta convertir los Modelos de peticiones en Modelos de instrucciones para traspasar al Operador (procesar: validar y completar)
-Falta entregar un estado interno del resultado (exito / error) ¿y un mensaje?
-"""
 class ServicioParticipantes(Servicio):
 
     def __init__(mi, operador:I_OperadorParticipantes, sesion:dict=None):
