@@ -361,7 +361,7 @@ class Recurso(BaseModel):
         valores.formato = _Constantes.FORMATO.TEXTO
         valores.tipo_mime = _Constantes.MIME.TXT
 
-    def diccionario(mi) -> dict:
+    def atributos(mi) -> dict:
         return mi.model_dump(by_alias=True, mode='json')
 
 
