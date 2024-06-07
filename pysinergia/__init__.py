@@ -2,7 +2,6 @@
 
 import json, os
 from pathlib import Path
-from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Componentes Globales de PySinergIA
@@ -281,36 +280,6 @@ class ErrorPersonalizado(Exception):
                 input = error['input'] if hasattr(error, 'input') else ''
                 mi.detalles.append({'tipo': type, 'error': msg, 'origen': loc, 'valor': input})
         return mi.detalles
-
-
-# --------------------------------------------------
-# Interface: I_Traductor
-# --------------------------------------------------
-class I_Traductor(metaclass=ABCMeta):
-
-    @abstractmethod
-    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
-        ...
-
-    @abstractmethod
-    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None):
-        ...
-
-    @abstractmethod
-    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
-        ...
-
-    @abstractmethod
-    def _(mi, texto:str='') -> str:
-        ...
-
-    @abstractmethod
-    def idioma_actual(mi) -> str:
-        ...
-
-    @abstractmethod
-    def fecha_hora(mi, zona_horaria:str=None) -> dict:
-        ...
 
 
 # --------------------------------------------------

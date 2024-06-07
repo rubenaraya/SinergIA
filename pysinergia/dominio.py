@@ -25,7 +25,6 @@ from pydantic import (
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _Constantes,
-    I_Traductor as _I_Traductor
 )
 
 # --------------------------------------------------
@@ -73,7 +72,7 @@ class ModeloPeticion(BaseModel):
 class ModeloRespuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    T:_I_Traductor | None = None
+    T: object | None = None
     codigo: int | None = _Constantes.ESTADO._200_EXITO
     tipo:str | None = _Constantes.SALIDA.EXITO
     mensaje:str | None = ''

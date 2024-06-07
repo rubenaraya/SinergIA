@@ -60,6 +60,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 class ErrorBasedatos(_ErrorPersonalizado):
     ...
 
+
 # --------------------------------------------------
 # Clase: Basedatos
 # --------------------------------------------------

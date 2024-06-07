@@ -9,13 +9,13 @@ from pysinergia import (
     Json as _Json,
     Constantes as _Constantes,
     ErrorPersonalizado as _ErrorPersonalizado,
-    I_Traductor as _I_Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
 )
 from pysinergia.adaptadores import (
-    I_Comunicador as _I_Comunicador
+    I_Comunicador as _I_Comunicador,
+    I_Traductor as _I_Traductor,
 )
 from pysinergia.conectores.disco import Disco as _Disco
 from pysinergia import __version__ as api_motor
@@ -197,7 +197,7 @@ class Comunicador(_I_Comunicador):
                 if formato == _Constantes.FORMATO.HTML or formato == _Constantes.FORMATO.TEXTO:
                     resultado = contenido
                 else:
-                    from pysinergia.adaptadores import Exportador
+                    from pysinergia.exportadores.exportador import Exportador
                     modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
                     clase = f'Exportador{str(formato).capitalize()}'
                     componente = getattr(importlib.import_module(modulo), clase)

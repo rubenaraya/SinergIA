@@ -7,7 +7,6 @@ from typing import (List, BinaryIO, TextIO)
 # Importaciones de PySinergIA
 from pysinergia import (
     ErrorPersonalizado as _ErrorPersonalizado,
-    Constantes as _Constantes,
 )
 
 # --------------------------------------------------

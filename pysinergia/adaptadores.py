@@ -15,11 +15,40 @@ from pydantic_settings import (
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as _Constantes,
-    I_Traductor as _I_Traductor
 )
 from pysinergia.dominio import (
     CargaArchivo as _CargaArchivo,
 )
+
+# --------------------------------------------------
+# Interface: I_Traductor
+# --------------------------------------------------
+class I_Traductor(metaclass=ABCMeta):
+
+    @abstractmethod
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+        ...
+
+    @abstractmethod
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None):
+        ...
+
+    @abstractmethod
+    def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
+        ...
+
+    @abstractmethod
+    def _(mi, texto:str='') -> str:
+        ...
+
+    @abstractmethod
+    def idioma_actual(mi) -> str:
+        ...
+
+    @abstractmethod
+    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+        ...
+
 
 # --------------------------------------------------
 # Interface: I_Comunicador
@@ -63,7 +92,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def traspasar_traductor(mi) -> _I_Traductor:
+    def traspasar_traductor(mi) -> I_Traductor:
         ...
 
 

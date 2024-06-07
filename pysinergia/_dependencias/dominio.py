@@ -11,4 +11,5 @@ from pydantic import Field
 # Importaciones de PySinergIA
 from pysinergia.dominio import (
     ModeloPeticion,
+    ModeloRespuesta,
 )
