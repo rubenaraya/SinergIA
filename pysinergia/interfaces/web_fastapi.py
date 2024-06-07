@@ -173,7 +173,7 @@ class ServidorApi:
             error.agregar_detalles(err.errors())
             salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
             return JSONResponse(content=salida, status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(RequestValidationError)
@@ -183,7 +183,7 @@ class ServidorApi:
             error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE)
             error.agregar_detalles(err.errors())
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
             salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
             return JSONResponse(content=salida, status_code=_C.ESTADO._422_NO_PROCESABLE)
 

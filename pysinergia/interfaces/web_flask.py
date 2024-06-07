@@ -170,7 +170,7 @@ class ServidorApi:
             error.agregar_detalles(err.errors())
             salida = ModeloRespuesta(**error.serializar(), T=traductor)
             if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
+                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
             return Response(salida.json(), status=_C.ESTADO._422_NO_PROCESABLE, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(HTTPException)
@@ -196,13 +196,16 @@ class ServidorApi:
 
         @api.errorhandler(Exception)
         def _error_nomanejado(err:Exception):
-            import sys
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
+
+            import sys
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            descripcion = f'{exception_name}: {exception_value}'
-            error = _ErrorPersonalizado(mensaje=descripcion, codigo=_C.ESTADO._500_ERROR)
+            print(f'{exception_name}: {exception_value}')
+
+            mensaje = 'Error-no-manejado'
+            error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR)
             salida = ModeloRespuesta(**error.serializar(), T=traductor)
             error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
             return Response(salida.json(), status=_C.ESTADO._500_ERROR, mimetype=_C.MIME.JSON)

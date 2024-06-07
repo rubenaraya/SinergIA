@@ -22,6 +22,12 @@ class RolParticipante(str, Enum):
 # --------------------------------------------------
 class PeticionBuscarParticipantes(ModeloPeticion):
     origen_datos: Optional[str] = Field('participantes')
+    id: Optional[str] | None = Field(
+        default='',
+        serialization_alias='id',
+        validation_alias='id',
+        json_schema_extra={'formato': 'integer', 'orden': 'DESC', 'entidad': 'participantes', 'visible': True}
+    )
     alias: Optional[str] = Field(
         default='',
         title='Alias',
@@ -48,12 +54,6 @@ class PeticionBuscarParticipantes(ModeloPeticion):
         validation_alias='estado',
         serialization_alias='estado',
         json_schema_extra={'formato': 'text', 'filtro': 'COINCIDE', 'orden': '', 'entidad': '', 'visible': False}
-    )
-    id: Optional[str] | None = Field(
-        default='',
-        serialization_alias='id',
-        validation_alias='id',
-        json_schema_extra={'formato': 'integer', 'orden': 'DESC', 'entidad': 'participantes', 'visible': True}
     )
     maximo: Optional[int] | None = Field(serialization_alias='maximo', default=0)
     pagina: Optional[int] | None = Field(serialization_alias='pagina', default=0)

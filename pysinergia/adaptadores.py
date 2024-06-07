@@ -103,6 +103,7 @@ class Configuracion(BaseSettings):
     aplicacion: str = ''
     servicio: str = ''
     zona_horaria: str = ''
+    formato_fecha: str = ''
     dominio: str = ''
     dir_locales: str = ''
     ruta_temp: str = ''
@@ -218,15 +219,17 @@ class Configuracion(BaseSettings):
         return {
             'aplicacion': mi.aplicacion,
             'servicio': mi.servicio,
-            'dominio': mi.dominio,
-            'dir_locales': mi.dir_locales,
             'ruta_temp': mi.ruta_temp,
             'ruta_servicio': mi.ruta_servicio,
-            'zona_horaria': mi.zona_horaria,
-            'idiomas_disponibles': mi.idiomas_disponibles,
             'app_web': mi.app_web,
             'raiz_api': mi.raiz_api,
             'frontend': mi.frontend,
+            'nivel_registro': mi.nivel_registro,
+            'dominio': mi.dominio,
+            'dir_locales': mi.dir_locales,
+            'idiomas_disponibles': mi.idiomas_disponibles,
+            'zona_horaria': mi.zona_horaria,
+            'formato_fecha': mi.formato_fecha,
         }
     def autenticacion(mi) -> dict:
         return dict({
@@ -241,6 +244,7 @@ class Configuracion(BaseSettings):
             'dir_locales': mi.dir_locales,
             'idiomas_disponibles': mi.idiomas_disponibles,
             'zona_horaria': mi.zona_horaria,
+            'formato_fecha': mi.formato_fecha,
         })
 
 

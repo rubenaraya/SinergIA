@@ -26,7 +26,8 @@ class Traductor(_I_Traductor):
     def __init__(mi, config:dict={}):
         mi.dominio:str = config.get('dominio', 'base')
         mi.dir_locales:str = config.get('dir_locales', 'locales')
-        mi.zona_horaria:str = config.get('zona_horaria', 'Etc/GMT')
+        mi.zona_horaria:str = config.get('zona_horaria', 'UTC')
+        mi.formato_fecha:str = config.get('formato_fecha', '%d/%m/%Y %H:%M')
         mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
         mi.idioma = ''
         mi.traduccion = None
@@ -104,32 +105,46 @@ class Traductor(_I_Traductor):
     def idioma_actual(mi) -> str:
         return mi.idioma
 
-    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+    def fecha_hora(mi, fecha_hora:str=None, zona_horaria:str=None, formato_fecha:str=None) -> dict:
         import pytz
         from datetime import datetime
-        fechahora = {}
-        if not zona_horaria:
-            zona_horaria = mi.zona_horaria
-        ist = pytz.timezone(zona_horaria)
-        local = ist.localize(datetime.now())
-        fechahora['fecha'] = local.strftime( "%d/%m/%Y" )
-        fechahora['hora'] = local.strftime( "%H:%M" )
-        fechahora['hms'] = local.strftime( "%H:%M:%S" )
-        fechahora['amd'] = local.strftime( "%Y-%m-%d" )
-        fechahora['dma'] = local.strftime( "%d-%m-%Y" )
-        fechahora['mda'] = local.strftime( "%m-%d-%Y" )
-        fechahora['dm'] = local.strftime( "%d-%m" )
-        fechahora['md'] = local.strftime( "%m-%d" )
-        fechahora['ma'] = local.strftime( "%m-%Y" )
-        fechahora['am'] = local.strftime( "%Y-%m" )
-        fechahora['dia'] = local.strftime( "%d" )
-        fechahora['mes'] = local.strftime( "%m" )
-        fechahora['ano'] = local.strftime( "%Y" )
-        fechahora['amdhms'] = local.strftime( "%Y%m%d%H%M%S" )
-        fechahora['iso8601'] = local.isoformat(timespec='seconds')
-        fechahora['p_amd'] = local.strftime( "%Y%m%d" )
-        fechahora['p_am'] = local.strftime( "%Y%m%d" )
-        return fechahora
+        try:
+            zona_horaria = zona_horaria or mi.zona_horaria
+            formato_fecha = formato_fecha or mi.formato_fecha
+            tz = pytz.timezone(zona_horaria)
+            if fecha_hora:
+                fecha_dt = datetime.strptime(fecha_hora, formato_fecha)
+                local = tz.localize(fecha_dt)
+            else:
+                local = tz.localize(datetime.now())
+            diccionario = {
+                'fecha': local.strftime("%d/%m/%Y"),
+                'hora': local.strftime("%H:%M"),
+                'hms': local.strftime("%H:%M:%S"),
+                'amd': local.strftime("%Y-%m-%d"),
+                'dma': local.strftime("%d-%m-%Y"),
+                'mda': local.strftime("%m-%d-%Y"),
+                'dm': local.strftime("%d-%m"),
+                'md': local.strftime("%m-%d"),
+                'ma': local.strftime("%m-%Y"),
+                'am': local.strftime("%Y-%m"),
+                'dia': local.strftime("%d"),
+                'mes': local.strftime("%m"),
+                'ano': local.strftime("%Y"),
+                'amdhms': local.strftime("%Y%m%d%H%M%S"),
+                'iso8601': local.isoformat(timespec='seconds'),
+                'p_amd': local.strftime("%Y%m%d"),
+                'p_am': local.strftime("%Y%m")
+            }
+            return diccionario
+        except ValueError as e:
+            return mi.fecha_hora()
+        except pytz.UnknownTimeZoneError as e:
+            print(e)
+            return {}
+        except Exception as e:
+            print(e)
+            return {}
 
 
 # --------------------------------------------------

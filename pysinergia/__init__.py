@@ -168,14 +168,15 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', traduccion:str='base'):
+    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', traduccion:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
         mi.codigo = int(codigo)
-        mi.mensaje = mensaje
+        mi.mensaje = str(mensaje).replace('{','(').replace('}',')')
         mi.detalles = detalles
         mi.aplicacion = aplicacion
         mi.servicio = servicio
         mi.recurso = recurso
         mi.traduccion = traduccion
+        mi.nivel_registro = nivel_registro
         mi.tipo = mi.tipo_salida(mi.codigo)
         super().__init__(mi.mensaje)
 
@@ -201,22 +202,20 @@ class ErrorPersonalizado(Exception):
             return Constantes.SALIDA.ALERTA
         return Constantes.SALIDA.ERROR
 
-    def registrar(mi, nombre:str, texto_extra:str='', nivel:str=Constantes.REGISTRO.ERROR, dir_logs:str='logs') -> str:
-        if mi.aplicacion and mi.servicio:
-            nombre = f'{mi.aplicacion}_{mi.servicio}'
-        registrador = RegistradorLogs.crear(nombre=nombre, dir_logs=dir_logs, nivel=nivel)
+    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str='ERROR', dir_logs:str='logs') -> str:
+        nombre = f'{mi.aplicacion}_{mi.servicio}' if mi.aplicacion and mi.servicio else nombre
         registro = mi.__repr__()
-        if texto_extra:
-            registro = f'{texto_extra} | {registro}'
-        if nivel == Constantes.REGISTRO.ERROR:
+        registro = f'{texto_extra} | {registro}' if texto_extra else registro
+        registrador = RegistradorLogs.crear(nombre=nombre, dir_logs=dir_logs, nivel=mi.nivel_registro)
+        if nivel_evento == Constantes.REGISTRO.ERROR:
             registrador.error(registro)
-        elif nivel == Constantes.REGISTRO.WARNING:
+        elif nivel_evento == Constantes.REGISTRO.WARNING:
             registrador.warning(registro)
-        elif nivel == Constantes.REGISTRO.DEBUG:
+        elif nivel_evento == Constantes.REGISTRO.DEBUG:
             registrador.debug(registro)
-        elif nivel == Constantes.REGISTRO.INFO:
+        elif nivel_evento == Constantes.REGISTRO.INFO:
             registrador.info(registro)
-        elif nivel == Constantes.REGISTRO.CRITICAL:
+        elif nivel_evento == Constantes.REGISTRO.CRITICAL:
             registrador.critical(registro)
         return registro
     
