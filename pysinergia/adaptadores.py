@@ -17,7 +17,7 @@ from pysinergia import (
     Constantes as _Constantes,
 )
 from pysinergia.dominio import (
-    CargaArchivo as _CargaArchivo,
+    ArchivoCargado as _ArchivoCargado,
 )
 
 # --------------------------------------------------
@@ -60,11 +60,11 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def elegir_formato(mi, formato:str=None) -> str:
+    def elegir_conversion(mi, conversion:str=None) -> str:
         ...
 
     @abstractmethod
-    def cargar_archivo(mi, portador:_CargaArchivo, unico:bool=False) -> _CargaArchivo:
+    def cargar_archivo(mi, portador:_ArchivoCargado, unico:bool=False) -> _ArchivoCargado:
         ...
     
     @abstractmethod
@@ -72,7 +72,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def exportar_contenido(mi, formato:str, info:dict={}, guardar:bool=False):
+    def exportar_contenido(mi, conversion:str, info:dict={}, guardar:bool=False):
         ...
 
     @abstractmethod

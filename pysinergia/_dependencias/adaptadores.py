@@ -8,10 +8,10 @@ from pysinergia import (
     Constantes,
 )
 from pysinergia.dominio import (
-    ModeloPeticion,
-    ModeloRespuesta,
+    Peticion,
+    Respuesta,
     RespuestaResultado,
-    CargaArchivo,
+    ArchivoCargado,
     Recurso,
 )
 from pysinergia.adaptadores import (

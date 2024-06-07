@@ -28,9 +28,9 @@ from pysinergia import (
 )
 
 # --------------------------------------------------
-# ClaseModelo: ModeloPeticion
+# ClaseModelo: Peticion
 # --------------------------------------------------
-class ModeloPeticion(BaseModel):
+class Peticion(BaseModel):
 
     def diccionario(mi) -> dict:
         return mi.model_dump(by_alias=True, mode='json')
@@ -66,9 +66,9 @@ class ModeloPeticion(BaseModel):
 
 
 # --------------------------------------------------
-# ClaseModelo: ModeloRespuesta
+# ClaseModelo: Respuesta
 # --------------------------------------------------
-class ModeloRespuesta(BaseModel):
+class Respuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     T: object | None = None
@@ -86,7 +86,7 @@ class ModeloRespuesta(BaseModel):
 
     @model_validator(mode='after')
     @classmethod
-    def model_validator(cls, valores:Self) -> 'ModeloRespuesta':
+    def model_validator(cls, valores:Self) -> 'Respuesta':
         from collections import ChainMap
 
         def _filtrar_diccionario(diccionario:dict):
@@ -121,7 +121,7 @@ class ModeloRespuesta(BaseModel):
 # --------------------------------------------------
 # ClaseModelo: RespuestaResultado
 # --------------------------------------------------
-class RespuestaResultado(ModeloRespuesta):
+class RespuestaResultado(Respuesta):
     fecha: dict | None = {}
     web: dict | None = {}
     url: dict | None = {}
@@ -130,9 +130,9 @@ class RespuestaResultado(ModeloRespuesta):
 
 
 # --------------------------------------------------
-# ClaseModelo: CargaArchivo
+# ClaseModelo: ArchivoCargado
 # --------------------------------------------------
-class CargaArchivo(BaseModel):
+class ArchivoCargado(BaseModel):
     origen: object
     contenido: object = None
     nombre: Optional[str] = ''
@@ -159,7 +159,7 @@ class CargaArchivo(BaseModel):
 
     @model_validator(mode='after')
     @classmethod
-    def validate_model(cls, valores:Self) -> 'CargaArchivo':
+    def validate_model(cls, valores:Self) -> 'ArchivoCargado':
         origen = valores.origen
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
@@ -193,9 +193,9 @@ class CargaArchivo(BaseModel):
         return valores
 
 # --------------------------------------------------
-# ClaseModelo: CargaImagen
+# ClaseModelo: ImagenCargada
 # --------------------------------------------------
-class CargaImagen(CargaArchivo):
+class ImagenCargada(ArchivoCargado):
     carpeta: Optional[str] = 'imagenes'
 
     @classmethod
@@ -210,9 +210,9 @@ class CargaImagen(CargaArchivo):
         return 5 * 1024 * 1024
 
 # --------------------------------------------------
-# ClaseModelo: CargaDocumento
+# ClaseModelo: DocumentoCargado
 # --------------------------------------------------
-class CargaDocumento(CargaArchivo):
+class DocumentoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'documentos'
 
     @classmethod
@@ -232,9 +232,9 @@ class CargaDocumento(CargaArchivo):
         return 2 * 1024 * 1024
 
 # --------------------------------------------------
-# ClaseModelo: CargaAudio
+# ClaseModelo: AudioCargado
 # --------------------------------------------------
-class CargaAudio(CargaArchivo):
+class AudioCargado(ArchivoCargado):
     carpeta: Optional[str] = 'audios'
 
     @classmethod
@@ -252,9 +252,9 @@ class CargaAudio(CargaArchivo):
         return 25 * 1024 * 1024
 
 # --------------------------------------------------
-# ClaseModelo: CargaVideo
+# ClaseModelo: VideoCargado
 # --------------------------------------------------
-class CargaVideo(CargaArchivo):
+class VideoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'videos'
     @classmethod
     def tipos_permitidos(cls) -> List[str]:
@@ -266,6 +266,7 @@ class CargaVideo(CargaArchivo):
     @classmethod
     def peso_maximo(cls) -> int:
         return 25 * 1024 * 1024
+
 
 # --------------------------------------------------
 # ClaseModelo: Archivo
@@ -283,24 +284,24 @@ class Archivo(BaseModel):
 # ClaseModelo: Recurso
 # --------------------------------------------------
 class Recurso(BaseModel):
-    formato: Optional[str] = ''
+    conversion: Optional[str] = ''
     tipo_mime: Optional[str] = ''
     extension: Optional[str] = ''
 
     @model_validator(mode='after')
     @classmethod
     def validate_model(cls, valores:Self) -> 'Recurso':
-        if valores.formato:
-            formatos = {
-                _Constantes.FORMATO.PDF: cls._pdf,
-                _Constantes.FORMATO.WORD: cls._word,
-                _Constantes.FORMATO.EXCEL: cls._excel,
-                _Constantes.FORMATO.CSV: cls._csv,
-                _Constantes.FORMATO.HTML: cls._html,
-                _Constantes.FORMATO.JSON: cls._json,
-                _Constantes.FORMATO.TEXTO: cls._texto,
+        if valores.conversion:
+            conversiones = {
+                _Constantes.CONVERSION.PDF: cls._pdf,
+                _Constantes.CONVERSION.WORD: cls._word,
+                _Constantes.CONVERSION.EXCEL: cls._excel,
+                _Constantes.CONVERSION.CSV: cls._csv,
+                _Constantes.CONVERSION.HTML: cls._html,
+                _Constantes.CONVERSION.JSON: cls._json,
+                _Constantes.CONVERSION.TEXTO: cls._texto,
             }
-            formatos.get(valores.formato)(valores)
+            conversiones.get(valores.conversion)(valores)
         elif valores.tipo_mime:
             tipos = {
                 _Constantes.MIME.PDF: cls._pdf,
@@ -328,36 +329,36 @@ class Recurso(BaseModel):
     @classmethod
     def _pdf(cls, valores:Self):
         valores.extension = 'pdf'
-        valores.formato = _Constantes.FORMATO.PDF
+        valores.conversion = _Constantes.CONVERSION.PDF
         valores.tipo_mime = _Constantes.MIME.PDF
     @classmethod
     def _word(cls, valores:Self):
         valores.extension = 'docx'
-        valores.formato = _Constantes.FORMATO.WORD
+        valores.conversion = _Constantes.CONVERSION.WORD
         valores.tipo_mime = _Constantes.MIME.DOCX
     @classmethod
     def _excel(cls, valores:Self):
         valores.extension = 'xlsx'
-        valores.formato = _Constantes.FORMATO.EXCEL
+        valores.conversion = _Constantes.CONVERSION.EXCEL
         valores.tipo_mime = _Constantes.MIME.XLSX
     @classmethod
     def _csv(cls, valores:Self):
         valores.extension = 'csv'
-        valores.formato = _Constantes.FORMATO.CSV
+        valores.conversion = _Constantes.CONVERSION.CSV
         valores.tipo_mime = _Constantes.MIME.CSV
     @classmethod
     def _html(cls, valores:Self):
         valores.extension = 'html'
-        valores.formato = _Constantes.FORMATO.HTML
+        valores.conversion = _Constantes.CONVERSION.HTML
         valores.tipo_mime = _Constantes.MIME.HTML
     @classmethod
     def _json(cls, valores:Self):
         valores.extension = 'json'
-        valores.formato = _Constantes.FORMATO.JSON
+        valores.conversion = _Constantes.CONVERSION.JSON
         valores.tipo_mime = _Constantes.MIME.JSON
     @classmethod
     def _texto(cls, valores:Self):
         valores.extension = 'txt'
-        valores.formato = _Constantes.FORMATO.TEXTO
+        valores.conversion = _Constantes.CONVERSION.TEXTO
         valores.tipo_mime = _Constantes.MIME.TXT
 

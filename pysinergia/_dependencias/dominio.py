@@ -10,6 +10,6 @@ from pydantic import Field, ConfigDict
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.dominio import (
-    ModeloPeticion,
-    ModeloRespuesta,
+    Peticion,
+    Respuesta,
 )

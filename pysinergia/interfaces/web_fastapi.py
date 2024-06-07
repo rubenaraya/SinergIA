@@ -23,7 +23,7 @@ from pysinergia import (
     Constantes as _C,
     ErrorPersonalizado as _ErrorPersonalizado
 )
-from pysinergia.dominio import ModeloRespuesta
+from pysinergia.dominio import Respuesta
 from pysinergia.web import (
     Comunicador as _Comunicador,
     Autenticador as _Autenticador,
@@ -153,14 +153,14 @@ class ServidorApi:
                 return RedirectResponse(url=err.url_login)
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(**err.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**err.serializar(), T=traductor).diccionario()
             return JSONResponse(content=salida, status_code=err.codigo)
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado(request:Request, err:_ErrorPersonalizado):
             traductor = _Traductor({'dominio': err.traduccion, 'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            salida = ModeloRespuesta(**err.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**err.serializar(), T=traductor).diccionario()
             if err.tipo == _C.SALIDA.ERROR:
                 err.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
             return JSONResponse(content=salida, status_code=err.codigo)
@@ -171,7 +171,7 @@ class ServidorApi:
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE)
             error.agregar_detalles(err.errors())
-            salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**error.serializar(), T=traductor).diccionario()
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
             return JSONResponse(content=salida, status_code=_C.ESTADO._422_NO_PROCESABLE)
@@ -184,7 +184,7 @@ class ServidorApi:
             error.agregar_detalles(err.errors())
             if mi.entorno == _C.ENTORNO.DESARROLLO:
                 error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
-            salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**error.serializar(), T=traductor).diccionario()
             return JSONResponse(content=salida, status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(HTTPException)
@@ -192,7 +192,7 @@ class ServidorApi:
             traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code)
-            salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**error.serializar(), T=traductor).diccionario()
             if err.status_code >= 500:
                 error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
             return JSONResponse(content=salida, status_code=err.status_code)
@@ -209,7 +209,7 @@ class ServidorApi:
 
             mensaje = 'Error-no-manejado'
             error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR)
-            salida = ModeloRespuesta(**error.serializar(), T=traductor).diccionario()
+            salida = Respuesta(**error.serializar(), T=traductor).diccionario()
             error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
             return JSONResponse(content=salida, status_code=_C.ESTADO._500_ERROR)
 

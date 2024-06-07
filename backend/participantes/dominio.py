@@ -20,7 +20,7 @@ class RolParticipante(str, Enum):
 # --------------------------------------------------
 # ClaseModelo: PeticionBuscarParticipantes
 # --------------------------------------------------
-class PeticionBuscarParticipantes(ModeloPeticion):
+class PeticionBuscarParticipantes(Peticion):
     origen_datos: Optional[str] = Field('participantes')
     id: Optional[str] | None = Field(
         default='',
@@ -61,13 +61,13 @@ class PeticionBuscarParticipantes(ModeloPeticion):
 # --------------------------------------------------
 # ClaseModelo: PeticionParticipante
 # --------------------------------------------------
-class PeticionParticipante(ModeloPeticion):
+class PeticionParticipante(Peticion):
     id: int = Field(..., title='ID', description='ID del participante', gt=0)
 
 # --------------------------------------------------
 # ClaseModelo: ModeloNuevoParticipante
 # --------------------------------------------------
-class ModeloNuevoParticipante(ModeloPeticion):
+class ModeloNuevoParticipante(Peticion):
     alias: str
     email: str
     rol: RolParticipante

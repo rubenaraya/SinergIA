@@ -5,9 +5,8 @@ from pysinergia._dependencias.adaptadores import *
 # --------------------------------------------------
 # Importaciones del Servicio personalizado
 from .servicio import (
-    ACCION,
-    CasosDeUsoParticipantes, 
-    I_RepositorioParticipantes
+    CasosDeUsoParticipantes as CasosDeUso, 
+    I_RepositorioParticipantes,
 )
 
 # --------------------------------------------------
@@ -25,57 +24,57 @@ class ControladorParticipantes(Controlador):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa web)
 
-    def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
-        servicio = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion)
-        resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.exportar())
+    def buscar_participantes(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
+        servicio = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
+        resultado = servicio.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.exportar())
         resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
             titulo='{titulo}',
             descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()
         ).diccionario()
-        recurso = Recurso(formato=mi.comunicador.elegir_formato(formato))
+        recurso = Recurso(conversion=mi.comunicador.elegir_conversion(conversion))
         nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, recurso.extension)
         encabezados = mi.comunicador.generar_encabezados(tipo_mime=recurso.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
-        contenido = mi.comunicador.exportar_contenido(formato=recurso.formato, info=respuesta, guardar=guardar)
+        contenido = mi.comunicador.exportar_contenido(conversion=recurso.conversion, info=respuesta, guardar=guardar)
         return (contenido, encabezados)
 
-    def cargar_archivo(mi, peticion:CargaArchivo) -> dict:
+    def cargar_archivo(mi, peticion:ArchivoCargado) -> dict:
         resultado = mi.comunicador.cargar_archivo(peticion)
         if resultado.es_valido:
-            contenido = ModeloRespuesta(
+            contenido = Respuesta(
                 mensaje='Archivo-cargado-con-exito',
-                resultado={'nombre': resultado.nombre},
+                resultado={'recurso': resultado.nombre},
                 T=mi.comunicador.traspasar_traductor()
             ).diccionario()
         else:
-            contenido = ModeloRespuesta(
+            contenido = Respuesta(
                 codigo=resultado.codigo,
                 tipo=resultado.resultado,
                 mensaje=resultado.mensaje_error,
-                resultado={'nombre': resultado.nombre},
+                resultado={'recurso': resultado.nombre},
                 T=mi.comunicador.traspasar_traductor()
             ).diccionario()
         return contenido
 
-    def agregar_participante(mi, peticion:ModeloPeticion):
-        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.AGREGAR_PARTICIPANTE, peticion.diccionario())
+    def agregar_participante(mi, peticion:Peticion):
+        resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+            CasosDeUso.ACCIONES.AGREGAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
-    def ver_participante(mi, peticion:ModeloPeticion):
-        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.VER_PARTICIPANTE, peticion.diccionario())
+    def ver_participante(mi, peticion:Peticion):
+        resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+            CasosDeUso.ACCIONES.VER_PARTICIPANTE, peticion.diccionario())
         return resultado
 
-    def actualizar_participante(mi, peticion:ModeloPeticion):
-        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.ACTUALIZAR_PARTICIPANTE, peticion.diccionario())
+    def actualizar_participante(mi, peticion:Peticion):
+        resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+            CasosDeUso.ACCIONES.ACTUALIZAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
-    def eliminar_participante(mi, peticion:ModeloPeticion):
-        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            ACCION.ELIMINAR_PARTICIPANTE, peticion.diccionario())
+    def eliminar_participante(mi, peticion:Peticion):
+        resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+            CasosDeUso.ACCIONES.ELIMINAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
 

@@ -12,17 +12,6 @@ from .dominio import (
 )
 
 # --------------------------------------------------
-# Constantes: ACCION
-# --------------------------------------------------
-class ACCION:
-    BUSCAR_PARTICIPANTES = 1
-    AGREGAR_PARTICIPANTE = 2
-    VER_PARTICIPANTE = 3
-    ACTUALIZAR_PARTICIPANTE = 4
-    ELIMINAR_PARTICIPANTE = 5
-
-
-# --------------------------------------------------
 # Interface: I_RepositorioParticipantes
 # --------------------------------------------------
 class I_RepositorioParticipantes(metaclass=ABCMeta):
@@ -57,21 +46,30 @@ class I_RepositorioParticipantes(metaclass=ABCMeta):
 # Clase: CasosDeUsoParticipantes
 # --------------------------------------------------
 class CasosDeUsoParticipantes(CasosDeUso):
-
     def __init__(mi, repositorio:I_RepositorioParticipantes, sesion:dict=None):
         mi.repositorio:I_RepositorioParticipantes = repositorio
         mi.sesion:dict = sesion
 
     # --------------------------------------------------
+    # Clase de constantes: ACCIONES
+
+    class ACCIONES:
+        BUSCAR_PARTICIPANTES = 1
+        AGREGAR_PARTICIPANTE = 2
+        VER_PARTICIPANTE = 3
+        ACTUALIZAR_PARTICIPANTE = 4
+        ELIMINAR_PARTICIPANTE = 5
+
+    # --------------------------------------------------
     # Métodos públicos (usados en la capa de adaptadores)
 
-    def solicitar_accion(mi, accion:ACCION, peticion:dict) -> dict:
+    def solicitar_accion(mi, accion:ACCIONES, peticion:dict) -> dict:
         realizar = {
-            ACCION.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
-            ACCION.AGREGAR_PARTICIPANTE: mi._agregar_participante,
-            ACCION.ACTUALIZAR_PARTICIPANTE: mi._actualizar_participante,
-            ACCION.ELIMINAR_PARTICIPANTE: mi._eliminar_participante,
-            ACCION.VER_PARTICIPANTE: mi._ver_participante
+            mi.ACCIONES.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
+            mi.ACCIONES.AGREGAR_PARTICIPANTE: mi._agregar_participante,
+            mi.ACCIONES.ACTUALIZAR_PARTICIPANTE: mi._actualizar_participante,
+            mi.ACCIONES.ELIMINAR_PARTICIPANTE: mi._eliminar_participante,
+            mi.ACCIONES.VER_PARTICIPANTE: mi._ver_participante
         }
         return realizar.get(accion)(peticion)
 

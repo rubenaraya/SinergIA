@@ -49,7 +49,7 @@ def buscar_participantes(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, formato=C.FORMATO.JSON)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, conversion=C.CONVERSION.JSON)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/participantes/<id>', methods=['GET'])
@@ -120,7 +120,7 @@ def pdf(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.PDF)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.CONVERSION.PDF)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/docx', methods=['GET'])
@@ -129,7 +129,7 @@ def docx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.WORD)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.CONVERSION.WORD)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/xlsx', methods=['GET'])
@@ -138,7 +138,7 @@ def xlsx(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.EXCEL)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.CONVERSION.EXCEL)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/csv', methods=['GET'])
@@ -147,7 +147,7 @@ def csv(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.CSV)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.CONVERSION.CSV)
     return Response(response=contenido, headers=encabezados)
 
 @enrutador.route('/html', methods=['GET'])
@@ -156,7 +156,7 @@ def html(query:PeticionBuscarParticipantes):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.FORMATO.HTML)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(query, C.CONVERSION.HTML)
     return Response(response=contenido, headers=encabezados)
 
 # --------------------------------------------------
@@ -167,11 +167,11 @@ def get_cargar(tipo):
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
 
-    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    modelos = {"imagen": ImagenCargada, "documento": DocumentoCargado, "audio": AudioCargado}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        salida = ModeloRespuesta(
+        salida = Respuesta(
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
@@ -191,11 +191,11 @@ def post_cargar(tipo):
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
 
-    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    modelos = {"imagen": ImagenCargada, "documento": DocumentoCargado, "audio": AudioCargado}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        contenido = ModeloRespuesta(
+        contenido = Respuesta(
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
@@ -203,7 +203,7 @@ def post_cargar(tipo):
         ).diccionario()
     elif 'carga' not in request.files:
         codigo = C.ESTADO._422_NO_PROCESABLE
-        contenido = ModeloRespuesta(
+        contenido = Respuesta(
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='No-se-recibio-ninguna-carga',

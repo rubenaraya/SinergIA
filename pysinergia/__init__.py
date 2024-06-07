@@ -94,7 +94,7 @@ class Constantes:
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
 
-    class FORMATO:
+    class CONVERSION:
         PDF = 'PDF'
         WORD = 'WORD'
         EXCEL = 'EXCEL'
@@ -102,6 +102,7 @@ class Constantes:
         HTML = 'HTML'
         JSON = 'JSON'
         TEXTO = 'TEXTO'
+        PPTX = 'PPTX'
 
     class PESO:
         KB = 1024

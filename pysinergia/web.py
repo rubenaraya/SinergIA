@@ -10,7 +10,7 @@ from pysinergia import (
     ErrorPersonalizado as _ErrorPersonalizado,
 )
 from pysinergia.dominio import (
-    CargaArchivo as _CargaArchivo,
+    ArchivoCargado as _ArchivoCargado,
 )
 from pysinergia.adaptadores import (
     I_Comunicador as _I_Comunicador,
@@ -198,22 +198,22 @@ class Comunicador(_I_Comunicador):
         except Exception as e:
             raise e
 
-    def exportar_contenido(mi, formato:str, info:dict={}, guardar:bool=False):
+    def exportar_contenido(mi, conversion:str, info:dict={}, guardar:bool=False):
         try:
             modo = 't'
             opciones:dict = info['opciones']
             opciones['idioma'] = mi.idioma
-            if formato == _Constantes.FORMATO.JSON:
+            if conversion == _Constantes.CONVERSION.JSON:
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
                 plantilla, ruta_plantillas = mi.comprobar_plantilla(opciones, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
-                if formato == _Constantes.FORMATO.HTML or formato == _Constantes.FORMATO.TEXTO:
+                if conversion == _Constantes.CONVERSION.HTML or conversion == _Constantes.CONVERSION.TEXTO:
                     resultado = contenido
                 else:
                     from pysinergia.exportadores.exportador import Exportador
-                    modulo = f'pysinergia.exportadores.exportador_{str(formato).lower()}'
-                    clase = f'Exportador{str(formato).capitalize()}'
+                    modulo = f'pysinergia.exportadores.exportador_{str(conversion).lower()}'
+                    clase = f'Exportador{str(conversion).capitalize()}'
                     componente = getattr(importlib.import_module(modulo), clase)
                     exportador:Exportador = componente(mi.config_web)
                     resultado = exportador.generar(contenido=contenido, opciones=opciones)
@@ -268,7 +268,7 @@ class Comunicador(_I_Comunicador):
             encabezados['Content-disposition'] = disposicion
         return encabezados
 
-    def cargar_archivo(mi, portador:_CargaArchivo, si_existe:str='RECHAZAR') -> _CargaArchivo:
+    def cargar_archivo(mi, portador:_ArchivoCargado, si_existe:str='RECHAZAR') -> _ArchivoCargado:
         if portador and portador.es_valido:
             unico = True if si_existe == portador.RENOMBRAR else False
             portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
@@ -288,15 +288,15 @@ class Comunicador(_I_Comunicador):
                 portador.ruta = ruta
         return portador
 
-    def elegir_formato(mi, formato:str=None) -> str:
-        if formato:
-            return formato
+    def elegir_conversion(mi, conversion:str=None) -> str:
+        if conversion:
+            return conversion
         config_web:dict = mi.contexto.get('web')
         if config_web:
             acepta = config_web.get('acepta', '')
             if 'application/json' in acepta:
-                return _Constantes.FORMATO.JSON
-        return _Constantes.FORMATO.HTML
+                return _Constantes.CONVERSION.JSON
+        return _Constantes.CONVERSION.HTML
 
     def traspasar_traductor(mi) -> Traductor:
         if mi.traductor:

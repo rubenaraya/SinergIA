@@ -29,11 +29,11 @@ from pysinergia import (
     ErrorPersonalizado,
 )
 from pysinergia.dominio import (
-    CargaAudio,
-    CargaDocumento,
-    CargaImagen,
-    CargaVideo,
-    ModeloRespuesta,
+    AudioCargado,
+    DocumentoCargado,
+    ImagenCargada,
+    VideoCargado,
+    Respuesta,
 )
 from pysinergia.adaptadores import (
     cargar_configuracion,

@@ -12,11 +12,14 @@ from pysinergia import (
 # --------------------------------------------------
 class CasosDeUso:
 
+    class ACCIONES:
+        ...
+
     def __init__(mi, repositorio, sesion:dict=None):
         mi.repositorio = repositorio
         mi.sesion:dict = sesion
 
-    def solicitar_accion(mi, accion:int, peticion:dict) -> dict:
+    def solicitar_accion(mi, accion:ACCIONES, peticion:dict) -> dict:
         raise NotImplementedError()
 
     def autorizar_roles(mi, roles:str, rechazar:bool=False) -> bool:

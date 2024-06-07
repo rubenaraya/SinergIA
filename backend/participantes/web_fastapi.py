@@ -46,7 +46,7 @@ async def buscar_participantes(request:Request, peticion:PeticionBuscarParticipa
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, formato=C.FORMATO.JSON)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, conversion=C.CONVERSION.JSON)
     return Response(content=contenido, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',
@@ -122,7 +122,7 @@ async def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.PDF, guardar=True)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.PDF, guardar=True)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/docx', status_code=C.ESTADO._200_EXITO)
@@ -130,7 +130,7 @@ async def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.WORD)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.WORD)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/xlsx', status_code=C.ESTADO._200_EXITO)
@@ -138,7 +138,7 @@ async def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.EXCEL)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.EXCEL)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/csv', status_code=C.ESTADO._200_EXITO)
@@ -146,7 +146,7 @@ async def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.CSV)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.CSV)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 @enrutador.get('/html', status_code=C.ESTADO._200_EXITO)
@@ -154,7 +154,7 @@ async def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.FORMATO.HTML)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.HTML)
     return StreamingResponse(content=contenido, headers=encabezados)
 
 # --------------------------------------------------
@@ -165,11 +165,11 @@ async def get_cargar(request:Request, tipo:str):
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
 
-    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    modelos = {"imagen": ImagenCargada, "documento": DocumentoCargado, "audio": AudioCargado}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        salida = ModeloRespuesta(
+        salida = Respuesta(
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
@@ -189,11 +189,11 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
  
-    modelos = {"imagen": CargaImagen, "documento": CargaDocumento, "audio": CargaAudio}
+    modelos = {"imagen": ImagenCargada, "documento": DocumentoCargado, "audio": AudioCargado}
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        contenido = ModeloRespuesta(
+        contenido = Respuesta(
             codigo=codigo,
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
