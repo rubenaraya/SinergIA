@@ -46,7 +46,7 @@ class I_Traductor(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def fecha_hora(mi, zona_horaria:str=None) -> dict:
+    def fecha_hora(mi, fecha_hora:str=None, zona_horaria:str=None, formato_fecha:str=None) -> dict:
         ...
 
 
@@ -249,9 +249,9 @@ class Configuracion(BaseSettings):
 
 
 # --------------------------------------------------
-# Clase: Operador
+# Clase: Repositorio
 # --------------------------------------------------
-class Operador(ABC):
+class Repositorio(ABC):
     def __init__(mi, configuracion:Configuracion):
         mi.configuracion:Configuracion = configuracion
         mi.inyectar_conectores(mi.configuracion)

@@ -3,7 +3,7 @@
 from pysinergia._dependencias.servicio import *
 
 # --------------------------------------------------
-# Importaciones del Servicio personalizado
+# Importaciones del CasosDeUso personalizado
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
@@ -23,37 +23,43 @@ class ACCION:
 
 
 # --------------------------------------------------
-# Interface: I_OperadorParticipantes
+# Interface: I_RepositorioParticipantes
 # --------------------------------------------------
-class I_OperadorParticipantes(metaclass=ABCMeta):
-    # Implementada en la capa de adaptadores por OperadorParticipantes
+class I_RepositorioParticipantes(metaclass=ABCMeta):
+    # Implementada en la capa de adaptadores por RepositorioParticipantes
+
     @abstractmethod
     def recuperar_lista_participantes_todos(mi, peticion:dict) -> Dict:
         ...
+
     @abstractmethod
     def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> Dict:
         ...
+
     @abstractmethod
     def recuperar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
+
     @abstractmethod
     def insertar_nuevo_participante(mi, peticion:dict) -> Dict:
         ...
+
     @abstractmethod
     def actualizar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
+
     @abstractmethod
     def eliminar_participante_por_id(mi, peticion:dict) -> Dict:
         ...
 
 
 # --------------------------------------------------
-# Clase: ServicioParticipantes
+# Clase: CasosDeUsoParticipantes
 # --------------------------------------------------
-class ServicioParticipantes(Servicio):
+class CasosDeUsoParticipantes(CasosDeUso):
 
-    def __init__(mi, operador:I_OperadorParticipantes, sesion:dict=None):
-        mi.operador:I_OperadorParticipantes = operador
+    def __init__(mi, repositorio:I_RepositorioParticipantes, sesion:dict=None):
+        mi.repositorio:I_RepositorioParticipantes = repositorio
         mi.sesion:dict = sesion
 
     # --------------------------------------------------
@@ -74,7 +80,7 @@ class ServicioParticipantes(Servicio):
 
     def _buscar_participantes(mi, peticion:dict):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
-        resultado = mi.operador.recuperar_lista_participantes_todos(peticion)
+        resultado = mi.repositorio.recuperar_lista_participantes_todos(peticion)
         opciones = mi.adjuntar_opciones({
             'nombre_descarga': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
@@ -89,18 +95,18 @@ class ServicioParticipantes(Servicio):
         }
 
     def _agregar_participante(mi, peticion:dict):
-        mi.operador.insertar_nuevo_participante(peticion)
+        mi.repositorio.insertar_nuevo_participante(peticion)
         return {"accion": "_agregar_participante", "operacion": "insertar_nuevo_participante", "modelo": "ModeloNuevoParticipante", "peticion": peticion.diccionario()}
 
     def _actualizar_participante(mi, peticion:dict):
-        mi.operador.actualizar_participante_por_id(peticion)
+        mi.repositorio.actualizar_participante_por_id(peticion)
         return {"accion": "_actualizar_participante", "operacion": "actualizar_participante_por_id", "modelo": "ModeloEditarParticipante", "peticion": peticion.diccionario()}
 
     def _eliminar_participante(mi, peticion:dict):
-        mi.operador.eliminar_participante_por_id(peticion)
+        mi.repositorio.eliminar_participante_por_id(peticion)
         return {"accion": "_eliminar_participante", "operacion": "eliminar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 
     def _ver_participante(mi, peticion:dict):
-        mi.operador.recuperar_participante_por_id(peticion)
+        mi.repositorio.recuperar_participante_por_id(peticion)
         return {"accion": "_ver_participante", "operacion": "recuperar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
 

@@ -42,7 +42,7 @@ class BasedatosMysql(_Basedatos):
                     raise e
         return False
 
-    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion}) as aux"
         cursor.execute(sql_total, parametros)
@@ -84,7 +84,7 @@ class BasedatosMysql(_Basedatos):
         elif estructura == _Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchall(), total)
 
-    def leer(mi, instruccion:str, parametros:list=[], estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         if estructura == _Basedatos.ESTRUCTURA.DICCIONARIO:
             cursor = mi.conexion.cursor(dictionary=True)
             cursor.execute(instruccion, parametros)

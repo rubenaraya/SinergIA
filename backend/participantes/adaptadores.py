@@ -6,8 +6,8 @@ from pysinergia._dependencias.adaptadores import *
 # Importaciones del Servicio personalizado
 from .servicio import (
     ACCION,
-    ServicioParticipantes, 
-    I_OperadorParticipantes
+    CasosDeUsoParticipantes, 
+    I_RepositorioParticipantes
 )
 
 # --------------------------------------------------
@@ -26,7 +26,7 @@ class ControladorParticipantes(Controlador):
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:ModeloPeticion, formato:str=None, guardar:bool=False) -> tuple:
-        servicio = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion)
+        servicio = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion)
         resultado = servicio.solicitar_accion(ACCION.BUSCAR_PARTICIPANTES, peticion.exportar())
         resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
@@ -59,30 +59,30 @@ class ControladorParticipantes(Controlador):
         return contenido
 
     def agregar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.AGREGAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def ver_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.VER_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def actualizar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.ACTUALIZAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
     def eliminar_participante(mi, peticion:ModeloPeticion):
-        resultado = ServicioParticipantes(OperadorParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
+        resultado = CasosDeUsoParticipantes(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
             ACCION.ELIMINAR_PARTICIPANTE, peticion.diccionario())
         return resultado
 
 
 # --------------------------------------------------
-# Clase: OperadorParticipantes
+# Clase: RepositorioParticipantes
 # --------------------------------------------------
-class OperadorParticipantes(Operador, I_OperadorParticipantes):
+class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
 
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
@@ -93,7 +93,7 @@ class OperadorParticipantes(Operador, I_OperadorParticipantes):
             modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             peticion=peticion
         )
-        datos, total = mi.basedatos.obtener(instruccion, [], pagina, maximo)
+        datos, total = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 

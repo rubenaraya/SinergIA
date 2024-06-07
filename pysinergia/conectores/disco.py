@@ -73,6 +73,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
 class ErrorDisco(_ErrorPersonalizado):
     ...
 
+
 # --------------------------------------------------
 # Clase: Disco
 # --------------------------------------------------

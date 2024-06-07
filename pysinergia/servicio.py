@@ -8,12 +8,12 @@ from pysinergia import (
 )
 
 # --------------------------------------------------
-# Clase: Servicio
+# Clase: CasosDeUso
 # --------------------------------------------------
-class Servicio:
+class CasosDeUso:
 
-    def __init__(mi, operador, sesion:dict=None):
-        mi.operador = operador
+    def __init__(mi, repositorio, sesion:dict=None):
+        mi.repositorio = repositorio
         mi.sesion:dict = sesion
 
     def solicitar_accion(mi, accion:int, peticion:dict) -> dict:

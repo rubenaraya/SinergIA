@@ -22,31 +22,27 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
+    def crear_caso(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
+    def actualizar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
+    def eliminar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
-    def leer(mi, instruccion:str, parametros:list=[], estructura:int=1) -> tuple:
+    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=1) -> tuple:
         ...
 
     @abstractmethod
-    def obtener(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=1) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=1) -> tuple:
         ...
 
     @abstractmethod
-    def crear_filtro(mi, filtro:str) -> str:
-        ...
-
-    @abstractmethod
-    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
+    def generar_comando(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
         ...
 
     @abstractmethod
@@ -70,7 +66,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
         mi.basedatos:str = None
         mi.ruta:str
         mi.marca:str
-        mi.filtros = {
+        mi._filtros = {
             mi.FILTRO.CONTIENE: mi._filtro_CONTIENE,
             mi.FILTRO.COINCIDE: mi._filtro_COINCIDE,
             mi.FILTRO.PALABRAS: mi._filtro_PALABRAS,
@@ -167,6 +163,9 @@ class Basedatos(ABC, I_ConectorBasedatos):
             return str(fecha_valida.strftime(salida))
         else:
             return ''
+
+    def _crear_filtro(mi, filtro:str) -> str:
+        return mi._filtros.get(filtro)
 
     def _filtro_FRASE(mi, campo:str, valor:str) -> str:
         valor = mi._limpiar_texto(valor)
@@ -447,22 +446,19 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.conexion.close()
             mi.conexion = None
 
-    def crear_filtro(mi, filtro:str) -> str:
-        return mi.filtros.get(filtro)
-
-    def insertar(mi, instruccion:str, parametros:list=[]) -> int:
+    def crear_caso(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.lastrowid
 
-    def actualizar(mi, instruccion:str, parametros:list=[]) -> int:
+    def actualizar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         mi.conexion.commit()
         return cursor.rowcount
 
-    def eliminar(mi, instruccion:str, parametros:list=[]) -> int:
+    def eliminar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         sql_total = instruccion.replace('DELETE FROM ', 'SELECT COUNT(*) FROM ')
         cursor.execute(sql_total, parametros)
@@ -501,7 +497,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
                 if orden:
                     ordenar.append(f'{campo} {orden}')
                 if filtro and valor:
-                    filtrado = mi.crear_filtro(filtro)(campo, valor)
+                    filtrado = mi._crear_filtro(filtro)(campo, valor)
                     if filtrado:
                         filtrar.append(filtrado)
         mostrar_texto = ', '.join(mostrar) if mostrar else '*'
@@ -512,7 +508,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
         modelo = modelo.replace('{ordenar}', ordenar_texto)
         return (modelo, pagina, maximo)
 
-    def generar_instruccion(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
+    def generar_comando(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
         if not modelo or not peticion:
             return None
 

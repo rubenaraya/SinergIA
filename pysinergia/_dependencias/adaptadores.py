@@ -16,6 +16,6 @@ from pysinergia.dominio import (
 )
 from pysinergia.adaptadores import (
     Controlador,
-    Operador,
+    Repositorio,
     Configuracion,
 )

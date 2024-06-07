@@ -6,4 +6,4 @@ from typing import Dict
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.dominio import ModeloPeticion
-from pysinergia.servicio import Servicio
+from pysinergia.servicio import CasosDeUso
