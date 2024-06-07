@@ -18,7 +18,6 @@ from flask_pydantic import validate
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as C,
-    Json,
     ErrorPersonalizado,
 )
 from pysinergia.dominio import (

@@ -40,7 +40,7 @@ class PeticionBuscarParticipantes(ModeloPeticion):
         serialization_alias='email',
         json_schema_extra={'formato': 'text', 'filtro': 'CONTIENE', 'orden': '', 'entidad': '', 'visible': True}
     )
-    estado: Optional[EstadoParticipante] | None = Field(
+    estado: Optional[EstadoParticipante] | str = Field(
         default='',
         title='Estado',
         description='Estado del participante',
@@ -55,6 +55,8 @@ class PeticionBuscarParticipantes(ModeloPeticion):
         validation_alias='id',
         json_schema_extra={'formato': 'integer', 'orden': 'DESC', 'entidad': 'participantes', 'visible': True}
     )
+    maximo: Optional[int] | None = Field(serialization_alias='maximo', default=0)
+    pagina: Optional[int] | None = Field(serialization_alias='pagina', default=0)
 
 # --------------------------------------------------
 # ClaseModelo: PeticionParticipante
@@ -75,3 +77,4 @@ class ModeloNuevoParticipante(ModeloPeticion):
 # --------------------------------------------------
 class ModeloEditarParticipante(ModeloNuevoParticipante):
     id: int
+

@@ -47,6 +47,10 @@ class BasedatosMysql(_Basedatos):
         sql_total = f"SELECT COUNT(*) FROM ({instruccion}) as aux"
         cursor.execute(sql_total, parametros)
         total = cursor.fetchone()[0]
+        if maximo < 1:
+            maximo = 25
+        if pagina < 1:
+            pagina = 1
         paginas = (total + maximo - 1) // maximo
         primero = ((pagina - 1) * maximo) + 1
         ultimo = primero + (maximo - 1)

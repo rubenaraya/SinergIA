@@ -5,7 +5,7 @@ from enum import Enum
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 # --------------------------------------------------
 # Importaciones de PySinergIA

@@ -1,6 +1,6 @@
 # pysinergia\__init__.py
 
-import json, os
+import os
 from pathlib import Path
 
 # --------------------------------------------------
@@ -135,47 +135,6 @@ class Constantes:
 
 
 # --------------------------------------------------
-# Clase estática: Json
-# --------------------------------------------------
-class Json:
-
-    def __new__(cls):
-        raise TypeError('Esta es una clase estática')
-
-    @staticmethod
-    def leer(archivo:str):
-        data = None
-        try:
-            if archivo and Path(archivo).is_file():
-                with open(archivo, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-        except:
-            pass
-        return data
-
-    @staticmethod
-    def guardar(datos, archivo:str) -> bool:
-        try:
-            if archivo and datos:
-                with open(archivo, 'w', encoding='utf-8') as f:
-                    json.dump(datos, f, ensure_ascii=False, indent=2)
-                return True
-        except:
-            pass
-        return False
-
-    @staticmethod
-    def codificar(objeto) -> str:
-        if isinstance(objeto, dict) or isinstance(objeto, list):
-            return json.dumps(objeto, ensure_ascii=False)
-        return None
-
-    @staticmethod
-    def decodificar(texto:str):
-        return json.loads(texto)
-
-
-# --------------------------------------------------
 # Clase estática: RegistradorLogs
 # --------------------------------------------------
 class RegistradorLogs:
@@ -210,7 +169,7 @@ class RegistradorLogs:
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
     def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', traduccion:str='base'):
-        mi.codigo = codigo
+        mi.codigo = int(codigo)
         mi.mensaje = mensaje
         mi.detalles = detalles
         mi.aplicacion = aplicacion
@@ -221,16 +180,14 @@ class ErrorPersonalizado(Exception):
         super().__init__(mi.mensaje)
 
     def __str__(mi):
-        return f'{mi.tipo} {mi.codigo}: {mi.mensaje}'
+        return mi.mensaje
 
     def __repr__(mi):
-        contenido = f'{mi.tipo} {mi.codigo}: {mi.mensaje}'
+        contenido = f'{mi.tipo} {mi.codigo} | {mi.mensaje}'
         if mi.aplicacion and mi.servicio:
             contenido = f'{mi.aplicacion}/{mi.servicio} | {contenido}'
         if mi.recurso:
             contenido = f'{contenido} | {mi.recurso}'
-        if mi.detalles:
-            contenido = f'{contenido}. {str(mi.detalles)}'
         return contenido
 
     def tipo_salida(mi, estado:int) -> str:
@@ -245,6 +202,8 @@ class ErrorPersonalizado(Exception):
         return Constantes.SALIDA.ERROR
 
     def registrar(mi, nombre:str, texto_extra:str='', nivel:str=Constantes.REGISTRO.ERROR, dir_logs:str='logs') -> str:
+        if mi.aplicacion and mi.servicio:
+            nombre = f'{mi.aplicacion}_{mi.servicio}'
         registrador = RegistradorLogs.crear(nombre=nombre, dir_logs=dir_logs, nivel=nivel)
         registro = mi.__repr__()
         if texto_extra:
@@ -262,23 +221,25 @@ class ErrorPersonalizado(Exception):
         return registro
     
     def serializar(mi) -> dict:
-        return dict({
+        return {
             'codigo': mi.codigo,
             'tipo': mi.tipo,
             'mensaje': mi.mensaje,
             'detalles': mi.detalles,
-            'titulo': f'{mi.tipo} {mi.codigo}',
-            'descripcion': mi.__repr__()
-        })
+        }
 
     def agregar_detalles(mi, errores:list) -> list:
         if errores and isinstance(errores, list):
             for error in errores:
-                type = error['type'] if hasattr(error, 'type') else ''
-                msg = error['msg'] if hasattr(error, 'msg') else ''
-                loc = error['loc'] if hasattr(error, 'loc') else ''
-                input = error['input'] if hasattr(error, 'input') else ''
-                mi.detalles.append({'tipo': type, 'error': msg, 'origen': loc, 'valor': input})
+                if isinstance(error, dict):
+                    type = error.get('type', '')
+                    msg = error.get('msg', '')
+                    loc = error.get('loc', '')
+                    input = error.get('input', '')
+                    if type or msg or loc or input:
+                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input})
+                    else:
+                        print(error)
         return mi.detalles
 
 

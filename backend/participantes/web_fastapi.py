@@ -46,7 +46,7 @@ async def buscar_participantes(request:Request, peticion:PeticionBuscarParticipa
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion)
+    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, formato=C.FORMATO.JSON)
     return Response(content=contenido, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',

@@ -31,7 +31,6 @@ from pysinergia import (
 # ClaseModelo: ModeloPeticion
 # --------------------------------------------------
 class ModeloPeticion(BaseModel):
-    model_config = ConfigDict(extra='allow')
 
     def diccionario(mi) -> dict:
         return mi.model_dump(by_alias=True, mode='json')
@@ -47,22 +46,22 @@ class ModeloPeticion(BaseModel):
             if field_name != origen_datos:
                 campo = field.serialization_alias
                 valor = datos.get(field_name)
-                resultado[campo] = {
-                    'campo': campo,
-                    'entrada': field.validation_alias,
-                    'etiqueta': field.title,
-                    'formato': field.json_schema_extra.get('formato', 'text'),
-                    'filtro': field.json_schema_extra.get('filtro', ''),
-                    'orden': field.json_schema_extra.get('orden', ''),
-                    'entidad': field.json_schema_extra.get('entidad', ''),
-                    'visible': field.json_schema_extra.get('visible', False),
-                    'valor': valor
-                }
+                if field.json_schema_extra:
+                    resultado[campo] = {
+                        'campo': campo,
+                        'entrada': field.validation_alias,
+                        'etiqueta': field.title,
+                        'formato': field.json_schema_extra.get('formato', 'text'),
+                        'filtro': field.json_schema_extra.get('filtro', ''),
+                        'orden': field.json_schema_extra.get('orden', ''),
+                        'entidad': field.json_schema_extra.get('entidad', ''),
+                        'visible': field.json_schema_extra.get('visible', False),
+                        'valor': valor
+                    }
+                else:
+                    resultado[campo] = valor
             else:
                 resultado[f'_{origen_datos}'] = datos.get(field_name)
-        for field_name, field_value in mi.model_extra.items():
-            if field_name != origen_datos:
-                resultado[field_name] = str(field_value)
         return resultado
 
 
@@ -73,15 +72,15 @@ class ModeloRespuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     T: object | None = None
-    codigo: int | None = _Constantes.ESTADO._200_EXITO
-    tipo:str | None = _Constantes.SALIDA.EXITO
-    mensaje:str | None = ''
+    codigo: Optional[int] | None = _Constantes.ESTADO._200_EXITO
+    tipo: Optional[str] | None = _Constantes.SALIDA.EXITO
+    mensaje: Optional[str] | None = ''
     titulo:str = ''
     descripcion:str = ''
     fecha_actual:str = ''
     hora_actual:str = ''
     idioma:str = ''
-    detalles: list = []
+    detalles:list = []
     resultado: dict | None = {}
     opciones: dict | None = {}
 
@@ -105,7 +104,8 @@ class ModeloRespuesta(BaseModel):
                 datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.opciones), fechahora)
                 valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
                 valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
-                valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
+                if isinstance(valores.descripcion, str):
+                    valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
         return valores
 
     def diccionario(mi) -> Dict:
@@ -278,6 +278,7 @@ class Archivo(BaseModel):
     extension: Optional[str] = ''
     peso: Optional[int] = 0
 
+
 # --------------------------------------------------
 # ClaseModelo: Recurso
 # --------------------------------------------------
@@ -359,14 +360,4 @@ class Recurso(BaseModel):
         valores.extension = 'txt'
         valores.formato = _Constantes.FORMATO.TEXTO
         valores.tipo_mime = _Constantes.MIME.TXT
-
-    def atributos(mi) -> dict:
-        return mi.model_dump(by_alias=True, mode='json')
-
-
-# --------------------------------------------------
-# Funcion: crear_modelo
-# --------------------------------------------------
-def crear_modelo(nombre:str, campos:dict[str, Any]) -> BaseModel:
-    return create_model(nombre, **campos)
 

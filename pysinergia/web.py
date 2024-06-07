@@ -1,12 +1,11 @@
 # pysinergia\web.py
 
-import time, jwt, importlib, gettext
+import time, jwt, importlib, gettext, json
 from pathlib import Path
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Json as _Json,
     Constantes as _Constantes,
     ErrorPersonalizado as _ErrorPersonalizado,
 )
@@ -190,7 +189,7 @@ class Comunicador(_I_Comunicador):
             opciones:dict = info['opciones']
             opciones['idioma'] = mi.idioma
             if formato == _Constantes.FORMATO.JSON:
-                resultado = _Json.codificar(info)
+                resultado = json.dumps(info, ensure_ascii=False)
             else:
                 plantilla, ruta_plantillas = mi.comprobar_plantilla(opciones, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
@@ -342,17 +341,25 @@ class Autenticador:
         return mi.token
 
     def recuperar_sesion(mi, id_sesion:str='') -> dict:
+        sesion = {}
         if not id_sesion:
             id_sesion = mi.obtener_id_sesion()
         if not id_sesion:
-            return {}
+            return sesion
         archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
-        return _Json.leer(archivo)
+        if Path(archivo).is_file():
+            with open(archivo, 'r', encoding='utf-8') as f:
+                sesion = json.load(f)
+        return sesion
     
     def guardar_sesion(mi, datos:dict) -> bool:
         id_sesion = mi.obtener_id_sesion()
         archivo = f'{mi.ruta_temp}/sesiones/{id_sesion}.json'
-        return _Json.guardar(datos, archivo)
+        if datos:
+            with open(archivo, 'w', encoding='utf-8') as f:
+                json.dump(datos, f, ensure_ascii=False, indent=2)
+            return True
+        return False
 
 
 # --------------------------------------------------

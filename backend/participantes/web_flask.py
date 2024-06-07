@@ -60,7 +60,7 @@ def ver_participante(id):
     comunicador.procesar_peticion(idioma, sesion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(configuracion, comunicador).ver_participante(peticion)
-    return Response(Json.codificar(respuesta), C.ESTADO._200_EXITO, mimetype=C.MIME.JSON)
+    return jsonify(respuesta)
 
 @enrutador.route('/participantes', methods=['POST'])
 def agregar_participante(body:ModeloNuevoParticipante):
@@ -68,7 +68,7 @@ def agregar_participante(body:ModeloNuevoParticipante):
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
     respuesta = Controlador(configuracion, comunicador).agregar_participante(body)
-    return Response(Json.codificar(respuesta), C.ESTADO._201_CREADO, mimetype=C.MIME.JSON)
+    return jsonify(respuesta), C.ESTADO._201_CREADO
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
 def actualizar_participante(id, body:ModeloEditarParticipante):
@@ -77,7 +77,7 @@ def actualizar_participante(id, body:ModeloEditarParticipante):
     comunicador.procesar_peticion(idioma, sesion)
     body.id = id
     respuesta = Controlador(configuracion, comunicador).actualizar_participante(body)
-    return Response(Json.codificar(respuesta), C.ESTADO._204_VACIO, mimetype=C.MIME.JSON)
+    return jsonify(respuesta), C.ESTADO._204_VACIO
 
 @enrutador.route('/participantes/<int>', methods=['DELETE'])
 def eliminar_participante(id):
@@ -86,7 +86,7 @@ def eliminar_participante(id):
     comunicador.procesar_peticion(idioma, sesion)
     peticion = PeticionParticipante(id=id)
     respuesta = Controlador(configuracion, comunicador).eliminar_participante(peticion)
-    return Response(Json.codificar(respuesta), C.ESTADO._204_VACIO, mimetype=C.MIME.JSON)
+    return jsonify(respuesta), C.ESTADO._204_VACIO
 
 
 # --------------------------------------------------
@@ -176,8 +176,8 @@ def get_cargar(tipo):
             tipo=C.SALIDA.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
-        ).diccionario()
-        return Response(response=Json.codificar(salida), status=codigo, mimetype=C.MIME.JSON)
+        ).json()
+        return salida, codigo
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -212,7 +212,7 @@ def post_cargar(tipo):
     else:
         contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=request.files['carga']))
         codigo = contenido.get('codigo', C.ESTADO._200_EXITO)
-    return Response(response=Json.codificar(contenido), status=codigo, mimetype=C.MIME.JSON)
+    return jsonify(contenido), codigo
 
 @enrutador.route('/manifest.json', methods=['GET'])
 def manifest():
@@ -262,7 +262,7 @@ def img():
         dir_destino='documentos/img',
         lista_salidas=salidas
     )
-    return Json.codificar(img)
+    return jsonify(img)
 
 @enrutador.route('/audio', methods=['GET'])
 def audio():
@@ -271,5 +271,5 @@ def audio():
     comunicador.procesar_peticion(idioma)
     convertidor = ConvertidorAudio(configuracion.disco_ruta)
     respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
-    return respuesta
+    return jsonify(respuesta)
 
