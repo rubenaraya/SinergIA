@@ -36,7 +36,7 @@ class CasosDeUso:
         if rechazar:
             raise _ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
-                tipo=_Constantes.SALIDA.ALERTA,
+                tipo=_Constantes.CONCLUSION.ALERTA,
                 codigo=_Constantes.ESTADO._403_NO_AUTORIZADO,
             )
         return False

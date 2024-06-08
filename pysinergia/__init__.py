@@ -36,7 +36,7 @@ class Constantes:
         ERROR = 'ERROR'
         CRITICAL = 'CRITICAL'
 
-    class SALIDA:
+    class CONCLUSION:
         EXITO = "EXITO"
         AVISO = "AVISO"
         ALERTA = "ALERTA"
@@ -194,14 +194,14 @@ class ErrorPersonalizado(Exception):
 
     def tipo_salida(mi, estado:int) -> str:
         if estado < 200:
-            return Constantes.SALIDA.ERROR
+            return Constantes.CONCLUSION.ERROR
         if estado < 300:
-            return Constantes.SALIDA.EXITO
+            return Constantes.CONCLUSION.EXITO
         if estado < 400:
-            return Constantes.SALIDA.AVISO
+            return Constantes.CONCLUSION.AVISO
         if estado < 500:
-            return Constantes.SALIDA.ALERTA
-        return Constantes.SALIDA.ERROR
+            return Constantes.CONCLUSION.ALERTA
+        return Constantes.CONCLUSION.ERROR
 
     def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str='ERROR', dir_logs:str='logs') -> str:
         nombre = f'{mi.aplicacion}_{mi.servicio}' if mi.aplicacion and mi.servicio else nombre

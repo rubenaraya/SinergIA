@@ -25,8 +25,8 @@ class ControladorParticipantes(Controlador):
     # Métodos públicos (usados en la capa web)
 
     def buscar_participantes(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
-        servicio = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
-        resultado = servicio.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.exportar())
+        casosdeuso = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
+        resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.exportar())
         resultado.update(mi.comunicador.transferir_contexto())
         respuesta = RespuestaResultado(**resultado,
             titulo='{titulo}',
@@ -36,8 +36,8 @@ class ControladorParticipantes(Controlador):
         recurso = Recurso(conversion=mi.comunicador.elegir_conversion(conversion))
         nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, recurso.extension)
         encabezados = mi.comunicador.generar_encabezados(tipo_mime=recurso.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
-        contenido = mi.comunicador.exportar_contenido(conversion=recurso.conversion, info=respuesta, guardar=guardar)
-        return (contenido, encabezados)
+        cuerpo = mi.comunicador.exportar_contenido(conversion=recurso.conversion, info=respuesta, guardar=guardar)
+        return (cuerpo, encabezados)
 
     def cargar_archivo(mi, peticion:ArchivoCargado) -> dict:
         resultado = mi.comunicador.cargar_archivo(peticion)

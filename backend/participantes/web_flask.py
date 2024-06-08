@@ -171,13 +171,13 @@ def get_cargar(tipo):
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        salida = Respuesta(
+        respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.SALIDA.ALERTA,
+            tipo=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).json()
-        return salida, codigo
+        return respuesta, codigo
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -197,7 +197,7 @@ def post_cargar(tipo):
         codigo = C.ESTADO._415_NO_SOPORTADO
         contenido = Respuesta(
             codigo=codigo,
-            tipo=C.SALIDA.ALERTA,
+            tipo=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
@@ -205,7 +205,7 @@ def post_cargar(tipo):
         codigo = C.ESTADO._422_NO_PROCESABLE
         contenido = Respuesta(
             codigo=codigo,
-            tipo=C.SALIDA.ALERTA,
+            tipo=C.CONCLUSION.ALERTA,
             mensaje='No-se-recibio-ninguna-carga',
             T=comunicador.traspasar_traductor()
         ).diccionario()

@@ -277,14 +277,14 @@ class Comunicador(_I_Comunicador):
                 portador.es_valido = False
                 portador.mensaje_error = 'El-archivo-ya-existe'
                 portador.codigo = _Constantes.ESTADO._413_NO_CARGADO
-                portador.resultado = _Constantes.SALIDA.ALERTA
+                portador.resultado = _Constantes.CONCLUSION.ALERTA
             else:
                 ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
                 if not ruta:
                     portador.es_valido = False
                     portador.mensaje_error = 'Error-al-guardar-el-archivo'
                     portador.codigo = _Constantes.ESTADO._500_ERROR
-                    portador.resultado = _Constantes.SALIDA.ERROR
+                    portador.resultado = _Constantes.CONCLUSION.ERROR
                 portador.ruta = ruta
         return portador
 

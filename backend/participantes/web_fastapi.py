@@ -46,8 +46,8 @@ async def buscar_participantes(request:Request, peticion:PeticionBuscarParticipa
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, conversion=C.CONVERSION.JSON)
-    return Response(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, conversion=C.CONVERSION.JSON)
+    return Response(content=cuerpo, headers=encabezados)
 
 @enrutador.get('/participantes/{id}',
                 status_code=C.ESTADO._200_EXITO,
@@ -122,40 +122,40 @@ async def pdf(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.PDF, guardar=True)
-    return StreamingResponse(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.PDF, guardar=True)
+    return StreamingResponse(content=cuerpo, headers=encabezados)
 
 @enrutador.get('/docx', status_code=C.ESTADO._200_EXITO)
 async def docx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.WORD)
-    return StreamingResponse(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.WORD)
+    return StreamingResponse(content=cuerpo, headers=encabezados)
 
 @enrutador.get('/xlsx', status_code=C.ESTADO._200_EXITO)
 async def xlsx(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.EXCEL)
-    return StreamingResponse(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.EXCEL)
+    return StreamingResponse(content=cuerpo, headers=encabezados)
 
 @enrutador.get('/csv', status_code=C.ESTADO._200_EXITO)
 async def csv(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.CSV)
-    return StreamingResponse(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.CSV)
+    return StreamingResponse(content=cuerpo, headers=encabezados)
 
 @enrutador.get('/html', status_code=C.ESTADO._200_EXITO)
 async def html(request:Request, peticion:PeticionBuscarParticipantes=Depends()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
-    contenido, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.HTML)
-    return StreamingResponse(content=contenido, headers=encabezados)
+    cuerpo, encabezados = Controlador(configuracion, comunicador).buscar_participantes(peticion, C.CONVERSION.HTML)
+    return StreamingResponse(content=cuerpo, headers=encabezados)
 
 # --------------------------------------------------
 
@@ -169,13 +169,13 @@ async def get_cargar(request:Request, tipo:str):
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        salida = Respuesta(
+        respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.SALIDA.ALERTA,
+            tipo=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
-        return JSONResponse(salida, status_code=codigo)
+        return JSONResponse(respuesta, status_code=codigo)
 
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
@@ -193,16 +193,16 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
     portador_archivo = modelos.get(tipo)
     if not portador_archivo:
         codigo = C.ESTADO._415_NO_SOPORTADO
-        contenido = Respuesta(
+        respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.SALIDA.ALERTA,
+            tipo=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
     else:
-        contenido = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
-        codigo = contenido.get('codigo', C.ESTADO._200_EXITO)
-    return JSONResponse(contenido, status_code=codigo)
+        respuesta = Controlador(configuracion, comunicador).cargar_archivo(portador_archivo(origen=carga))
+        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+    return JSONResponse(respuesta, status_code=codigo)
 
 @enrutador.get('/manifest.json', status_code=C.ESTADO._200_EXITO)
 async def manifest(request:Request):
