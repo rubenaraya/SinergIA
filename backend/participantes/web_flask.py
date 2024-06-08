@@ -26,12 +26,12 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.app_web}/{aplicacion}/login'
+    url_login=f'/{configuracion.app_global}/{aplicacion}/login'
 )
 enrutador = Blueprint(
     name=configuracion.servicio,
     import_name=__name__,
-    url_prefix=f'{configuracion.raiz_api}/{aplicacion}'
+    url_prefix=f'{configuracion.raiz_global}/{aplicacion}'
 )
 
 # --------------------------------------------------
@@ -40,7 +40,7 @@ enrutador = Blueprint(
 
 @enrutador.route('/', methods=['GET'])
 def get_inicio():
-    return redirect(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
+    return redirect(f'/{configuracion.app_global}/{configuracion.frontend}/{aplicacion}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
 #@autenticador.validar_token
@@ -219,10 +219,10 @@ def manifest():
     idioma = request.headers.get('Accept-Language')
     comunicador.procesar_peticion(idioma)
     datos = {
-        'name': 'Aplicación Web SinergIA',
-        'short_name': 'App SinergIA',
-        'id': 'App-prueba',
-        'description': ''
+        'titulo_pwa': configuracion.titulo_pwa,
+        'nombre_pwa': configuracion.nombre_pwa,
+        'id_pwa': configuracion.id_pwa,
+        'descripcion_pwa': configuracion.descripcion_pwa
     }
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(datos),

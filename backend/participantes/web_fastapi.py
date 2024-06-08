@@ -26,9 +26,9 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.app_web}/{aplicacion}/login'
+    url_login=f'/{configuracion.app_global}/{aplicacion}/login'
 )
-enrutador = APIRouter(prefix=f'{configuracion.raiz_api}/{aplicacion}')
+enrutador = APIRouter(prefix=f'{configuracion.raiz_global}/{aplicacion}')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
@@ -36,7 +36,7 @@ enrutador = APIRouter(prefix=f'{configuracion.raiz_api}/{aplicacion}')
 
 @enrutador.get('/')
 def get_inicio():
-    return RedirectResponse(f'/{configuracion.app_web}/{configuracion.frontend}/{aplicacion}/index.html')
+    return RedirectResponse(f'/{configuracion.app_global}/{configuracion.frontend}/{aplicacion}/index.html')
 
 @enrutador.get('/participantes',
                 status_code=C.ESTADO._200_EXITO,
@@ -209,10 +209,10 @@ async def manifest(request:Request):
     idioma = request.headers.get('Accept-Language')
     await comunicador.procesar_peticion(request, idioma)
     datos = {
-        'name': 'Aplicación Web SinergIA',
-        'short_name': 'App SinergIA',
-        'id': 'App-prueba',
-        'description': ''
+        'titulo_pwa': configuracion.titulo_pwa,
+        'nombre_pwa': configuracion.nombre_pwa,
+        'id_pwa': configuracion.id_pwa,
+        'descripcion_pwa': configuracion.descripcion_pwa
     }
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(datos),

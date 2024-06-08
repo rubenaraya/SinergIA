@@ -1,8 +1,8 @@
 {
-    "short_name": "{{ datos.short_name }}",
-    "name": "{{ datos.name }}",
-    "description": "{{ datos.description }}",
-    "id": "{{ datos.id }}",
+    "short_name": "{{ datos.nombre_pwa }}",
+    "name": "{{ datos.titulo_pwa }}",
+    "description": "{{ datos.descripcion_pwa }}",
+    "id": "{{ datos.id_pwa }}",
     "start_url": "{{ url.app }}",
     "scope": "{{ url.app }}",
     "lang": "{{ web.idioma }}", 

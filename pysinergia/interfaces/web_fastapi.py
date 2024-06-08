@@ -36,10 +36,8 @@ from pysinergia import __version__ as api_motor
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi:
-    def __init__(mi, app_web:str, raiz_api:str=''):
-        os.environ['RAIZ_API'] = raiz_api
-        os.environ['APP_WEB'] = app_web
-        mi.entorno:str = None
+    def __init__(mi):
+        ...
 
     # --------------------------------------------------
     # Métodos privados
@@ -47,13 +45,13 @@ class ServidorApi:
     def _configurar_encabezados(mi, api:FastAPI):
         @api.middleware("http")
         async def configurar_encabezados_(request:Request, call_next):
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
             respuesta:Response = await call_next(request)
             respuesta.headers["X-API-Motor"] = api_motor
-            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {str(respuesta.status_code)}')
             return respuesta
@@ -69,11 +67,11 @@ class ServidorApi:
             ruta_favicon = Path(mi.dir_frontend) / 'favicon.ico'
             return FileResponse(str(ruta_favicon))
 
-    def _configurar_cors(mi, api:FastAPI, origenes_cors:list):
+    def _configurar_cors(mi, api:FastAPI):
         from fastapi.middleware.cors import CORSMiddleware
         api.add_middleware(
             CORSMiddleware,
-            allow_origins = origenes_cors,
+            allow_origins = os.getenv('ORIGENES_CORS'),
             allow_credentials = True,
             allow_methods = ['*'],
             allow_headers = ['*'],
@@ -83,64 +81,7 @@ class ServidorApi:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
         return f'{request.method} {url}'
 
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> FastAPI:
-        from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = ( Path('.') / f'{dir_frontend}').resolve()
-        os.environ['ALIAS_FRONTEND'] = alias_frontend
-        docs_url = '/docs' if doc else None
-        redoc_url = '/redoc' if doc else None
-        api = FastAPI(
-            title=titulo,
-            description=descripcion,
-            version=version,
-            docs_url=docs_url,
-            redoc_url=redoc_url,
-        )
-        mi.titulo = titulo
-        mi.descripcion = descripcion
-        mi.version = version
-        mi.entorno = entorno
-        api.mount(f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
-        mi._configurar_cors(api, origenes_cors)
-        mi._configurar_encabezados(api)
-        mi._configurar_endpoints(api)
-        return api
-
-    def mapear_enrutadores(mi, api:FastAPI, ubicacion:str):
-        import importlib
-        ruta_ubicacion = Path(ubicacion)
-        modulo_base = 'web_fastapi'
-        try:
-            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
-        except Exception as e:
-            print(e)
-            return
-        for directorio in directorios:
-            try:
-                nombre_servicio = directorio.name
-                if (directorio / f'{modulo_base}.py').is_file():
-                    enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
-                    api.include_router(getattr(enrutador, 'enrutador'))
-            except Exception as e:
-                print(e)
-                continue
-
-    def iniciar_servicio(mi, app:str, host:str, puerto:int):
-        if mi.entorno == _C.ENTORNO.DESARROLLO or mi.entorno == _C.ENTORNO.LOCAL:
-            import uvicorn
-            uvicorn.run(
-                app,
-                host=host,
-                port=puerto,
-                ssl_keyfile='key.pem',
-                ssl_certfile='cert.pem',
-                reload=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
-            )
-
-    def manejar_errores(mi, api:FastAPI, dir_logs:str, archivo_logs:str, idiomas_disponibles:list):
+    def _manejar_errores(mi, api:FastAPI):
         from fastapi.exceptions import (
             RequestValidationError,
             HTTPException,
@@ -151,55 +92,55 @@ class ServidorApi:
         async def _error_autenticacion(request:Request, err:_ErrorAutenticacion):
             if err.url_login:
                 return RedirectResponse(url=err.url_login)
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
             return JSONResponse(content=respuesta, status_code=err.codigo)
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado(request:Request, err:_ErrorPersonalizado):
-            traductor = _Traductor({'dominio': err.traduccion, 'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'dominio_idioma': err.dominio_idioma, 'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
             if err.tipo == _C.CONCLUSION.ERROR:
-                err.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+                err.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
             return JSONResponse(content=respuesta, status_code=err.codigo)
 
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, err:ValidationError):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE)
             error.agregar_detalles(err.errors())
             respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
             return JSONResponse(content=respuesta, status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, err:RequestValidationError):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE)
             error.agregar_detalles(err.errors())
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
             respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
             return JSONResponse(content=respuesta, status_code=_C.ESTADO._422_NO_PROCESABLE)
 
         @api.exception_handler(HTTPException)
         async def _error_http(request:Request, err:HTTPException):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code)
             respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
             if err.status_code >= 500:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
             return JSONResponse(content=respuesta, status_code=err.status_code)
 
         @api.exception_handler(Exception)
         async def _error_nomanejado(request:Request, err:Exception):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
 
             import sys
@@ -210,10 +151,65 @@ class ServidorApi:
             mensaje = 'Error-no-manejado'
             error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR)
             respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(request), dir_logs=dir_logs)
+            error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
             return JSONResponse(content=respuesta, status_code=_C.ESTADO._500_ERROR)
 
-            
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def crear_api(mi) -> FastAPI:
+        from fastapi.staticfiles import StaticFiles
+        mi.dir_frontend = ( Path('.') / f'{os.getenv('DIR_FRONTEND')}').resolve()
+        os.environ['ALIAS_FRONTEND'] = os.getenv('ALIAS_FRONTEND')
+        docs_url = '/docs' if os.getenv('DOCS') else None
+        redoc_url = '/redoc' if os.getenv('DOCS') else None
+        api = FastAPI(
+            docs_url=docs_url,
+            redoc_url=redoc_url,
+        )
+        api.mount(f"{str(os.getenv('RAIZ_GLOBAL', ''))}/{os.getenv('ALIAS_FRONTEND')}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
+        mi._configurar_cors(api)
+        mi._configurar_encabezados(api)
+        mi._configurar_endpoints(api)
+        mi._manejar_errores(api)
+        return api
+
+    def mapear_enrutadores(mi, api:FastAPI):
+        import importlib
+        ruta_ubicacion = Path(os.getenv('DIR_ENRUTADORES'))
+        modulo_base = 'web_fastapi'
+        try:
+            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+        except Exception as e:
+            print(e)
+            return
+        for directorio in directorios:
+            try:
+                nombre_servicio = directorio.name
+                if (directorio / f'{modulo_base}.py').is_file():
+                    enrutador = importlib.import_module(f'{os.getenv('DIR_ENRUTADORES')}.{nombre_servicio}.{modulo_base}')
+                    api.include_router(getattr(enrutador, 'enrutador'))
+            except Exception as e:
+                print(e)
+                continue
+
+    def iniciar_servicio(mi, app:str, puerto:int, host:str=None):
+        if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == _C.ENTORNO.LOCAL:
+            import uvicorn
+            ssl_cert=str(Path(os.getenv('SSL_CERT')))
+            ssl_key=str(Path(os.getenv('SSL_KEY')))
+            if not host:
+                host = os.getenv('HOST_LOCAL')
+            uvicorn.run(
+                app,
+                host=host,
+                port=puerto,
+                ssl_keyfile=ssl_cert,
+                ssl_certfile=ssl_key,
+                reload=os.getenv('MODO_DEBUG')
+            )
+
+
 # --------------------------------------------------
 # Clase: ComunicadorWeb
 # --------------------------------------------------
@@ -259,22 +255,22 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.url))
-        raiz_api = mi.config_web.get('raiz_api')
+        raiz_global = mi.config_web.get('raiz_global')
         dir_frontend = mi.config_web.get('frontend')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
-        raiz_api = '/' + partes[0] if len(partes) > 0 else ''
+        raiz_global = '/' + partes[0] if len(partes) > 0 else ''
         aplicacion = '/' + partes[1] if len(partes) > 1 else ''
         recurso = '/' + '/'.join(partes[2:]) if len(partes) > 2 else '/'
         mi.contexto['url'] = {
             'servidor': servidor,
             'absoluta': f'{servidor}{url_analizada.path}',
             'relativa': url_analizada.path,
-            'puntoentrada': f'{servidor}{raiz_api}',
+            'puntoentrada': f'{servidor}{raiz_global}',
             'puntofinal': f'{aplicacion}{recurso}',
-            'app': f'{raiz_api}{aplicacion}',
+            'app': f'{raiz_global}{aplicacion}',
             'recurso': recurso,
-            'frontend': f'{raiz_api}/{dir_frontend}',
+            'frontend': f'{raiz_global}/{dir_frontend}',
         }
         mi.contexto['web']['api_marco'] = 'FastAPI'
         mi.contexto['web']['dominio'] = url_analizada.hostname

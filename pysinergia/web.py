@@ -24,8 +24,8 @@ from pysinergia import __version__ as api_motor
 # --------------------------------------------------
 class Traductor(_I_Traductor):
     def __init__(mi, config:dict={}):
-        mi.dominio:str = config.get('dominio', 'base')
-        mi.dir_locales:str = config.get('dir_locales', 'locales')
+        mi.dominio_idioma:str = config.get('dominio_idioma', 'base')
+        mi.ruta_locales:str = config.get('ruta_locales', 'locales')
         mi.zona_horaria:str = config.get('zona_horaria', 'UTC')
         mi.formato_fecha:str = config.get('formato_fecha', '%d/%m/%Y %H:%M')
         mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
@@ -62,18 +62,18 @@ class Traductor(_I_Traductor):
     # --------------------------------------------------
     # Métodos públicos
 
-    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None) -> str:
         mi._negociar_idioma(idiomas_aceptados, idiomas_disponibles)
-        if not dominio:
-            dominio = mi.dominio
-        mi.dominio = dominio
-        if not dir_locales:
-            dir_locales = mi.dir_locales
-        mi.dir_locales = dir_locales
+        if not dominio_idioma:
+            dominio_idioma = mi.dominio_idioma
+        mi.dominio_idioma = dominio_idioma
+        if not ruta_locales:
+            ruta_locales = mi.ruta_locales
+        mi.ruta_locales = ruta_locales
         try:
             mi.traduccion = gettext.translation(
-                domain=mi.dominio,
-                localedir=mi.dir_locales,
+                domain=mi.dominio_idioma,
+                localedir=mi.ruta_locales,
                 languages=[mi.idioma],
                 fallback=False,
             )
@@ -81,13 +81,13 @@ class Traductor(_I_Traductor):
             raise e
         return mi.idioma
 
-    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> gettext.GNUTranslations:
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None) -> gettext.GNUTranslations:
         if not mi.traduccion:
             mi.asignar_idioma(
                 idiomas_aceptados=idiomas_aceptados,
                 idiomas_disponibles=idiomas_disponibles,
-                dominio=dominio,
-                dir_locales=dir_locales
+                dominio_idioma=dominio_idioma,
+                ruta_locales=ruta_locales
             )
         return mi.traduccion.gettext
 

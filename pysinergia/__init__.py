@@ -144,14 +144,14 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, dir_logs='logs', nivel:str='ERROR'):
+    def crear(nombre:str, ruta_logs='logs', nivel:str='ERROR'):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
         registrador.setLevel(nivel)
         registrador.propagate = False
         manejador = RotatingFileHandler(
-            filename = f'{dir_logs}/{nombre}.log',
+            filename = f'{ruta_logs}/{nombre}.log',
             maxBytes = (10 * (1048576)),
             backupCount = 9,
             encoding = 'utf-8'
@@ -169,16 +169,16 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', traduccion:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
+    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', dominio_idioma:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
         mi.codigo = int(codigo)
         mi.mensaje = str(mensaje).replace('{','(').replace('}',')')
         mi.detalles = detalles
         mi.aplicacion = aplicacion
         mi.servicio = servicio
         mi.recurso = recurso
-        mi.traduccion = traduccion
+        mi.dominio_idioma = dominio_idioma
         mi.nivel_registro = nivel_registro
-        mi.tipo = mi.tipo_salida(mi.codigo)
+        mi.tipo = mi.conclusion(mi.codigo)
         super().__init__(mi.mensaje)
 
     def __str__(mi):
@@ -192,7 +192,7 @@ class ErrorPersonalizado(Exception):
             contenido = f'{contenido} | {mi.recurso}'
         return contenido
 
-    def tipo_salida(mi, estado:int) -> str:
+    def conclusion(mi, estado:int) -> str:
         if estado < 200:
             return Constantes.CONCLUSION.ERROR
         if estado < 300:
@@ -203,11 +203,11 @@ class ErrorPersonalizado(Exception):
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
 
-    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str='ERROR', dir_logs:str='logs') -> str:
+    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str='ERROR', ruta_logs:str='logs') -> str:
         nombre = f'{mi.aplicacion}_{mi.servicio}' if mi.aplicacion and mi.servicio else nombre
         registro = mi.__repr__()
         registro = f'{texto_extra} | {registro}' if texto_extra else registro
-        registrador = RegistradorLogs.crear(nombre=nombre, dir_logs=dir_logs, nivel=mi.nivel_registro)
+        registrador = RegistradorLogs.crear(nombre=nombre, ruta_logs=ruta_logs, nivel=mi.nivel_registro)
         if nivel_evento == Constantes.REGISTRO.ERROR:
             registrador.error(registro)
         elif nivel_evento == Constantes.REGISTRO.WARNING:

@@ -34,10 +34,8 @@ from pysinergia import __version__ as api_motor
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi:
-    def __init__(mi, app_web:str, raiz_api:str=''):
-        os.environ['RAIZ_API'] = raiz_api
-        os.environ['APP_WEB'] = app_web
-        mi.entorno:str = None
+    def __init__(mi):
+        ...
 
     # --------------------------------------------------
     # Métodos privados
@@ -47,14 +45,14 @@ class ServidorApi:
         @api.after_request
         def procesar_salidas(respuesta:Response):
             respuesta.headers['X-API-Motor'] = f"{api_motor}"
-            if mi.entorno == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
             return respuesta
 
         @api.before_request
         def procesar_entradas():
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
@@ -69,11 +67,11 @@ class ServidorApi:
         def favicon():
             return send_from_directory(mi.dir_frontend, 'favicon.ico')
 
-    def _configurar_cors(mi, api:Flask, origenes_cors:list):
+    def _configurar_cors(mi, api:Flask):
         from flask_cors import CORS
         CORS(api, resources={
                 r'/*': {
-                    'origins': origenes_cors,
+                    'origins': os.getenv('ORIGENES_CORS'),
                     'methods': ['GET','POST','PUT','DELETE']
                 }
             }
@@ -83,61 +81,7 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
-    # --------------------------------------------------
-    # Métodos públicos
-
-    def crear_api(mi, dir_frontend:str, alias_frontend:str, origenes_cors:list=['*'], titulo:str='', descripcion:str='', version:str='', doc:bool=False, entorno:str='') -> Flask:
-        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
-        os.environ['ALIAS_FRONTEND'] = alias_frontend
-        api = Flask(__name__,
-            static_url_path=f"{str(os.getenv('RAIZ_API', ''))}/{alias_frontend}",
-            static_folder=mi.dir_frontend.as_posix(),
-        )
-        mi.titulo = titulo
-        mi.descripcion = descripcion
-        mi.version = version
-        mi.entorno = entorno
-        api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
-        mi._configurar_cors(api, origenes_cors)
-        mi._configurar_encabezados(api)
-        mi._configurar_endpoints(api)
-        api.app_context().push()
-        return api
-
-    def mapear_enrutadores(mi, api:Flask, ubicacion:str):
-        import importlib
-        ruta_ubicacion = Path(ubicacion)
-        modulo_base = 'web_flask'
-        try:
-            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
-        except Exception as e:
-            print(e)
-            return
-        for directorio in directorios:
-            try:
-                nombre_servicio = directorio.name
-                if (directorio / f'{modulo_base}.py').is_file():
-                    enrutador = importlib.import_module(f'{ubicacion}.{nombre_servicio}.{modulo_base}')
-                    api.register_blueprint(getattr(enrutador, 'enrutador'))
-            except Exception as e:
-                print(e)
-                continue
-
-    def iniciar_servicio(mi, app:Flask, host:str, puerto:int):
-        if mi.entorno == _C.ENTORNO.DESARROLLO or mi.entorno == _C.ENTORNO.LOCAL:
-            ssl_cert=Path('cert.pem')
-            ssl_key=Path('key.pem')
-            app.config['TEMPLATES_AUTO_RELOAD'] = True
-            app.config['EXPLAIN_TEMPLATE_LOADING'] = True
-            app.app_context().push()
-            app.run(
-                host=host,
-                port=puerto,
-                ssl_context=(ssl_cert, ssl_key),
-                debug=True if mi.entorno == _C.ENTORNO.DESARROLLO else False
-            )
-
-    def manejar_errores(mi, api:Flask, dir_logs:str, archivo_logs:str, idiomas_disponibles:list):
+    def _manejar_errores(mi, api:Flask):
         from werkzeug.exceptions import (
             HTTPException,
             InternalServerError,
@@ -148,55 +92,55 @@ class ServidorApi:
         def _error_autenticacion(err:_ErrorAutenticacion):
             if err.url_login:
                 return redirect(err.url_login)
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor)
             return Response(respuesta.json(), status=err.codigo, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(_ErrorPersonalizado)
         def _error_personalizado(err:_ErrorPersonalizado):
-            traductor = _Traductor({'dominio': err.traduccion, 'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'dominio_idioma': err.dominio_idioma, 'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor)
             if err.tipo == _C.CONCLUSION.ERROR:
-                err.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
+                err.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
             return Response(respuesta.json(), status=err.codigo, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE)
             error.agregar_detalles(err.errors())
             respuesta = Respuesta(**error.serializar(), T=traductor)
-            if mi.entorno == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs, nivel_evento=_C.REGISTRO.DEBUG)
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
             return Response(respuesta.json(), status=_C.ESTADO._422_NO_PROCESABLE, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(HTTPException)
         def _error_http(err:HTTPException):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             error = _ErrorPersonalizado(mensaje=err.description, codigo=err.code)
             respuesta = Respuesta(**error.serializar(), T=traductor)
             if err.code >= 500:
-                error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
             return Response(respuesta.json(), status=err.code, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(InternalServerError)
         def _error_interno(err:InternalServerError):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             original = err.original_exception
             descripcion = original.args[0] if len(original.args) > 0 else original.__doc__ if original.__doc__ else ''
             error = _ErrorPersonalizado(mensaje=descripcion, codigo=_C.ESTADO._500_ERROR)
             respuesta = Respuesta(**error.serializar(), T=traductor)
-            error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
+            error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
             return Response(respuesta.json(), status=_C.ESTADO._500_ERROR, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(Exception)
         def _error_nomanejado(err:Exception):
-            traductor = _Traductor({'idiomas_disponibles': idiomas_disponibles})
+            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
 
             import sys
@@ -207,8 +151,61 @@ class ServidorApi:
             mensaje = 'Error-no-manejado'
             error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR)
             respuesta = Respuesta(**error.serializar(), T=traductor)
-            error.registrar(nombre=archivo_logs, texto_extra=mi._obtener_url(), dir_logs=dir_logs)
+            error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
             return Response(respuesta.json(), status=_C.ESTADO._500_ERROR, mimetype=_C.MIME.JSON)
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def crear_api(mi) -> Flask:
+        mi.dir_frontend = (Path('.') / f'{os.getenv('DIR_FRONTEND')}').resolve()
+        api = Flask(__name__,
+            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL'))}/{os.getenv('ALIAS_FRONTEND')}",
+            static_folder=mi.dir_frontend.as_posix(),
+        )
+        api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+        mi._configurar_cors(api)
+        mi._configurar_encabezados(api)
+        mi._configurar_endpoints(api)
+        mi._manejar_errores(api)
+        api.app_context().push()
+        return api
+
+    def mapear_enrutadores(mi, api:Flask):
+        import importlib
+        ruta_ubicacion = Path(os.getenv('DIR_ENRUTADORES'))
+        modulo_base = 'web_flask'
+        try:
+            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+        except Exception as e:
+            print(e)
+            return
+        for directorio in directorios:
+            try:
+                nombre_servicio = directorio.name
+                if (directorio / f'{modulo_base}.py').is_file():
+                    enrutador = importlib.import_module(f'{os.getenv('DIR_ENRUTADORES')}.{nombre_servicio}.{modulo_base}')
+                    api.register_blueprint(getattr(enrutador, 'enrutador'))
+            except Exception as e:
+                print(e)
+                continue
+
+    def iniciar_servicio(mi, app:Flask, puerto:int, host:str=None):
+        if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == _C.ENTORNO.LOCAL:
+            ssl_cert=str(Path(os.getenv('SSL_CERT')))
+            ssl_key=str(Path(os.getenv('SSL_KEY')))
+            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+                app.config['TEMPLATES_AUTO_RELOAD'] = True
+                app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+            app.app_context().push()
+            if not host:
+                host = os.getenv('HOST_LOCAL')
+            app.run(
+                host=host,
+                port=puerto,
+                ssl_context=(ssl_cert, ssl_key),
+                debug=os.getenv('MODO_DEBUG')
+            )
 
 
 # --------------------------------------------------
@@ -242,22 +239,22 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.base_url))
-        raiz_api = mi.config_web.get('raiz_api')
+        raiz_global = mi.config_web.get('raiz_global')
         dir_frontend = mi.config_web.get('frontend')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
-        raiz_api = '/' + partes[0] if len(partes) > 0 else ''
+        raiz_global = '/' + partes[0] if len(partes) > 0 else ''
         aplicacion = '/' + partes[1] if len(partes) > 1 else ''
         recurso = '/' + '/'.join(partes[2:]) if len(partes) > 2 else '/'
         mi.contexto['url'] = {
             'servidor': servidor,
             'absoluta': f'{servidor}{url_analizada.path}',
             'relativa': url_analizada.path,
-            'puntoentrada': f'{servidor}{raiz_api}',
+            'puntoentrada': f'{servidor}{raiz_global}',
             'puntofinal': f'{aplicacion}{recurso}',
-            'app': f'{raiz_api}{aplicacion}',
+            'app': f'{raiz_global}{aplicacion}',
             'recurso': recurso,
-            'frontend': f'{raiz_api}/{dir_frontend}',
+            'frontend': f'{raiz_global}/{dir_frontend}',
         }
         mi.contexto['web']['api_marco'] = 'Flask'
         mi.contexto['web']['dominio'] = url_analizada.hostname

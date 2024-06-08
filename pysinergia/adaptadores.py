@@ -26,11 +26,11 @@ from pysinergia.dominio import (
 class I_Traductor(metaclass=ABCMeta):
 
     @abstractmethod
-    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None) -> str:
+    def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None) -> str:
         ...
 
     @abstractmethod
-    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio:str=None, dir_locales:str=None):
+    def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None):
         ...
 
     @abstractmethod
@@ -104,17 +104,22 @@ class Configuracion(BaseSettings):
     servicio: str = ''
     zona_horaria: str = ''
     formato_fecha: str = ''
-    dominio: str = ''
-    dir_locales: str = ''
+    dominio_idioma: str = ''
+    ruta_locales: str = ''
     ruta_temp: str = ''
+    ruta_logs: str = ''
+    nivel_registro: str = ''
     idiomas_disponibles: list = []
+    id_pwa: str = ''
+    nombre_pwa: str = ''
+    titulo_pwa: str = ''
+    descripcion_pwa: str = ''
     api_keys: dict = {}
     secret_key: str = ''
     algoritmo_jwt: str = ''
     ruta_servicio: str = ''
-    nivel_registro: str = ''
-    raiz_api: str = ''
-    app_web: str = ''
+    raiz_global: str = ''
+    app_global: str = ''
     frontend: str = ''
     basedatos_fuente: str = ''
     basedatos_clase: str = ''
@@ -212,8 +217,8 @@ class Configuracion(BaseSettings):
             ruta = Path(mi.ruta_servicio)
             mi.servicio = ruta.name if ruta.parts else ''
             mi.aplicacion = aplicacion
-            mi.app_web = os.getenv('APP_WEB', '')
-            mi.raiz_api = os.getenv('RAIZ_API', '')
+            mi.app_global = os.getenv('APP_GLOBAL', '')
+            mi.raiz_global = os.getenv('RAIZ_GLOBAL', '')
             mi.frontend = os.getenv('ALIAS_FRONTEND', '')
     def web(mi) -> dict:
         return {
@@ -221,15 +226,20 @@ class Configuracion(BaseSettings):
             'servicio': mi.servicio,
             'ruta_temp': mi.ruta_temp,
             'ruta_servicio': mi.ruta_servicio,
-            'app_web': mi.app_web,
-            'raiz_api': mi.raiz_api,
+            'app_global': mi.app_global,
+            'raiz_global': mi.raiz_global,
             'frontend': mi.frontend,
             'nivel_registro': mi.nivel_registro,
-            'dominio': mi.dominio,
-            'dir_locales': mi.dir_locales,
+            'ruta_logs': mi.ruta_logs,
+            'dominio_idioma': mi.dominio_idioma,
+            'ruta_locales': mi.ruta_locales,
             'idiomas_disponibles': mi.idiomas_disponibles,
             'zona_horaria': mi.zona_horaria,
             'formato_fecha': mi.formato_fecha,
+            'id_pwa': mi.id_pwa,
+            'nombre_pwa': mi.nombre_pwa,
+            'titulo_pwa': mi.titulo_pwa,
+            'descripcion_pwa': mi.descripcion_pwa,
         }
     def autenticacion(mi) -> dict:
         return dict({
@@ -240,8 +250,8 @@ class Configuracion(BaseSettings):
         })
     def traductor(mi) -> dict:
         return dict({
-            'dominio': mi.dominio,
-            'dir_locales': mi.dir_locales,
+            'dominio_idioma': mi.dominio_idioma,
+            'ruta_locales': mi.ruta_locales,
             'idiomas_disponibles': mi.idiomas_disponibles,
             'zona_horaria': mi.zona_horaria,
             'formato_fecha': mi.formato_fecha,
