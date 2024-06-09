@@ -18,7 +18,7 @@ class DiscoLocal(_Disco):
 
     def __init__(mi, config:dict):
         super().__init__(config)
-        mi._path = Path(mi._config.get('ruta', ''))
+        mi._path = Path(mi._config.get('ruta'))
 
     # --------------------------------------------------
     # Métodos privados

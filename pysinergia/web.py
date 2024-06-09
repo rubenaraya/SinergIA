@@ -24,11 +24,11 @@ from pysinergia import __version__ as api_motor
 # --------------------------------------------------
 class Traductor(_I_Traductor):
     def __init__(mi, config:dict={}):
-        mi.dominio_idioma:str = config.get('dominio_idioma', 'base')
-        mi.ruta_locales:str = config.get('ruta_locales', 'locales')
-        mi.zona_horaria:str = config.get('zona_horaria', 'UTC')
-        mi.formato_fecha:str = config.get('formato_fecha', '%d/%m/%Y %H:%M')
-        mi.idiomas_disponibles:list = config.get('idiomas_disponibles', ['es'])
+        mi.dominio_idioma:str = config.get('DOMINIO_IDIOMA', 'base')
+        mi.ruta_locales:str = config.get('RUTA_LOCALES', 'locales')
+        mi.zona_horaria:str = config.get('ZONA_HORARIA', 'UTC')
+        mi.formato_fecha:str = config.get('FORMATO_FECHA', '%d/%m/%Y %H:%M')
+        mi.idiomas_disponibles:list = config.get('IDIOMAS_DISPONIBLES', ['es'])
         mi.idioma = ''
         mi.traduccion = None
 
@@ -163,9 +163,9 @@ class Comunicador(_I_Comunicador):
     # Métodos privados
 
     def _conectar_disco(mi, config_disco:dict) -> _Disco:
-        disco_fuente = config_disco.get('fuente','')
-        modulo = f'pysinergia.conectores.{disco_fuente}'
-        componente = getattr(importlib.import_module(modulo), config_disco.get('clase',''))
+        fuente = config_disco.get('fuente')
+        clase = config_disco.get('clase')
+        componente = getattr(importlib.import_module(f'pysinergia.conectores.{fuente}'), clase)
         return componente(config_disco)
 
     # --------------------------------------------------
@@ -240,7 +240,7 @@ class Comunicador(_I_Comunicador):
         plantilla = opciones.get(tipo, '')
         ruta_plantillas = opciones.get('ruta_plantillas', None)
         if not ruta_plantillas:
-            ruta = mi.config_web.get('ruta_servicio', '.')
+            ruta = mi.config_web.get('RUTA_SERVICIO')
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():
@@ -277,14 +277,14 @@ class Comunicador(_I_Comunicador):
                 portador.es_valido = False
                 portador.mensaje_error = 'El-archivo-ya-existe'
                 portador.codigo = _Constantes.ESTADO._413_NO_CARGADO
-                portador.resultado = _Constantes.CONCLUSION.ALERTA
+                portador.conclusion = _Constantes.CONCLUSION.ALERTA
             else:
                 ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
                 if not ruta:
                     portador.es_valido = False
                     portador.mensaje_error = 'Error-al-guardar-el-archivo'
                     portador.codigo = _Constantes.ESTADO._500_ERROR
-                    portador.resultado = _Constantes.CONCLUSION.ERROR
+                    portador.conclusion = _Constantes.CONCLUSION.ERROR
                 portador.ruta = ruta
         return portador
 
@@ -309,10 +309,10 @@ class Comunicador(_I_Comunicador):
 # --------------------------------------------------
 class Autenticador:
     def __init__(mi, config_autenticacion:dict, url_login:str=''):
-        mi.secret_key = config_autenticacion.get('secret_key','')
-        mi.algoritmo_jwt = config_autenticacion.get('algoritmo_jwt','')
-        mi.api_keys:dict = config_autenticacion.get('api_keys','')
-        mi.ruta_temp:str = config_autenticacion.get('ruta_temp','')
+        mi.secret_key = config_autenticacion.get('SECRET_KEY')
+        mi.algoritmo_jwt = config_autenticacion.get('ALGORITMO_JWT')
+        mi.api_keys:dict = config_autenticacion.get('API_KEYS')
+        mi.ruta_temp:str = config_autenticacion.get('RUTA_TEMP')
         mi.url_login:str = url_login
         mi.token:str = None
 

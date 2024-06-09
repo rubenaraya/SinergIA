@@ -36,7 +36,7 @@ class Exportador(ABC, I_Exportador):
         mi.config_web:dict = config_web or {}
 
     def obtener_ruta(mi) -> str:
-        ruta_temp = mi.config_web.get('ruta_temp', '')
+        ruta_temp = mi.config_web.get('RUTA_TEMP')
         ruta = Path(ruta_temp) / 'archivos'
         ruta = ruta.resolve()
         if not ruta.exists():

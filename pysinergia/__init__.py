@@ -144,7 +144,7 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, ruta_logs='logs', nivel:str='ERROR'):
+    def crear(nombre:str, ruta_logs='logs', nivel:str=Constantes.REGISTRO.ERROR):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
@@ -178,21 +178,21 @@ class ErrorPersonalizado(Exception):
         mi.recurso = recurso
         mi.dominio_idioma = dominio_idioma
         mi.nivel_registro = nivel_registro
-        mi.tipo = mi.conclusion(mi.codigo)
+        mi.conclusion = mi.concluir(mi.codigo)
         super().__init__(mi.mensaje)
 
     def __str__(mi):
         return mi.mensaje
 
     def __repr__(mi):
-        contenido = f'{mi.tipo} {mi.codigo} | {mi.mensaje}'
+        contenido = f'{mi.conclusion} {mi.codigo} | {mi.mensaje}'
         if mi.aplicacion and mi.servicio:
             contenido = f'{mi.aplicacion}/{mi.servicio} | {contenido}'
         if mi.recurso:
             contenido = f'{contenido} | {mi.recurso}'
         return contenido
 
-    def conclusion(mi, estado:int) -> str:
+    def concluir(mi, estado:int) -> str:
         if estado < 200:
             return Constantes.CONCLUSION.ERROR
         if estado < 300:
@@ -203,7 +203,7 @@ class ErrorPersonalizado(Exception):
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
 
-    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str='ERROR', ruta_logs:str='logs') -> str:
+    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str=Constantes.REGISTRO.ERROR, ruta_logs:str='logs') -> str:
         nombre = f'{mi.aplicacion}_{mi.servicio}' if mi.aplicacion and mi.servicio else nombre
         registro = mi.__repr__()
         registro = f'{texto_extra} | {registro}' if texto_extra else registro
@@ -223,7 +223,7 @@ class ErrorPersonalizado(Exception):
     def serializar(mi) -> dict:
         return {
             'codigo': mi.codigo,
-            'tipo': mi.tipo,
+            'conclusion': mi.conclusion,
             'mensaje': mi.mensaje,
             'detalles': mi.detalles,
         }

@@ -102,7 +102,7 @@ class ServidorApi:
             traductor = _Traductor({'dominio_idioma': err.dominio_idioma, 'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor)
-            if err.tipo == _C.CONCLUSION.ERROR:
+            if err.conclusion == _C.CONCLUSION.ERROR:
                 err.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
             return Response(respuesta.json(), status=err.codigo, mimetype=_C.MIME.JSON)
 
@@ -158,9 +158,10 @@ class ServidorApi:
     # Métodos públicos
 
     def crear_api(mi) -> Flask:
-        mi.dir_frontend = (Path('.') / f'{os.getenv('DIR_FRONTEND')}').resolve()
+        dir_frontend = os.getenv('DIR_FRONTEND')
+        mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         api = Flask(__name__,
-            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL'))}/{os.getenv('ALIAS_FRONTEND')}",
+            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL'))}/{str(os.getenv('ALIAS_FRONTEND'))}",
             static_folder=mi.dir_frontend.as_posix(),
         )
         api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
@@ -184,7 +185,9 @@ class ServidorApi:
             try:
                 nombre_servicio = directorio.name
                 if (directorio / f'{modulo_base}.py').is_file():
-                    enrutador = importlib.import_module(f'{os.getenv('DIR_ENRUTADORES')}.{nombre_servicio}.{modulo_base}')
+                    dir_enrutadores = os.getenv('DIR_ENRUTADORES')
+                    modulo = f'{dir_enrutadores}.{nombre_servicio}.{modulo_base}'
+                    enrutador = importlib.import_module(modulo)
                     api.register_blueprint(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
@@ -239,8 +242,8 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.base_url))
-        raiz_global = mi.config_web.get('raiz_global')
-        dir_frontend = mi.config_web.get('frontend')
+        raiz_global = mi.config_web.get('RAIZ_GLOBAL')
+        alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
         raiz_global = '/' + partes[0] if len(partes) > 0 else ''
@@ -254,7 +257,7 @@ class ComunicadorWeb(_Comunicador):
             'puntofinal': f'{aplicacion}{recurso}',
             'app': f'{raiz_global}{aplicacion}',
             'recurso': recurso,
-            'frontend': f'{raiz_global}/{dir_frontend}',
+            'frontend': f'{raiz_global}/{alias_frontend}',
         }
         mi.contexto['web']['api_marco'] = 'Flask'
         mi.contexto['web']['dominio'] = url_analizada.hostname

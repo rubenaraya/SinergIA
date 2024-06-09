@@ -73,7 +73,7 @@ class Respuesta(BaseModel):
 
     T: object | None = None
     codigo: Optional[int] | None = _Constantes.ESTADO._200_EXITO
-    tipo: Optional[str] | None = _Constantes.CONCLUSION.EXITO
+    conclusion: Optional[str] | None = _Constantes.CONCLUSION.EXITO
     mensaje: Optional[str] | None = ''
     titulo:str = ''
     descripcion:str = ''
@@ -142,7 +142,7 @@ class ArchivoCargado(BaseModel):
     tipo_mime: Optional[str] = ''
     peso: Optional[int] = 0
     codigo: Optional[int] = _Constantes.ESTADO._200_EXITO
-    resultado: Optional[str] = _Constantes.CONCLUSION.EXITO
+    conclusion: Optional[str] = _Constantes.CONCLUSION.EXITO
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
 
@@ -164,19 +164,19 @@ class ArchivoCargado(BaseModel):
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
             valores.codigo = _Constantes.ESTADO._422_NO_PROCESABLE
-            valores.resultado = _Constantes.CONCLUSION.ALERTA
+            valores.conclusion = _Constantes.CONCLUSION.ALERTA
             return valores
         if origen.filename == '':
             valores.mensaje_error = 'La-carga-recibida-no-contiene-archivo'
             valores.codigo = _Constantes.ESTADO._400_NO_VALIDO
-            valores.resultado = _Constantes.CONCLUSION.ALERTA
+            valores.conclusion = _Constantes.CONCLUSION.ALERTA
             return valores
         valores.nombre = origen.filename
         valores.extension = valores.nombre.rsplit('.', 1)[1].lower()
         if origen.content_type not in cls.tipos_permitidos():
             valores.mensaje_error = 'El-tipo-de-archivo-no-esta-permitido'
             valores.codigo = _Constantes.ESTADO._415_NO_SOPORTADO
-            valores.resultado = _Constantes.CONCLUSION.ALERTA
+            valores.conclusion = _Constantes.CONCLUSION.ALERTA
             return valores
         valores.tipo_mime = origen.content_type
         valores.contenido = origen.file if hasattr(origen, 'file') else origen.stream
@@ -187,7 +187,7 @@ class ArchivoCargado(BaseModel):
         if peso > cls.peso_maximo():
             valores.mensaje_error = 'El-archivo-supera-el-peso-maximo-aceptado'
             valores.codigo = _Constantes.ESTADO._413_NO_CARGADO
-            valores.resultado = _Constantes.CONCLUSION.ALERTA
+            valores.conclusion = _Constantes.CONCLUSION.ALERTA
             return valores
         valores.es_valido = True
         return valores

@@ -17,8 +17,8 @@ from .adaptadores import (
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-aplicacion = 'prueba'
-configuracion = cargar_configuracion(ConfigServicio, __name__, aplicacion, None)
+configuracion = cargar_configuracion(ConfigServicio, __file__, 'prueba', None)
+
 comunicador = ComunicadorWeb(
     configuracion.web(),
     configuracion.disco(),
@@ -26,9 +26,9 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.app_global}/{aplicacion}/login'
+    url_login=f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}/login'
 )
-enrutador = APIRouter(prefix=f'{configuracion.raiz_global}/{aplicacion}')
+enrutador = APIRouter(prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}')
 
 # --------------------------------------------------
 # Rutas del Servicio personalizado
@@ -36,7 +36,7 @@ enrutador = APIRouter(prefix=f'{configuracion.raiz_global}/{aplicacion}')
 
 @enrutador.get('/')
 def get_inicio():
-    return RedirectResponse(f'/{configuracion.app_global}/{configuracion.frontend}/{aplicacion}/index.html')
+    return RedirectResponse(f'/{configuracion.APP_GLOBAL}/{configuracion.ALIAS_FRONTEND}/{configuracion.APLICACION}/index.html')
 
 @enrutador.get('/participantes',
                 status_code=C.ESTADO._200_EXITO,
@@ -107,7 +107,7 @@ async def get_login(request:Request):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
 
 @enrutador.post('/login',
@@ -171,7 +171,7 @@ async def get_cargar(request:Request, tipo:str):
         codigo = C.ESTADO._415_NO_SOPORTADO
         respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.CONCLUSION.ALERTA,
+            conclusion=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
@@ -180,7 +180,7 @@ async def get_cargar(request:Request, tipo:str):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
 
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO)
@@ -195,7 +195,7 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
         codigo = C.ESTADO._415_NO_SOPORTADO
         respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.CONCLUSION.ALERTA,
+            conclusion=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
@@ -208,16 +208,10 @@ async def post_cargar(request:Request, tipo:str, carga:UploadFile=File(...)):
 async def manifest(request:Request):
     idioma = request.headers.get('Accept-Language')
     await comunicador.procesar_peticion(request, idioma)
-    datos = {
-        'titulo_pwa': configuracion.titulo_pwa,
-        'nombre_pwa': configuracion.nombre_pwa,
-        'id_pwa': configuracion.id_pwa,
-        'descripcion_pwa': configuracion.descripcion_pwa
-    }
     respuesta = comunicador.transformar_contenido(
-        comunicador.transferir_contexto(datos),
+        comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
     return Response(content=respuesta, media_type=C.MIME.MANIFEST)
 
@@ -226,7 +220,7 @@ async def audio(request:Request):
     from pysinergia.exportadores.convertidor_audio import ConvertidorAudio
     idioma = request.headers.get('Accept-Language')
     await comunicador.procesar_peticion(request, idioma)
-    convertidor = ConvertidorAudio(configuracion.disco_ruta)
+    convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)
     respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
     return JSONResponse(respuesta, status_code=C.ESTADO._200_EXITO)
 

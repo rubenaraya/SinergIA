@@ -50,7 +50,7 @@ class ControladorParticipantes(Controlador):
         else:
             contenido = Respuesta(
                 codigo=resultado.codigo,
-                tipo=resultado.resultado,
+                conclusion=resultado.conclusion,
                 mensaje=resultado.mensaje_error,
                 resultado={'recurso': resultado.nombre},
                 T=mi.comunicador.traspasar_traductor()

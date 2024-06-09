@@ -102,7 +102,7 @@ class ServidorApi:
             traductor = _Traductor({'dominio_idioma': err.dominio_idioma, 'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
             traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
             respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
-            if err.tipo == _C.CONCLUSION.ERROR:
+            if err.conclusion == _C.CONCLUSION.ERROR:
                 err.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
             return JSONResponse(content=respuesta, status_code=err.codigo)
 
@@ -159,15 +159,14 @@ class ServidorApi:
 
     def crear_api(mi) -> FastAPI:
         from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = ( Path('.') / f'{os.getenv('DIR_FRONTEND')}').resolve()
-        os.environ['ALIAS_FRONTEND'] = os.getenv('ALIAS_FRONTEND')
+        mi.dir_frontend = ( Path('.') / f'{str(os.getenv('DIR_FRONTEND'))}').resolve()
         docs_url = '/docs' if os.getenv('DOCS') else None
         redoc_url = '/redoc' if os.getenv('DOCS') else None
         api = FastAPI(
             docs_url=docs_url,
             redoc_url=redoc_url,
         )
-        api.mount(f"{str(os.getenv('RAIZ_GLOBAL', ''))}/{os.getenv('ALIAS_FRONTEND')}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
+        api.mount(f"{str(os.getenv('RAIZ_GLOBAL'))}/{str(os.getenv('ALIAS_FRONTEND'))}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
         mi._configurar_cors(api)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -187,7 +186,8 @@ class ServidorApi:
             try:
                 nombre_servicio = directorio.name
                 if (directorio / f'{modulo_base}.py').is_file():
-                    enrutador = importlib.import_module(f'{os.getenv('DIR_ENRUTADORES')}.{nombre_servicio}.{modulo_base}')
+                    modulo = f'{str(os.getenv('DIR_ENRUTADORES'))}.{nombre_servicio}.{modulo_base}'
+                    enrutador = importlib.import_module(modulo)
                     api.include_router(getattr(enrutador, 'enrutador'))
             except Exception as e:
                 print(e)
@@ -255,8 +255,8 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.url))
-        raiz_global = mi.config_web.get('raiz_global')
-        dir_frontend = mi.config_web.get('frontend')
+        raiz_global = mi.config_web.get('RAIZ_GLOBAL')
+        alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
         raiz_global = '/' + partes[0] if len(partes) > 0 else ''
@@ -270,7 +270,7 @@ class ComunicadorWeb(_Comunicador):
             'puntofinal': f'{aplicacion}{recurso}',
             'app': f'{raiz_global}{aplicacion}',
             'recurso': recurso,
-            'frontend': f'{raiz_global}/{dir_frontend}',
+            'frontend': f'{raiz_global}/{alias_frontend}',
         }
         mi.contexto['web']['api_marco'] = 'FastAPI'
         mi.contexto['web']['dominio'] = url_analizada.hostname

@@ -2,6 +2,9 @@
 
 from abc import (ABC, ABCMeta, abstractmethod)
 from functools import lru_cache
+from typing import (
+    List, Dict
+)
 from pathlib import Path
 
 # --------------------------------------------------
@@ -10,6 +13,7 @@ from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
+from pydantic import Field, field_validator
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -100,161 +104,178 @@ class I_Comunicador(metaclass=ABCMeta):
 # ClaseModelo: Configuracion
 # --------------------------------------------------
 class Configuracion(BaseSettings):
-    aplicacion: str = ''
-    servicio: str = ''
-    zona_horaria: str = ''
-    formato_fecha: str = ''
-    dominio_idioma: str = ''
-    ruta_locales: str = ''
-    ruta_temp: str = ''
-    ruta_logs: str = ''
-    nivel_registro: str = ''
-    idiomas_disponibles: list = []
-    id_pwa: str = ''
-    nombre_pwa: str = ''
-    titulo_pwa: str = ''
-    descripcion_pwa: str = ''
-    api_keys: dict = {}
-    secret_key: str = ''
-    algoritmo_jwt: str = ''
-    ruta_servicio: str = ''
-    raiz_global: str = ''
-    app_global: str = ''
-    frontend: str = ''
-    basedatos_fuente: str = ''
-    basedatos_clase: str = ''
-    basedatos_nombre: str = ''
-    basedatos_ruta: str = ''
-    basedatos_usuario: str = ''
-    basedatos_password: str = ''
-    almacen_fuente: str = ''
-    almacen_clase: str = ''
-    almacen_nombre: str = ''
-    almacen_ruta: str = ''
-    almacen_apikey: str = ''
-    almacen_url: str = ''
-    almacen_usuario: str = ''
-    almacen_password: str = ''
-    disco_fuente: str = ''
-    disco_clase: str = ''
-    disco_nombre: str = ''
-    disco_ruta: str = ''
-    disco_id: str = ''
-    disco_location: str = ''
-    disco_key: str = ''
-    disco_secret: str = ''
-    llm_fuente: str = ''
-    llm_clase: str = ''
-    llm_nombre: str = ''
-    llm_ruta: str = ''
-    llm_apikey: str = ''
-    llm_url: str = ''
-    spi_fuente: str = ''
-    spi_clase: str = ''
-    spi_nombre: str = ''
-    spi_ruta: str = ''
-    spi_apikey: str = ''
-    spi_url: str = ''
+    # Variables Aplicacion Global
+    RAIZ_GLOBAL: str = ''
+    APP_GLOBAL: str = Field(default='')
+    RUTA_LOGS: str = Field(default='')
+    IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
+    ARCHIVO_LOGS: str = Field(default='')
+    ALIAS_FRONTEND: str = Field(default='')
+    # Variables Aplicacion Personalizada
+    APLICACION: str = ''
+    NOMBRE_PWA: str = ''
+    TITULO_PWA: str = ''
+    DESCRIPCION_PWA: str = ''
+    API_KEYS: Dict[str,str] = Field(default={})
+    SECRET_KEY: str = ''
+    ALGORITMO_JWT: str = ''
+    ZONA_HORARIA: str = ''
+    FORMATO_FECHA: str = ''
+    DOMINIO_IDIOMA: str = ''
+    RUTA_LOCALES: str = ''
+    RUTA_TEMP: str = ''
+    NIVEL_REGISTRO: str = ''
+    # Variables Servicio especifico
+    SERVICIO: str = Field(default='')
+    RUTA_SERVICIO: str = Field(default='')
+    BASEDATOS_FUENTE: str = ''
+    BASEDATOS_CLASE: str = ''
+    BASEDATOS_NOMBRE: str = ''
+    BASEDATOS_RUTA: str = ''
+    BASEDATOS_USUARIO: str = ''
+    BASEDATOS_PASSWORD: str = ''
+    ALMACEN_FUENTE: str = ''
+    ALMACEN_CLASE: str = ''
+    ALMACEN_NOMBRE: str = ''
+    ALMACEN_RUTA: str = ''
+    ALMACEN_APIKEY: str = ''
+    ALMACEN_URL: str = ''
+    ALMACEN_USUARIO: str = ''
+    ALMACEN_PASSWORD: str = ''
+    DISCO_FUENTE: str = ''
+    DISCO_CLASE: str = ''
+    DISCO_NOMBRE: str = ''
+    DISCO_RUTA: str = ''
+    DISCO_ID: str = ''
+    DISCO_LOCATION: str = ''
+    DISCO_KEY: str = ''
+    DISCO_SECRET: str = ''
+    LLM_FUENTE: str = ''
+    LLM_CLASE: str = ''
+    LLM_NOMBRE: str = ''
+    LLM_RUTA: str = ''
+    LLM_APIKEY: str = ''
+    LLM_URL: str = ''
+    SPI_FUENTE: str = ''
+    SPI_CLASE: str = ''
+    SPI_NOMBRE: str = ''
+    SPI_RUTA: str = ''
+    SPI_APIKEY: str = ''
+    SPI_URL: str = ''
     model_config = SettingsConfigDict(
-        env_file='.env',
-        env_file_encoding='utf-8',
         env_prefix='',
         extra='ignore',
+        case_sensitive=True,
+        validate_assignment=True,
+        validate_default=True,
     )
+
+    @field_validator('IDIOMAS_DISPONIBLES', mode='before')
+    @classmethod
+    def parse_json_list(cls, v):
+        import json
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except ValueError:
+                pass
+        return v or []
+
+    @field_validator('API_KEYS', mode='before')
+    @classmethod
+    def parse_json_dict(cls, v):
+        import json
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except ValueError:
+                pass
+        return v or {}
+
     def basedatos(mi) -> dict:
         return dict({
-            'fuente': mi.basedatos_fuente,
-            'clase': mi.basedatos_clase,
-            'nombre': mi.basedatos_nombre,
-            'ruta': mi.basedatos_ruta,
-            'usuario': mi.basedatos_usuario,
-            'password': mi.basedatos_password
+            'fuente': mi.BASEDATOS_FUENTE,
+            'clase': mi.BASEDATOS_CLASE,
+            'nombre': mi.BASEDATOS_NOMBRE,
+            'ruta': mi.BASEDATOS_RUTA,
+            'usuario': mi.BASEDATOS_USUARIO,
+            'password': mi.BASEDATOS_PASSWORD,
         })
     def disco(mi) -> dict:
         return dict({
-            'fuente': mi.disco_fuente,
-            'clase': mi.disco_clase,
-            'nombre': mi.disco_nombre,
-            'ruta': mi.disco_ruta,
-            'id': mi.disco_id,
-            'location': mi.disco_location,
-            'key': mi.disco_key,
-            'secret': mi.disco_secret
+            'fuente': mi.DISCO_FUENTE,
+            'clase': mi.DISCO_CLASE,
+            'nombre': mi.DISCO_NOMBRE,
+            'ruta': mi.DISCO_RUTA,
+            'id': mi.DISCO_ID,
+            'location': mi.DISCO_LOCATION,
+            'key': mi.DISCO_KEY,
+            'secret': mi.DISCO_SECRET,
         })
     def almacen(mi) -> dict:
         return dict({
-            'fuente': mi.almacen_fuente,
-            'clase': mi.almacen_clase,
-            'nombre': mi.almacen_nombre,
-            'ruta': mi.almacen_ruta,
-            'url': mi.almacen_url,
-            'apikey': mi.almacen_apikey,
-            'usuario': mi.almacen_usuario,
-            'password': mi.almacen_password
+            'fuente': mi.ALMACEN_FUENTE,
+            'clase': mi.ALMACEN_CLASE,
+            'nombre': mi.ALMACEN_NOMBRE,
+            'ruta': mi.ALMACEN_RUTA,
+            'url': mi.ALMACEN_URL,
+            'apikey': mi.ALMACEN_APIKEY,
+            'usuario': mi.ALMACEN_USUARIO,
+            'password': mi.ALMACEN_PASSWORD,
         })
     def llm(mi) -> dict:
         return dict({
-            'fuente': mi.llm_fuente,
-            'clase': mi.llm_clase,
-            'nombre': mi.llm_nombre,
-            'ruta': mi.llm_ruta,
-            'url': mi.llm_url,
-            'apikey': mi.llm_apikey,
+            'fuente': mi.LLM_FUENTE,
+            'clase': mi.LLM_CLASE,
+            'nombre': mi.LLM_NOMBRE,
+            'ruta': mi.LLM_RUTA,
+            'url': mi.LLM_URL,
+            'apikey': mi.LLM_APIKEY,
         })
     def spi(mi) -> dict:
         return dict({
-            'fuente': mi.spi_fuente,
-            'clase': mi.spi_clase,
-            'nombre': mi.spi_nombre,
-            'ruta': mi.spi_ruta,
-            'url': mi.spi_url,
-            'apikey': mi.spi_apikey,
+            'fuente': mi.SPI_FUENTE,
+            'clase': mi.SPI_CLASE,
+            'nombre': mi.SPI_NOMBRE,
+            'ruta': mi.SPI_RUTA,
+            'url': mi.SPI_URL,
+            'apikey': mi.SPI_APIKEY,
         })
-    def iniciar(mi, ruta_archivo:str, aplicacion:str):
-        import os
-        mi.ruta_servicio = Path(ruta_archivo).parent.as_posix()
-        if mi.ruta_servicio:
-            ruta = Path(mi.ruta_servicio)
-            mi.servicio = ruta.name if ruta.parts else ''
-            mi.aplicacion = aplicacion
-            mi.app_global = os.getenv('APP_GLOBAL', '')
-            mi.raiz_global = os.getenv('RAIZ_GLOBAL', '')
-            mi.frontend = os.getenv('ALIAS_FRONTEND', '')
     def web(mi) -> dict:
         return {
-            'aplicacion': mi.aplicacion,
-            'servicio': mi.servicio,
-            'ruta_temp': mi.ruta_temp,
-            'ruta_servicio': mi.ruta_servicio,
-            'app_global': mi.app_global,
-            'raiz_global': mi.raiz_global,
-            'frontend': mi.frontend,
-            'nivel_registro': mi.nivel_registro,
-            'ruta_logs': mi.ruta_logs,
-            'dominio_idioma': mi.dominio_idioma,
-            'ruta_locales': mi.ruta_locales,
-            'idiomas_disponibles': mi.idiomas_disponibles,
-            'zona_horaria': mi.zona_horaria,
-            'formato_fecha': mi.formato_fecha,
-            'id_pwa': mi.id_pwa,
-            'nombre_pwa': mi.nombre_pwa,
-            'titulo_pwa': mi.titulo_pwa,
-            'descripcion_pwa': mi.descripcion_pwa,
+            'APLICACION': mi.APLICACION,
+            'SERVICIO': mi.SERVICIO,
+            'RUTA_TEMP': mi.RUTA_TEMP,
+            'RUTA_SERVICIO': mi.RUTA_SERVICIO,
+            'APP_GLOBAL': mi.APP_GLOBAL,
+            'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
+            'ALIAS_FRONTEND': mi.ALIAS_FRONTEND,
+            'NIVEL_REGISTRO': mi.NIVEL_REGISTRO,
+            'RUTA_LOGS': mi.RUTA_LOGS,
+            'ARCHIVO_LOGS': mi.ARCHIVO_LOGS,
+            'DOMINIO_IDIOMA': mi.DOMINIO_IDIOMA,
+            'RUTA_LOCALES': mi.RUTA_LOCALES,
+            'IDIOMAS_DISPONIBLES': mi.IDIOMAS_DISPONIBLES,
+            'ZONA_HORARIA': mi.ZONA_HORARIA,
+            'FORMATO_FECHA': mi.FORMATO_FECHA,
+            'NOMBRE_PWA': mi.NOMBRE_PWA,
+            'TITULO_PWA': mi.TITULO_PWA,
+            'DESCRIPCION_PWA': mi.DESCRIPCION_PWA,
         }
     def autenticacion(mi) -> dict:
         return dict({
-            'algoritmo_jwt': mi.algoritmo_jwt,
-            'secret_key': mi.secret_key,
-            'api_keys': mi.api_keys,
-            'ruta_temp': mi.ruta_temp,
+            'ALGORITMO_JWT': mi.ALGORITMO_JWT,
+            'SECRET_KEY': mi.SECRET_KEY,
+            'API_KEYS': mi.API_KEYS,
+            'RUTA_TEMP': mi.RUTA_TEMP,
         })
     def traductor(mi) -> dict:
         return dict({
-            'dominio_idioma': mi.dominio_idioma,
-            'ruta_locales': mi.ruta_locales,
-            'idiomas_disponibles': mi.idiomas_disponibles,
-            'zona_horaria': mi.zona_horaria,
-            'formato_fecha': mi.formato_fecha,
+            'DOMINIO_IDIOMA': mi.DOMINIO_IDIOMA,
+            'RUTA_LOCALES': mi.RUTA_LOCALES,
+            'IDIOMAS_DISPONIBLES': mi.IDIOMAS_DISPONIBLES,
+            'ZONA_HORARIA': mi.ZONA_HORARIA,
+            'FORMATO_FECHA': mi.FORMATO_FECHA,
         })
 
 
@@ -272,9 +293,9 @@ class Repositorio(ABC):
     def _importar_conector(mi, config:dict):
         import importlib
         try:
-            modulo = getattr(
-                importlib.import_module(f"{_Constantes.RUTA_CONECTORES}.{config.get('fuente')}"),
-                config.get('clase'))
+            fuente = config.get('fuente')
+            clase = config.get('clase')
+            modulo = getattr(importlib.import_module(f"{_Constantes.RUTA_CONECTORES}.{fuente}"), clase)
             if modulo:
                 return modulo
             return None
@@ -287,27 +308,27 @@ class Repositorio(ABC):
 
     def inyectar_conectores(mi, configuracion:Configuracion):
         try:
-            if configuracion.basedatos_clase:
+            if configuracion.BASEDATOS_CLASE:
                 from pysinergia.conectores.basedatos import Basedatos
                 conector_basedatos = mi._importar_conector(mi.configuracion.basedatos())
                 if conector_basedatos:
                     mi.basedatos:Basedatos = conector_basedatos()
-            if configuracion.almacen_clase:
+            if configuracion.ALMACEN_CLASE:
                 from pysinergia.conectores.almacen import Almacen
                 conector_almacen = mi._importar_conector(mi.configuracion.almacen())
                 if conector_almacen:
                     mi.almacen:Almacen = conector_almacen()
-            if configuracion.disco_clase:
+            if configuracion.DISCO_CLASE:
                 from pysinergia.conectores.disco import Disco
                 conector_disco = mi._importar_conector(mi.configuracion.disco())
                 if conector_disco:
                     mi.disco:Disco = conector_disco(mi.configuracion.disco())
-            if configuracion.llm_clase:
+            if configuracion.LLM_CLASE:
                 from pysinergia.conectores.llm import Llm
                 conector_llm = mi._importar_conector(mi.configuracion.llm())
                 if conector_llm:
                     mi.llm:Llm = conector_llm()
-            if configuracion.spi_clase:
+            if configuracion.SPI_CLASE:
                 from pysinergia.conectores.spi import Spi
                 conector_spi = mi._importar_conector(mi.configuracion.spi())
                 if conector_spi:
@@ -332,12 +353,20 @@ class Controlador(ABC):
 # Funcion: cargar_configuracion
 # --------------------------------------------------
 @lru_cache
-def cargar_configuracion(modelo:Configuracion, paquete:str, aplicacion:str, entorno:str=None):
-    nombre_archivo = f".{entorno.lower()}.env" if entorno else '.config.env'
-    partes = paquete.split('.')[:-1]
-    ruta = Path(*partes)
-    archivo_env = (ruta / nombre_archivo).as_posix()
-    configuracion:Configuracion = modelo(_env_file=archivo_env)
-    configuracion.iniciar(archivo_env, aplicacion)
+def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str, entorno:str=None) -> Configuracion:
+    from dotenv import dotenv_values
+    prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
+    ruta_servicio_path = Path(ruta_origen).parent
+    lista_env:list[Path] = [(ruta_servicio_path / f'.{prefijo_entorno}.env')]
+    if env_aplicacion:
+        lista_env.append((ruta_servicio_path.parent / f'config/.{prefijo_entorno}.{env_aplicacion}.env'))
+    valores_configuracion = {
+        'RUTA_SERVICIO': ruta_servicio_path.as_posix(),
+        'SERVICIO': ruta_servicio_path.name,
+    }
+    for archivo in lista_env:
+        if archivo.exists():
+            valores_configuracion.update(dotenv_values(archivo))
+    configuracion:Configuracion = modelo_base(**valores_configuracion)
     return configuracion
 

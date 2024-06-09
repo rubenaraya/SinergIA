@@ -17,8 +17,8 @@ from .adaptadores import (
 
 # --------------------------------------------------
 # Configuración del Servicio personalizado
-aplicacion = 'prueba'
-configuracion = cargar_configuracion(ConfigServicio, __name__, aplicacion, None)
+configuracion = cargar_configuracion(ConfigServicio, __file__, 'prueba', None)
+
 comunicador = ComunicadorWeb(
     configuracion.web(),
     configuracion.disco(),
@@ -26,12 +26,12 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.app_global}/{aplicacion}/login'
+    url_login=f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}/login'
 )
 enrutador = Blueprint(
-    name=configuracion.servicio,
+    name=configuracion.SERVICIO,
     import_name=__name__,
-    url_prefix=f'{configuracion.raiz_global}/{aplicacion}'
+    url_prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
 )
 
 # --------------------------------------------------
@@ -40,7 +40,7 @@ enrutador = Blueprint(
 
 @enrutador.route('/', methods=['GET'])
 def get_inicio():
-    return redirect(f'/{configuracion.app_global}/{configuracion.frontend}/{aplicacion}/index.html')
+    return redirect(f'/{configuracion.APP_GLOBAL}/{configuracion.ALIAS_FRONTEND}/{configuracion.APLICACION}/index.html')
 
 @enrutador.route('/participantes', methods=['GET'])
 #@autenticador.validar_token
@@ -101,7 +101,7 @@ def get_login():
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
@@ -173,7 +173,7 @@ def get_cargar(tipo):
         codigo = C.ESTADO._415_NO_SOPORTADO
         respuesta = Respuesta(
             codigo=codigo,
-            tipo=C.CONCLUSION.ALERTA,
+            conclusion=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).json()
@@ -182,7 +182,7 @@ def get_cargar(tipo):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
 
 @enrutador.route('/cargar/<tipo>', methods=['POST'])
@@ -197,7 +197,7 @@ def post_cargar(tipo):
         codigo = C.ESTADO._415_NO_SOPORTADO
         contenido = Respuesta(
             codigo=codigo,
-            tipo=C.CONCLUSION.ALERTA,
+            conclusion=C.CONCLUSION.ALERTA,
             mensaje='Tipo-de-carga-no-valido',
             T=comunicador.traspasar_traductor()
         ).diccionario()
@@ -205,7 +205,7 @@ def post_cargar(tipo):
         codigo = C.ESTADO._422_NO_PROCESABLE
         contenido = Respuesta(
             codigo=codigo,
-            tipo=C.CONCLUSION.ALERTA,
+            conclusion=C.CONCLUSION.ALERTA,
             mensaje='No-se-recibio-ninguna-carga',
             T=comunicador.traspasar_traductor()
         ).diccionario()
@@ -218,16 +218,10 @@ def post_cargar(tipo):
 def manifest():
     idioma = request.headers.get('Accept-Language')
     comunicador.procesar_peticion(idioma)
-    datos = {
-        'titulo_pwa': configuracion.titulo_pwa,
-        'nombre_pwa': configuracion.nombre_pwa,
-        'id_pwa': configuracion.id_pwa,
-        'descripcion_pwa': configuracion.descripcion_pwa
-    }
     respuesta = comunicador.transformar_contenido(
-        comunicador.transferir_contexto(datos),
+        comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.ruta_servicio}/plantillas'
+        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.MANIFEST)
 
@@ -269,7 +263,7 @@ def audio():
     from pysinergia.exportadores.convertidor_audio import ConvertidorAudio
     idioma = request.headers.get('Accept-Language')
     comunicador.procesar_peticion(idioma)
-    convertidor = ConvertidorAudio(configuracion.disco_ruta)
+    convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)
     respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
     return jsonify(respuesta)
 
