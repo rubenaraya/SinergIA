@@ -3,7 +3,7 @@
 from pysinergia._dependencias.adaptadores import *
 
 # --------------------------------------------------
-# Importaciones del Servicio personalizado
+# Importaciones del Microservicio personalizado
 from .servicio import (
     CasosDeUsoParticipantes as CasosDeUso, 
     I_RepositorioParticipantes,

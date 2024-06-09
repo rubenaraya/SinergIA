@@ -169,12 +169,12 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', servicio:str='', recurso:str='', dominio_idioma:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
+    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', microservicio:str='', recurso:str='', dominio_idioma:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
         mi.codigo = int(codigo)
         mi.mensaje = str(mensaje).replace('{','(').replace('}',')')
         mi.detalles = detalles
         mi.aplicacion = aplicacion
-        mi.servicio = servicio
+        mi.microservicio = microservicio
         mi.recurso = recurso
         mi.dominio_idioma = dominio_idioma
         mi.nivel_registro = nivel_registro
@@ -186,8 +186,8 @@ class ErrorPersonalizado(Exception):
 
     def __repr__(mi):
         contenido = f'{mi.conclusion} {mi.codigo} | {mi.mensaje}'
-        if mi.aplicacion and mi.servicio:
-            contenido = f'{mi.aplicacion}/{mi.servicio} | {contenido}'
+        if mi.aplicacion and mi.microservicio:
+            contenido = f'{mi.aplicacion}/{mi.microservicio} | {contenido}'
         if mi.recurso:
             contenido = f'{contenido} | {mi.recurso}'
         return contenido
@@ -204,7 +204,7 @@ class ErrorPersonalizado(Exception):
         return Constantes.CONCLUSION.ERROR
 
     def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str=Constantes.REGISTRO.ERROR, ruta_logs:str='logs') -> str:
-        nombre = f'{mi.aplicacion}_{mi.servicio}' if mi.aplicacion and mi.servicio else nombre
+        nombre = f'{mi.aplicacion}_{mi.microservicio}' if mi.aplicacion and mi.microservicio else nombre
         registro = mi.__repr__()
         registro = f'{texto_extra} | {registro}' if texto_extra else registro
         registrador = RegistradorLogs.crear(nombre=nombre, ruta_logs=ruta_logs, nivel=mi.nivel_registro)

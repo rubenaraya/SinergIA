@@ -3,7 +3,7 @@
 from pysinergia._dependencias.web_flask import *
 
 # --------------------------------------------------
-# Importaciones del Servicio personalizado
+# Importaciones del Microservicio personalizado
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
@@ -12,12 +12,12 @@ from .dominio import (
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
-    ConfigParticipantes as ConfigServicio,
+    ConfigParticipantes as ConfigMicroservicio,
 )
 
 # --------------------------------------------------
-# Configuración del Servicio personalizado
-configuracion = cargar_configuracion(ConfigServicio, __file__, 'prueba', None)
+# Configuración del Microservicio personalizado
+configuracion = cargar_configuracion(ConfigMicroservicio, __file__, 'prueba', None)
 
 comunicador = ComunicadorWeb(
     configuracion.web(),
@@ -29,13 +29,13 @@ autenticador = AutenticadorWeb(
     url_login=f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}/login'
 )
 enrutador = Blueprint(
-    name=configuracion.SERVICIO,
+    name=configuracion.MICROSERVICIO,
     import_name=__name__,
     url_prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
 )
 
 # --------------------------------------------------
-# Rutas del Servicio personalizado
+# Rutas del Microservicio personalizado
 # --------------------------------------------------
 
 @enrutador.route('/', methods=['GET'])
@@ -101,7 +101,7 @@ def get_login():
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
@@ -182,7 +182,7 @@ def get_cargar(tipo):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
 
 @enrutador.route('/cargar/<tipo>', methods=['POST'])
@@ -221,7 +221,7 @@ def manifest():
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.MANIFEST)
 

@@ -163,6 +163,7 @@ class Comunicador(_I_Comunicador):
     # Métodos privados
 
     def _conectar_disco(mi, config_disco:dict) -> _Disco:
+        """TODO: Agregar manejador de errores"""
         fuente = config_disco.get('fuente')
         clase = config_disco.get('clase')
         componente = getattr(importlib.import_module(f'pysinergia.conectores.{fuente}'), clase)
@@ -239,7 +240,7 @@ class Comunicador(_I_Comunicador):
         plantilla = metadatos.get(tipo, '')
         ruta_plantillas = metadatos.get('ruta_plantillas', None)
         if not ruta_plantillas:
-            ruta = mi.config_web.get('RUTA_SERVICIO')
+            ruta = mi.config_web.get('RUTA_MICROSERVICIO')
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():

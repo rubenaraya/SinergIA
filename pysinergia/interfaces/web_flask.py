@@ -127,6 +127,9 @@ class ServidorApi:
             respuesta = Respuesta(**error.serializar(), T=traductor)
             if err.code >= 500:
                 error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'))
+            elif os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
+
             return Response(respuesta.json(), status=err.code, mimetype=_C.MIME.JSON)
 
         @api.errorhandler(InternalServerError)

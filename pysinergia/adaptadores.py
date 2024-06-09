@@ -6,6 +6,7 @@ from typing import (
     List, Dict
 )
 from pathlib import Path
+import json
 
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Adaptadores)
@@ -104,7 +105,7 @@ class I_Comunicador(metaclass=ABCMeta):
 # ClaseModelo: Configuracion
 # --------------------------------------------------
 class Configuracion(BaseSettings):
-    # Variables Aplicacion Global
+    # Aplicacion Global
     APP_GLOBAL: str = Field(default='')
     RAIZ_GLOBAL: str = Field(default='')
     RUTA_RAIZ: str = Field(default='')
@@ -112,7 +113,7 @@ class Configuracion(BaseSettings):
     IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
     ARCHIVO_LOGS: str = Field(default='')
     ALIAS_FRONTEND: str = Field(default='')
-    # Variables Aplicacion Personalizada
+    # Aplicacion Personalizada
     APLICACION: str = Field(default='')
     NOMBRE_PWA: str = ''
     TITULO_PWA: str = ''
@@ -126,9 +127,9 @@ class Configuracion(BaseSettings):
     RUTA_LOCALES: str = ''
     RUTA_TEMP: str = ''
     NIVEL_REGISTRO: str = ''
-    # Variables Servicio especifico
-    SERVICIO: str = Field(default='')
-    RUTA_SERVICIO: str = Field(default='')
+    # Microservicio especifico
+    MICROSERVICIO: str = Field(default='')
+    RUTA_MICROSERVICIO: str = Field(default='')
     BASEDATOS_FUENTE: str = ''
     BASEDATOS_CLASE: str = ''
     BASEDATOS_NOMBRE: str = ''
@@ -174,7 +175,6 @@ class Configuracion(BaseSettings):
     @field_validator('IDIOMAS_DISPONIBLES', mode='before')
     @classmethod
     def parse_json_list(cls, v):
-        import json
         if isinstance(v, str):
             try:
                 return json.loads(v)
@@ -185,7 +185,6 @@ class Configuracion(BaseSettings):
     @field_validator('API_KEYS', mode='before')
     @classmethod
     def parse_json_dict(cls, v):
-        import json
         if isinstance(v, str):
             try:
                 return json.loads(v)
@@ -245,9 +244,9 @@ class Configuracion(BaseSettings):
     def web(mi) -> dict:
         return {
             'APLICACION': mi.APLICACION,
-            'SERVICIO': mi.SERVICIO,
+            'MICROSERVICIO': mi.MICROSERVICIO,
             'RUTA_TEMP': mi.RUTA_TEMP,
-            'RUTA_SERVICIO': mi.RUTA_SERVICIO,
+            'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
             'RUTA_RAIZ': mi.RUTA_RAIZ,
             'APP_GLOBAL': mi.APP_GLOBAL,
             'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
@@ -358,13 +357,13 @@ class Controlador(ABC):
 def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str, entorno:str=None) -> Configuracion:
     from dotenv import dotenv_values
     prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
-    ruta_servicio_path = Path(ruta_origen).parent
-    lista_env:list[Path] = [(ruta_servicio_path / f'.{prefijo_entorno}.env')]
+    ruta_microservicio_path = Path(ruta_origen).parent
+    lista_env:list[Path] = [(ruta_microservicio_path / f'.{prefijo_entorno}.env')]
     if env_aplicacion:
-        lista_env.append((ruta_servicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
+        lista_env.append((ruta_microservicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
     valores_configuracion = {
-        'RUTA_SERVICIO': ruta_servicio_path.as_posix(),
-        'SERVICIO': ruta_servicio_path.name,
+        'RUTA_MICROSERVICIO': ruta_microservicio_path.as_posix(),
+        'MICROSERVICIO': ruta_microservicio_path.name,
     }
     for archivo in lista_env:
         if archivo.exists():

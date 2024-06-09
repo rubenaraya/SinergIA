@@ -3,7 +3,7 @@
 from pysinergia._dependencias.web_fastapi import *
 
 # --------------------------------------------------
-# Importaciones del Servicio personalizado
+# Importaciones del Microservicio personalizado
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
@@ -12,12 +12,12 @@ from .dominio import (
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
-    ConfigParticipantes as ConfigServicio,
+    ConfigParticipantes as ConfigMicroservicio,
 )
 
 # --------------------------------------------------
-# Configuración del Servicio personalizado
-configuracion = cargar_configuracion(ConfigServicio, __file__, 'prueba', None)
+# Configuración del Microservicio personalizado
+configuracion = cargar_configuracion(ConfigMicroservicio, __file__, 'prueba', None)
 
 comunicador = ComunicadorWeb(
     configuracion.web(),
@@ -31,7 +31,7 @@ autenticador = AutenticadorWeb(
 enrutador = APIRouter(prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}')
 
 # --------------------------------------------------
-# Rutas del Servicio personalizado
+# Rutas del Microservicio personalizado
 # --------------------------------------------------
 
 @enrutador.get('/')
@@ -107,7 +107,7 @@ async def get_login(request:Request):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
 
 @enrutador.post('/login',
@@ -180,7 +180,7 @@ async def get_cargar(request:Request, tipo:str):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
 
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO)
@@ -211,7 +211,7 @@ async def manifest(request:Request):
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.RUTA_SERVICIO}/plantillas'
+        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(content=respuesta, media_type=C.MIME.MANIFEST)
 
