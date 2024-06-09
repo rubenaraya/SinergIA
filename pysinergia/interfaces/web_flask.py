@@ -161,7 +161,7 @@ class ServidorApi:
         dir_frontend = os.getenv('DIR_FRONTEND')
         mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         api = Flask(__name__,
-            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL'))}/{str(os.getenv('ALIAS_FRONTEND'))}",
+            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND'))}",
             static_folder=mi.dir_frontend.as_posix(),
         )
         api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
@@ -242,7 +242,7 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.base_url))
-        raiz_global = mi.config_web.get('RAIZ_GLOBAL')
+        raiz_global = mi.config_web.get('RAIZ_GLOBAL','')
         alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')

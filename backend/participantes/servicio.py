@@ -79,7 +79,7 @@ class CasosDeUsoParticipantes(CasosDeUso):
     def _buscar_participantes(mi, peticion:dict):
         mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
         resultado = mi.repositorio.recuperar_lista_participantes_todos(peticion)
-        opciones = mi.adjuntar_opciones({
+        metadatos = mi.agregar_metadatos({
             'nombre_descarga': 'documento de prueba',
             'titulo': 'Listado de Pruebas',
             'carpeta_guardar': 'creados'
@@ -89,7 +89,7 @@ class CasosDeUsoParticipantes(CasosDeUso):
             "operacion": "recuperar_lista_participantes_todos",
             "modelo": "PeticionBuscarParticipantes",
             "resultado": resultado,
-            "opciones": opciones
+            "metadatos": metadatos
         }
 
     def _agregar_participante(mi, peticion:dict):

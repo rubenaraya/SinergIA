@@ -82,7 +82,7 @@ class Respuesta(BaseModel):
     idioma:str = ''
     detalles:list = []
     resultado: dict | None = {}
-    opciones: dict | None = {}
+    metadatos: dict | None = {}
 
     @model_validator(mode='after')
     @classmethod
@@ -101,7 +101,7 @@ class Respuesta(BaseModel):
             valores.idioma = valores.T.idioma_actual()
             _ = valores.T.abrir_traduccion()
             if _:
-                datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.opciones), fechahora)
+                datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.metadatos), fechahora)
                 valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
                 valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
                 if isinstance(valores.descripcion, str):

@@ -201,12 +201,12 @@ class Comunicador(_I_Comunicador):
     def exportar_contenido(mi, conversion:str, info:dict={}, guardar:bool=False):
         try:
             modo = 't'
-            opciones:dict = info['opciones']
-            opciones['idioma'] = mi.idioma
+            metadatos:dict = info['metadatos']
+            metadatos['idioma'] = mi.idioma
             if conversion == _Constantes.CONVERSION.JSON:
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
-                plantilla, ruta_plantillas = mi.comprobar_plantilla(opciones, 'plantilla')
+                plantilla, ruta_plantillas = mi.comprobar_plantilla(metadatos, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
                 if conversion == _Constantes.CONVERSION.HTML or conversion == _Constantes.CONVERSION.TEXTO:
                     resultado = contenido
@@ -216,11 +216,11 @@ class Comunicador(_I_Comunicador):
                     clase = f'Exportador{str(conversion).capitalize()}'
                     componente = getattr(importlib.import_module(modulo), clase)
                     exportador:Exportador = componente(mi.config_web)
-                    resultado = exportador.generar(contenido=contenido, opciones=opciones)
+                    resultado = exportador.generar(contenido=contenido, opciones=metadatos)
                     modo = 'b'
             if guardar:
-                nombre_descarga = opciones.get('nombre_descarga', '')
-                carpeta_guardar = opciones.get('carpeta_guardar', '')
+                nombre_descarga = metadatos.get('nombre_descarga', '')
+                carpeta_guardar = metadatos.get('carpeta_guardar', '')
                 ruta_archivo = str(f'{carpeta_guardar}/{nombre_descarga}').strip('/')
                 mi.disco.escribir(resultado, ruta_archivo, modo)
             return resultado
@@ -228,17 +228,17 @@ class Comunicador(_I_Comunicador):
             raise e
 
     def obtener_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
-        if 'opciones' in info:
-            opciones:dict = info['opciones']
-            nombre = mi.disco.normalizar_nombre(opciones.get('nombre_descarga', ''), extension, largo, auto)
-            opciones['nombre_descarga'] = nombre
+        if 'metadatos' in info:
+            metadatos:dict = info['metadatos']
+            nombre = mi.disco.normalizar_nombre(metadatos.get('nombre_descarga', ''), extension, largo, auto)
+            metadatos['nombre_descarga'] = nombre
         else:
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
 
-    def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
-        plantilla = opciones.get(tipo, '')
-        ruta_plantillas = opciones.get('ruta_plantillas', None)
+    def comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
+        plantilla = metadatos.get(tipo, '')
+        ruta_plantillas = metadatos.get('ruta_plantillas', None)
         if not ruta_plantillas:
             ruta = mi.config_web.get('RUTA_SERVICIO')
             ruta_plantillas = f'{ruta}/plantillas'
@@ -248,7 +248,7 @@ class Comunicador(_I_Comunicador):
                 if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                     ruta_plantillas = ''
                     plantilla = ''
-        opciones['ruta_plantillas'] = ruta_plantillas
+        metadatos['ruta_plantillas'] = ruta_plantillas
         return (plantilla, ruta_plantillas)
 
     def transferir_contexto(mi, datos:dict=None) -> dict:

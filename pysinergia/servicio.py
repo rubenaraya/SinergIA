@@ -41,8 +41,8 @@ class CasosDeUso:
             )
         return False
 
-    def adjuntar_opciones(mi, opciones:dict, info:dict=None) -> dict:
-        requeridas = {
+    def agregar_metadatos(mi, metadatos:dict, info:dict=None) -> dict:
+        requeridos = {
             'plantilla': 'tabla.html',
             'hoja_estilos': 'tabla.css',
             'tabla_datos': 'Hoja1',
@@ -56,11 +56,11 @@ class CasosDeUso:
         }
         if info is None:
             info = {}
-        for clave, valor in requeridas.items():
+        for clave, valor in requeridos.items():
             if clave not in info:
                 info[clave] = valor
-        if opciones is not None:
-            for clave, valor in opciones.items():
+        if metadatos is not None:
+            for clave, valor in metadatos.items():
                 info[clave] = valor
         return info
 

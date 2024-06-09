@@ -84,7 +84,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def comprobar_plantilla(mi, opciones:dict, tipo:str='') -> tuple:
+    def comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
         ...
 
     @abstractmethod
@@ -105,14 +105,14 @@ class I_Comunicador(metaclass=ABCMeta):
 # --------------------------------------------------
 class Configuracion(BaseSettings):
     # Variables Aplicacion Global
-    RAIZ_GLOBAL: str = ''
+    RAIZ_GLOBAL: str = Field(default='')
     APP_GLOBAL: str = Field(default='')
     RUTA_LOGS: str = Field(default='')
     IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
     ARCHIVO_LOGS: str = Field(default='')
     ALIAS_FRONTEND: str = Field(default='')
     # Variables Aplicacion Personalizada
-    APLICACION: str = ''
+    APLICACION: str = Field(default='')
     NOMBRE_PWA: str = ''
     TITULO_PWA: str = ''
     DESCRIPCION_PWA: str = ''

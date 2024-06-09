@@ -166,7 +166,7 @@ class ServidorApi:
             docs_url=docs_url,
             redoc_url=redoc_url,
         )
-        api.mount(f"{str(os.getenv('RAIZ_GLOBAL'))}/{str(os.getenv('ALIAS_FRONTEND'))}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
+        api.mount(f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND'))}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
         mi._configurar_cors(api)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -255,7 +255,7 @@ class ComunicadorWeb(_Comunicador):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         url_analizada = urlparse(str(request.url))
-        raiz_global = mi.config_web.get('RAIZ_GLOBAL')
+        raiz_global = mi.config_web.get('RAIZ_GLOBAL','')
         alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
