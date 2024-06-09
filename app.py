@@ -24,7 +24,7 @@ else:
 # --------------------------------------------------
 # Ejecuta script de inicio
 
-servidor = ServidorApi()
+servidor = ServidorApi(__file__)
 api = servidor.crear_api()
 servidor.mapear_enrutadores(api)
 
@@ -32,9 +32,8 @@ servidor.mapear_enrutadores(api)
 # Lanza el Servidor Web (solo en desarrollo/local)
 
 if __name__ == '__main__':
-    script = Path(__file__).stem
     servidor.iniciar_servicio(
         host = os.getenv('HOST_LOCAL'), 
         puerto = os.getenv('PUERTO_FASTAPI') if os.getenv('FRAMEWORK')=='fastapi' else os.getenv('PUERTO_FLASK'),
-        app = f'{script}:api' if os.getenv('FRAMEWORK')=='fastapi' else api,
+        app = f'{servidor.nombre_script}:api' if os.getenv('FRAMEWORK')=='fastapi' else api,
     )

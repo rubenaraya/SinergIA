@@ -105,8 +105,9 @@ class I_Comunicador(metaclass=ABCMeta):
 # --------------------------------------------------
 class Configuracion(BaseSettings):
     # Variables Aplicacion Global
-    RAIZ_GLOBAL: str = Field(default='')
     APP_GLOBAL: str = Field(default='')
+    RAIZ_GLOBAL: str = Field(default='')
+    RUTA_RAIZ: str = Field(default='')
     RUTA_LOGS: str = Field(default='')
     IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
     ARCHIVO_LOGS: str = Field(default='')
@@ -247,6 +248,7 @@ class Configuracion(BaseSettings):
             'SERVICIO': mi.SERVICIO,
             'RUTA_TEMP': mi.RUTA_TEMP,
             'RUTA_SERVICIO': mi.RUTA_SERVICIO,
+            'RUTA_RAIZ': mi.RUTA_RAIZ,
             'APP_GLOBAL': mi.APP_GLOBAL,
             'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
             'ALIAS_FRONTEND': mi.ALIAS_FRONTEND,
@@ -359,7 +361,7 @@ def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicac
     ruta_servicio_path = Path(ruta_origen).parent
     lista_env:list[Path] = [(ruta_servicio_path / f'.{prefijo_entorno}.env')]
     if env_aplicacion:
-        lista_env.append((ruta_servicio_path.parent / f'config/.{prefijo_entorno}.{env_aplicacion}.env'))
+        lista_env.append((ruta_servicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
     valores_configuracion = {
         'RUTA_SERVICIO': ruta_servicio_path.as_posix(),
         'SERVICIO': ruta_servicio_path.name,

@@ -34,8 +34,10 @@ from pysinergia import __version__ as api_motor
 # Clase: ServidorApi
 # --------------------------------------------------
 class ServidorApi:
-    def __init__(mi):
-        ...
+    def __init__(mi, ruta_script:str):
+        ruta_script_path = Path(ruta_script)
+        os.environ['RUTA_RAIZ'] = ruta_script_path.parent.as_posix()
+        mi.nombre_script = ruta_script_path.stem
 
     # --------------------------------------------------
     # Métodos privados

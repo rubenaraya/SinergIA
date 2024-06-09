@@ -177,7 +177,6 @@ class Comunicador(_I_Comunicador):
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['idioma'] = mi.idioma
-        mi.contexto['web']['ruta_raiz'] = Path('.').resolve().as_posix()
         mi.contexto['web']['api_motor'] = api_motor
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
@@ -244,7 +243,7 @@ class Comunicador(_I_Comunicador):
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():
-                ruta_plantillas = 'backend/plantillas'
+                ruta_plantillas = 'backend/_plantillas'
                 if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                     ruta_plantillas = ''
                     plantilla = ''
