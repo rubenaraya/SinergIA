@@ -161,14 +161,14 @@ class ServidorApi:
 
     def crear_api(mi) -> FastAPI:
         from fastapi.staticfiles import StaticFiles
-        mi.dir_frontend = ( Path('.') / f'{str(os.getenv('DIR_FRONTEND'))}').resolve()
+        mi.dir_frontend = ( Path('.') / str(os.getenv('DIR_FRONTEND',''))).resolve()
         docs_url = '/docs' if os.getenv('DOCS') else None
         redoc_url = '/redoc' if os.getenv('DOCS') else None
         api = FastAPI(
             docs_url=docs_url,
             redoc_url=redoc_url,
         )
-        api.mount(f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND'))}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
+        api.mount(f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND',''))}", StaticFiles(directory=f'{mi.dir_frontend.as_posix()}'), name='frontend')
         mi._configurar_cors(api)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -177,18 +177,18 @@ class ServidorApi:
 
     def mapear_enrutadores(mi, api:FastAPI):
         import importlib
-        ruta_ubicacion = Path(os.getenv('DIR_ENRUTADORES'))
+        ruta_backend = Path(os.getenv('DIR_BACKEND'))
         modulo_base = 'web_fastapi'
         try:
-            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+            directorios = [d for d in ruta_backend.iterdir() if d.is_dir()]
         except Exception as e:
             print(e)
             return
         for directorio in directorios:
             try:
-                nombre_servicio = directorio.name
                 if (directorio / f'{modulo_base}.py').is_file():
-                    modulo = f'{str(os.getenv('DIR_ENRUTADORES'))}.{nombre_servicio}.{modulo_base}'
+                    dir_backend = os.getenv('DIR_BACKEND')
+                    modulo = f'{dir_backend}.{directorio.name}.{modulo_base}'
                     enrutador = importlib.import_module(modulo)
                     api.include_router(getattr(enrutador, 'enrutador'))
             except Exception as e:
@@ -198,16 +198,14 @@ class ServidorApi:
     def iniciar_servicio(mi, app:str, puerto:int, host:str=None):
         if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == _C.ENTORNO.LOCAL:
             import uvicorn
-            ssl_cert=str(Path(os.getenv('SSL_CERT')))
-            ssl_key=str(Path(os.getenv('SSL_KEY')))
             if not host:
                 host = os.getenv('HOST_LOCAL')
             uvicorn.run(
                 app,
                 host=host,
-                port=puerto,
-                ssl_keyfile=ssl_cert,
-                ssl_certfile=ssl_key,
+                port=int(puerto),
+                ssl_keyfile=os.getenv('SSL_KEY',''),
+                ssl_certfile=os.getenv('SSL_CERT',''),
                 reload=os.getenv('MODO_DEBUG')
             )
 

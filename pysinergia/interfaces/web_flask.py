@@ -176,19 +176,18 @@ class ServidorApi:
 
     def mapear_enrutadores(mi, api:Flask):
         import importlib
-        ruta_ubicacion = Path(os.getenv('DIR_ENRUTADORES'))
+        ruta_backend = Path(os.getenv('DIR_BACKEND'))
         modulo_base = 'web_flask'
         try:
-            directorios = [d for d in ruta_ubicacion.iterdir() if d.is_dir()]
+            directorios = [d for d in ruta_backend.iterdir() if d.is_dir()]
         except Exception as e:
             print(e)
             return
         for directorio in directorios:
             try:
-                nombre_servicio = directorio.name
                 if (directorio / f'{modulo_base}.py').is_file():
-                    dir_enrutadores = os.getenv('DIR_ENRUTADORES')
-                    modulo = f'{dir_enrutadores}.{nombre_servicio}.{modulo_base}'
+                    dir_backend = os.getenv('DIR_BACKEND')
+                    modulo = f'{dir_backend}.{directorio.name}.{modulo_base}'
                     enrutador = importlib.import_module(modulo)
                     api.register_blueprint(getattr(enrutador, 'enrutador'))
             except Exception as e:
@@ -207,7 +206,7 @@ class ServidorApi:
                 host = os.getenv('HOST_LOCAL')
             app.run(
                 host=host,
-                port=puerto,
+                port=int(puerto),
                 ssl_context=(ssl_cert, ssl_key),
                 debug=os.getenv('MODO_DEBUG')
             )
