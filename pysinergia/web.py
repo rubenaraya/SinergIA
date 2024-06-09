@@ -177,8 +177,8 @@ class Comunicador(_I_Comunicador):
         mi.idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
-        mi.contexto['web']['idioma'] = mi.idioma
-        mi.contexto['web']['api_motor'] = api_motor
+        mi.contexto['web']['IDIOMA'] = mi.idioma
+        mi.contexto['web']['API_MOTOR'] = api_motor
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
@@ -293,7 +293,7 @@ class Comunicador(_I_Comunicador):
             return conversion
         config_web:dict = mi.contexto.get('web')
         if config_web:
-            acepta = config_web.get('acepta', '')
+            acepta = config_web.get('ACEPTA', '')
             if 'application/json' in acepta:
                 return _Constantes.CONVERSION.JSON
         return _Constantes.CONVERSION.HTML

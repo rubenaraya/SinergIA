@@ -272,9 +272,9 @@ class ComunicadorWeb(_Comunicador):
             'recurso': recurso,
             'frontend': f'{raiz_global}/{alias_frontend}',
         }
-        mi.contexto['web']['api_marco'] = 'FastAPI'
-        mi.contexto['web']['dominio'] = url_analizada.hostname
-        mi.contexto['web']['acepta'] = request.headers.get('accept', '')
+        mi.contexto['web']['API_MARCO'] = 'FastAPI'
+        mi.contexto['web']['DOMINIO'] = url_analizada.hostname
+        mi.contexto['web']['ACEPTA'] = request.headers.get('accept', '')
         mi.contexto['peticion'] = await mi._recibir_peticion(request)
 
 

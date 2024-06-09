@@ -1,8 +1,8 @@
 # pysinergia\interfaces\web_flask.py
 
+import os
 from pathlib import Path
 from functools import wraps
-import os
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -263,9 +263,9 @@ class ComunicadorWeb(_Comunicador):
             'recurso': recurso,
             'frontend': f'{raiz_global}/{alias_frontend}',
         }
-        mi.contexto['web']['api_marco'] = 'Flask'
-        mi.contexto['web']['dominio'] = url_analizada.hostname
-        mi.contexto['web']['acepta'] = request.headers.get('accept', '')
+        mi.contexto['web']['API_MARCO'] = 'Flask'
+        mi.contexto['web']['DOMINIO'] = url_analizada.hostname
+        mi.contexto['web']['ACEPTA'] = request.headers.get('accept', '')
         mi.contexto['peticion'] = mi._recibir_peticion()
 
 
