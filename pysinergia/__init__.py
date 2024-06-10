@@ -144,7 +144,7 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, ruta_logs='logs', nivel:str=Constantes.REGISTRO.ERROR):
+    def crear(nombre:str, ruta_logs=os.getenv('RUTA_LOGS'), nivel:str=os.getenv('NIVEL_REGISTRO')):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
         registrador = getLogger(nombre)
@@ -169,22 +169,34 @@ class RegistradorLogs:
 # Clase: ErrorPersonalizado
 # --------------------------------------------------
 class ErrorPersonalizado(Exception):
-    def __init__(mi, mensaje:str, codigo:int=500, detalles:list=[], aplicacion:str='', microservicio:str='', recurso:str='', dominio_idioma:str='base', nivel_registro:str=Constantes.REGISTRO.ERROR):
-        mi.codigo = int(codigo)
-        mi.mensaje = str(mensaje).replace('{','(').replace('}',')')
-        mi.detalles = detalles
-        mi.aplicacion = aplicacion
-        mi.microservicio = microservicio
-        mi.recurso = recurso
-        mi.dominio_idioma = dominio_idioma
-        mi.nivel_registro = nivel_registro
-        mi.conclusion = mi.concluir(mi.codigo)
-        super().__init__(mi.mensaje)
+    def __init__(mi,
+                mensaje:str,
+                codigo:int=Constantes.ESTADO._500_ERROR,
+                detalles:list=[],
+                aplicacion:str='',
+                microservicio:str='',
+                recurso:str='',
+                nivel_evento:str=Constantes.REGISTRO.ERROR,
+                dominio_idioma:str=os.getenv('DOMINIO_IDIOMA'),
+                archivo_logs:str=os.getenv('ARCHIVO_LOGS'),
+            ):
+        mensaje = str(mensaje).replace('{','(').replace('}',')')
+        super().__init__(mensaje)
+        mi.mensaje:str = mensaje
+        mi.codigo:int = int(codigo)
+        mi.detalles:list = detalles
+        mi.aplicacion:str = aplicacion
+        mi.microservicio:str = microservicio
+        mi.recurso:str = recurso
+        mi.dominio_idioma:str = dominio_idioma
+        mi.nivel_evento:str = nivel_evento
+        mi.archivo_logs:str = archivo_logs
+        mi.conclusion:str = mi.concluir(mi.codigo)
 
-    def __str__(mi):
+    def __str__(mi) -> str:
         return mi.mensaje
 
-    def __repr__(mi):
+    def __repr__(mi) -> str:
         contenido = f'{mi.conclusion} {mi.codigo} | {mi.mensaje}'
         if mi.aplicacion and mi.microservicio:
             contenido = f'{mi.aplicacion}/{mi.microservicio} | {contenido}'
@@ -203,22 +215,23 @@ class ErrorPersonalizado(Exception):
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
 
-    def registrar(mi, nombre:str, texto_extra:str='', nivel_evento:str=Constantes.REGISTRO.ERROR, ruta_logs:str='logs') -> str:
-        nombre = f'{mi.aplicacion}_{mi.microservicio}' if mi.aplicacion and mi.microservicio else nombre
-        registro = mi.__repr__()
-        registro = f'{texto_extra} | {registro}' if texto_extra else registro
-        registrador = RegistradorLogs.crear(nombre=nombre, ruta_logs=ruta_logs, nivel=mi.nivel_registro)
-        if nivel_evento == Constantes.REGISTRO.ERROR:
-            registrador.error(registro)
-        elif nivel_evento == Constantes.REGISTRO.WARNING:
-            registrador.warning(registro)
-        elif nivel_evento == Constantes.REGISTRO.DEBUG:
-            registrador.debug(registro)
-        elif nivel_evento == Constantes.REGISTRO.INFO:
-            registrador.info(registro)
-        elif nivel_evento == Constantes.REGISTRO.CRITICAL:
-            registrador.critical(registro)
-        return registro
+    def registrar(mi, texto_pre:str='', texto_pos:str='') -> str:
+        nombre = f'{mi.aplicacion}_{mi.microservicio}' if mi.aplicacion and mi.microservicio else mi.archivo_logs
+        texto_registrado = mi.__repr__()
+        texto_registrado = f'{texto_pre} | {texto_registrado}' if texto_pre else texto_registrado
+        texto_registrado = f'{texto_registrado} | {texto_pos}' if texto_pos else texto_registrado
+        registrador = RegistradorLogs.crear(nombre)
+        if mi.nivel_evento == Constantes.REGISTRO.ERROR:
+            registrador.error(texto_registrado)
+        elif mi.nivel_evento == Constantes.REGISTRO.WARNING:
+            registrador.warning(texto_registrado)
+        elif mi.nivel_evento == Constantes.REGISTRO.DEBUG:
+            registrador.debug(texto_registrado)
+        elif mi.nivel_evento == Constantes.REGISTRO.INFO:
+            registrador.info(texto_registrado)
+        elif mi.nivel_evento == Constantes.REGISTRO.CRITICAL:
+            registrador.critical(texto_registrado)
+        return texto_registrado
     
     def serializar(mi) -> dict:
         return {
@@ -240,6 +253,7 @@ class ErrorPersonalizado(Exception):
                         mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input})
                     else:
                         print(error)
+                        continue
         return mi.detalles
 
 

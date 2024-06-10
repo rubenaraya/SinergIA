@@ -83,6 +83,14 @@ class ServidorApi:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
         return f'{request.method} {url}'
 
+    def _crear_respuesta_error(mi, request:Request, err:_ErrorPersonalizado, registrar:bool=False):
+        traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
+        traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'), dominio_idioma=err.dominio_idioma)
+        respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
+        if registrar:
+            err.registrar(texto_pre=mi._obtener_url(request))
+        return JSONResponse(content=respuesta, status_code=err.codigo)
+
     def _manejar_errores(mi, api:FastAPI):
         from fastapi.exceptions import (
             RequestValidationError,
@@ -94,67 +102,42 @@ class ServidorApi:
         async def _error_autenticacion(request:Request, err:_ErrorAutenticacion):
             if err.url_login:
                 return RedirectResponse(url=err.url_login)
-            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
-            return JSONResponse(content=respuesta, status_code=err.codigo)
+            return mi._crear_respuesta_error(request, err, False)
 
         @api.exception_handler(_ErrorPersonalizado)
         async def _error_personalizado(request:Request, err:_ErrorPersonalizado):
-            traductor = _Traductor({'dominio_idioma': err.dominio_idioma, 'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
-            if err.conclusion == _C.CONCLUSION.ERROR:
-                err.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
-            return JSONResponse(content=respuesta, status_code=err.codigo)
+            registrar = (err.conclusion == _C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            return mi._crear_respuesta_error(request, err, registrar)
 
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, err:ValidationError):
-            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE)
+            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE, nivel_evento=_C.REGISTRO.INFO)
             error.agregar_detalles(err.errors())
-            respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
-            return JSONResponse(content=respuesta, status_code=_C.ESTADO._422_NO_PROCESABLE)
+            registrar = (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, err:RequestValidationError):
-            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE)
+            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE, nivel_evento=_C.REGISTRO.INFO)
             error.agregar_detalles(err.errors())
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
-                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'), nivel_evento=_C.REGISTRO.DEBUG)
-            respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            return JSONResponse(content=respuesta, status_code=_C.ESTADO._422_NO_PROCESABLE)
+            registrar = os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO
+            return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(HTTPException)
         async def _error_http(request:Request, err:HTTPException):
-            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-            error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code)
-            respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            if err.status_code >= 500:
-                error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
-            return JSONResponse(content=respuesta, status_code=err.status_code)
+            error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code, nivel_evento=_C.REGISTRO.ERROR if err.code >= 500 else _C.REGISTRO.DEBUG)
+            registrar = (err.status_code >= 500) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            error.nivel_evento = _C.REGISTRO.DEBUG if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO else _C.REGISTRO.INFO
+            return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(Exception)
         async def _error_nomanejado(request:Request, err:Exception):
-            traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
-            traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'))
-
             import sys
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
-            print(f'{exception_name}: {exception_value}')
-
-            mensaje = 'Error-no-manejado'
-            error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR)
-            respuesta = Respuesta(**error.serializar(), T=traductor).diccionario()
-            error.registrar(nombre=os.getenv('ARCHIVO_LOGS'), texto_extra=mi._obtener_url(request), ruta_logs=os.getenv('RUTA_LOGS'))
-            return JSONResponse(content=respuesta, status_code=_C.ESTADO._500_ERROR)
+            mensaje = f'{exception_name}: {exception_value}'
+            error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR, nivel_evento=_C.REGISTRO.ERROR)
+            return mi._crear_respuesta_error(request, error, True)
 
     # --------------------------------------------------
     # Métodos públicos
@@ -220,32 +203,35 @@ class ComunicadorWeb(_Comunicador):
 
     async def _recibir_peticion(mi, request:Request) -> dict:
         peticion = {}
-        form_data = await request.form()
-        for key, value in form_data.multi_items():
-            if hasattr(value, 'file'):
-                continue
-            if key in peticion:
-                peticion[key].append(value)
-            else:
-                peticion[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
         try:
-            json_data = await request.json()
-            for key, value in json_data.items():
+            form_data = await request.form()
+            for key, value in form_data.multi_items():
+                if hasattr(value, 'file'):
+                    continue
+                if key in peticion:
+                    peticion[key].append(value)
+                else:
+                    peticion[key] = form_data.getlist(key) if len(form_data.getlist(key)) > 1 else value
+            try:
+                json_data = await request.json()
+                for key, value in json_data.items():
+                    if key in peticion:
+                        if not isinstance(peticion[key], list):
+                            peticion[key] = [peticion[key]]
+                        peticion[key].append(value)
+                    else:
+                        peticion[key] = value
+            except Exception:
+                pass
+            for key, value in request.query_params.multi_items():
                 if key in peticion:
                     if not isinstance(peticion[key], list):
                         peticion[key] = [peticion[key]]
                     peticion[key].append(value)
                 else:
-                    peticion[key] = value
-        except Exception:
+                    peticion[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
+        except Exception as e:
             pass
-        for key, value in request.query_params.multi_items():
-            if key in peticion:
-                if not isinstance(peticion[key], list):
-                    peticion[key] = [peticion[key]]
-                peticion[key].append(value)
-            else:
-                peticion[key] = request.query_params.getlist(key) if len(request.query_params.getlist(key)) > 1 else value
         return peticion
 
     # --------------------------------------------------

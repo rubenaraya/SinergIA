@@ -1,6 +1,6 @@
 # pysinergia\web.py
 
-import time, jwt, importlib, gettext, json
+import time, jwt, importlib, gettext, os, json
 from pathlib import Path
 
 # --------------------------------------------------
@@ -24,11 +24,11 @@ from pysinergia import __version__ as api_motor
 # --------------------------------------------------
 class Traductor(_I_Traductor):
     def __init__(mi, config:dict={}):
-        mi.dominio_idioma:str = config.get('DOMINIO_IDIOMA', 'base')
-        mi.ruta_locales:str = config.get('RUTA_LOCALES', 'locales')
+        mi.dominio_idioma:str = config.get('DOMINIO_IDIOMA', str(os.getenv('DOMINIO_IDIOMA')))
+        mi.ruta_locales:str = config.get('RUTA_LOCALES', str(os.getenv('RUTA_LOCALES')))
+        mi.idiomas_disponibles:list = config.get('IDIOMAS_DISPONIBLES', os.getenv('IDIOMAS_DISPONIBLES'))
         mi.zona_horaria:str = config.get('ZONA_HORARIA', 'UTC')
         mi.formato_fecha:str = config.get('FORMATO_FECHA', '%d/%m/%Y %H:%M')
-        mi.idiomas_disponibles:list = config.get('IDIOMAS_DISPONIBLES', ['es'])
         mi.idioma = ''
         mi.traduccion = None
 
@@ -382,8 +382,10 @@ class Autenticador:
 # --------------------------------------------------
 class ErrorAutenticacion(_ErrorPersonalizado):
     def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
-        mi.codigo = codigo
-        mi.mensaje = mensaje
+        super().__init__(
+            mensaje=mensaje,
+            codigo=codigo,
+            nivel_registro=_Constantes.REGISTRO.INFO
+        )
         mi.url_login = url_login
-        super().__init__(mi.mensaje)
 

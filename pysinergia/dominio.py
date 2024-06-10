@@ -79,7 +79,6 @@ class Respuesta(BaseModel):
     descripcion:str = ''
     fecha_actual:str = ''
     hora_actual:str = ''
-    idioma:str = ''
     detalles:list = []
     resultado: dict | None = {}
     metadatos: dict | None = {}
@@ -98,14 +97,16 @@ class Respuesta(BaseModel):
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
             valores.hora_actual = fechahora.get('hora')
-            valores.idioma = valores.T.idioma_actual()
             _ = valores.T.abrir_traduccion()
             if _:
                 datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.metadatos), fechahora)
-                valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
-                valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
-                if isinstance(valores.descripcion, str):
-                    valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
+                try:
+                    valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
+                    valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
+                    if isinstance(valores.descripcion, str):
+                        valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
+                except Exception as e:
+                    print(e)
         return valores
 
     def diccionario(mi) -> Dict:

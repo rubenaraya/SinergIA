@@ -113,6 +113,9 @@ class Configuracion(BaseSettings):
     IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
     ARCHIVO_LOGS: str = Field(default='')
     ALIAS_FRONTEND: str = Field(default='')
+    DOMINIO_IDIOMA: str = Field(default='')
+    RUTA_LOCALES: str = Field(default='')
+    NIVEL_REGISTRO: str = Field(default='')
     # Aplicacion Personalizada
     APLICACION: str = Field(default='')
     NOMBRE_PWA: str = ''
@@ -123,10 +126,7 @@ class Configuracion(BaseSettings):
     ALGORITMO_JWT: str = ''
     ZONA_HORARIA: str = ''
     FORMATO_FECHA: str = ''
-    DOMINIO_IDIOMA: str = ''
-    RUTA_LOCALES: str = ''
     RUTA_TEMP: str = ''
-    NIVEL_REGISTRO: str = ''
     # Microservicio especifico
     MICROSERVICIO: str = Field(default='')
     RUTA_MICROSERVICIO: str = Field(default='')
@@ -245,18 +245,14 @@ class Configuracion(BaseSettings):
         return {
             'APLICACION': mi.APLICACION,
             'MICROSERVICIO': mi.MICROSERVICIO,
-            'RUTA_TEMP': mi.RUTA_TEMP,
             'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
             'RUTA_RAIZ': mi.RUTA_RAIZ,
+            'RUTA_TEMP': mi.RUTA_TEMP,
             'APP_GLOBAL': mi.APP_GLOBAL,
             'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
             'ALIAS_FRONTEND': mi.ALIAS_FRONTEND,
-            'NIVEL_REGISTRO': mi.NIVEL_REGISTRO,
-            'RUTA_LOGS': mi.RUTA_LOGS,
-            'ARCHIVO_LOGS': mi.ARCHIVO_LOGS,
-            'DOMINIO_IDIOMA': mi.DOMINIO_IDIOMA,
-            'RUTA_LOCALES': mi.RUTA_LOCALES,
             'IDIOMAS_DISPONIBLES': mi.IDIOMAS_DISPONIBLES,
+            'ARCHIVO_LOGS': mi.ARCHIVO_LOGS,
             'ZONA_HORARIA': mi.ZONA_HORARIA,
             'FORMATO_FECHA': mi.FORMATO_FECHA,
             'NOMBRE_PWA': mi.NOMBRE_PWA,
