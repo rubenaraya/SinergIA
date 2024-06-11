@@ -1,6 +1,7 @@
 # backend\participantes\servicio.py
 
-from pysinergia._dependencias.servicio import *
+from pysinergia._dependencias import CasosDeUso
+from abc import (ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -18,27 +19,27 @@ class I_RepositorioParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por RepositorioParticipantes
 
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi, peticion:dict) -> Dict:
+    def recuperar_lista_participantes_todos(mi, peticion:dict) -> dict:
         ...
 
     @abstractmethod
-    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> Dict:
+    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> dict:
         ...
 
     @abstractmethod
-    def recuperar_participante_por_id(mi, peticion:dict) -> Dict:
+    def recuperar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 
     @abstractmethod
-    def insertar_nuevo_participante(mi, peticion:dict) -> Dict:
+    def insertar_nuevo_participante(mi, peticion:dict) -> dict:
         ...
 
     @abstractmethod
-    def actualizar_participante_por_id(mi, peticion:dict) -> Dict:
+    def actualizar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 
     @abstractmethod
-    def eliminar_participante_por_id(mi, peticion:dict) -> Dict:
+    def eliminar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 
 

@@ -1,6 +1,15 @@
 # backend\participantes\adaptadores.py
 
-from pysinergia._dependencias.adaptadores import *
+from pysinergia._dependencias import (
+    Configuracion,
+    Controlador,
+    Repositorio,
+    Peticion,
+    ArchivoCargado,
+    Respuesta,
+    RespuestaResultado,
+    Recurso,
+)
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -96,18 +105,18 @@ class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
         mi.basedatos.desconectar()
         return datos
 
-    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> Dict:
+    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> dict:
         ...
 
-    def recuperar_participante_por_id(mi, peticion:dict) -> Dict:
+    def recuperar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 
-    def insertar_nuevo_participante(mi, peticion:dict) -> Dict:
+    def insertar_nuevo_participante(mi, peticion:dict) -> dict:
         ...
 
-    def actualizar_participante_por_id(mi, peticion:dict) -> Dict:
+    def actualizar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 
-    def eliminar_participante_por_id(mi, peticion:dict) -> Dict:
+    def eliminar_participante_por_id(mi, peticion:dict) -> dict:
         ...
 

@@ -1,6 +1,9 @@
 # backend\participantes\dominio.py
 
-from pysinergia._dependencias.dominio import *
+from pysinergia._dependencias import Peticion
+from pydantic import Field
+from typing import Optional
+from enum import Enum
 
 # --------------------------------------------------
 # Clase: EstadoParticipante

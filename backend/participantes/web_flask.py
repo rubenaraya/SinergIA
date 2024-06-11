@@ -1,5 +1,14 @@
 # backend\participantes\web_flask.py
 
+from pysinergia._dependencias import (
+    cargar_configuracion,
+    C,
+    Traductor,
+    ImagenCargada,
+    DocumentoCargado,
+    AudioCargado,
+    Respuesta,
+)
 from pysinergia._dependencias.web_flask import *
 
 # --------------------------------------------------

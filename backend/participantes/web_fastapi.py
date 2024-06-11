@@ -1,5 +1,14 @@
 # backend\participantes\web_fastapi.py
 
+from pysinergia._dependencias import (
+    cargar_configuracion,
+    C,
+    Traductor,
+    ImagenCargada,
+    DocumentoCargado,
+    AudioCargado,
+    Respuesta,
+)
 from pysinergia._dependencias.web_fastapi import *
 
 # --------------------------------------------------

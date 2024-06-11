@@ -2,6 +2,7 @@
 
 import time, jwt, importlib, gettext, os, json
 from pathlib import Path
+from functools import lru_cache
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
@@ -15,6 +16,7 @@ from pysinergia.dominio import (
 from pysinergia.adaptadores import (
     I_Comunicador as _I_Comunicador,
     I_Traductor as _I_Traductor,
+    Configuracion as _Configuracion,
 )
 from pysinergia.conectores.disco import Disco as _Disco
 from pysinergia import __version__ as api_motor
@@ -388,4 +390,26 @@ class ErrorAutenticacion(_ErrorPersonalizado):
             nivel_registro=_Constantes.REGISTRO.INFO
         )
         mi.url_login = url_login
+
+
+# --------------------------------------------------
+# Funcion: cargar_configuracion
+# --------------------------------------------------
+@lru_cache
+def cargar_configuracion(modelo_base:_Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> _Configuracion:
+    from dotenv import dotenv_values
+    prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
+    ruta_microservicio_path = Path(ruta_origen).parent
+    lista_env:list[Path] = [(ruta_microservicio_path / f'.{prefijo_entorno}.env')]
+    if env_aplicacion:
+        lista_env.append((ruta_microservicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
+    valores_configuracion = {
+        'RUTA_MICROSERVICIO': ruta_microservicio_path.as_posix(),
+        'MICROSERVICIO': ruta_microservicio_path.name,
+    }
+    for archivo in lista_env:
+        if archivo.exists():
+            valores_configuracion.update(dotenv_values(archivo))
+    configuracion:_Configuracion = modelo_base(**valores_configuracion)
+    return configuracion
 

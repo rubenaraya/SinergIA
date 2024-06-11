@@ -1,11 +1,9 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABC, ABCMeta, abstractmethod)
-from functools import lru_cache
 from typing import (
     List, Dict
 )
-from pathlib import Path
 import json
 
 # --------------------------------------------------
@@ -341,26 +339,4 @@ class Controlador(ABC):
         contexto = mi.comunicador.transferir_contexto()
         sesion = contexto.get('sesion')
         mi.sesion:dict = sesion or {}
-
-
-# --------------------------------------------------
-# Funcion: cargar_configuracion
-# --------------------------------------------------
-@lru_cache
-def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str, entorno:str=None) -> Configuracion:
-    from dotenv import dotenv_values
-    prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
-    ruta_microservicio_path = Path(ruta_origen).parent
-    lista_env:list[Path] = [(ruta_microservicio_path / f'.{prefijo_entorno}.env')]
-    if env_aplicacion:
-        lista_env.append((ruta_microservicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
-    valores_configuracion = {
-        'RUTA_MICROSERVICIO': ruta_microservicio_path.as_posix(),
-        'MICROSERVICIO': ruta_microservicio_path.name,
-    }
-    for archivo in lista_env:
-        if archivo.exists():
-            valores_configuracion.update(dotenv_values(archivo))
-    configuracion:Configuracion = modelo_base(**valores_configuracion)
-    return configuracion
 

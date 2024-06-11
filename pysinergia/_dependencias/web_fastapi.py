@@ -24,21 +24,6 @@ from fastapi.responses import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    Constantes as C,
-    ErrorPersonalizado,
-)
-from pysinergia.dominio import (
-    AudioCargado,
-    DocumentoCargado,
-    ImagenCargada,
-    VideoCargado,
-    Respuesta,
-)
-from pysinergia.adaptadores import (
-    cargar_configuracion,
-)
-from pysinergia.web import Traductor
 from pysinergia.interfaces.web_fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
