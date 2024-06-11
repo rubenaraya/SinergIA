@@ -1,8 +1,8 @@
-# pysinergia\exportadores\exportador_excel.py
+# pysinergia\complementos\exportador_csv.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.exportadores.exportador import (
+from pysinergia.complementos.exportador import (
     Exportador as _Exportador,
     ErrorExportador as _ErrorExportador,
 )
@@ -11,34 +11,39 @@ from pysinergia import (
 )
 
 # --------------------------------------------------
-# Clase: ExportadorExcel
+# Clase: ExportadorCsv
 # --------------------------------------------------
-class ExportadorExcel(_Exportador):
+class ExportadorCsv(_Exportador):
 
-    def generar(mi, contenido:str, opciones:dict={}):
+    def generar(mi, contenido:str='', opciones:dict={}):
         from pathlib import Path
         from uuid import uuid4
         import pandas as pd
         import io
         uuid = str(uuid4())
         ruta_aux = Path(mi.obtener_ruta())
-        ruta_xlsx = ruta_aux / f'{uuid}.xlsx'
-        tabla_datos = opciones.get('tabla_datos', 'Hoja1')
+        ruta_csv = ruta_aux / f'{uuid}.csv'
         try:
             tabla = pd.read_html(io.StringIO(contenido), encoding='utf-8')[0]
-            tabla.to_excel(
-                ruta_xlsx,
-                sheet_name=tabla_datos,
+            csv_buffer = io.StringIO()
+            tabla.to_csv(
+                csv_buffer,
                 header=True,
                 index=False,
+                encoding='utf-8-sig',
+                quoting=0,
+                sep=';'
             )
-            xlsx_bytes = ruta_xlsx.read_bytes()
-            xlsx_io = io.BytesIO(xlsx_bytes)
-            ruta_xlsx.unlink()
-            return xlsx_io
+            csv_buffer.seek(0)
+            with ruta_csv.open('w', encoding='utf-8-sig', newline='') as f:
+                f.write(csv_buffer.read())
+            csv_bytes = ruta_csv.read_bytes()
+            csv_io = io.BytesIO(csv_bytes)
+            ruta_csv.unlink()
+            return csv_io
         except Exception as e:
             raise _ErrorExportador(
-                mensaje='Error-en-exportador-Excel',
+                mensaje='Error-en-exportador-CSV',
                 codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )

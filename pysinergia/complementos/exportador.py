@@ -1,4 +1,4 @@
-# pysinergia\exportadores\exportador.py
+# pysinergia\complementos\exportador.py
 
 from abc import (ABC, ABCMeta, abstractmethod)
 from pathlib import Path

@@ -3,7 +3,7 @@
 from pysinergia._dependencias.servicio import *
 
 # --------------------------------------------------
-# Importaciones del CasosDeUso personalizado
+# Importaciones del Microservicio personalizado
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,

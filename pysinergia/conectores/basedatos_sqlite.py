@@ -26,6 +26,7 @@ class BasedatosSqlite(_Basedatos):
 
     def conectar(mi, config:dict) -> bool:
         from pathlib import Path
+        import os
         if mi.conexion and mi.basedatos == config.get('nombre'):
             return True
         if mi.conexion:
@@ -37,7 +38,8 @@ class BasedatosSqlite(_Basedatos):
             if ruta_basedatos.is_file():
                 mi.conexion = sqlite3.connect(str(ruta_basedatos.resolve()))
                 mi.conexion.enable_load_extension(True)
-                extension = Path(f'{_Constantes.DIR_LIB_SQLEAN}/regexp')
+                ruta_lib_sqlean = os.getenv('RUTA_LIB_SQLEAN')
+                extension = Path(f'{ruta_lib_sqlean}/regexp')
                 mi.conexion.load_extension(str(extension.resolve()))
                 return True
         return False

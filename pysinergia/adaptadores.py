@@ -18,9 +18,6 @@ from pydantic import Field, field_validator
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    Constantes as _Constantes,
-)
 from pysinergia.dominio import (
     ArchivoCargado as _ArchivoCargado,
 )
@@ -292,7 +289,7 @@ class Repositorio(ABC):
         try:
             fuente = config.get('fuente')
             clase = config.get('clase')
-            modulo = getattr(importlib.import_module(f"{_Constantes.RUTA_CONECTORES}.{fuente}"), clase)
+            modulo = getattr(importlib.import_module(f"pysinergia.conectores.{fuente}"), clase)
             if modulo:
                 return modulo
             return None

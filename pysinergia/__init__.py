@@ -17,12 +17,6 @@ class Constantes:
     def __new__(cls):
         raise TypeError('Esta es una clase estática')
 
-    RUTA_CONECTORES = 'pysinergia.conectores'
-    RUTA_EXPORTADORES = 'pysinergia.exportadores'
-    DIR_LIB_SQLEAN = '_lib/sqlean'
-    DIR_LIB_FFMPEG = '_lib/ffmpeg'
-    DIR_LIB_PANDOC = '_lib/pandoc/bin'
-
     class ENTORNO:
         PRODUCCION = 'PRODUCCION'
         DESARROLLO = 'DESARROLLO'
@@ -259,5 +253,5 @@ class ErrorPersonalizado(Exception):
 
 # --------------------------------------------------
 # Configuracion de FFMPEG
-os.environ["PATH"] = str(Path(f'{Constantes.DIR_LIB_FFMPEG}').resolve()) + os.pathsep + os.getenv("PATH")
+os.environ['PATH'] = str(Path(os.getenv('RUTA_LIB_FFMPEG')).resolve()) + os.pathsep + os.getenv('PATH')
 

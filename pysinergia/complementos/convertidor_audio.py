@@ -1,6 +1,6 @@
-# pysinergia\exportadores\convertidor_audio.py
+# pysinergia\complementos\convertidor_audio.py
 
-import math
+import os, math
 from pathlib import Path
 from pydub import AudioSegment
 
@@ -9,7 +9,7 @@ from pydub import AudioSegment
 from pysinergia import (
     Constantes as _Constantes,
 )
-from pysinergia.exportadores.exportador import (
+from pysinergia.complementos.exportador import (
     ErrorExportador as _ErrorExportador,
 )
 
@@ -18,7 +18,8 @@ from pysinergia.exportadores.exportador import (
 # --------------------------------------------------
 class ConvertidorAudio:
     def __init__(mi, ruta_base:str):
-        AudioSegment.converter = f'{_Constantes.DIR_LIB_FFMPEG}/ffmpeg'
+        ruta_lib_ffmpeg = os.getenv('RUTA_LIB_FFMPEG')
+        AudioSegment.converter = f'{ruta_lib_ffmpeg}/ffmpeg'
         mi.ruta_base:str = ruta_base
         mi.opciones = {
             'tiempo_maximo': 30 * _Constantes.TIEMPO.MIN,

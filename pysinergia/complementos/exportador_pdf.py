@@ -1,8 +1,8 @@
-# pysinergia\exportadores\exportador_pdf.py
+# pysinergia\complementos\exportador_pdf.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.exportadores.exportador import (
+from pysinergia.complementos.exportador import (
     Exportador as _Exportador,
     ErrorExportador as _ErrorExportador,
 )

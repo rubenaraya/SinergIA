@@ -217,7 +217,7 @@ async def manifest(request:Request):
 
 @enrutador.get('/audio', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse)
 async def audio(request:Request):
-    from pysinergia.exportadores.convertidor_audio import ConvertidorAudio
+    from pysinergia.complementos.convertidor_audio import ConvertidorAudio
     idioma = request.headers.get('Accept-Language')
     await comunicador.procesar_peticion(request, idioma)
     convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)

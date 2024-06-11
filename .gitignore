@@ -169,4 +169,5 @@ key.pem
 _app*.py
 _prueba*.*
 main.py
+setup.py
 docs/~*.~vsd

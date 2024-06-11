@@ -260,7 +260,7 @@ def img():
 
 @enrutador.route('/audio', methods=['GET'])
 def audio():
-    from pysinergia.exportadores.convertidor_audio import ConvertidorAudio
+    from pysinergia.complementos.convertidor_audio import ConvertidorAudio
     idioma = request.headers.get('Accept-Language')
     comunicador.procesar_peticion(idioma)
     convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)

@@ -1,8 +1,8 @@
-# pysinergia\exportadores\exportador_word.py
+# pysinergia\complementos\exportador_word.py
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.exportadores.exportador import (
+from pysinergia.complementos.exportador import (
     Exportador as _Exportador,
     ErrorExportador as _ErrorExportador,
 )
@@ -16,7 +16,7 @@ from pysinergia import (
 class ExportadorWord(_Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):
-        import subprocess, io
+        import subprocess, io, os
         from pathlib import Path
         from uuid import uuid4
         uuid = str(uuid4())
@@ -25,7 +25,7 @@ class ExportadorWord(_Exportador):
         ruta_docx = ruta_aux / f'{uuid}.docx'
         try:
             ruta_html.write_text(contenido, encoding='utf-8')
-            dir_pandoc = Path(_Constantes.DIR_LIB_PANDOC).resolve()
+            dir_pandoc = Path(os.getenv('RUTA_LIB_PANDOC')).resolve()
             ruta_pandoc = dir_pandoc / 'pandoc'
             subprocess.run([str(ruta_pandoc), str(ruta_html), '-o', str(ruta_docx)])
             docx_bytes = ruta_docx.read_bytes()
@@ -39,3 +39,4 @@ class ExportadorWord(_Exportador):
                 codigo=_Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
+

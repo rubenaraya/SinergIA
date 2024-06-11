@@ -211,8 +211,8 @@ class Comunicador(_I_Comunicador):
                 if conversion == _Constantes.CONVERSION.HTML or conversion == _Constantes.CONVERSION.TEXTO:
                     resultado = contenido
                 else:
-                    from pysinergia.exportadores.exportador import Exportador
-                    modulo = f'pysinergia.exportadores.exportador_{str(conversion).lower()}'
+                    from pysinergia.complementos.exportador import Exportador
+                    modulo = f'pysinergia.complementos.exportador_{str(conversion).lower()}'
                     clase = f'Exportador{str(conversion).capitalize()}'
                     componente = getattr(importlib.import_module(modulo), clase)
                     exportador:Exportador = componente(mi.config_web)
