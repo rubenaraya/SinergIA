@@ -68,7 +68,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
     
     @abstractmethod
-    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
+    def transformar_contenido(mi, info:dict, plantilla:str, ruta_plantillas:str='.') -> str:
         ...
 
     @abstractmethod
@@ -100,6 +100,7 @@ class Configuracion(BaseSettings):
     APP_GLOBAL: str = Field(default='')
     RAIZ_GLOBAL: str = Field(default='')
     RUTA_RAIZ: str = Field(default='')
+    RUTA_PLANTILLAS: str = Field(default='')
     RUTA_LOGS: str = Field(default='')
     IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
     ARCHIVO_LOGS: str = Field(default='')
@@ -239,6 +240,7 @@ class Configuracion(BaseSettings):
             'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
             'RUTA_RAIZ': mi.RUTA_RAIZ,
             'RUTA_TEMP': mi.RUTA_TEMP,
+            'RUTA_PLANTILLAS': mi.RUTA_PLANTILLAS,
             'APP_GLOBAL': mi.APP_GLOBAL,
             'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
             'ALIAS_FRONTEND': mi.ALIAS_FRONTEND,

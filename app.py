@@ -1,11 +1,11 @@
 # app.py
 
 import os
-from pysinergia._dependencias import crear_servidor_api
+from pysinergia._dependencias import configurar_servidor_api
 
 # --------------------------------------------------
 # Ejecuta script de inicio del ServidorApi
-servidor = crear_servidor_api(__file__, '.config.env')
+servidor = configurar_servidor_api(__file__, '.config.env')
 api = servidor.crear_api()
 servidor.mapear_microservicios(api)
 

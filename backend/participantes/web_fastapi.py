@@ -1,7 +1,7 @@
 # backend\participantes\web_fastapi.py
 
 from pysinergia._dependencias import (
-    cargar_configuracion,
+    configurar_microservicio,
     C,
     Traductor,
     ImagenCargada,
@@ -26,7 +26,7 @@ from .adaptadores import (
 
 # --------------------------------------------------
 # Configuración del Microservicio personalizado
-configuracion = cargar_configuracion(ConfigMicroservicio, __file__, 'prueba', None)
+configuracion = configurar_microservicio(ConfigMicroservicio, __file__, 'prueba', None)
 
 comunicador = ComunicadorWeb(
     configuracion.web(),
@@ -188,7 +188,7 @@ async def get_cargar(request:Request, tipo:str):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='cargar.html',
-        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
+        ruta_plantillas=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
 
 @enrutador.post('/cargar/{tipo}', status_code=C.ESTADO._200_EXITO)

@@ -1,5 +1,7 @@
 # pysinergia\servicio.py
 
+from abc import (ABC)
+
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
@@ -10,7 +12,7 @@ from pysinergia import (
 # --------------------------------------------------
 # Clase: CasosDeUso
 # --------------------------------------------------
-class CasosDeUso:
+class CasosDeUso(ABC):
 
     class ACCIONES:
         ...

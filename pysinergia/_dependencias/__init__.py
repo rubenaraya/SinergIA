@@ -23,8 +23,8 @@ from pysinergia.adaptadores import (
 )
 from pysinergia.web import (
     Traductor,
-    cargar_configuracion,
-    crear_servidor_api,
+    configurar_microservicio,
+    configurar_servidor_api,
 )
 
 __all__ = [
@@ -44,6 +44,6 @@ __all__ = [
     'Repositorio',
     'Configuracion',
     'Traductor',
-    'cargar_configuracion',
-    'crear_servidor_api',
+    'configurar_microservicio',
+    'configurar_servidor_api',
 ]

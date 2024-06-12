@@ -1,6 +1,7 @@
 # pysinergia\web.py
 
 import time, jwt, importlib, gettext, os, json
+from abc import (ABC)
 from pathlib import Path
 from functools import lru_cache
 
@@ -155,7 +156,7 @@ class Traductor(I_Traductor):
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
-class Comunicador(I_Comunicador):
+class Comunicador(ABC, I_Comunicador):
 
     def __init__(mi, config_web:dict, config_disco:dict, traductor:Traductor=None):
         mi.config_web:dict = config_web or {}
@@ -184,8 +185,7 @@ class Comunicador(I_Comunicador):
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():
-                dir_backend = os.getenv('DIR_BACKEND')
-                ruta_plantillas = f'{dir_backend}/_plantillas'
+                ruta_plantillas = mi.config_web.get('RUTA_PLANTILLAS')
                 if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                     ruta_plantillas = ''
                     plantilla = ''
@@ -205,15 +205,14 @@ class Comunicador(I_Comunicador):
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
-    def transformar_contenido(mi, info:dict, plantilla:str, directorio:str='.') -> str:
+    def transformar_contenido(mi, info:dict, plantilla:str, ruta_plantillas:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
         resultado = ''
         try:
-            if not Path(f'{directorio}/{plantilla}').exists():
-                dir_backend = os.getenv('DIR_BACKEND')
-                directorio = f'{dir_backend}/_plantillas'
-            if Path(f'{directorio}/{plantilla}').exists():
-                cargador = FileSystemLoader(directorio)
+            if not Path(f'{ruta_plantillas}/{plantilla}').exists():
+                ruta_plantillas = mi.config_web.get('RUTA_PLANTILLAS')
+            if Path(f'{ruta_plantillas}/{plantilla}').exists():
+                cargador = FileSystemLoader(ruta_plantillas)
                 entorno = Environment(loader=cargador)
                 entorno.add_extension('jinja2.ext.i18n')
                 if mi.traductor.traduccion:
@@ -233,7 +232,7 @@ class Comunicador(I_Comunicador):
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
                 plantilla, ruta_plantillas = mi._comprobar_plantilla(metadatos, 'plantilla')
-                contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
+                contenido = mi.transformar_contenido(info=info, plantilla=plantilla, ruta_plantillas=ruta_plantillas)
                 if conversion == Constantes.CONVERSION.HTML or conversion == Constantes.CONVERSION.TEXTO:
                     resultado = contenido
                 else:
@@ -318,7 +317,7 @@ class Comunicador(I_Comunicador):
 # --------------------------------------------------
 # Clase: Autenticador
 # --------------------------------------------------
-class Autenticador:
+class Autenticador(ABC):
     def __init__(mi, config_autenticacion:dict, url_login:str=''):
         mi.secret_key = config_autenticacion.get('SECRET_KEY')
         mi.algoritmo_jwt = config_autenticacion.get('ALGORITMO_JWT')
@@ -402,10 +401,10 @@ class ErrorAutenticacion(ErrorPersonalizado):
 
 
 # --------------------------------------------------
-# Funcion: cargar_configuracion
+# Funcion: configurar_microservicio
 # --------------------------------------------------
 @lru_cache
-def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> Configuracion:
+def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> Configuracion:
     from dotenv import dotenv_values
     prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
     ruta_microservicio_path = Path(ruta_origen).parent
@@ -424,9 +423,9 @@ def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicac
 
 
 # --------------------------------------------------
-# Funcion: crear_servidor_api
+# Funcion: configurar_servidor_api
 # --------------------------------------------------
-def crear_servidor_api(ruta_origen:str, archivo_env:str):
+def configurar_servidor_api(ruta_origen:str, archivo_env:str):
     from dotenv import dotenv_values
     try:
         archivo_env_path = Path(archivo_env)

@@ -28,6 +28,10 @@ from pysinergia import Constantes
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
+    contexto: Optional[dict] | None = {}
+
+    def recibir_contextp(mi, contexto:dict={}):
+        mi.contexto = contexto
 
     def diccionario(mi) -> dict:
         return mi.model_dump(by_alias=True, mode='json')
