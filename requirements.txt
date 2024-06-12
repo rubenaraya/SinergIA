@@ -1,29 +1,31 @@
-# Flask
-flask
-flask-cors
-Flask-Pydantic
-
-# FastAPI
-fastapi
-
-# Basicos
+pydantic>2.0
 pydantic-settings
+python-dotenv
 PyJWT
-pytz
 Pillow
+python-multipart
+pytz
 
-# Complementos
+[complementos]
 openpyxl
 pandas
 pandoc
 weasyprint
 pydub
 
-# Conectores
+[conectores]
 mysql-connector-python
 chromadb
 faiss-cpu
-openai[datalib]
+openai
 langchain
 PyMuPDF
 docx2txt
+
+[flask]
+flask
+flask-cors
+Flask-Pydantic
+
+[fastapi]
+fastapi

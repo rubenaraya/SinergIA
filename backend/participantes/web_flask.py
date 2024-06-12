@@ -110,7 +110,6 @@ def get_login():
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
@@ -230,7 +229,6 @@ def manifest():
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.MANIFEST)
 

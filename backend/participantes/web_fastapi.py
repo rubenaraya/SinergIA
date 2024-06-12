@@ -116,7 +116,6 @@ async def get_login(request:Request):
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='login.html',
-        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
 
 @enrutador.post('/login',
@@ -220,7 +219,6 @@ async def manifest(request:Request):
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
         plantilla='manifest.json',
-        directorio=f'{configuracion.RUTA_MICROSERVICIO}/plantillas'
     )
     return Response(content=respuesta, media_type=C.MIME.MANIFEST)
 

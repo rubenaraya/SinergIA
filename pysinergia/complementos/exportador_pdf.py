@@ -18,14 +18,15 @@ class ExportadorPdf(_Exportador):
     def generar(mi, contenido:str, opciones:dict={}):
         from weasyprint import HTML, CSS
         from pathlib import Path
-        import io
+        import io, os
         try:
             hoja_estilos = str(opciones.get('hoja_estilos', ''))
             ruta_plantillas = Path(opciones.get('ruta_plantillas', ''))
             if hoja_estilos:
                 ruta_css = (ruta_plantillas / hoja_estilos)
                 if not ruta_css.exists():
-                    ruta_plantillas = Path('backend/plantillas')
+                    dir_backend = os.getenv('DIR_BACKEND')
+                    ruta_plantillas = Path(f'{dir_backend}/_plantillas')
                     ruta_css = ruta_plantillas / hoja_estilos
                     if not ruta_css.exists():
                         hoja_estilos = ''

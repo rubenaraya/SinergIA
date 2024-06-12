@@ -188,6 +188,9 @@ class Comunicador(_I_Comunicador):
         from jinja2 import (Environment, FileSystemLoader)
         resultado = ''
         try:
+            if not Path(f'{directorio}/{plantilla}').exists():
+                dir_backend = os.getenv('DIR_BACKEND')
+                directorio = f'{dir_backend}/_plantillas'
             if Path(f'{directorio}/{plantilla}').exists():
                 cargador = FileSystemLoader(directorio)
                 entorno = Environment(loader=cargador)
@@ -246,7 +249,8 @@ class Comunicador(_I_Comunicador):
             ruta_plantillas = f'{ruta}/plantillas'
         if plantilla:
             if not Path(f'{ruta_plantillas}/{plantilla}').exists():
-                ruta_plantillas = 'backend/_plantillas'
+                dir_backend = os.getenv('DIR_BACKEND')
+                ruta_plantillas = f'{dir_backend}/_plantillas'
                 if not Path(f'{ruta_plantillas}/{plantilla}').exists():
                     ruta_plantillas = ''
                     plantilla = ''
