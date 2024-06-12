@@ -19,7 +19,10 @@ from pysinergia.adaptadores import (
     Configuracion,
 )
 from pysinergia.conectores.disco import Disco
-from pysinergia import __version__ as api_motor
+from pysinergia import (
+    __nombre__ as bib_nombre,
+    __version__ as bib_version,
+)
 
 # --------------------------------------------------
 # Clase: Traductor
@@ -165,22 +168,24 @@ class Comunicador(I_Comunicador):
     # Métodos privados
 
     def _conectar_disco(mi, config_disco:dict) -> Disco:
-        """TODO: Agregar manejador de errores"""
-        fuente = config_disco.get('fuente')
-        clase = config_disco.get('clase')
-        componente = getattr(importlib.import_module(f'pysinergia.conectores.{fuente}'), clase)
-        return componente(config_disco)
+        try:
+            fuente = config_disco.get('fuente')
+            clase = config_disco.get('clase')
+            componente = getattr(importlib.import_module(f'pysinergia.conectores.{fuente}'), clase)
+            return componente(config_disco)
+        except Exception as e:
+            raise e
 
     # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        global api_motor
+        global bib_nombre, bib_version
         mi.idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['IDIOMA'] = mi.idioma
-        mi.contexto['web']['API_MOTOR'] = api_motor
+        mi.contexto['web']['API_MOTOR'] = f'{bib_nombre} v{bib_version}'
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
@@ -241,6 +246,7 @@ class Comunicador(I_Comunicador):
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
 
+    # TODO: Evaluar si se puede privatizar
     def comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
         plantilla = metadatos.get(tipo, '')
         ruta_plantillas = metadatos.get('ruta_plantillas', None)
@@ -257,6 +263,7 @@ class Comunicador(I_Comunicador):
         metadatos['ruta_plantillas'] = ruta_plantillas
         return (plantilla, ruta_plantillas)
 
+    # TODO: Evaluar si se puede privatizar
     def transferir_contexto(mi, datos:dict=None) -> dict:
         if mi.contexto.get('datos', None) is None:
             mi.contexto['datos'] = {}
@@ -419,22 +426,23 @@ def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicac
 
 
 # --------------------------------------------------
-# Funcion: servidor_api
+# Funcion: crear_servidor_api
 # --------------------------------------------------
-def servidor_api(ruta_origen:str):
+def crear_servidor_api(ruta_origen:str, archivo_env:str):
     from dotenv import dotenv_values
-    archivo = Path('.config.env')
-    if archivo.exists() and archivo.is_file():
-        claves = dotenv_values(archivo)
+    try:
+        archivo_env_path = Path(archivo_env)
+        claves = dotenv_values(archivo_env_path)
         for clave, valor in claves.items():
             os.environ[clave] = valor
         ruta_lib_ffmpeg = Path(os.getenv('RUTA_LIB_FFMPEG','')).resolve()
         if ruta_lib_ffmpeg.is_dir():
             os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
-        if os.getenv('FRAMEWORK') == 'fastapi':
-            from pysinergia.interfaces.web_fastapi import ServidorApi
-        else:
+        if os.getenv('FRAMEWORK') == 'flask':
             from pysinergia.interfaces.web_flask import ServidorApi
+        elif os.getenv('FRAMEWORK') == 'fastapi':
+            from pysinergia.interfaces.web_fastapi import ServidorApi
         return ServidorApi(ruta_origen)
-    return None
+    except Exception as e:
+        raise e
 

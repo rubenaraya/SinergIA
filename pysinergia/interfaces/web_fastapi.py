@@ -30,7 +30,10 @@ from pysinergia.web import (
     ErrorAutenticacion,
     Traductor,
 )
-from pysinergia import __version__ as api_motor
+from pysinergia import (
+    __nombre__ as bib_nombre,
+    __version__ as bib_version,
+)
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -45,24 +48,27 @@ class ServidorApi:
     # Métodos privados
 
     def _configurar_encabezados(mi, api:FastAPI):
+        
         @api.middleware("http")
         async def configurar_encabezados_(request:Request, call_next):
+            global bib_nombre, bib_version
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
             respuesta:Response = await call_next(request)
-            respuesta.headers["X-API-Motor"] = api_motor
+            respuesta.headers["X-API-Motor"] = f'{bib_nombre} v{bib_version}'
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {str(respuesta.status_code)}')
             return respuesta
 
     def _configurar_endpoints(mi, api:FastAPI):
+        global bib_nombre, bib_version
 
         @api.get('/', include_in_schema=False)
         def entrypoint():
-            return {'api-entrypoint': f'{api_motor}'}
+            return {'api-entrypoint': f'{bib_nombre} v{bib_version}'}
 
         @api.get('/favicon.ico', include_in_schema=False)
         def favicon():

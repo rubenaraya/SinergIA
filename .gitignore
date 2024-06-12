@@ -148,17 +148,15 @@ cython_debug/
 #.idea/
 
 # Específicos
+_desarrollo/
 _instalador/
 _lib/
 _mkcert/
 logs/
 repositorios/
-repositorios/*/
 tmp/
-tmp/*/
+src/
 frontend/jsinergia/_encriptar.js
-_desarrollo/
-_desarrollo/*/
 
 .*.env
 *.env
@@ -166,9 +164,5 @@ _desarrollo/*/
 *.zip
 cert.pem
 key.pem
-_app*.py
 _prueba*.*
-main.py
-setup.py
-pyproject.toml
 docs/~*.~vsd

@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools >= 65.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pysinergia"]
+
+[project]
+name = "PySinergIA"
+version = "0.0.1"
+description = "Biblioteca Python para desarrollar Aplicaciones WEB/REST de back-end basadas en una arquitectura limpia de microservicios"
+
+dependencies = [
+    "pydantic >= 2.0",
+    "pydantic-settings",
+    "python-dotenv",
+    "PyJWT",
+    "Pillow",
+    "python-multipart",
+    "pytz",
+]
+requires-python = ">= 3.10"
+authors = [{name = "Rubén Araya Tagle", email = "rubenarayatagle@gmail.com"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = [
+    "clean architecture",
+    "microservices",
+    "api rest",
+    "web app",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: Spanish",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Topic :: Internet",
+    "Programming Language :: Python 3.10",
+    "Programming Language :: Python 3.11",
+    "Programming Language :: Python 3.12",
+    "Framework :: FastAPI",
+    "Framework :: Flask",
+    "Framework :: Pydantic :: 2",
+]
+
+[project.optional-dependencies]
+conectores = [
+    "mysql-connector-python",
+    "chromadb",
+    "faiss-cpu",
+    "openai",
+    "langchain",
+    "PyMuPDF",
+    "docx2txt",
+]
+complementos = [
+    "openpyxl",
+    "pandas",
+    "pandoc",
+    "weasyprint",
+    "pydub",
+]
+
+[project.urls]
+Homepage = "https://github.com/rubenaraya/PySinergIA"
+Repository = "https://github.com/rubenaraya/PySinergIA"

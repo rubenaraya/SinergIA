@@ -6,7 +6,8 @@ import os
 # Componentes Globales de PySinergIA
 # --------------------------------------------------
 
-__version__ = 'PySinergIA v0.0.1'
+__nombre__ = 'PySinergIA'
+__version__ = '0.0.1'
 
 # --------------------------------------------------
 # Clase estática: Constantes

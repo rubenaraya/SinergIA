@@ -29,7 +29,10 @@ from pysinergia.web import (
     ErrorAutenticacion,
     Traductor,
 )
-from pysinergia import __version__ as api_motor
+from pysinergia import (
+    __nombre__ as bib_nombre,
+    __version__ as bib_version,
+)
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -47,7 +50,8 @@ class ServidorApi:
 
         @api.after_request
         def procesar_salidas(respuesta:Response):
-            respuesta.headers['X-API-Motor'] = f"{api_motor}"
+            global bib_nombre, bib_version
+            respuesta.headers['X-API-Motor'] = f'{bib_nombre} v{bib_version}'
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
@@ -61,10 +65,11 @@ class ServidorApi:
                     print(f'peticion: {content_type}')
 
     def _configurar_endpoints(mi, api:Flask):
+        global bib_nombre, bib_version
 
         @api.route('/', methods=['GET'])
         def entrypoint():
-            return {'api-entrypoint': f'{api_motor}'}
+            return {'api-entrypoint': f'{bib_nombre} v{bib_version}'}
 
         @api.route('/favicon.ico', methods=['GET'])
         def favicon():
@@ -146,7 +151,7 @@ class ServidorApi:
         dir_frontend = os.getenv('DIR_FRONTEND')
         mi.dir_frontend = (Path('.') / f'{dir_frontend}').resolve()
         api = Flask(__name__,
-            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND'))}",
+            static_url_path=f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND',''))}",
             static_folder=mi.dir_frontend.as_posix(),
         )
         api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
