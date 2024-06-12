@@ -7,7 +7,7 @@ from pysinergia._dependencias import (
     Peticion,
     ArchivoCargado,
     Respuesta,
-    RespuestaResultado,
+    Resultado,
     Recurso,
 )
 
@@ -35,9 +35,16 @@ class ControladorParticipantes(Controlador):
 
     def buscar_participantes(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
         casosdeuso = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
-        resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.exportar())
+
+
+        resultado = casosdeuso.solicitar_accion(
+            CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES,
+            peticion.exportar()
+        )
         resultado.update(mi.comunicador.transferir_contexto())
-        respuesta = RespuestaResultado(**resultado,
+
+
+        respuesta = Resultado(**resultado,
             titulo='{titulo}',
             descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
             T=mi.comunicador.traspasar_traductor()

@@ -80,10 +80,6 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
-        ...
-
-    @abstractmethod
     def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         ...
 

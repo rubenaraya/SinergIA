@@ -176,6 +176,22 @@ class Comunicador(I_Comunicador):
         except Exception as e:
             raise e
 
+    def _comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
+        plantilla = metadatos.get(tipo, '')
+        ruta_plantillas = metadatos.get('ruta_plantillas', None)
+        if not ruta_plantillas:
+            ruta = mi.config_web.get('RUTA_MICROSERVICIO')
+            ruta_plantillas = f'{ruta}/plantillas'
+        if plantilla:
+            if not Path(f'{ruta_plantillas}/{plantilla}').exists():
+                dir_backend = os.getenv('DIR_BACKEND')
+                ruta_plantillas = f'{dir_backend}/_plantillas'
+                if not Path(f'{ruta_plantillas}/{plantilla}').exists():
+                    ruta_plantillas = ''
+                    plantilla = ''
+        metadatos['ruta_plantillas'] = ruta_plantillas
+        return (plantilla, ruta_plantillas)
+
     # --------------------------------------------------
     # Métodos públicos
 
@@ -216,7 +232,7 @@ class Comunicador(I_Comunicador):
             if conversion == Constantes.CONVERSION.JSON:
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
-                plantilla, ruta_plantillas = mi.comprobar_plantilla(metadatos, 'plantilla')
+                plantilla, ruta_plantillas = mi._comprobar_plantilla(metadatos, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
                 if conversion == Constantes.CONVERSION.HTML or conversion == Constantes.CONVERSION.TEXTO:
                     resultado = contenido
@@ -246,24 +262,6 @@ class Comunicador(I_Comunicador):
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
 
-    # TODO: Evaluar si se puede privatizar
-    def comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
-        plantilla = metadatos.get(tipo, '')
-        ruta_plantillas = metadatos.get('ruta_plantillas', None)
-        if not ruta_plantillas:
-            ruta = mi.config_web.get('RUTA_MICROSERVICIO')
-            ruta_plantillas = f'{ruta}/plantillas'
-        if plantilla:
-            if not Path(f'{ruta_plantillas}/{plantilla}').exists():
-                dir_backend = os.getenv('DIR_BACKEND')
-                ruta_plantillas = f'{dir_backend}/_plantillas'
-                if not Path(f'{ruta_plantillas}/{plantilla}').exists():
-                    ruta_plantillas = ''
-                    plantilla = ''
-        metadatos['ruta_plantillas'] = ruta_plantillas
-        return (plantilla, ruta_plantillas)
-
-    # TODO: Evaluar si se puede privatizar
     def transferir_contexto(mi, datos:dict=None) -> dict:
         if mi.contexto.get('datos', None) is None:
             mi.contexto['datos'] = {}

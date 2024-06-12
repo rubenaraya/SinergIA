@@ -12,7 +12,7 @@ from pysinergia.dominio import (
     VideoCargado,
     Peticion,
     Respuesta,
-    RespuestaResultado,
+    Resultado,
     Recurso,
 )
 from pysinergia.servicio import CasosDeUso
@@ -37,7 +37,7 @@ __all__ = [
     'VideoCargado',
     'Peticion',
     'Respuesta',
-    'RespuestaResultado',
+    'Resultado',
     'Recurso',
     'CasosDeUso',
     'Controlador',

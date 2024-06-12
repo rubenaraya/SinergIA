@@ -117,9 +117,9 @@ class Respuesta(BaseModel):
         return mi.model_dump_json()
 
 # --------------------------------------------------
-# ClaseModelo: RespuestaResultado
+# ClaseModelo: Resultado
 # --------------------------------------------------
-class RespuestaResultado(Respuesta):
+class Resultado(Respuesta):
     fecha: dict | None = {}
     web: dict | None = {}
     url: dict | None = {}
