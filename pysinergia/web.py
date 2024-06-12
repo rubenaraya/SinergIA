@@ -7,24 +7,24 @@ from functools import lru_cache
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Constantes as _Constantes,
-    ErrorPersonalizado as _ErrorPersonalizado,
+    Constantes,
+    ErrorPersonalizado,
 )
 from pysinergia.dominio import (
-    ArchivoCargado as _ArchivoCargado,
+    ArchivoCargado,
 )
 from pysinergia.adaptadores import (
-    I_Comunicador as _I_Comunicador,
-    I_Traductor as _I_Traductor,
-    Configuracion as _Configuracion,
+    I_Comunicador,
+    I_Traductor,
+    Configuracion,
 )
-from pysinergia.conectores.disco import Disco as _Disco
+from pysinergia.conectores.disco import Disco
 from pysinergia import __version__ as api_motor
 
 # --------------------------------------------------
 # Clase: Traductor
 # --------------------------------------------------
-class Traductor(_I_Traductor):
+class Traductor(I_Traductor):
     def __init__(mi, config:dict={}):
         mi.dominio_idioma:str = config.get('DOMINIO_IDIOMA', str(os.getenv('DOMINIO_IDIOMA')))
         mi.ruta_locales:str = config.get('RUTA_LOCALES', str(os.getenv('RUTA_LOCALES')))
@@ -152,19 +152,19 @@ class Traductor(_I_Traductor):
 # --------------------------------------------------
 # Clase: Comunicador
 # --------------------------------------------------
-class Comunicador(_I_Comunicador):
+class Comunicador(I_Comunicador):
 
     def __init__(mi, config_web:dict, config_disco:dict, traductor:Traductor=None):
         mi.config_web:dict = config_web or {}
         mi.idioma = None
         mi.contexto:dict = {}
-        mi.disco:_Disco = mi._conectar_disco(config_disco)
+        mi.disco:Disco = mi._conectar_disco(config_disco)
         mi.traductor = traductor or Traductor()
 
     # --------------------------------------------------
     # Métodos privados
 
-    def _conectar_disco(mi, config_disco:dict) -> _Disco:
+    def _conectar_disco(mi, config_disco:dict) -> Disco:
         """TODO: Agregar manejador de errores"""
         fuente = config_disco.get('fuente')
         clase = config_disco.get('clase')
@@ -208,12 +208,12 @@ class Comunicador(_I_Comunicador):
             modo = 't'
             metadatos:dict = info['metadatos']
             metadatos['idioma'] = mi.idioma
-            if conversion == _Constantes.CONVERSION.JSON:
+            if conversion == Constantes.CONVERSION.JSON:
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
                 plantilla, ruta_plantillas = mi.comprobar_plantilla(metadatos, 'plantilla')
                 contenido = mi.transformar_contenido(info=info, plantilla=plantilla, directorio=ruta_plantillas)
-                if conversion == _Constantes.CONVERSION.HTML or conversion == _Constantes.CONVERSION.TEXTO:
+                if conversion == Constantes.CONVERSION.HTML or conversion == Constantes.CONVERSION.TEXTO:
                     resultado = contenido
                 else:
                     from pysinergia.complementos.exportador import Exportador
@@ -274,7 +274,7 @@ class Comunicador(_I_Comunicador):
             encabezados['Content-disposition'] = disposicion
         return encabezados
 
-    def cargar_archivo(mi, portador:_ArchivoCargado, si_existe:str='RECHAZAR') -> _ArchivoCargado:
+    def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:
         if portador and portador.es_valido:
             unico = True if si_existe == portador.RENOMBRAR else False
             portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
@@ -282,15 +282,15 @@ class Comunicador(_I_Comunicador):
             if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
                 portador.es_valido = False
                 portador.mensaje_error = 'El-archivo-ya-existe'
-                portador.codigo = _Constantes.ESTADO._413_NO_CARGADO
-                portador.conclusion = _Constantes.CONCLUSION.ALERTA
+                portador.codigo = Constantes.ESTADO._413_NO_CARGADO
+                portador.conclusion = Constantes.CONCLUSION.ALERTA
             else:
                 ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
                 if not ruta:
                     portador.es_valido = False
                     portador.mensaje_error = 'Error-al-guardar-el-archivo'
-                    portador.codigo = _Constantes.ESTADO._500_ERROR
-                    portador.conclusion = _Constantes.CONCLUSION.ERROR
+                    portador.codigo = Constantes.ESTADO._500_ERROR
+                    portador.conclusion = Constantes.CONCLUSION.ERROR
                 portador.ruta = ruta
         return portador
 
@@ -301,8 +301,8 @@ class Comunicador(_I_Comunicador):
         if config_web:
             acepta = config_web.get('ACEPTA', '')
             if 'application/json' in acepta:
-                return _Constantes.CONVERSION.JSON
-        return _Constantes.CONVERSION.HTML
+                return Constantes.CONVERSION.JSON
+        return Constantes.CONVERSION.HTML
 
     def traspasar_traductor(mi) -> Traductor:
         if mi.traductor:
@@ -386,12 +386,12 @@ class Autenticador:
 # --------------------------------------------------
 # Clase: ErrorAutenticacion
 # --------------------------------------------------
-class ErrorAutenticacion(_ErrorPersonalizado):
+class ErrorAutenticacion(ErrorPersonalizado):
     def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
         super().__init__(
             mensaje=mensaje,
             codigo=codigo,
-            nivel_registro=_Constantes.REGISTRO.INFO
+            nivel_registro=Constantes.REGISTRO.INFO
         )
         mi.url_login = url_login
 
@@ -400,7 +400,7 @@ class ErrorAutenticacion(_ErrorPersonalizado):
 # Funcion: cargar_configuracion
 # --------------------------------------------------
 @lru_cache
-def cargar_configuracion(modelo_base:_Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> _Configuracion:
+def cargar_configuracion(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> Configuracion:
     from dotenv import dotenv_values
     prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
     ruta_microservicio_path = Path(ruta_origen).parent
@@ -414,6 +414,27 @@ def cargar_configuracion(modelo_base:_Configuracion, ruta_origen:str, env_aplica
     for archivo in lista_env:
         if archivo.exists():
             valores_configuracion.update(dotenv_values(archivo))
-    configuracion:_Configuracion = modelo_base(**valores_configuracion)
+    configuracion:Configuracion = modelo_base(**valores_configuracion)
     return configuracion
+
+
+# --------------------------------------------------
+# Funcion: servidor_api
+# --------------------------------------------------
+def servidor_api(ruta_origen:str):
+    from dotenv import dotenv_values
+    archivo = Path('.config.env')
+    if archivo.exists() and archivo.is_file():
+        claves = dotenv_values(archivo)
+        for clave, valor in claves.items():
+            os.environ[clave] = valor
+        ruta_lib_ffmpeg = Path(os.getenv('RUTA_LIB_FFMPEG','')).resolve()
+        if ruta_lib_ffmpeg.is_dir():
+            os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
+        if os.getenv('FRAMEWORK') == 'fastapi':
+            from pysinergia.interfaces.web_fastapi import ServidorApi
+        else:
+            from pysinergia.interfaces.web_flask import ServidorApi
+        return ServidorApi(ruta_origen)
+    return None
 

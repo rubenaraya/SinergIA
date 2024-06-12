@@ -3,14 +3,14 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.conectores.almacen import (
-    Almacen as _Almacen,
-    ErrorAlmacen as _ErrorAlmacen,
+    Almacen,
+    ErrorAlmacen,
 )
 
 # --------------------------------------------------
 # Clase: AlmacenFaiss
 # --------------------------------------------------
-class AlmacenFaiss(_Almacen):
+class AlmacenFaiss(Almacen):
     def __init__(mi):
         super().__init__()
 

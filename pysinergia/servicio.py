@@ -3,8 +3,8 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Constantes as _Constantes,
-    ErrorPersonalizado as _ErrorPersonalizado,
+    Constantes,
+    ErrorPersonalizado,
 )
 
 # --------------------------------------------------
@@ -34,10 +34,10 @@ class CasosDeUso:
             if bool(eval_roles & eval_credenciales):
                 return True
         if rechazar:
-            raise _ErrorPersonalizado(
+            raise ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
-                conclusion=_Constantes.CONCLUSION.ALERTA,
-                codigo=_Constantes.ESTADO._403_NO_AUTORIZADO,
+                conclusion=Constantes.CONCLUSION.ALERTA,
+                codigo=Constantes.ESTADO._403_NO_AUTORIZADO,
             )
         return False
 

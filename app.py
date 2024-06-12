@@ -1,38 +1,18 @@
 # app.py
 
-from dotenv import dotenv_values
-from pathlib import Path
 import os
+from pysinergia._dependencias import servidor_api
 
 # --------------------------------------------------
-# Carga configuracion en variables de entorno
-
-archivo = Path('.config.env')
-if archivo.exists() and archivo.is_file():
-    claves = dotenv_values(archivo)
-    for clave, valor in claves.items():
-        os.environ[clave] = valor
-
-# --------------------------------------------------
-# Importa la biblioteca de PySinergIA
-
-if os.getenv('FRAMEWORK') == 'fastapi':
-    from pysinergia.interfaces.web_fastapi import ServidorApi
-else:
-    from pysinergia.interfaces.web_flask import ServidorApi
-
-# --------------------------------------------------
-# Ejecuta script de inicio
-
-servidor = ServidorApi(__file__)
+# Ejecuta script de inicio del ServidorApi
+servidor = servidor_api(__file__)
 api = servidor.crear_api()
-servidor.mapear_enrutadores(api)
+servidor.mapear_microservicios(api)
 
 # --------------------------------------------------
 # Lanza el Servidor Web (solo en desarrollo/local)
-
 if __name__ == '__main__':
-    servidor.iniciar_servicio(
+    servidor.iniciar_servicio_web(
         host = os.getenv('HOST_LOCAL'), 
         puerto = os.getenv('PUERTO_FASTAPI') if os.getenv('FRAMEWORK')=='fastapi' else os.getenv('PUERTO_FLASK'),
         app = f'{servidor.nombre_script}:api' if os.getenv('FRAMEWORK')=='fastapi' else api,

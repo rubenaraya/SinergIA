@@ -5,9 +5,7 @@ from typing import (List, BinaryIO, TextIO)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    ErrorPersonalizado as _ErrorPersonalizado,
-)
+from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorDisco
@@ -70,7 +68,7 @@ class I_ConectorDisco(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorDisco
 # --------------------------------------------------
-class ErrorDisco(_ErrorPersonalizado):
+class ErrorDisco(ErrorPersonalizado):
     ...
 
 

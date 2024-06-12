@@ -5,16 +5,16 @@ from typing import (BinaryIO, TextIO, List)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.dominio import Archivo as _Archivo
+from pysinergia.dominio import Archivo
 from pysinergia.conectores.disco import (
-    Disco as _Disco,
-    ErrorDisco as _ErrorDisco,
+    Disco as Disco,
+    ErrorDisco,
 )
 
 # --------------------------------------------------
 # Clase: DiscoLocal
 # --------------------------------------------------
-class DiscoLocal(_Disco):
+class DiscoLocal(Disco):
 
     def __init__(mi, config:dict):
         super().__init__(config)
@@ -83,11 +83,11 @@ class DiscoLocal(_Disco):
             else:
                 return False
         except FileNotFoundError as e:
-            raise _ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
         except PermissionError as e:
-            raise _ErrorDisco(mensaje='Permiso-denegado-para-eliminar-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-el-archivo', recurso=nombre, detalles=[str(e)])
         except Exception as e:
-            raise _ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
 
     def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
         ruta_archivo = mi._leer_ruta(nombre)
@@ -103,11 +103,11 @@ class DiscoLocal(_Disco):
                     archivo.write(contenido)
             return ruta_archivo
         except PermissionError as e:
-            raise _ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
         except IOError as e:
-            raise _ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
         except Exception as e:
-            raise _ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
         finally:
             if archivo:
                 archivo.close()
@@ -120,11 +120,11 @@ class DiscoLocal(_Disco):
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 return archivo.read()
         except FileNotFoundError as e:
-            raise _ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
         except PermissionError as e:
-            raise _ErrorDisco(mensaje='Permiso-denegado-para-abrir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-abrir-el-archivo', recurso=nombre, detalles=[str(e)])
         except Exception as e:
-            raise _ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
 
     def copiar(mi, nombre:str, dir_destino:str, mover:bool=False) -> bool:
         import shutil
@@ -152,11 +152,11 @@ class DiscoLocal(_Disco):
                 return str(path.resolve().as_posix())
             return ''
         except PermissionError as e:
-            raise _ErrorDisco(mensaje='Permiso-denegado-para-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
         except OSError as e:
-            raise _ErrorDisco(mensaje='Error-del-sistema-operativo-al-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
         except Exception as e:
-            raise _ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
 
     def eliminar_carpeta(mi, nombre:str) -> bool:
         try:
@@ -165,13 +165,13 @@ class DiscoLocal(_Disco):
                 path.rmdir()
                 return True
             else:
-                raise _ErrorDisco(mensaje='La-carpeta-no-existe', recurso=nombre)
+                raise ErrorDisco(mensaje='La-carpeta-no-existe', recurso=nombre)
         except PermissionError as e:
-            raise _ErrorDisco(mensaje='Permiso-denegado-para-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
         except OSError as e:
-            raise _ErrorDisco(mensaje='Error-del-sistema-operativo-al-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
         except Exception as e:
-            raise _ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
 
     def comprobar_ruta(mi, nombre:str, tipo:str='') -> str:
         path = (mi._path / Path(nombre))
@@ -180,13 +180,13 @@ class DiscoLocal(_Disco):
             return path.as_posix()
         return None
 
-    def listar_archivos(mi, nombre:str, extension:str='*') -> List[_Archivo]:
+    def listar_archivos(mi, nombre:str, extension:str='*') -> List[Archivo]:
         lista = []
         path = (mi._path / Path(nombre))
         if path.exists() and path.is_dir():
             for archivo in path.rglob(f'*.{extension}'):
                 if archivo.is_file():
-                    lista.append(_Archivo(
+                    lista.append(Archivo(
                         nombre=archivo.name,
                         ruta=archivo.as_posix(),
                         ubicacion=archivo.parent.as_posix(),

@@ -1,7 +1,6 @@
 # pysinergia\__init__.py
 
 import os
-from pathlib import Path
 
 # --------------------------------------------------
 # Componentes Globales de PySinergIA
@@ -250,11 +249,4 @@ class ErrorPersonalizado(Exception):
                         print(error)
                         continue
         return mi.detalles
-
-
-# --------------------------------------------------
-# Ubicación de biblioteca FFMPEG
-ruta_lib_ffmpeg = Path(os.getenv('RUTA_LIB_FFMPEG')).resolve()
-if ruta_lib_ffmpeg.is_dir():
-    os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
 

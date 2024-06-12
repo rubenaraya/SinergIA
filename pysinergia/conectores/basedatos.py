@@ -6,7 +6,7 @@ from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorBasedatos
@@ -53,7 +53,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorBasedatos
 # --------------------------------------------------
-class ErrorBasedatos(_ErrorPersonalizado):
+class ErrorBasedatos(ErrorPersonalizado):
     ...
 
 

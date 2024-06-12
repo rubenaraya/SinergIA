@@ -24,6 +24,7 @@ from pysinergia.adaptadores import (
 from pysinergia.web import (
     Traductor,
     cargar_configuracion,
+    servidor_api,
 )
 
 __all__ = [
@@ -44,4 +45,5 @@ __all__ = [
     'Configuracion',
     'Traductor',
     'cargar_configuracion',
+    'servidor_api',
 ]

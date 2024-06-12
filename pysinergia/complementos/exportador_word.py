@@ -3,17 +3,15 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.complementos.exportador import (
-    Exportador as _Exportador,
-    ErrorExportador as _ErrorExportador,
+    Exportador,
+    ErrorExportador,
 )
-from pysinergia import (
-    Constantes as _Constantes,
-)
+from pysinergia import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorWord
 # --------------------------------------------------
-class ExportadorWord(_Exportador):
+class ExportadorWord(Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):
         import subprocess, io, os
@@ -36,9 +34,9 @@ class ExportadorWord(_Exportador):
                 return docx_io
             return None
         except Exception as e:
-            raise _ErrorExportador(
+            raise ErrorExportador(
                 mensaje='Error-en-exportador-Word',
-                codigo=_Constantes.ESTADO._500_ERROR,
+                codigo=Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

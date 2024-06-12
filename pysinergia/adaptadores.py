@@ -17,7 +17,7 @@ from pydantic import Field, field_validator
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.dominio import (
-    ArchivoCargado as _ArchivoCargado,
+    ArchivoCargado as ArchivoCargado,
 )
 
 # --------------------------------------------------
@@ -64,7 +64,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def cargar_archivo(mi, portador:_ArchivoCargado, unico:bool=False) -> _ArchivoCargado:
+    def cargar_archivo(mi, portador:ArchivoCargado, unico:bool=False) -> ArchivoCargado:
         ...
     
     @abstractmethod

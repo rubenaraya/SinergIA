@@ -4,7 +4,7 @@ from abc import (ABC, ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorAlmacen
@@ -19,7 +19,7 @@ class I_ConectorAlmacen(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorAlmacen
 # --------------------------------------------------
-class ErrorAlmacen(_ErrorPersonalizado):
+class ErrorAlmacen(ErrorPersonalizado):
     ...
 
 

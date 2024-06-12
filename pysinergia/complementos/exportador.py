@@ -5,7 +5,7 @@ from pathlib import Path
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_Exportador
@@ -24,7 +24,7 @@ class I_Exportador(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorExportador
 # --------------------------------------------------
-class ErrorExportador(_ErrorPersonalizado):
+class ErrorExportador(ErrorPersonalizado):
     ...
 
 

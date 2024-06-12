@@ -3,17 +3,15 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.complementos.exportador import (
-    Exportador as _Exportador,
-    ErrorExportador as _ErrorExportador,
+    Exportador,
+    ErrorExportador,
 )
-from pysinergia import (
-    Constantes as _Constantes,
-)
+from pysinergia import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorExcel
 # --------------------------------------------------
-class ExportadorExcel(_Exportador):
+class ExportadorExcel(Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):
         from pathlib import Path
@@ -37,9 +35,9 @@ class ExportadorExcel(_Exportador):
             ruta_xlsx.unlink()
             return xlsx_io
         except Exception as e:
-            raise _ErrorExportador(
+            raise ErrorExportador(
                 mensaje='Error-en-exportador-Excel',
-                codigo=_Constantes.ESTADO._500_ERROR,
+                codigo=Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

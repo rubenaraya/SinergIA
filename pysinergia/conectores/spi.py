@@ -4,7 +4,7 @@ from abc import (ABC, ABCMeta, abstractmethod)
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado as _ErrorPersonalizado
+from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorSpi
@@ -19,7 +19,7 @@ class I_ConectorSpi(metaclass=ABCMeta):
 # --------------------------------------------------
 # Clase: ErrorSpi
 # --------------------------------------------------
-class ErrorSpi(_ErrorPersonalizado):
+class ErrorSpi(ErrorPersonalizado):
     ...
 
 

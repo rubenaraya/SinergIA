@@ -7,25 +7,22 @@ from typing import (
     List,
     Optional,
     Self,
-    Tuple,
-    Any,
-    Literal,
+    #Tuple,
+    #Literal,
+    #Any,
 )
-from enum import Enum
+#from enum import Enum
 from pydantic import (
     BaseModel,
     ConfigDict,
-    create_model,
     model_validator,
-    field_validator,
-    Field,
+    #field_validator,
+    #Field,
 )
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    Constantes as _Constantes,
-)
+from pysinergia import Constantes
 
 # --------------------------------------------------
 # ClaseModelo: Peticion
@@ -72,8 +69,8 @@ class Respuesta(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     T: object | None = None
-    codigo: Optional[int] | None = _Constantes.ESTADO._200_EXITO
-    conclusion: Optional[str] | None = _Constantes.CONCLUSION.EXITO
+    codigo: Optional[int] | None = Constantes.ESTADO._200_EXITO
+    conclusion: Optional[str] | None = Constantes.CONCLUSION.EXITO
     mensaje: Optional[str] | None = ''
     titulo:str = ''
     descripcion:str = ''
@@ -142,8 +139,8 @@ class ArchivoCargado(BaseModel):
     carpeta: Optional[str] = ''
     tipo_mime: Optional[str] = ''
     peso: Optional[int] = 0
-    codigo: Optional[int] = _Constantes.ESTADO._200_EXITO
-    conclusion: Optional[str] = _Constantes.CONCLUSION.EXITO
+    codigo: Optional[int] = Constantes.ESTADO._200_EXITO
+    conclusion: Optional[str] = Constantes.CONCLUSION.EXITO
     es_valido: Optional[bool] = False
     mensaje_error: Optional[str] = ''
 
@@ -164,20 +161,20 @@ class ArchivoCargado(BaseModel):
         origen = valores.origen
         if not origen:
             valores.mensaje_error = 'No-se-recibio-ninguna-carga'
-            valores.codigo = _Constantes.ESTADO._422_NO_PROCESABLE
-            valores.conclusion = _Constantes.CONCLUSION.ALERTA
+            valores.codigo = Constantes.ESTADO._422_NO_PROCESABLE
+            valores.conclusion = Constantes.CONCLUSION.ALERTA
             return valores
         if origen.filename == '':
             valores.mensaje_error = 'La-carga-recibida-no-contiene-archivo'
-            valores.codigo = _Constantes.ESTADO._400_NO_VALIDO
-            valores.conclusion = _Constantes.CONCLUSION.ALERTA
+            valores.codigo = Constantes.ESTADO._400_NO_VALIDO
+            valores.conclusion = Constantes.CONCLUSION.ALERTA
             return valores
         valores.nombre = origen.filename
         valores.extension = valores.nombre.rsplit('.', 1)[1].lower()
         if origen.content_type not in cls.tipos_permitidos():
             valores.mensaje_error = 'El-tipo-de-archivo-no-esta-permitido'
-            valores.codigo = _Constantes.ESTADO._415_NO_SOPORTADO
-            valores.conclusion = _Constantes.CONCLUSION.ALERTA
+            valores.codigo = Constantes.ESTADO._415_NO_SOPORTADO
+            valores.conclusion = Constantes.CONCLUSION.ALERTA
             return valores
         valores.tipo_mime = origen.content_type
         valores.contenido = origen.file if hasattr(origen, 'file') else origen.stream
@@ -187,8 +184,8 @@ class ArchivoCargado(BaseModel):
         valores.peso = peso
         if peso > cls.peso_maximo():
             valores.mensaje_error = 'El-archivo-supera-el-peso-maximo-aceptado'
-            valores.codigo = _Constantes.ESTADO._413_NO_CARGADO
-            valores.conclusion = _Constantes.CONCLUSION.ALERTA
+            valores.codigo = Constantes.ESTADO._413_NO_CARGADO
+            valores.conclusion = Constantes.CONCLUSION.ALERTA
             return valores
         valores.es_valido = True
         return valores
@@ -202,9 +199,9 @@ class ImagenCargada(ArchivoCargado):
     @classmethod
     def tipos_permitidos(cls) -> List[str]:
         return [
-            _Constantes.MIME.JPG,
-            _Constantes.MIME.JPEG,
-            _Constantes.MIME.PNG,
+            Constantes.MIME.JPG,
+            Constantes.MIME.JPEG,
+            Constantes.MIME.PNG,
         ]
     @classmethod
     def peso_maximo(cls) -> int:
@@ -219,14 +216,14 @@ class DocumentoCargado(ArchivoCargado):
     @classmethod
     def tipos_permitidos(cls) -> List[str]:
         return [
-            _Constantes.MIME.DOCX,
-            _Constantes.MIME.DOC,
-            _Constantes.MIME.XLSX,
-            _Constantes.MIME.XLS,
-            _Constantes.MIME.PPTX,
-            _Constantes.MIME.PPT,
-            _Constantes.MIME.PDF,
-            _Constantes.MIME.CSV,
+            Constantes.MIME.DOCX,
+            Constantes.MIME.DOC,
+            Constantes.MIME.XLSX,
+            Constantes.MIME.XLS,
+            Constantes.MIME.PPTX,
+            Constantes.MIME.PPT,
+            Constantes.MIME.PDF,
+            Constantes.MIME.CSV,
         ]
     @classmethod
     def peso_maximo(cls) -> int:
@@ -241,12 +238,12 @@ class AudioCargado(ArchivoCargado):
     @classmethod
     def tipos_permitidos(cls) -> List[str]:
         return [
-            _Constantes.MIME.MP3,
-            _Constantes.MIME.WAV,
-            _Constantes.MIME.OGG,
-            _Constantes.MIME.OPUS,
-            _Constantes.MIME.WMA,
-            _Constantes.MIME.WEBA,
+            Constantes.MIME.MP3,
+            Constantes.MIME.WAV,
+            Constantes.MIME.OGG,
+            Constantes.MIME.OPUS,
+            Constantes.MIME.WMA,
+            Constantes.MIME.WEBA,
         ]
     @classmethod
     def peso_maximo(cls) -> int:
@@ -260,9 +257,9 @@ class VideoCargado(ArchivoCargado):
     @classmethod
     def tipos_permitidos(cls) -> List[str]:
         return [
-            _Constantes.MIME.MP4,
-            _Constantes.MIME.WEBM,
-            _Constantes.MIME.WMV,
+            Constantes.MIME.MP4,
+            Constantes.MIME.WEBM,
+            Constantes.MIME.WMV,
         ]
     @classmethod
     def peso_maximo(cls) -> int:
@@ -294,24 +291,24 @@ class Recurso(BaseModel):
     def validate_model(cls, valores:Self) -> 'Recurso':
         if valores.conversion:
             conversiones = {
-                _Constantes.CONVERSION.PDF: cls._pdf,
-                _Constantes.CONVERSION.WORD: cls._word,
-                _Constantes.CONVERSION.EXCEL: cls._excel,
-                _Constantes.CONVERSION.CSV: cls._csv,
-                _Constantes.CONVERSION.HTML: cls._html,
-                _Constantes.CONVERSION.JSON: cls._json,
-                _Constantes.CONVERSION.TEXTO: cls._texto,
+                Constantes.CONVERSION.PDF: cls._pdf,
+                Constantes.CONVERSION.WORD: cls._word,
+                Constantes.CONVERSION.EXCEL: cls._excel,
+                Constantes.CONVERSION.CSV: cls._csv,
+                Constantes.CONVERSION.HTML: cls._html,
+                Constantes.CONVERSION.JSON: cls._json,
+                Constantes.CONVERSION.TEXTO: cls._texto,
             }
             conversiones.get(valores.conversion)(valores)
         elif valores.tipo_mime:
             tipos = {
-                _Constantes.MIME.PDF: cls._pdf,
-                _Constantes.MIME.DOCX: cls._word,
-                _Constantes.MIME.XLSX: cls._excel,
-                _Constantes.MIME.CSV: cls._csv,
-                _Constantes.MIME.HTML: cls._html,
-                _Constantes.MIME.JSON: cls._json,
-                _Constantes.MIME.TXT: cls._texto,
+                Constantes.MIME.PDF: cls._pdf,
+                Constantes.MIME.DOCX: cls._word,
+                Constantes.MIME.XLSX: cls._excel,
+                Constantes.MIME.CSV: cls._csv,
+                Constantes.MIME.HTML: cls._html,
+                Constantes.MIME.JSON: cls._json,
+                Constantes.MIME.TXT: cls._texto,
             }
             tipos.get(valores.tipo_mime)(valores)
         elif valores.extension:
@@ -330,36 +327,36 @@ class Recurso(BaseModel):
     @classmethod
     def _pdf(cls, valores:Self):
         valores.extension = 'pdf'
-        valores.conversion = _Constantes.CONVERSION.PDF
-        valores.tipo_mime = _Constantes.MIME.PDF
+        valores.conversion = Constantes.CONVERSION.PDF
+        valores.tipo_mime = Constantes.MIME.PDF
     @classmethod
     def _word(cls, valores:Self):
         valores.extension = 'docx'
-        valores.conversion = _Constantes.CONVERSION.WORD
-        valores.tipo_mime = _Constantes.MIME.DOCX
+        valores.conversion = Constantes.CONVERSION.WORD
+        valores.tipo_mime = Constantes.MIME.DOCX
     @classmethod
     def _excel(cls, valores:Self):
         valores.extension = 'xlsx'
-        valores.conversion = _Constantes.CONVERSION.EXCEL
-        valores.tipo_mime = _Constantes.MIME.XLSX
+        valores.conversion = Constantes.CONVERSION.EXCEL
+        valores.tipo_mime = Constantes.MIME.XLSX
     @classmethod
     def _csv(cls, valores:Self):
         valores.extension = 'csv'
-        valores.conversion = _Constantes.CONVERSION.CSV
-        valores.tipo_mime = _Constantes.MIME.CSV
+        valores.conversion = Constantes.CONVERSION.CSV
+        valores.tipo_mime = Constantes.MIME.CSV
     @classmethod
     def _html(cls, valores:Self):
         valores.extension = 'html'
-        valores.conversion = _Constantes.CONVERSION.HTML
-        valores.tipo_mime = _Constantes.MIME.HTML
+        valores.conversion = Constantes.CONVERSION.HTML
+        valores.tipo_mime = Constantes.MIME.HTML
     @classmethod
     def _json(cls, valores:Self):
         valores.extension = 'json'
-        valores.conversion = _Constantes.CONVERSION.JSON
-        valores.tipo_mime = _Constantes.MIME.JSON
+        valores.conversion = Constantes.CONVERSION.JSON
+        valores.tipo_mime = Constantes.MIME.JSON
     @classmethod
     def _texto(cls, valores:Self):
         valores.extension = 'txt'
-        valores.conversion = _Constantes.CONVERSION.TEXTO
-        valores.tipo_mime = _Constantes.MIME.TXT
+        valores.conversion = Constantes.CONVERSION.TEXTO
+        valores.tipo_mime = Constantes.MIME.TXT
 

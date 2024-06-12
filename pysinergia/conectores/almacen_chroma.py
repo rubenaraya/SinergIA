@@ -3,14 +3,14 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.conectores.almacen import (
-    Almacen as _Almacen,
-    ErrorAlmacen as _ErrorAlmacen,
+    Almacen,
+    ErrorAlmacen,
 )
 
 # --------------------------------------------------
 # Clase: AlmacenChroma
 # --------------------------------------------------
-class AlmacenChroma(_Almacen):
+class AlmacenChroma(Almacen):
     def __init__(mi):
         super().__init__()
 

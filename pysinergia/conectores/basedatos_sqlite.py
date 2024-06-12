@@ -6,16 +6,16 @@ import sqlite3
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import Constantes as _Constantes
+from pysinergia import Constantes
 from pysinergia.conectores.basedatos import (
-    Basedatos as _Basedatos,
-    ErrorBasedatos as _ErrorBasedatos
+    Basedatos,
+    ErrorBasedatos,
 )
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
 # --------------------------------------------------
-class BasedatosSqlite(_Basedatos):
+class BasedatosSqlite(Basedatos):
     def __init__(mi):
         super().__init__()
         mi.marca:str = '?'
@@ -45,7 +45,7 @@ class BasedatosSqlite(_Basedatos):
                 return True
         return False
 
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
         cursor.execute(sql_total, parametros)
@@ -65,7 +65,7 @@ class BasedatosSqlite(_Basedatos):
             instruccion += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
         cursor.execute(instruccion, parametros)
-        if estructura == _Basedatos.ESTRUCTURA.DICCIONARIO:
+        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             columnas = list(map(lambda x: x[0], cursor.description))
@@ -84,16 +84,16 @@ class BasedatosSqlite(_Basedatos):
                 "paginador": paginador
             }
             return datos, total
-        elif estructura == _Basedatos.ESTRUCTURA.TUPLA:
+        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchall(), total)
 
-    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=_Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
-        if estructura == _Basedatos.ESTRUCTURA.DICCIONARIO:
+        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
             cursor.row_factory = sqlite3.Row
             lista = [dict(fila) for fila in cursor.fetchall()]
             return lista[0], 1
-        elif estructura == _Basedatos.ESTRUCTURA.TUPLA:
+        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
             return (cursor.fetchone(), 1)
 

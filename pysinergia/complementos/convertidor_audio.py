@@ -6,12 +6,8 @@ from pydub import AudioSegment
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia import (
-    Constantes as _Constantes,
-)
-from pysinergia.complementos.exportador import (
-    ErrorExportador as _ErrorExportador,
-)
+from pysinergia import Constantes
+from pysinergia.complementos.exportador import ErrorExportador
 
 # --------------------------------------------------
 # Clase: ConvertidorAudio
@@ -20,11 +16,11 @@ class ConvertidorAudio:
     def __init__(mi, ruta_base:str):
         mi.ruta_base:str = ruta_base
         mi.opciones = {
-            'tiempo_maximo': 30 * _Constantes.TIEMPO.MIN,
-            'peso_maximo': 24 * _Constantes.PESO.MB,
+            'tiempo_maximo': 30 * Constantes.TIEMPO.MIN,
+            'peso_maximo': 24 * Constantes.PESO.MB,
             'canales': 1,
-            'formato': _Constantes.AUDIO.MP3,
-            'bitrate': _Constantes.BITRATE._64KBPS,
+            'formato': Constantes.AUDIO.MP3,
+            'bitrate': Constantes.BITRATE._64KBPS,
         }
 
     def convertir(mi, ruta_audio:str, dir_destino:str, opciones:dict=None) -> list[str]:
@@ -64,9 +60,9 @@ class ConvertidorAudio:
                 else:
                     resultado.append(ruta_guardar)
         except Exception as e:
-            raise _ErrorExportador(
+            raise ErrorExportador(
                 mensaje='Error-en-exportador-Audio',
-                codigo=_Constantes.ESTADO._500_ERROR,
+                codigo=Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
         return resultado

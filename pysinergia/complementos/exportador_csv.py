@@ -3,17 +3,15 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.complementos.exportador import (
-    Exportador as _Exportador,
-    ErrorExportador as _ErrorExportador,
+    Exportador,
+    ErrorExportador,
 )
-from pysinergia import (
-    Constantes as _Constantes,
-)
+from pysinergia import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorCsv
 # --------------------------------------------------
-class ExportadorCsv(_Exportador):
+class ExportadorCsv(Exportador):
 
     def generar(mi, contenido:str='', opciones:dict={}):
         from pathlib import Path
@@ -42,9 +40,9 @@ class ExportadorCsv(_Exportador):
             ruta_csv.unlink()
             return csv_io
         except Exception as e:
-            raise _ErrorExportador(
+            raise ErrorExportador(
                 mensaje='Error-en-exportador-CSV',
-                codigo=_Constantes.ESTADO._500_ERROR,
+                codigo=Constantes.ESTADO._500_ERROR,
                 detalles=[str(e)]
             )
 

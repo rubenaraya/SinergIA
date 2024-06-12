@@ -3,14 +3,14 @@
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.conectores.llm import (
-    Llm as _Llm,
-    ErrorLlm as _ErrorLlm
+    Llm,
+    ErrorLlm,
 )
 
 # --------------------------------------------------
 # Clase: LlmOpenai
 # --------------------------------------------------
-class LlmOpenai(_Llm):
+class LlmOpenai(Llm):
     def __init__(mi):
         super().__init__()
         ...

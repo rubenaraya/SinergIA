@@ -20,15 +20,15 @@ from fastapi.encoders import jsonable_encoder
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Constantes as _C,
-    ErrorPersonalizado as _ErrorPersonalizado
+    Constantes as C,
+    ErrorPersonalizado,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
-    Comunicador as _Comunicador,
-    Autenticador as _Autenticador,
-    ErrorAutenticacion as _ErrorAutenticacion,
-    Traductor as _Traductor,
+    Comunicador,
+    Autenticador,
+    ErrorAutenticacion,
+    Traductor,
 )
 from pysinergia import __version__ as api_motor
 
@@ -47,13 +47,13 @@ class ServidorApi:
     def _configurar_encabezados(mi, api:FastAPI):
         @api.middleware("http")
         async def configurar_encabezados_(request:Request, call_next):
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
             respuesta:Response = await call_next(request)
             respuesta.headers["X-API-Motor"] = api_motor
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {str(respuesta.status_code)}')
             return respuesta
@@ -83,8 +83,8 @@ class ServidorApi:
         url = f'{request.url.path}?{request.query_params}' if request.query_params else request.url.path
         return f'{request.method} {url}'
 
-    def _crear_respuesta_error(mi, request:Request, err:_ErrorPersonalizado, registrar:bool=False):
-        traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
+    def _crear_respuesta_error(mi, request:Request, err:ErrorPersonalizado, registrar:bool=False):
+        traductor = Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
         traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'), dominio_idioma=err.dominio_idioma)
         respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
         if registrar:
@@ -98,36 +98,36 @@ class ServidorApi:
         )
         from pydantic import ValidationError
 
-        @api.exception_handler(_ErrorAutenticacion)
-        async def _error_autenticacion(request:Request, err:_ErrorAutenticacion):
+        @api.exception_handler(ErrorAutenticacion)
+        async def _error_autenticacion(request:Request, err:ErrorAutenticacion):
             if err.url_login:
                 return RedirectResponse(url=err.url_login)
             return mi._crear_respuesta_error(request, err, False)
 
-        @api.exception_handler(_ErrorPersonalizado)
-        async def _error_personalizado(request:Request, err:_ErrorPersonalizado):
-            registrar = (err.conclusion == _C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+        @api.exception_handler(ErrorPersonalizado)
+        async def _error_personalizado(request:Request, err:ErrorPersonalizado):
+            registrar = (err.conclusion == C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             return mi._crear_respuesta_error(request, err, registrar)
 
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, err:ValidationError):
-            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE, nivel_evento=_C.REGISTRO.INFO)
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO)
             error.agregar_detalles(err.errors())
-            registrar = (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            registrar = (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, err:RequestValidationError):
-            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=_C.ESTADO._422_NO_PROCESABLE, nivel_evento=_C.REGISTRO.INFO)
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO)
             error.agregar_detalles(err.errors())
-            registrar = os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO
+            registrar = os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO
             return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(HTTPException)
         async def _error_http(request:Request, err:HTTPException):
-            error = _ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code, nivel_evento=_C.REGISTRO.ERROR if err.code >= 500 else _C.REGISTRO.DEBUG)
-            registrar = (err.status_code >= 500) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
-            error.nivel_evento = _C.REGISTRO.DEBUG if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO else _C.REGISTRO.INFO
+            error = ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code, nivel_evento=C.REGISTRO.ERROR if err.code >= 500 else C.REGISTRO.DEBUG)
+            registrar = (err.status_code >= 500) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
+            error.nivel_evento = C.REGISTRO.DEBUG if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO else C.REGISTRO.INFO
             return mi._crear_respuesta_error(request, error, registrar)
 
         @api.exception_handler(Exception)
@@ -136,7 +136,7 @@ class ServidorApi:
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'{exception_name}: {exception_value}'
-            error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR, nivel_evento=_C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje=mensaje, codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
             return mi._crear_respuesta_error(request, error, True)
 
     # --------------------------------------------------
@@ -158,7 +158,7 @@ class ServidorApi:
         mi._manejar_errores(api)
         return api
 
-    def mapear_enrutadores(mi, api:FastAPI):
+    def mapear_microservicios(mi, api:FastAPI):
         import importlib
         ruta_backend = Path(os.getenv('DIR_BACKEND'))
         modulo_base = 'web_fastapi'
@@ -178,8 +178,8 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:str, puerto:int, host:str=None):
-        if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == _C.ENTORNO.LOCAL:
+    def iniciar_servicio_web(mi, app:str, puerto:int, host:str=None):
+        if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == C.ENTORNO.LOCAL:
             import uvicorn
             if not host:
                 host = os.getenv('HOST_LOCAL')
@@ -196,7 +196,7 @@ class ServidorApi:
 # --------------------------------------------------
 # Clase: ComunicadorWeb
 # --------------------------------------------------
-class ComunicadorWeb(_Comunicador):
+class ComunicadorWeb(Comunicador):
 
     # --------------------------------------------------
     # Métodos privados
@@ -267,7 +267,7 @@ class ComunicadorWeb(_Comunicador):
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
-class AutenticadorWeb(_Autenticador):
+class AutenticadorWeb(Autenticador):
 
     # --------------------------------------------------
     # Métodos públicos
@@ -278,9 +278,9 @@ class AutenticadorWeb(_Autenticador):
             if mi.api_keys and api_key_header and api_key_header in mi.api_keys:
                 return mi.api_keys.get(api_key_header)
         mensaje = 'API-key-invalida'
-        raise _ErrorAutenticacion(
+        raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO._403_NO_AUTORIZADO,
+            codigo=C.ESTADO._403_NO_AUTORIZADO,
         )
 
     async def validar_token(mi, request:Request) -> str:
@@ -293,9 +293,9 @@ class AutenticadorWeb(_Autenticador):
                     mensaje = 'Token-invalido'
                 else:
                     return mi.token
-        raise _ErrorAutenticacion(
+        raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO._401_NO_AUTENTICADO,
+            codigo=C.ESTADO._401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
 

@@ -19,15 +19,15 @@ from flask import (
 # --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
-    Constantes as _C,
-    ErrorPersonalizado as _ErrorPersonalizado
+    Constantes as C,
+    ErrorPersonalizado,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
-    Comunicador as _Comunicador,
-    Autenticador as _Autenticador,
-    ErrorAutenticacion as _ErrorAutenticacion,
-    Traductor as _Traductor,
+    Comunicador,
+    Autenticador,
+    ErrorAutenticacion,
+    Traductor,
 )
 from pysinergia import __version__ as api_motor
 
@@ -48,14 +48,14 @@ class ServidorApi:
         @api.after_request
         def procesar_salidas(respuesta:Response):
             respuesta.headers['X-API-Motor'] = f"{api_motor}"
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
             return respuesta
 
         @api.before_request
         def procesar_entradas():
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
@@ -84,8 +84,8 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
-    def _crear_respuesta_error(mi, err:_ErrorPersonalizado, registrar:bool=False):
-        traductor = _Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
+    def _crear_respuesta_error(mi, err:ErrorPersonalizado, registrar:bool=False):
+        traductor = Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
         traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'), dominio_idioma=err.dominio_idioma)
         respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
         if registrar:
@@ -99,35 +99,35 @@ class ServidorApi:
         )
         from pydantic import ValidationError
 
-        @api.errorhandler(_ErrorAutenticacion)
-        def _error_autenticacion(err:_ErrorAutenticacion):
+        @api.errorhandler(ErrorAutenticacion)
+        def _error_autenticacion(err:ErrorAutenticacion):
             if err.url_login:
                 return redirect(err.url_login)
             return mi._crear_respuesta_error(err, False)
 
-        @api.errorhandler(_ErrorPersonalizado)
-        def _error_personalizado(err:_ErrorPersonalizado):
-            registrar = (err.conclusion == _C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+        @api.errorhandler(ErrorPersonalizado)
+        def _error_personalizado(err:ErrorPersonalizado):
+            registrar = (err.conclusion == C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             return mi._crear_respuesta_error(err, registrar)
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            error = _ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=_C.ESTADO._422_NO_PROCESABLE, nivel_evento=_C.REGISTRO.INFO)
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO)
             error.agregar_detalles(err.errors())
-            registrar = (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            registrar = (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             return mi._crear_respuesta_error(error, registrar)
 
         @api.errorhandler(HTTPException)
         def _error_http(err:HTTPException):
-            error = _ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=_C.REGISTRO.ERROR if err.code >= 500 else _C.REGISTRO.DEBUG)
-            registrar = (err.code >= 500) or (os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO)
+            error = ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=C.REGISTRO.ERROR if err.code >= 500 else C.REGISTRO.DEBUG)
+            registrar = (err.code >= 500) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             return mi._crear_respuesta_error(error, registrar)
 
         @api.errorhandler(InternalServerError)
         def _error_interno(err:InternalServerError):
             original = err.original_exception
             descripcion = original.args[0] if len(original.args) > 0 else original.__doc__ if original.__doc__ else ''
-            error = _ErrorPersonalizado(mensaje=descripcion, codigo=_C.ESTADO._500_ERROR, nivel_evento=_C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje=descripcion, codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error, True)
 
         @api.errorhandler(Exception)
@@ -136,7 +136,7 @@ class ServidorApi:
             exception_type, exception_value, exception_traceback = sys.exc_info()
             exception_name = getattr(exception_type, '__name__', None)
             mensaje = f'{exception_name}: {exception_value}'
-            error = _ErrorPersonalizado(mensaje=mensaje, codigo=_C.ESTADO._500_ERROR, nivel_evento=_C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje=mensaje, codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error, True)
 
     # --------------------------------------------------
@@ -157,7 +157,7 @@ class ServidorApi:
         api.app_context().push()
         return api
 
-    def mapear_enrutadores(mi, api:Flask):
+    def mapear_microservicios(mi, api:Flask):
         import importlib
         ruta_backend = Path(os.getenv('DIR_BACKEND'))
         modulo_base = 'web_flask'
@@ -177,11 +177,11 @@ class ServidorApi:
                 print(e)
                 continue
 
-    def iniciar_servicio(mi, app:Flask, puerto:int, host:str=None):
-        if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == _C.ENTORNO.LOCAL:
+    def iniciar_servicio_web(mi, app:Flask, puerto:int, host:str=None):
+        if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == C.ENTORNO.LOCAL:
             ssl_cert=str(Path(os.getenv('SSL_CERT')))
             ssl_key=str(Path(os.getenv('SSL_KEY')))
-            if os.getenv('ENTORNO') == _C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
                 app.config['TEMPLATES_AUTO_RELOAD'] = True
                 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
             app.app_context().push()
@@ -198,7 +198,7 @@ class ServidorApi:
 # --------------------------------------------------
 # Clase: ComunicadorWeb
 # --------------------------------------------------
-class ComunicadorWeb(_Comunicador):
+class ComunicadorWeb(Comunicador):
 
     # --------------------------------------------------
     # Métodos privados
@@ -255,7 +255,7 @@ class ComunicadorWeb(_Comunicador):
 # --------------------------------------------------
 # Clase: AutenticadorWeb
 # --------------------------------------------------
-class AutenticadorWeb(_Autenticador):
+class AutenticadorWeb(Autenticador):
 
     # --------------------------------------------------
     # Métodos privados
@@ -266,9 +266,9 @@ class AutenticadorWeb(_Autenticador):
             if mi.api_keys and api_key_header and api_key_header in mi.api_keys:
                 return mi.api_keys.get(api_key_header)
         mensaje = 'API-key-invalida'
-        raise _ErrorAutenticacion(
+        raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO._403_NO_AUTORIZADO,
+            codigo=C.ESTADO._403_NO_AUTORIZADO,
         )
     
     def _validar_token(mi) -> str:
@@ -281,9 +281,9 @@ class AutenticadorWeb(_Autenticador):
                     mensaje = 'Token-invalido'
                 else:
                     return mi.token
-        raise _ErrorAutenticacion(
+        raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=_C.ESTADO._401_NO_AUTENTICADO,
+            codigo=C.ESTADO._401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
 
