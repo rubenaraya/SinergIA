@@ -170,4 +170,5 @@ _app*.py
 _prueba*.*
 main.py
 setup.py
+pyproject.toml
 docs/~*.~vsd

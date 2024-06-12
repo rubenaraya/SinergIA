@@ -77,7 +77,7 @@ class DiscoLocal(_Disco):
     def eliminar(mi, nombre:str) -> bool:
         try:
             path = (mi._path / Path(nombre))
-            if path.exists() and path.is_file:
+            if path.exists() and path.is_file():
                 path.unlink()
                 return True
             else:
@@ -161,7 +161,7 @@ class DiscoLocal(_Disco):
     def eliminar_carpeta(mi, nombre:str) -> bool:
         try:
             path = (mi._path / Path(nombre))
-            if path.exists() and path.is_dir:
+            if path.exists() and path.is_dir():
                 path.rmdir()
                 return True
             else:
@@ -185,7 +185,7 @@ class DiscoLocal(_Disco):
         path = (mi._path / Path(nombre))
         if path.exists() and path.is_dir():
             for archivo in path.rglob(f'*.{extension}'):
-                if archivo.is_file:
+                if archivo.is_file():
                     lista.append(_Archivo(
                         nombre=archivo.name,
                         ruta=archivo.as_posix(),

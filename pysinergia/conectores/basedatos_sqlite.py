@@ -39,8 +39,9 @@ class BasedatosSqlite(_Basedatos):
                 mi.conexion = sqlite3.connect(str(ruta_basedatos.resolve()))
                 mi.conexion.enable_load_extension(True)
                 ruta_lib_sqlean = os.getenv('RUTA_LIB_SQLEAN')
-                extension = Path(f'{ruta_lib_sqlean}/regexp')
-                mi.conexion.load_extension(str(extension.resolve()))
+                extension_lib_sqlean = Path(f'{ruta_lib_sqlean}/regexp').resolve()
+                if extension_lib_sqlean.is_file():
+                    mi.conexion.load_extension(str(extension_lib_sqlean))
                 return True
         return False
 

@@ -87,6 +87,7 @@ class Constantes:
         OGG = 'audio/ogg'
         WAV = 'audio/wav'
         SVG = 'image/svg+xml'
+        MD = 'text/markdown'
 
     class CONVERSION:
         PDF = 'PDF'
@@ -252,6 +253,8 @@ class ErrorPersonalizado(Exception):
 
 
 # --------------------------------------------------
-# Configuracion de FFMPEG
-os.environ['PATH'] = str(Path(os.getenv('RUTA_LIB_FFMPEG')).resolve()) + os.pathsep + os.getenv('PATH')
+# Ubicación de biblioteca FFMPEG
+ruta_lib_ffmpeg = Path(os.getenv('RUTA_LIB_FFMPEG')).resolve()
+if ruta_lib_ffmpeg.is_dir():
+    os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
 

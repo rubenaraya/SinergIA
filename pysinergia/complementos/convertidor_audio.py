@@ -18,8 +18,6 @@ from pysinergia.complementos.exportador import (
 # --------------------------------------------------
 class ConvertidorAudio:
     def __init__(mi, ruta_base:str):
-        ruta_lib_ffmpeg = os.getenv('RUTA_LIB_FFMPEG')
-        AudioSegment.converter = f'{ruta_lib_ffmpeg}/ffmpeg'
         mi.ruta_base:str = ruta_base
         mi.opciones = {
             'tiempo_maximo': 30 * _Constantes.TIEMPO.MIN,
@@ -45,6 +43,8 @@ class ConvertidorAudio:
             tiempo_maximo = opciones.get('tiempo_maximo')
             bitrate = opciones.get('bitrate')
             canales = opciones.get('canales')
+            ruta_lib_ffmpeg = os.getenv('RUTA_LIB_FFMPEG')
+            AudioSegment.converter = f'{ruta_lib_ffmpeg}/ffmpeg'
             audio:AudioSegment = AudioSegment.from_file(path_origen)
             if canales == 1:
                 audio = audio.split_to_mono()[0]

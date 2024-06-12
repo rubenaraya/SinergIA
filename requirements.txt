@@ -6,28 +6,24 @@ Flask-Pydantic
 # FastAPI
 fastapi
 
-# Otros
+# Basicos
 pydantic-settings
 PyJWT
 pytz
-
-# Convertidores
 Pillow
+
+# Complementos
 openpyxl
 pandas
 pandoc
 weasyprint
 pydub
 
-# Bases de datos
+# Conectores
 mysql-connector-python
-
-# Vectores + Cargadores +LLM
 chromadb
 faiss-cpu
-openai
 openai[datalib]
 langchain
 PyMuPDF
 docx2txt
-

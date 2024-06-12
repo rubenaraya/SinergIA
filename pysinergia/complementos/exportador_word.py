@@ -27,12 +27,14 @@ class ExportadorWord(_Exportador):
             ruta_html.write_text(contenido, encoding='utf-8')
             dir_pandoc = Path(os.getenv('RUTA_LIB_PANDOC')).resolve()
             ruta_pandoc = dir_pandoc / 'pandoc'
-            subprocess.run([str(ruta_pandoc), str(ruta_html), '-o', str(ruta_docx)])
-            docx_bytes = ruta_docx.read_bytes()
-            ruta_html.unlink()
-            ruta_docx.unlink()
-            docx_io = io.BytesIO(docx_bytes)
-            return docx_io
+            if ruta_pandoc.is_file():
+                subprocess.run([str(ruta_pandoc), str(ruta_html), '-o', str(ruta_docx)])
+                docx_bytes = ruta_docx.read_bytes()
+                ruta_html.unlink()
+                ruta_docx.unlink()
+                docx_io = io.BytesIO(docx_bytes)
+                return docx_io
+            return None
         except Exception as e:
             raise _ErrorExportador(
                 mensaje='Error-en-exportador-Word',
