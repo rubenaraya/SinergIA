@@ -3,7 +3,13 @@ requires = ["setuptools >= 65.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["pysinergia"]
+packages = [
+    "pysinergia",
+    "pysinergia.interfaces",
+    "pysinergia.conectores",
+    "pysinergia.complementos",
+    "pysinergia._dependencias",
+]
 
 [project]
 name = "PySinergIA"
