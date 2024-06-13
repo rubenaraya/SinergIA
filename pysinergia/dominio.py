@@ -34,13 +34,7 @@ class Peticion(BaseModel):
     def agregar_contexto(mi, contexto:dict={}):
         mi.contexto = contexto
 
-    def diccionario(mi) -> dict:
-        return mi.model_dump(by_alias=True, mode='json')
-
-    def json(mi) -> str:
-        return mi.model_dump_json(by_alias=True)
-
-    def exportar(mi) -> dict:
+    def serializar(mi) -> dict:
         resultado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():

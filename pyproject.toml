@@ -70,6 +70,14 @@ complementos = [
     "weasyprint",
     "pydub",
 ]
+fastapi = [
+    "fastpi",
+]
+flask = [
+    "flask",
+    "flask-cors",
+    "Flask-Pydantic",
+]
 
 [project.urls]
 Homepage = "https://github.com/rubenaraya/PySinergIA"

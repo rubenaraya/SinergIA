@@ -93,17 +93,17 @@ class CasosDeUsoParticipantes(CasosDeUso):
 
     def _agregar_participante(mi, peticion:dict):
         mi.repositorio.insertar_nuevo_participante(peticion)
-        return {"accion": "_agregar_participante", "operacion": "insertar_nuevo_participante", "modelo": "ModeloNuevoParticipante", "peticion": peticion.diccionario()}
+        return {"peticion": peticion}
 
     def _actualizar_participante(mi, peticion:dict):
         mi.repositorio.actualizar_participante_por_id(peticion)
-        return {"accion": "_actualizar_participante", "operacion": "actualizar_participante_por_id", "modelo": "ModeloEditarParticipante", "peticion": peticion.diccionario()}
+        return {"peticion": peticion}
 
     def _eliminar_participante(mi, peticion:dict):
         mi.repositorio.eliminar_participante_por_id(peticion)
-        return {"accion": "_eliminar_participante", "operacion": "eliminar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
+        return {"peticion": peticion}
 
     def _ver_participante(mi, peticion:dict):
         mi.repositorio.recuperar_participante_por_id(peticion)
-        return {"accion": "_ver_participante", "operacion": "recuperar_participante_por_id", "modelo": "PeticionParticipante", "peticion": peticion.diccionario()}
+        return {"peticion": peticion}
 
