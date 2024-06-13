@@ -34,66 +34,84 @@ class Peticion(BaseModel):
         mi.contexto = contexto
 
     def serializar(mi) -> dict:
-        resultado = {}
+        serializado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
             if field_name not in ['contexto']:
-                campo = field.serialization_alias
+                entrada = field.validation_alias if field.validation_alias else ''
+                salida = field.serialization_alias if field.serialization_alias else ''
                 valor = datos.get(field_name)
                 if field.json_schema_extra:
-                    resultado[campo] = {
-                        'campo': campo,
-                        'entrada': field.validation_alias,
-                        'etiqueta': field.title,
+                    serializado[field_name] = {
+                        'campo': field_name,
+                        'entrada': entrada or '',
+                        'salida': salida or '',
+                        'etiqueta': field.title or '',
                         'filtro': field.json_schema_extra.get('filtro', ''),
                         'orden': field.json_schema_extra.get('orden', ''),
                         'entidad': field.json_schema_extra.get('entidad', ''),
-                        'valor': valor
+                        'valor': valor or ''
                     }
                 else:
-                    resultado[campo] = valor
+                    serializado[field_name] = valor
             else:
-                resultado[f'_{field_name}'] = datos.get(field_name)
-        return resultado
+                serializado[f'_{field_name}'] = datos.get(field_name)
+        return serializado
 
 # --------------------------------------------------
 # ClaseModelo: Procedimiento
 # --------------------------------------------------
 class Procedimiento(BaseModel):
-    origen_datos: Optional[str] | None = ''
-    solicitud_datos: Optional[dict] | None = {}
+    modelo_origen_datos: Optional[str] | None = ''
+    modelo_solicitud: Optional[dict] | None = {}
+    modelo_roles: Optional[str] | None = ''
+
+    def _autorizar(mi, permisos:str) -> bool:
+        if permisos == '':
+            return True
+        if permisos and mi.modelo_roles:
+            if permisos == '*':
+                return True
+            eval_permisos = set(permisos.split(','))
+            eval_modelo_roles = set(mi.modelo_roles.split(','))
+            if bool(eval_permisos & eval_modelo_roles):
+                return True
+        return False
 
     def serializar(mi) -> dict:
-        resultado = {}
+        serializado:dict = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['solicitud_datos','origen_datos']:
-                campo = field.validation_alias if field.validation_alias else field.serialization_alias
+            if field_name not in ['modelo_solicitud','modelo_origen_datos','modelo_roles']:
+                entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 if field.json_schema_extra:
-                    resultado[campo] = {
-                        'campo': campo,
-                        'salida': salida,
-                        'etiqueta': field.title,
-                        'formato': field.json_schema_extra.get('formato', 'text'),
-                        'entidad': field.json_schema_extra.get('entidad', ''),
-                    }
+                    permisos = field.json_schema_extra.get('permisos', '')
+                    if mi._autorizar(permisos=permisos):
+                        serializado[field_name] = {
+                            'campo': field_name,
+                            'entrada': entrada or '',
+                            'salida': salida or '',
+                            'etiqueta': field.title or '',
+                            'formato': field.json_schema_extra.get('formato', 'text'),
+                            'entidad': field.json_schema_extra.get('entidad', ''),
+                        }
             else:
-                resultado[f'_{field_name}'] = datos.get(field_name)
-        return resultado
+                serializado[f'_{field_name}'] = datos.get(field_name)
+        return serializado
 
 # --------------------------------------------------
 # ClaseModelo: Respuesta
 # --------------------------------------------------
 class Respuesta(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict()
 
     T: object | None = None
-    codigo: Optional[int] | None = Constantes.ESTADO._200_EXITO
-    conclusion: Optional[str] | None = Constantes.CONCLUSION.EXITO
-    mensaje: Optional[str] | None = ''
-    titulo:str = ''
-    descripcion:str = ''
+    codigo: Optional[int] | None = None
+    conclusion: Optional[str] | None = None
+    mensaje: Optional[str] | None = None
+    titulo: Optional[str] | None = None
+    descripcion: Optional[str] | None = None
     fecha_actual:str = ''
     hora_actual:str = ''
     detalles:list = []
@@ -109,7 +127,11 @@ class Respuesta(BaseModel):
             if diccionario and isinstance(diccionario, dict):
                 return {k: v for k, v in diccionario.items() if isinstance(v, (str, int, float, bool))}
             return {}
-
+        
+        if not valores.codigo:
+            valores.codigo = Constantes.ESTADO._200_EXITO
+        if not valores.conclusion:
+            valores.conclusion = Constantes.CONCLUSION.EXITO
         if valores.T:
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
@@ -118,23 +140,19 @@ class Respuesta(BaseModel):
             if _:
                 datos = ChainMap(_filtrar_diccionario(valores.resultado), _filtrar_diccionario(valores.metadatos), fechahora)
                 try:
-                    valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else ''
-                    valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else ''
+                    valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else None
+                    valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else None
                     if isinstance(valores.descripcion, str):
-                        valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else ''
+                        valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else None
                 except Exception as e:
                     print(e)
         return valores
 
     def diccionario(mi) -> Dict:
-        mi.T = None
-        diccionario = mi.model_dump(mode='json')
-        diccionario.pop('T')
-        return diccionario
+        return mi.model_dump(mode='json', exclude_none=True, exclude_unset=True, exclude=('T','web','sesion','fecha'))
 
     def json(mi) -> str:
-        mi.T = None
-        return mi.model_dump_json()
+        return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude={'T','web','sesion','fecha'})
 
 # --------------------------------------------------
 # ClaseModelo: Resultado

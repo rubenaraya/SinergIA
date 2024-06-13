@@ -3,6 +3,7 @@
 from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
+    RegistradorLogs,
 )
 from pysinergia.dominio import (
     ArchivoCargado,
@@ -31,6 +32,7 @@ from pysinergia.web import (
 __all__ = [
     'C',
     'ErrorPersonalizado',
+    'RegistradorLogs',
     'ArchivoCargado',
     'AudioCargado',
     'DocumentoCargado',

@@ -24,7 +24,7 @@ class CasosDeUso(ABC):
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         raise NotImplementedError()
 
-    def autorizar_roles(mi, roles:str, rechazar:bool=False) -> bool:
+    def autorizar_acceso(mi, roles:str, rechazar:bool=False) -> bool:
         if roles == '':
             return True
         credenciales:str = mi.sesion.get('roles')

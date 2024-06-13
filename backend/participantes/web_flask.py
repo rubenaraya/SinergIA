@@ -17,7 +17,8 @@ from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
     ModeloNuevoParticipante,
-    ModeloEditarParticipante,
+    PeticionActualizarParticipante,
+    ProcedimientoActualizarParticipante,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -80,7 +81,7 @@ def agregar_participante(body:ModeloNuevoParticipante):
     return jsonify(respuesta), C.ESTADO._201_CREADO
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
-def actualizar_participante(id, body:ModeloEditarParticipante):
+def actualizar_participante(id, body:PeticionActualizarParticipante):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
@@ -273,4 +274,32 @@ def audio():
     convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)
     respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
     return jsonify(respuesta)
+
+@enrutador.route('/sql', methods=['GET'])
+def sql():
+    from pysinergia.conectores.basedatos_mysql import BasedatosMysql as Basedatos
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idioma, sesion)
+    peticion = PeticionActualizarParticipante(
+        contexto=comunicador.transferir_contexto(),
+        id=1,
+        nombre='Rubén Araya Tagle',
+        email='raraya@masexperto.com',
+        estado='Activo',
+    )
+    procedimiento = ProcedimientoActualizarParticipante(
+        modelo_solicitud=peticion.serializar(),
+        modelo_roles=sesion.get('roles'),
+    ).serializar()
+    basedatos = Basedatos()
+    basedatos.conectar(configuracion.basedatos())
+    instruccion, parametros = basedatos.generar_comando(
+        plantilla=basedatos.INSTRUCCION.UPDATE_POR_ID,
+        procedimiento=procedimiento
+    )
+    print(instruccion)
+    print(parametros)
+
+    return jsonify(procedimiento)
 

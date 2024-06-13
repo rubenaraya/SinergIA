@@ -8,8 +8,8 @@ from abc import (ABCMeta, abstractmethod)
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
+    PeticionActualizarParticipante,
     ModeloNuevoParticipante,
-    ModeloEditarParticipante,
 )
 
 # --------------------------------------------------
@@ -19,7 +19,7 @@ class I_RepositorioParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por RepositorioParticipantes
 
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi, solicitud:dict) -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict, modelo_roles:str='') -> dict:
         ...
 
     @abstractmethod
@@ -78,17 +78,17 @@ class CasosDeUsoParticipantes(CasosDeUso):
     # Métodos privados
 
     def _buscar_participantes(mi, solicitud:dict):
-        mi.autorizar_roles('Ejecutivo,Usuario', rechazar=True)
-        resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud)
-        metadatos = mi.agregar_metadatos({
-            'nombre_descarga': 'documento de prueba',
-            'titulo': 'Listado de Pruebas',
-            'carpeta_guardar': 'creados'
-        })
         entrega:dict = solicitud.get('_contexto', {})
-        entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}'
-        entrega['resultado'] = resultado
-        entrega['metadatos'] = metadatos
+        if mi.autorizar_acceso(roles='Ejecutivo,Usuario', rechazar=True):
+            resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, modelo_roles=mi.sesion.get('roles'))
+            metadatos = mi.agregar_metadatos({
+                'nombre_descarga': 'documento de prueba',
+                'titulo': 'Listado de Pruebas',
+                'carpeta_guardar': 'creados'
+            })
+            entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}'
+            entrega['resultado'] = resultado
+            entrega['metadatos'] = metadatos
         return entrega
 
     def _agregar_participante(mi, solicitud:dict):
