@@ -82,16 +82,14 @@ class CasosDeUsoParticipantes(CasosDeUso):
         resultado = mi.repositorio.recuperar_lista_participantes_todos(peticion)
         metadatos = mi.agregar_metadatos({
             'nombre_descarga': 'documento de prueba',
-            'titulo': 'Listado de Pruebas',
+            'titulo': 'Listado de Pruebas OK',
             'carpeta_guardar': 'creados'
         })
-        return {
-            "accion": "_buscar_participantes",
-            "operacion": "recuperar_lista_participantes_todos",
-            "modelo": "PeticionBuscarParticipantes",
-            "resultado": resultado,
-            "metadatos": metadatos
-        }
+        entrega:dict = peticion.get('_contexto', {})
+        entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}'
+        entrega['resultado'] = resultado
+        entrega['metadatos'] = metadatos
+        return entrega
 
     def _agregar_participante(mi, peticion:dict):
         mi.repositorio.insertar_nuevo_participante(peticion)

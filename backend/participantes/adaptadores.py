@@ -35,22 +35,11 @@ class ControladorParticipantes(Controlador):
 
     def buscar_participantes(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
         casosdeuso = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
-
-
-        resultado = casosdeuso.solicitar_accion(
-            CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES,
-            peticion.exportar()
-        )
-        resultado.update(mi.comunicador.transferir_contexto())
-
-
-        respuesta = Resultado(**resultado,
-            titulo='{titulo}',
-            descripcion='Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}',
-            T=mi.comunicador.traspasar_traductor()
-        ).diccionario()
+        peticion.agregar_contexto(mi.comunicador.transferir_contexto())
+        resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.exportar())
+        respuesta = Resultado(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
         recurso = Recurso(conversion=mi.comunicador.elegir_conversion(conversion))
-        nombre_descarga = mi.comunicador.obtener_nombre_descarga(respuesta, recurso.extension)
+        nombre_descarga = mi.comunicador.generar_nombre_descarga(respuesta, recurso.extension)
         encabezados = mi.comunicador.generar_encabezados(tipo_mime=recurso.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
         cuerpo = mi.comunicador.exportar_contenido(conversion=recurso.conversion, info=respuesta, guardar=guardar)
         return (cuerpo, encabezados)

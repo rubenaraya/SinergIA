@@ -252,7 +252,7 @@ class Comunicador(ABC, I_Comunicador):
         except Exception as e:
             raise e
 
-    def obtener_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
+    def generar_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'metadatos' in info:
             metadatos:dict = info['metadatos']
             nombre = mi.disco.normalizar_nombre(metadatos.get('nombre_descarga', ''), extension, largo, auto)

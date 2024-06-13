@@ -28,9 +28,10 @@ from pysinergia import Constantes
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
+    origen_datos: Optional[str] | None = ''
     contexto: Optional[dict] | None = {}
 
-    def recibir_contextp(mi, contexto:dict={}):
+    def agregar_contexto(mi, contexto:dict={}):
         mi.contexto = contexto
 
     def diccionario(mi) -> dict:
@@ -41,10 +42,9 @@ class Peticion(BaseModel):
 
     def exportar(mi) -> dict:
         resultado = {}
-        origen_datos = 'origen_datos'
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name != origen_datos:
+            if field_name not in ['contexto','origen_datos']:
                 campo = field.serialization_alias
                 valor = datos.get(field_name)
                 if field.json_schema_extra:
@@ -62,7 +62,7 @@ class Peticion(BaseModel):
                 else:
                     resultado[campo] = valor
             else:
-                resultado[f'_{origen_datos}'] = datos.get(field_name)
+                resultado[f'_{field_name}'] = datos.get(field_name)
         return resultado
 
 
