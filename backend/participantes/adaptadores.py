@@ -17,7 +17,7 @@ from .servicio import (
     CasosDeUsoParticipantes as CasosDeUso, 
     I_RepositorioParticipantes,
 )
-from .dominio import RequerimientoBuscarParticipantes
+from .dominio import ProcedimientoBuscarParticipantes
 
 # --------------------------------------------------
 # ClaseModelo: ConfigParticipantes
@@ -94,10 +94,10 @@ class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
 
     def recuperar_lista_participantes_todos(mi, solicitud:dict) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        requerimiento = RequerimientoBuscarParticipantes(solicitud=solicitud)
+        procedimiento = ProcedimientoBuscarParticipantes(solicitud_datos=solicitud).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
-            modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-            requerimiento=solicitud
+            plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
+            procedimiento=procedimiento
         )
         datos, total = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()

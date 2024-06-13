@@ -28,7 +28,6 @@ from pysinergia import Constantes
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
-    origen_datos: Optional[str] | None = ''
     contexto: Optional[dict] | None = {}
 
     def agregar_contexto(mi, contexto:dict={}):
@@ -38,7 +37,7 @@ class Peticion(BaseModel):
         resultado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['contexto','origen_datos']:
+            if field_name not in ['contexto']:
                 campo = field.serialization_alias
                 valor = datos.get(field_name)
                 if field.json_schema_extra:
@@ -46,7 +45,6 @@ class Peticion(BaseModel):
                         'campo': campo,
                         'entrada': field.validation_alias,
                         'etiqueta': field.title,
-                        'formato': field.json_schema_extra.get('formato', 'text'),
                         'filtro': field.json_schema_extra.get('filtro', ''),
                         'orden': field.json_schema_extra.get('orden', ''),
                         'entidad': field.json_schema_extra.get('entidad', ''),
@@ -59,22 +57,25 @@ class Peticion(BaseModel):
         return resultado
 
 # --------------------------------------------------
-# ClaseModelo: Requerimiento
+# ClaseModelo: Procedimiento
 # --------------------------------------------------
-class Requerimiento(BaseModel):
+class Procedimiento(BaseModel):
     origen_datos: Optional[str] | None = ''
-    solicitud: Optional[dict] | None = {}
+    solicitud_datos: Optional[dict] | None = {}
 
     def serializar(mi) -> dict:
         resultado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['solicitud','origen_datos']:
-                campo = field.alias
+            if field_name not in ['solicitud_datos','origen_datos']:
+                campo = field.validation_alias if field.validation_alias else field.serialization_alias
+                salida = field.serialization_alias if field.serialization_alias else ''
                 if field.json_schema_extra:
                     resultado[campo] = {
                         'campo': campo,
+                        'salida': salida,
                         'etiqueta': field.title,
+                        'formato': field.json_schema_extra.get('formato', 'text'),
                         'entidad': field.json_schema_extra.get('entidad', ''),
                     }
             else:

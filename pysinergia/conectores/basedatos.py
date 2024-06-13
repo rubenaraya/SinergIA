@@ -42,11 +42,11 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_comando(mi, modelo:str, requerimiento:dict={}, id:str='') -> tuple:
+    def generar_comando(mi, plantilla:str, procedimiento:dict={}, id:str='') -> tuple:
         ...
 
     @abstractmethod
-    def generar_consulta(mi, modelo:str, requerimiento:dict={}) -> tuple:
+    def generar_consulta(mi, plantilla:str, procedimiento:dict={}) -> tuple:
         ...
 
 
@@ -468,17 +468,18 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.conexion.commit()
         return total
 
-    def generar_consulta(mi, modelo:str=None, requerimiento:dict={}) -> tuple:
-        if not modelo or not requerimiento:
+    def generar_consulta(mi, plantilla:str=None, procedimiento:dict={}) -> tuple:
+        if not plantilla or not procedimiento:
             return None
         mostrar:list[str] = []
         filtrar:list[str] = []
         ordenar:list[str] = []
-        pagina = int(requerimiento.get('pagina', 1))
-        maximo = int(requerimiento.get('maximo', 25))
-        origen_datos = str(requerimiento.get('_origen_datos', ''))
-        modelo = modelo.replace('{origen_datos}', origen_datos)
-        for clave, contenido in requerimiento.items():
+        solicitud_datos:dict = procedimiento.get('_solicitud_datos', {})
+        origen_datos = procedimiento.get('_origen_datos', '')
+        pagina = int(solicitud_datos.get('pagina', 1))
+        maximo = int(solicitud_datos.get('maximo', 25))
+        plantilla = plantilla.replace('{origen_datos}', origen_datos)
+        for clave, contenido in solicitud_datos.items():
             if isinstance(contenido, dict) and origen_datos and clave not in ['_contexto']:
                 campo = contenido.get('campo', clave)
                 entrada = contenido.get('entrada', '')
@@ -490,25 +491,34 @@ class Basedatos(ABC, I_ConectorBasedatos):
                     valor = ','.join(valor)
                 if entidad:
                     campo = f'{entidad}.{campo}'
-                campo_mostrar = f'{campo} as {entrada}' if entrada and campo != entrada else campo
-                mostrar.append(campo_mostrar)
                 if orden:
                     ordenar.append(f'{campo} {orden}')
                 if filtro and valor:
                     filtrado = mi._crear_filtro(filtro)(campo, valor)
                     if filtrado:
                         filtrar.append(filtrado)
+        for clave, contenido in procedimiento.items():
+            if isinstance(contenido, dict) and clave not in ['_origen_datos','_solicitud_datos']:
+                campo = contenido.get('campo', clave)
+                salida = contenido.get('salida', '')
+                entidad = contenido.get('entidad', '')
+                if entidad:
+                    campo = f'{entidad}.{campo}'
+                campo_mostrar = f'{campo} as {salida}' if salida and campo != salida else campo
+                mostrar.append(campo_mostrar)
         mostrar_texto = ', '.join(mostrar) if mostrar else '*'
+        plantilla = plantilla.replace('{mostrar}', mostrar_texto)
         filtrar_texto = ' AND '.join(filtrar) if filtrar else '1'
+        plantilla = plantilla.replace('{filtrar}', filtrar_texto)
         ordenar_texto = ' ORDER BY ' + ', '.join(ordenar) if ordenar else ''
-        modelo = modelo.replace('{mostrar}', mostrar_texto)
-        modelo = modelo.replace('{filtrar}', filtrar_texto)
-        modelo = modelo.replace('{ordenar}', ordenar_texto)
-        return (modelo, pagina, maximo)
+        plantilla = plantilla.replace('{ordenar}', ordenar_texto)
+        return (plantilla, pagina, maximo)
 
-    def generar_comando(mi, modelo:str, requerimiento:dict={}, id:str='') -> tuple:
-        if not modelo or not requerimiento:
+    def generar_comando(mi, plantilla:str, procedimiento:dict={}, id:str='') -> tuple:
+        if not plantilla or not procedimiento:
             return None
+        solicitud_datos:dict = procedimiento.get('_solicitud_datos', {})
+        origen_datos = procedimiento.get('_origen_datos', '')
 
         def _formato_text(valor):
             return str(valor)
@@ -549,10 +559,11 @@ class Basedatos(ABC, I_ConectorBasedatos):
         parametros:list = []
         campos:list[str] = []
         marcas:list[str] = []
-        origen_datos = str(requerimiento.get('_origen_datos', ''))
-        modelo = modelo.replace('{origen_datos}', origen_datos)
-        modelo = modelo.replace('{id}', f"'{str(id)}'")
-        for clave, contenido in requerimiento.items():
+        plantilla = plantilla.replace('{origen_datos}', origen_datos)
+        plantilla = plantilla.replace('{id}', f"'{str(id)}'")
+
+        """TODO: Corregir para que las definiciones las tome del procedimiento y los valores de la peticion"""
+        for clave, contenido in procedimiento.items():
             if isinstance(contenido, dict) and clave != 'id' and origen_datos:
                 campo = contenido.get('campo', clave)
                 entidad = contenido.get('entidad', '')
@@ -563,18 +574,19 @@ class Basedatos(ABC, I_ConectorBasedatos):
                 if not entidad or entidad == origen_datos:
                     if valor and formato:
                         valor = formatos.get(formato)(valor)
-                if modelo.startswith('SELECT '):
+                if plantilla.startswith('SELECT '):
                     campos.append(campo)
-                elif modelo.startswith('UPDATE ') and valor:
+                elif plantilla.startswith('UPDATE ') and valor:
                     campos.append(f'{campo}={mi.marca}')
                     parametros.append(valor)
-                elif modelo.startswith('INSERT ') and valor:
+                elif plantilla.startswith('INSERT ') and valor:
                     campos.append(campo)
                     marcas.append(mi.marca)
                     parametros.append(valor)
+
         lista_campos = ', '.join(campos) if campos else ''
         lista_marcas = ', '.join(marcas) if marcas else ''
-        modelo = modelo.replace('{lista_campos}', lista_campos)
-        modelo = modelo.replace('{lista_marcas}', lista_marcas)
-        return (modelo, parametros)
+        plantilla = plantilla.replace('{lista_campos}', lista_campos)
+        plantilla = plantilla.replace('{lista_marcas}', lista_marcas)
+        return (plantilla, parametros)
 
