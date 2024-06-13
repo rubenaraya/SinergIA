@@ -1,9 +1,7 @@
 # pysinergia\adaptadores.py
 
 from abc import (ABC, ABCMeta, abstractmethod)
-from typing import (
-    List, Dict
-)
+from typing import (List, Dict)
 import json
 
 # --------------------------------------------------
@@ -122,6 +120,8 @@ class Configuracion(BaseSettings):
     # Microservicio especifico
     MICROSERVICIO: str = Field(default='')
     RUTA_MICROSERVICIO: str = Field(default='')
+    URL_MICROSERVICIO: str = ''
+    PREFIJO_MICROSERVICIO: str = ''
     BASEDATOS_FUENTE: str = ''
     BASEDATOS_CLASE: str = ''
     BASEDATOS_NOMBRE: str = ''
@@ -238,6 +238,8 @@ class Configuracion(BaseSettings):
             'APLICACION': mi.APLICACION,
             'MICROSERVICIO': mi.MICROSERVICIO,
             'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
+            'URL_MICROSERVICIO': mi.URL_MICROSERVICIO,
+            'PREFIJO_MICROSERVICIO': mi.PREFIJO_MICROSERVICIO,
             'RUTA_RAIZ': mi.RUTA_RAIZ,
             'RUTA_TEMP': mi.RUTA_TEMP,
             'RUTA_PLANTILLAS': mi.RUTA_PLANTILLAS,
@@ -267,7 +269,9 @@ class Configuracion(BaseSettings):
             'ZONA_HORARIA': mi.ZONA_HORARIA,
             'FORMATO_FECHA': mi.FORMATO_FECHA,
         })
-
+    def iniciar(mi):
+        mi.URL_MICROSERVICIO = f'/{mi.APP_GLOBAL}/{mi.APLICACION}'
+        mi.PREFIJO_MICROSERVICIO = f'{mi.RAIZ_GLOBAL}/{mi.APLICACION}'
 
 # --------------------------------------------------
 # Clase: Repositorio

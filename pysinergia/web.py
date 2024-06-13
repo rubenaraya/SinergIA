@@ -419,6 +419,7 @@ def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_apl
         if archivo.exists():
             valores_configuracion.update(dotenv_values(archivo))
     configuracion:Configuracion = modelo_base(**valores_configuracion)
+    configuracion.iniciar()
     return configuracion
 
 

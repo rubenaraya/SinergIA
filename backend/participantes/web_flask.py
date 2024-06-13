@@ -35,12 +35,12 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}/login'
+    url_login=f'{configuracion.URL_MICROSERVICIO}/login'
 )
 enrutador = Blueprint(
     name=configuracion.MICROSERVICIO,
     import_name=__name__,
-    url_prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
+    url_prefix=f'{configuracion.PREFIJO_MICROSERVICIO}'
 )
 
 # --------------------------------------------------

@@ -21,7 +21,7 @@ class CasosDeUso(ABC):
         mi.repositorio = repositorio
         mi.sesion:dict = sesion
 
-    def solicitar_accion(mi, accion:ACCIONES, peticion:dict) -> dict:
+    def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         raise NotImplementedError()
 
     def autorizar_roles(mi, roles:str, rechazar:bool=False) -> bool:

@@ -42,11 +42,11 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_comando(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
+    def generar_comando(mi, modelo:str, requerimiento:dict={}, id:str='') -> tuple:
         ...
 
     @abstractmethod
-    def generar_consulta(mi, modelo:str, peticion:dict={}) -> tuple:
+    def generar_consulta(mi, modelo:str, requerimiento:dict={}) -> tuple:
         ...
 
 
@@ -468,32 +468,30 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.conexion.commit()
         return total
 
-    def generar_consulta(mi, modelo:str=None, peticion:dict={}) -> tuple:
-        if not modelo or not peticion:
+    def generar_consulta(mi, modelo:str=None, requerimiento:dict={}) -> tuple:
+        if not modelo or not requerimiento:
             return None
         mostrar:list[str] = []
         filtrar:list[str] = []
         ordenar:list[str] = []
-        pagina = int(peticion.get('pagina', 1))
-        maximo = int(peticion.get('maximo', 25))
-        origen_datos = str(peticion.get('_origen_datos', ''))
+        pagina = int(requerimiento.get('pagina', 1))
+        maximo = int(requerimiento.get('maximo', 25))
+        origen_datos = str(requerimiento.get('_origen_datos', ''))
         modelo = modelo.replace('{origen_datos}', origen_datos)
-        for clave, contenido in peticion.items():
-            if isinstance(contenido, dict) and origen_datos:
+        for clave, contenido in requerimiento.items():
+            if isinstance(contenido, dict) and origen_datos and clave not in ['_contexto']:
                 campo = contenido.get('campo', clave)
                 entrada = contenido.get('entrada', '')
                 entidad = contenido.get('entidad', '')
                 filtro = contenido.get('filtro', '')
                 orden = contenido.get('orden', '')
-                visible = contenido.get('visible', False)
                 valor = contenido.get('valor', '')
                 if isinstance(valor, list):
                     valor = ','.join(valor)
                 if entidad:
                     campo = f'{entidad}.{campo}'
                 campo_mostrar = f'{campo} as {entrada}' if entrada and campo != entrada else campo
-                if visible:
-                    mostrar.append(campo_mostrar)
+                mostrar.append(campo_mostrar)
                 if orden:
                     ordenar.append(f'{campo} {orden}')
                 if filtro and valor:
@@ -508,8 +506,8 @@ class Basedatos(ABC, I_ConectorBasedatos):
         modelo = modelo.replace('{ordenar}', ordenar_texto)
         return (modelo, pagina, maximo)
 
-    def generar_comando(mi, modelo:str, peticion:dict={}, id:str='') -> tuple:
-        if not modelo or not peticion:
+    def generar_comando(mi, modelo:str, requerimiento:dict={}, id:str='') -> tuple:
+        if not modelo or not requerimiento:
             return None
 
         def _formato_text(valor):
@@ -551,22 +549,21 @@ class Basedatos(ABC, I_ConectorBasedatos):
         parametros:list = []
         campos:list[str] = []
         marcas:list[str] = []
-        origen_datos = str(peticion.get('_origen_datos', ''))
+        origen_datos = str(requerimiento.get('_origen_datos', ''))
         modelo = modelo.replace('{origen_datos}', origen_datos)
         modelo = modelo.replace('{id}', f"'{str(id)}'")
-        for clave, contenido in peticion.items():
+        for clave, contenido in requerimiento.items():
             if isinstance(contenido, dict) and clave != 'id' and origen_datos:
                 campo = contenido.get('campo', clave)
                 entidad = contenido.get('entidad', '')
                 formato = contenido.get('formato', '')
-                visible = contenido.get('visible', False)
                 valor = contenido.get('valor', '')
                 if isinstance(valor, list):
                     valor = ','.join(valor)
                 if not entidad or entidad == origen_datos:
                     if valor and formato:
                         valor = formatos.get(formato)(valor)
-                if modelo.startswith('SELECT ') and visible:
+                if modelo.startswith('SELECT '):
                     campos.append(campo)
                 elif modelo.startswith('UPDATE ') and valor:
                     campos.append(f'{campo}={mi.marca}')

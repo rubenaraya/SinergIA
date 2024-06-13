@@ -50,7 +50,6 @@ class Peticion(BaseModel):
                         'filtro': field.json_schema_extra.get('filtro', ''),
                         'orden': field.json_schema_extra.get('orden', ''),
                         'entidad': field.json_schema_extra.get('entidad', ''),
-                        'visible': field.json_schema_extra.get('visible', False),
                         'valor': valor
                     }
                 else:
@@ -59,6 +58,28 @@ class Peticion(BaseModel):
                 resultado[f'_{field_name}'] = datos.get(field_name)
         return resultado
 
+# --------------------------------------------------
+# ClaseModelo: Requerimiento
+# --------------------------------------------------
+class Requerimiento(BaseModel):
+    origen_datos: Optional[str] | None = ''
+    solicitud: Optional[dict] | None = {}
+
+    def serializar(mi) -> dict:
+        resultado = {}
+        datos = mi.model_dump(mode='json', warnings=False)
+        for field_name, field in mi.model_fields.items():
+            if field_name not in ['solicitud','origen_datos']:
+                campo = field.alias
+                if field.json_schema_extra:
+                    resultado[campo] = {
+                        'campo': campo,
+                        'etiqueta': field.title,
+                        'entidad': field.json_schema_extra.get('entidad', ''),
+                    }
+            else:
+                resultado[f'_{field_name}'] = datos.get(field_name)
+        return resultado
 
 # --------------------------------------------------
 # ClaseModelo: Respuesta
@@ -123,7 +144,6 @@ class Resultado(Respuesta):
     url: dict | None = {}
     sesion: dict | None = {}
     esquemas: dict | None = {}
-
 
 # --------------------------------------------------
 # ClaseModelo: ArchivoCargado
@@ -263,7 +283,6 @@ class VideoCargado(ArchivoCargado):
     def peso_maximo(cls) -> int:
         return 25 * 1024 * 1024
 
-
 # --------------------------------------------------
 # ClaseModelo: Archivo
 # --------------------------------------------------
@@ -274,7 +293,6 @@ class Archivo(BaseModel):
     base: Optional[str] = ''
     extension: Optional[str] = ''
     peso: Optional[int] = 0
-
 
 # --------------------------------------------------
 # ClaseModelo: Recurso

@@ -35,9 +35,9 @@ comunicador = ComunicadorWeb(
 )
 autenticador = AutenticadorWeb(
     configuracion.autenticacion(),
-    url_login=f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}/login'
+    url_login=f'{configuracion.URL_MICROSERVICIO}/login'
 )
-enrutador = APIRouter(prefix=f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}')
+enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
 
 # --------------------------------------------------
 # Rutas del Microservicio personalizado

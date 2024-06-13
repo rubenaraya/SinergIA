@@ -17,6 +17,7 @@ from .servicio import (
     CasosDeUsoParticipantes as CasosDeUso, 
     I_RepositorioParticipantes,
 )
+from .dominio import RequerimientoBuscarParticipantes
 
 # --------------------------------------------------
 # ClaseModelo: ConfigParticipantes
@@ -91,28 +92,29 @@ class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi, peticion:dict) -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
+        requerimiento = RequerimientoBuscarParticipantes(solicitud=solicitud)
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
             modelo=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-            peticion=peticion
+            requerimiento=solicitud
         )
         datos, total = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
-    def recuperar_lista_participantes_filtrados(mi, peticion:dict) -> dict:
+    def recuperar_lista_participantes_filtrados(mi, solicitud:dict) -> dict:
         ...
 
-    def recuperar_participante_por_id(mi, peticion:dict) -> dict:
+    def recuperar_participante_por_id(mi, solicitud:dict) -> dict:
         ...
 
-    def insertar_nuevo_participante(mi, peticion:dict) -> dict:
+    def insertar_nuevo_participante(mi, solicitud:dict) -> dict:
         ...
 
-    def actualizar_participante_por_id(mi, peticion:dict) -> dict:
+    def actualizar_participante_por_id(mi, solicitud:dict) -> dict:
         ...
 
-    def eliminar_participante_por_id(mi, peticion:dict) -> dict:
+    def eliminar_participante_por_id(mi, solicitud:dict) -> dict:
         ...
 
