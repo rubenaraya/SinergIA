@@ -16,9 +16,12 @@ from pysinergia._dependencias.web_flask import *
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
-    ModeloNuevoParticipante,
     PeticionActualizarParticipante,
+    PeticionAgregarParticipante,
     ProcedimientoActualizarParticipante,
+    ProcedimientoAgregarParticipante,
+    ProcedimientoEliminarParticipante,
+    ProcedimientoBuscarParticipantes,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -73,7 +76,7 @@ def ver_participante(id):
     return jsonify(respuesta)
 
 @enrutador.route('/participantes', methods=['POST'])
-def agregar_participante(body:ModeloNuevoParticipante):
+def agregar_participante(body:PeticionAgregarParticipante):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
@@ -282,15 +285,15 @@ def sql():
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
     peticion = PeticionActualizarParticipante(
-        contexto=comunicador.transferir_contexto(),
+        dto_contexto=comunicador.transferir_contexto(),
         id=1,
         nombre='Rubén Araya Tagle',
         email='raraya@masexperto.com',
         estado='Activo',
     )
     procedimiento = ProcedimientoActualizarParticipante(
-        modelo_solicitud=peticion.serializar(),
-        modelo_roles=sesion.get('roles'),
+        dto_solicitud_datos=peticion.serializar(),
+        dto_roles_usuario=sesion.get('roles'),
     ).serializar()
     basedatos = Basedatos()
     basedatos.conectar(configuracion.basedatos())

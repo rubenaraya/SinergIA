@@ -42,7 +42,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_comando(mi, plantilla:str, procedimiento:dict={}) -> tuple:
+    def generar_comando(mi, plantilla:str, procedimiento:dict={}, campo_id:str='id') -> tuple:
         ...
 
     @abstractmethod
@@ -474,13 +474,13 @@ class Basedatos(ABC, I_ConectorBasedatos):
         mostrar:list[str] = []
         filtrar:list[str] = []
         ordenar:list[str] = []
-        modelo_solicitud:dict = procedimiento.get('_modelo_solicitud', {})
-        modelo_origen_datos = procedimiento.get('_modelo_origen_datos', '')
-        pagina = int(modelo_solicitud.get('pagina', 1))
-        maximo = int(modelo_solicitud.get('maximo', 25))
-        plantilla = plantilla.replace('{origen_datos}', modelo_origen_datos)
-        for clave, contenido in modelo_solicitud.items():
-            if isinstance(contenido, dict) and modelo_origen_datos and clave not in ['_contexto']:
+        dto_solicitud_datos:dict = procedimiento.get('_dto_solicitud_datos', {})
+        dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
+        pagina = int(dto_solicitud_datos.get('pagina', 1))
+        maximo = int(dto_solicitud_datos.get('maximo', 25))
+        plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
+        for clave, contenido in dto_solicitud_datos.items():
+            if isinstance(contenido, dict) and dto_origen_datos and clave not in ['_dto_contexto']:
                 campo = contenido.get('campo', clave)
                 entrada = contenido.get('entrada', '')
                 salida = contenido.get('salida', '')
@@ -499,7 +499,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
                     if filtrado:
                         filtrar.append(filtrado)
         for clave, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and clave not in ['_modelo_origen_datos','_modelo_solicitud']:
+            if isinstance(contenido, dict) and clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_usuario']:
                 campo = clave
                 entrada = contenido.get('entrada', '')
                 salida = contenido.get('salida', '')
@@ -516,7 +516,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
         plantilla = plantilla.replace('{ordenar}', ordenar_texto)
         return (plantilla, pagina, maximo)
 
-    def generar_comando(mi, plantilla:str, procedimiento:dict={}) -> tuple:
+    def generar_comando(mi, plantilla:str, procedimiento:dict={}, campo_id:str='id') -> tuple:
         if not plantilla or not procedimiento:
             return None
 
@@ -559,22 +559,22 @@ class Basedatos(ABC, I_ConectorBasedatos):
         parametros:list = []
         campos:list[str] = []
         marcas:list[str] = []
-        modelo_solicitud:dict = procedimiento.get('_modelo_solicitud', {})
-        modelo_origen_datos = procedimiento.get('_modelo_origen_datos', '')
-        plantilla = plantilla.replace('{origen_datos}', modelo_origen_datos)
+        dto_solicitud_datos:dict = procedimiento.get('_dto_solicitud_datos', {})
+        dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
+        plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
         for campo, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and campo not in ['_modelo_solicitud','_modelo_origen_datos','_modelo_roles'] and modelo_origen_datos:
+            if isinstance(contenido, dict) and campo not in ['_dto_solicitud_datos','_dto_origen_datos','_dto_roles_usuario'] and dto_origen_datos:
                 salida = contenido.get('salida', '')
                 entidad = contenido.get('entidad', '')
                 formato = contenido.get('formato', '')
-                valor = modelo_solicitud[campo].get('valor', '') if modelo_solicitud.get(campo) else ''
+                valor = dto_solicitud_datos[campo].get('valor', '') if dto_solicitud_datos.get(campo) else ''
                 if valor:
-                    if campo == 'id':
+                    if campo == campo_id:
                         plantilla = plantilla.replace('{id}', f"'{valor}'")
                     else:
                         if isinstance(valor, list):
                             valor = ','.join(valor)
-                        if not entidad or entidad == modelo_origen_datos:
+                        if not entidad or entidad == dto_origen_datos:
                             if valor and formato:
                                 valor = formatos.get(formato)(valor)
                         if plantilla.startswith('SELECT '):

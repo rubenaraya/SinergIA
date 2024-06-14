@@ -9,7 +9,10 @@ from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
     PeticionActualizarParticipante,
-    ModeloNuevoParticipante,
+    PeticionAgregarParticipante,
+    ProcedimientoAgregarParticipante,
+    ProcedimientoActualizarParticipante,
+    ProcedimientoEliminarParticipante,
 )
 
 # --------------------------------------------------
@@ -19,7 +22,7 @@ class I_RepositorioParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por RepositorioParticipantes
 
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi, solicitud:dict, modelo_roles:str='') -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_usuario:str='') -> dict:
         ...
 
     @abstractmethod
@@ -78,9 +81,9 @@ class CasosDeUsoParticipantes(CasosDeUso):
     # Métodos privados
 
     def _buscar_participantes(mi, solicitud:dict):
-        entrega:dict = solicitud.get('_contexto', {})
+        entrega:dict = solicitud.get('_dto_contexto', {})
         if mi.autorizar_acceso(roles='Ejecutivo,Usuario', rechazar=True):
-            resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, modelo_roles=mi.sesion.get('roles'))
+            resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, roles_usuario=mi.sesion.get('roles'))
             metadatos = mi.agregar_metadatos({
                 'nombre_descarga': 'documento de prueba',
                 'titulo': 'Listado de Pruebas',

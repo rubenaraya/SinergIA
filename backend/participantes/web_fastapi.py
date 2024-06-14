@@ -16,9 +16,12 @@ from pysinergia._dependencias.web_fastapi import *
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
-    ModeloNuevoParticipante,
     PeticionActualizarParticipante,
+    PeticionAgregarParticipante,
+    ProcedimientoAgregarParticipante,
     ProcedimientoActualizarParticipante,
+    ProcedimientoEliminarParticipante,
+    ProcedimientoBuscarParticipantes,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -71,7 +74,7 @@ async def ver_participante(request:Request, peticion:PeticionParticipante=Depend
 @enrutador.post('/participantes',
                 status_code=C.ESTADO._201_CREADO,
                 response_class=JSONResponse)
-async def agregar_participante(request:Request, peticion:ModeloNuevoParticipante=Body()):
+async def agregar_participante(request:Request, peticion:PeticionAgregarParticipante=Body()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)

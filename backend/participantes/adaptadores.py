@@ -92,9 +92,9 @@ class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi, solicitud:dict, modelo_roles:str='') -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_usuario:str='') -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        procedimiento = ProcedimientoBuscarParticipantes(modelo_solicitud=solicitud, modelo_roles=modelo_roles).serializar()
+        procedimiento = ProcedimientoBuscarParticipantes(dto_solicitud_datos=solicitud, dto_roles_usuario=roles_usuario).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
             plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             procedimiento=procedimiento

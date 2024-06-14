@@ -28,16 +28,16 @@ from pysinergia import Constantes
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
-    contexto: Optional[dict] | None = {}
+    dto_contexto: Optional[dict] | None = {}
 
     def agregar_contexto(mi, contexto:dict={}):
-        mi.contexto = contexto
+        mi.dto_contexto = contexto
 
     def serializar(mi) -> dict:
         serializado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['contexto']:
+            if field_name not in ['dto_contexto']:
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 valor = datos.get(field_name)
@@ -62,19 +62,19 @@ class Peticion(BaseModel):
 # ClaseModelo: Procedimiento
 # --------------------------------------------------
 class Procedimiento(BaseModel):
-    modelo_origen_datos: Optional[str] | None = ''
-    modelo_solicitud: Optional[dict] | None = {}
-    modelo_roles: Optional[str] | None = ''
+    dto_origen_datos: Optional[str] | None = ''
+    dto_solicitud_datos: Optional[dict] | None = {}
+    dto_roles_usuario: Optional[str] | None = ''
 
     def _autorizar(mi, permisos:str) -> bool:
         if permisos == '':
             return True
-        if permisos and mi.modelo_roles:
+        if permisos and mi.dto_roles_usuario:
             if permisos == '*':
                 return True
             eval_permisos = set(permisos.split(','))
-            eval_modelo_roles = set(mi.modelo_roles.split(','))
-            if bool(eval_permisos & eval_modelo_roles):
+            eval_roles_usuario = set(mi.dto_roles_usuario.split(','))
+            if bool(eval_permisos & eval_roles_usuario):
                 return True
         return False
 
@@ -82,7 +82,7 @@ class Procedimiento(BaseModel):
         serializado:dict = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['modelo_solicitud','modelo_origen_datos','modelo_roles']:
+            if field_name not in ['dto_solicitud_datos','dto_origen_datos','dto_roles_usuario']:
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 if field.json_schema_extra:

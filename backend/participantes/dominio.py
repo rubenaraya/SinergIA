@@ -28,13 +28,13 @@ class RolParticipante(str, Enum):
 # --------------------------------------------------
 class PeticionBuscarParticipantes(Peticion):
     id: Optional[int] | None = Field(
-        default=0,
+        default=None,
         serialization_alias='id',
         validation_alias='id',
         json_schema_extra={'orden':'DESC', 'entidad':''}
     )
-    alias: Optional[str] = Field(
-        default='',
+    alias: Optional[str] | None = Field(
+        default=None,
         title='Alias',
         description='Nombre del participante',
         max_length=25,
@@ -42,8 +42,8 @@ class PeticionBuscarParticipantes(Peticion):
         serialization_alias='alias',
         json_schema_extra={'filtro':'CONTIENE', 'orden':'', 'entidad':''}
     )
-    email: Optional[str] = Field(
-        default='',
+    email: Optional[str] | None = Field(
+        default=None,
         title='E-Mail',
         description='Correo-e del participante',
         max_length=50,
@@ -51,8 +51,8 @@ class PeticionBuscarParticipantes(Peticion):
         serialization_alias='email',
         json_schema_extra={'filtro':'CONTIENE', 'orden':'', 'entidad':''}
     )
-    estado: Optional[EstadoParticipante] | str = Field(
-        default='',
+    estado: Optional[EstadoParticipante] | None = Field(
+        default=None,
         title='Estado',
         description='Estado del participante',
         max_length=10,
@@ -67,30 +67,30 @@ class PeticionBuscarParticipantes(Peticion):
 # ClaseModelo: ProcedimientoBuscarParticipantes
 # --------------------------------------------------
 class ProcedimientoBuscarParticipantes(Procedimiento):
-    modelo_origen_datos: Optional[str] = Field('participantes')
+    dto_origen_datos: Optional[str] = Field('participantes')
     id: Optional[int] | None = Field(
-        default=0,
+        default=None,
         title='ID',
         validation_alias='id',
         serialization_alias='id',
         json_schema_extra={'entidad':''}
     )
     alias: Optional[str] | None = Field(
-        default='',
+        default=None,
         title='Alias',
-        validation_alias='alias',
-        serialization_alias='nombre',
+        validation_alias='nombre',
+        serialization_alias='alias',
         json_schema_extra={'entidad':''}
     )
     email: Optional[str] | None = Field(
-        default='',
+        default=None,
         title='E-Mail',
         validation_alias='email',
         serialization_alias='email',
         json_schema_extra={'entidad':''}
     )
     estado: Optional[str] | None = Field(
-        default='',
+        default=None,
         title='Estado',
         validation_alias='estado',
         serialization_alias='estado',
@@ -102,9 +102,11 @@ class ProcedimientoBuscarParticipantes(Procedimiento):
 # --------------------------------------------------
 class PeticionParticipante(Peticion):
     id: Optional[int] | None = Field(
-        default=0,
+        default=None,
+        title='ID',
         validation_alias='id',
-        json_schema_extra={'filtro':'COINCIDE'}
+        serialization_alias='id',
+        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
     )
 
 # --------------------------------------------------
@@ -143,12 +145,40 @@ class PeticionActualizarParticipante(PeticionParticipante):
         json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
     )
 
+# --------------------------------------------------
+# ClaseModelo: PeticionAgregarParticipante
+# --------------------------------------------------
+class PeticionAgregarParticipante(Peticion):
+    alias: Optional[str] | None = Field(
+        default=None,
+        title='Alias',
+        max_length=25,
+        validation_alias='nombre',
+        serialization_alias='alias',
+        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
+    )
+    email: Optional[str] | None = Field(
+        default=None,
+        title='E-Mail',
+        max_length=50,
+        validation_alias='email',
+        serialization_alias='email',
+        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
+    )
+    estado: Optional[EstadoParticipante] | None = Field(
+        default=None,
+        title='Estado',
+        max_length=10,
+        validation_alias='estado',
+        serialization_alias='estado',
+        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
+    )
 
 # --------------------------------------------------
 # ClaseModelo: ProcedimientoActualizarParticipante
 # --------------------------------------------------
 class ProcedimientoActualizarParticipante(Procedimiento):
-    modelo_origen_datos: Optional[str] = Field('participantes')
+    dto_origen_datos: Optional[str] = Field('participantes')
     id: Optional[int] | None = Field(
         default=None,
         validation_alias='id',
@@ -175,8 +205,38 @@ class ProcedimientoActualizarParticipante(Procedimiento):
     )
 
 # --------------------------------------------------
-# ClaseModelo: ModeloNuevoParticipante
+# ClaseModelo: ProcedimientoAgregarParticipante
 # --------------------------------------------------
-class ModeloNuevoParticipante(Peticion):
-    ...
+class ProcedimientoAgregarParticipante(Procedimiento):
+    dto_origen_datos: Optional[str] = Field('participantes')
+    alias: Optional[str] | None = Field(
+        default=None,
+        validation_alias='nombre',
+        serialization_alias='alias',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
+    email: Optional[str] | None = Field(
+        default=None,
+        validation_alias='email',
+        serialization_alias='email',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
+    estado: Optional[str] | None = Field(
+        default=None,
+        validation_alias='estado',
+        serialization_alias='estado',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
+
+# --------------------------------------------------
+# ClaseModelo: ProcedimientoEliminarParticipante
+# --------------------------------------------------
+class ProcedimientoEliminarParticipante(Procedimiento):
+    dto_origen_datos: Optional[str] = Field('participantes')
+    id: Optional[int] | None = Field(
+        default=None,
+        validation_alias='id',
+        serialization_alias='id',
+        json_schema_extra={'formato':'integer', 'permisos':''}
+    )
 
