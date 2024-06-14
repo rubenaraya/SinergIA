@@ -7,7 +7,6 @@ from pysinergia._dependencias import (
     Peticion,
     ArchivoCargado,
     Respuesta,
-    Resultado,
     Recurso,
 )
 
@@ -38,11 +37,11 @@ class ControladorParticipantes(Controlador):
         casosdeuso = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
         peticion.agregar_contexto(mi.comunicador.transferir_contexto())
         resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.serializar())
-        respuesta = Resultado(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
         recurso = Recurso(conversion=mi.comunicador.elegir_conversion(conversion))
         nombre_descarga = mi.comunicador.generar_nombre_descarga(respuesta, recurso.extension)
         encabezados = mi.comunicador.generar_encabezados(tipo_mime=recurso.tipo_mime, nombre_descarga=nombre_descarga, charset='utf-8')
-        cuerpo = mi.comunicador.exportar_contenido(conversion=recurso.conversion, info=respuesta, guardar=guardar)
+        cuerpo = mi.comunicador.exportar_informacion(conversion=recurso.conversion, info=respuesta, guardar=guardar)
         return (cuerpo, encabezados)
 
     def cargar_archivo(mi, peticion:ArchivoCargado) -> dict:
@@ -92,9 +91,9 @@ class RepositorioParticipantes(Repositorio, I_RepositorioParticipantes):
     # --------------------------------------------------
     # Métodos públicos (usados en la capa de servicio)
 
-    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_usuario:str='') -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_sesion:str='') -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        procedimiento = ProcedimientoBuscarParticipantes(dto_solicitud_datos=solicitud, dto_roles_usuario=roles_usuario).serializar()
+        procedimiento = ProcedimientoBuscarParticipantes(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
             plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             procedimiento=procedimiento

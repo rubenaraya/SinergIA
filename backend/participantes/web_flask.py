@@ -8,6 +8,7 @@ from pysinergia._dependencias import (
     DocumentoCargado,
     AudioCargado,
     Respuesta,
+    Repositorio,
 )
 from pysinergia._dependencias.web_flask import *
 
@@ -280,29 +281,26 @@ def audio():
 
 @enrutador.route('/sql', methods=['GET'])
 def sql():
-    from pysinergia.conectores.basedatos_mysql import BasedatosMysql as Basedatos
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    peticion = PeticionActualizarParticipante(
+    solicitud = PeticionActualizarParticipante(
         dto_contexto=comunicador.transferir_contexto(),
         id=1,
         nombre='Rubén Araya Tagle',
         email='raraya@masexperto.com',
         estado='Activo',
-    )
-    procedimiento = ProcedimientoActualizarParticipante(
-        dto_solicitud_datos=peticion.serializar(),
-        dto_roles_usuario=sesion.get('roles'),
     ).serializar()
-    basedatos = Basedatos()
-    basedatos.conectar(configuracion.basedatos())
-    instruccion, parametros = basedatos.generar_comando(
-        plantilla=basedatos.INSTRUCCION.UPDATE_POR_ID,
+    procedimiento = ProcedimientoActualizarParticipante(
+        dto_solicitud_datos=solicitud,
+        dto_roles_sesion=sesion.get('roles'),
+    ).serializar()
+    repo = Repositorio(configuracion)
+    repo.basedatos.conectar(configuracion.basedatos())
+    instruccion, parametros = repo.basedatos.generar_comando(
+        plantilla=repo.basedatos.INSTRUCCION.UPDATE_POR_ID,
         procedimiento=procedimiento
     )
-    print(instruccion)
-    print(parametros)
-
-    return jsonify(procedimiento)
+    respuesta = {'instruccion': instruccion, 'parametros': parametros}
+    return jsonify(respuesta)
 

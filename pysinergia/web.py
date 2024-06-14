@@ -205,6 +205,36 @@ class Comunicador(ABC, I_Comunicador):
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
+    def transferir_contexto(mi, datos:dict=None) -> dict:
+        if mi.contexto.get('datos', None) is None:
+            mi.contexto['datos'] = {}
+        if datos is not None:
+            for clave, valor in datos.items():
+                mi.contexto['datos'][clave] = valor
+        return mi.contexto
+
+    def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:
+        if portador and portador.es_valido:
+            unico = True if si_existe == portador.RENOMBRAR else False
+            portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
+            ruta_guardar = f'{portador.carpeta}/{portador.nombre}'
+            if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
+                portador.es_valido = False
+                portador.mensaje_error = 'El-archivo-ya-existe'
+                portador.codigo = Constantes.ESTADO._413_NO_CARGADO
+                portador.conclusion = Constantes.CONCLUSION.ALERTA
+            else:
+                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
+                if not ruta:
+                    portador.es_valido = False
+                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
+                    portador.codigo = Constantes.ESTADO._500_ERROR
+                    portador.conclusion = Constantes.CONCLUSION.ERROR
+                portador.ruta = ruta
+        return portador
+
+    # --------------------------------------------------
+
     def transformar_contenido(mi, info:dict, plantilla:str, ruta_plantillas:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
         resultado = ''
@@ -223,7 +253,7 @@ class Comunicador(ABC, I_Comunicador):
         except Exception as e:
             raise e
 
-    def exportar_contenido(mi, conversion:str, info:dict={}, guardar:bool=False):
+    def exportar_informacion(mi, conversion:str, info:dict={}, guardar:bool=False):
         try:
             modo = 't'
             metadatos:dict = info['metadatos']
@@ -261,14 +291,6 @@ class Comunicador(ABC, I_Comunicador):
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
 
-    def transferir_contexto(mi, datos:dict=None) -> dict:
-        if mi.contexto.get('datos', None) is None:
-            mi.contexto['datos'] = {}
-        if datos is not None:
-            for clave, valor in datos.items():
-                mi.contexto['datos'][clave] = valor
-        return mi.contexto
-
     def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         content_type = f"{tipo_mime}; charset={charset}" if charset else tipo_mime
         encabezados = {'Content-Type': content_type}
@@ -277,26 +299,6 @@ class Comunicador(ABC, I_Comunicador):
         else:
             encabezados['Content-disposition'] = disposicion
         return encabezados
-
-    def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:
-        if portador and portador.es_valido:
-            unico = True if si_existe == portador.RENOMBRAR else False
-            portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)
-            ruta_guardar = f'{portador.carpeta}/{portador.nombre}'
-            if mi.disco.comprobar_ruta(ruta_guardar) and si_existe == portador.RECHAZAR:
-                portador.es_valido = False
-                portador.mensaje_error = 'El-archivo-ya-existe'
-                portador.codigo = Constantes.ESTADO._413_NO_CARGADO
-                portador.conclusion = Constantes.CONCLUSION.ALERTA
-            else:
-                ruta = mi.disco.escribir(portador.contenido, ruta_guardar, modo='b')
-                if not ruta:
-                    portador.es_valido = False
-                    portador.mensaje_error = 'Error-al-guardar-el-archivo'
-                    portador.codigo = Constantes.ESTADO._500_ERROR
-                    portador.conclusion = Constantes.CONCLUSION.ERROR
-                portador.ruta = ruta
-        return portador
 
     def elegir_conversion(mi, conversion:str=None) -> str:
         if conversion:

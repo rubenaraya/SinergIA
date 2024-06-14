@@ -70,7 +70,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def exportar_contenido(mi, conversion:str, info:dict={}, guardar:bool=False):
+    def exportar_informacion(mi, conversion:str, info:dict={}, guardar:bool=False):
         ...
 
     @abstractmethod
@@ -93,7 +93,7 @@ class I_Comunicador(metaclass=ABCMeta):
 # --------------------------------------------------
 # ClaseModelo: Configuracion
 # --------------------------------------------------
-class Configuracion(BaseSettings):
+class Configuracion(ABC, BaseSettings):
     # Aplicacion Global
     APP_GLOBAL: str = Field(default='')
     RAIZ_GLOBAL: str = Field(default='')
@@ -281,14 +281,11 @@ class Repositorio(ABC):
         mi.configuracion:Configuracion = configuracion
         mi.inyectar_conectores(mi.configuracion)
 
-    # --------------------------------------------------
-    # Métodos privados
-
-    def _importar_conector(mi, config:dict):
+    def _importar_conector(mi, dic_config:dict):
         import importlib
         try:
-            fuente = config.get('fuente')
-            clase = config.get('clase')
+            fuente = dic_config.get('fuente')
+            clase = dic_config.get('clase')
             modulo = getattr(importlib.import_module(f"pysinergia.conectores.{fuente}"), clase)
             if modulo:
                 return modulo
@@ -296,9 +293,6 @@ class Repositorio(ABC):
         except Exception as e:
             print(e)
             return None
-
-    # --------------------------------------------------
-    # Métodos públicos
 
     def inyectar_conectores(mi, configuracion:Configuracion):
         try:

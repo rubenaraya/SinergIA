@@ -55,6 +55,8 @@ class ServidorApi:
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
+            if respuesta.content_type == 'application/json':
+                respuesta.headers['Content-Type'] = 'application/json; charset=utf-8'
             return respuesta
 
         @api.before_request
@@ -84,6 +86,7 @@ class ServidorApi:
                 }
             }
         )
+        api.config['CORS_HEADERS'] = 'Content-Type'
 
     def _obtener_url(mi) -> str:
         url = f'{request.url}'
@@ -154,7 +157,7 @@ class ServidorApi:
             static_url_path=f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND',''))}",
             static_folder=mi.dir_frontend.as_posix(),
         )
-        api.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+        api.config['MAX_CONTENT_LENGTH'] = 50 * C.PESO.MB
         mi._configurar_cors(api)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -189,7 +192,9 @@ class ServidorApi:
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
                 app.config['TEMPLATES_AUTO_RELOAD'] = True
                 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
+                app.config['PROPAGATE_EXCEPTIONS'] = True
             app.app_context().push()
+            app.test_request_context().push()
             if not host:
                 host = os.getenv('HOST_LOCAL')
             app.run(

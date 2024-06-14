@@ -499,7 +499,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
                     if filtrado:
                         filtrar.append(filtrado)
         for clave, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_usuario']:
+            if isinstance(contenido, dict) and clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_sesion']:
                 campo = clave
                 entrada = contenido.get('entrada', '')
                 salida = contenido.get('salida', '')
@@ -563,7 +563,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
         dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
         plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
         for campo, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and campo not in ['_dto_solicitud_datos','_dto_origen_datos','_dto_roles_usuario'] and dto_origen_datos:
+            if isinstance(contenido, dict) and campo not in ['_dto_solicitud_datos','_dto_origen_datos','_dto_roles_sesion'] and dto_origen_datos:
                 salida = contenido.get('salida', '')
                 entidad = contenido.get('entidad', '')
                 formato = contenido.get('formato', '')

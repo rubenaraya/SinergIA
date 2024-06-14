@@ -22,7 +22,7 @@ class I_RepositorioParticipantes(metaclass=ABCMeta):
     # Implementada en la capa de adaptadores por RepositorioParticipantes
 
     @abstractmethod
-    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_usuario:str='') -> dict:
+    def recuperar_lista_participantes_todos(mi, solicitud:dict, roles_sesion:str='') -> dict:
         ...
 
     @abstractmethod
@@ -83,7 +83,7 @@ class CasosDeUsoParticipantes(CasosDeUso):
     def _buscar_participantes(mi, solicitud:dict):
         entrega:dict = solicitud.get('_dto_contexto', {})
         if mi.autorizar_acceso(roles='Ejecutivo,Usuario', rechazar=True):
-            resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, roles_usuario=mi.sesion.get('roles'))
+            resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, roles_sesion=mi.sesion.get('roles'))
             metadatos = mi.agregar_metadatos({
                 'nombre_descarga': 'documento de prueba',
                 'titulo': 'Listado de Pruebas',

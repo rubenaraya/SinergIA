@@ -14,7 +14,6 @@ from pysinergia.dominio import (
     Peticion,
     Procedimiento,
     Respuesta,
-    Resultado,
     Recurso,
 )
 from pysinergia.servicio import CasosDeUso
@@ -41,7 +40,6 @@ __all__ = [
     'Peticion',
     'Procedimiento',
     'Respuesta',
-    'Resultado',
     'Recurso',
     'CasosDeUso',
     'Controlador',

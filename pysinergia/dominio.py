@@ -64,17 +64,17 @@ class Peticion(BaseModel):
 class Procedimiento(BaseModel):
     dto_origen_datos: Optional[str] | None = ''
     dto_solicitud_datos: Optional[dict] | None = {}
-    dto_roles_usuario: Optional[str] | None = ''
+    dto_roles_sesion: Optional[str] | None = ''
 
     def _autorizar(mi, permisos:str) -> bool:
         if permisos == '':
             return True
-        if permisos and mi.dto_roles_usuario:
+        if permisos and mi.dto_roles_sesion:
             if permisos == '*':
                 return True
             eval_permisos = set(permisos.split(','))
-            eval_roles_usuario = set(mi.dto_roles_usuario.split(','))
-            if bool(eval_permisos & eval_roles_usuario):
+            eval_roles_sesion = set(mi.dto_roles_sesion.split(','))
+            if bool(eval_permisos & eval_roles_sesion):
                 return True
         return False
 
@@ -82,7 +82,7 @@ class Procedimiento(BaseModel):
         serializado:dict = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['dto_solicitud_datos','dto_origen_datos','dto_roles_usuario']:
+            if field_name not in ['dto_solicitud_datos','dto_origen_datos','dto_roles_sesion']:
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 if field.json_schema_extra:
@@ -117,6 +117,11 @@ class Respuesta(BaseModel):
     detalles:list = []
     resultado: dict | None = {}
     metadatos: dict | None = {}
+    fecha: dict | None = {}
+    web: dict | None = {}
+    url: dict | None = {}
+    sesion: dict | None = {}
+    esquemas: dict | None = {}
 
     @model_validator(mode='after')
     @classmethod
@@ -149,20 +154,10 @@ class Respuesta(BaseModel):
         return valores
 
     def diccionario(mi) -> Dict:
-        return mi.model_dump(mode='json', exclude_none=True, exclude_unset=True, exclude=('T','web','sesion','fecha'))
+        return mi.model_dump(mode='json', exclude_none=True, exclude_unset=True, exclude=('T'))
 
     def json(mi) -> str:
-        return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude={'T','web','sesion','fecha'})
-
-# --------------------------------------------------
-# ClaseModelo: Resultado
-# --------------------------------------------------
-class Resultado(Respuesta):
-    fecha: dict | None = {}
-    web: dict | None = {}
-    url: dict | None = {}
-    sesion: dict | None = {}
-    esquemas: dict | None = {}
+        return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude={'T'})
 
 # --------------------------------------------------
 # ClaseModelo: ArchivoCargado
