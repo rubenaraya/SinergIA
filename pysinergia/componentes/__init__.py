@@ -1,4 +1,4 @@
-# pysinergia\_dependencias\__init__.py
+# pysinergia\componentes\__init__.py
 
 from pysinergia import (
     Constantes as C,

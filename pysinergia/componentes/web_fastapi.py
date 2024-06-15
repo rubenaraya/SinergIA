@@ -1,4 +1,4 @@
-# pysinergia\_dependencias\web_fastapi.py
+# pysinergia\componentes\web_fastapi.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web

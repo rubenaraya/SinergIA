@@ -1,6 +1,6 @@
 # backend\participantes\adaptadores.py
 
-from pysinergia._dependencias import (
+from pysinergia.componentes import (
     Configuracion,
     Controlador,
     Repositorio,

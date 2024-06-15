@@ -1,6 +1,6 @@
 # backend\participantes\web_fastapi.py
 
-from pysinergia._dependencias import (
+from pysinergia.componentes import (
     configurar_microservicio,
     C,
     Traductor,
@@ -9,7 +9,7 @@ from pysinergia._dependencias import (
     AudioCargado,
     Respuesta,
 )
-from pysinergia._dependencias.web_fastapi import *
+from pysinergia.componentes.web_fastapi import *
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado

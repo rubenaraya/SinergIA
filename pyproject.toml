@@ -8,11 +8,11 @@ packages = [
     "pysinergia.interfaces",
     "pysinergia.conectores",
     "pysinergia.complementos",
-    "pysinergia._dependencias",
+    "pysinergia.componentes",
 ]
 
 [project]
-name = "PySinergIA"
+name = "pysinergia"
 version = "0.0.1"
 description = "Biblioteca Python para desarrollar Aplicaciones WEB/REST de back-end basadas en una arquitectura limpia de microservicios"
 

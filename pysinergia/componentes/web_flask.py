@@ -1,4 +1,4 @@
-# pysinergia\_dependencias\web_flask.py
+# pysinergia\componentes\web_flask.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web

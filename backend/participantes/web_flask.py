@@ -1,6 +1,6 @@
 # backend\participantes\web_flask.py
 
-from pysinergia._dependencias import (
+from pysinergia.componentes import (
     configurar_microservicio,
     C,
     Traductor,
@@ -10,7 +10,7 @@ from pysinergia._dependencias import (
     Respuesta,
     Repositorio,
 )
-from pysinergia._dependencias.web_flask import *
+from pysinergia.componentes.web_flask import *
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
