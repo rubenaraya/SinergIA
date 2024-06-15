@@ -2,6 +2,7 @@
 
 from pysinergia._dependencias import CasosDeUso
 from abc import (ABCMeta, abstractmethod)
+from typing import S
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -58,22 +59,29 @@ class CasosDeUsoParticipantes(CasosDeUso):
     # Clase de constantes: ACCIONES
 
     class ACCIONES:
-        BUSCAR_PARTICIPANTES = 1
-        AGREGAR_PARTICIPANTE = 2
-        VER_PARTICIPANTE = 3
-        ACTUALIZAR_PARTICIPANTE = 4
-        ELIMINAR_PARTICIPANTE = 5
+        BUSCAR = 1
+        AGREGAR = 2
+        VER = 3
+        ACTUALIZAR = 4
+        ELIMINAR = 5
+
+    class PERMISOS:
+        BUSCAR = '*'
+        AGREGAR = 'Admin'
+        VER = '*'
+        ACTUALIZAR = 'Admin,Ejecutivo'
+        ELIMINAR = 'Admin'
 
     # --------------------------------------------------
-    # Métodos públicos (usados en la capa de adaptadores)
+    # Métodos públicos
 
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         realizar = {
-            mi.ACCIONES.BUSCAR_PARTICIPANTES: mi._buscar_participantes,
-            mi.ACCIONES.AGREGAR_PARTICIPANTE: mi._agregar_participante,
-            mi.ACCIONES.ACTUALIZAR_PARTICIPANTE: mi._actualizar_participante,
-            mi.ACCIONES.ELIMINAR_PARTICIPANTE: mi._eliminar_participante,
-            mi.ACCIONES.VER_PARTICIPANTE: mi._ver_participante
+            mi.ACCIONES.BUSCAR: mi._buscar_participantes,
+            mi.ACCIONES.AGREGAR: mi._agregar_participante,
+            mi.ACCIONES.ACTUALIZAR: mi._actualizar_participante,
+            mi.ACCIONES.ELIMINAR: mi._eliminar_participante,
+            mi.ACCIONES.VER: mi._ver_participante
         }
         return realizar.get(accion)(solicitud)
 
@@ -82,7 +90,7 @@ class CasosDeUsoParticipantes(CasosDeUso):
 
     def _buscar_participantes(mi, solicitud:dict):
         entrega:dict = solicitud.get('_dto_contexto', {})
-        if mi.autorizar_acceso(roles='Ejecutivo,Usuario', rechazar=True):
+        if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
             resultado = mi.repositorio.recuperar_lista_participantes_todos(solicitud, roles_sesion=mi.sesion.get('roles'))
             metadatos = mi.agregar_metadatos({
                 'nombre_descarga': 'documento de prueba',

@@ -25,6 +25,21 @@ from pydantic import (
 from pysinergia import Constantes
 
 # --------------------------------------------------
+# Funcion: autorizar_acceso
+# --------------------------------------------------
+def autorizar_acceso(roles:str, permisos:str=None) -> bool:
+    if permisos == '':
+        return True
+    if permisos and roles:
+        if permisos == '*':
+            return True
+        eval_permisos = set(permisos.split(','))
+        eval_roles = set(roles.split(','))
+        if bool(eval_permisos & eval_roles):
+            return True
+    return False
+
+# --------------------------------------------------
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
@@ -66,28 +81,16 @@ class Procedimiento(BaseModel):
     dto_solicitud_datos: Optional[dict] | None = {}
     dto_roles_sesion: Optional[str] | None = ''
 
-    def _autorizar(mi, permisos:str) -> bool:
-        if permisos == '':
-            return True
-        if permisos and mi.dto_roles_sesion:
-            if permisos == '*':
-                return True
-            eval_permisos = set(permisos.split(','))
-            eval_roles_sesion = set(mi.dto_roles_sesion.split(','))
-            if bool(eval_permisos & eval_roles_sesion):
-                return True
-        return False
-
     def serializar(mi) -> dict:
         serializado:dict = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['dto_solicitud_datos','dto_origen_datos','dto_roles_sesion']:
+            if not field_name.startswith('dto_'):
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 if field.json_schema_extra:
                     permisos = field.json_schema_extra.get('permisos', '')
-                    if mi._autorizar(permisos=permisos):
+                    if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
                         serializado[field_name] = {
                             'campo': field_name,
                             'entrada': entrada or '',

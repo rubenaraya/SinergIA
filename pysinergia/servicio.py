@@ -8,6 +8,7 @@ from pysinergia import (
     Constantes,
     ErrorPersonalizado,
 )
+from pysinergia.dominio import autorizar_acceso
 
 # --------------------------------------------------
 # Clase: CasosDeUso
@@ -24,24 +25,16 @@ class CasosDeUso(ABC):
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         raise NotImplementedError()
 
-    def autorizar_acceso(mi, roles:str, rechazar:bool=False) -> bool:
-        if roles == '':
-            return True
-        credenciales:str = mi.sesion.get('roles')
-        if roles and credenciales:
-            if roles == '*':
-                return True
-            eval_roles = set(roles.split(','))
-            eval_credenciales = set(credenciales.split(','))
-            if bool(eval_roles & eval_credenciales):
-                return True
-        if rechazar:
+    def autorizar_accion(mi, permisos:str, rechazar:bool=False) -> bool:
+        roles:str = mi.sesion.get('roles')
+        autorizacion = autorizar_acceso(roles=roles, permisos=permisos)
+        if not autorizacion and rechazar:
             raise ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
                 conclusion=Constantes.CONCLUSION.ALERTA,
                 codigo=Constantes.ESTADO._403_NO_AUTORIZADO,
             )
-        return False
+        return autorizacion
 
     def agregar_metadatos(mi, metadatos:dict, info:dict=None) -> dict:
         requeridos = {

@@ -281,16 +281,24 @@ def audio():
 
 @enrutador.route('/sql', methods=['GET'])
 def sql():
+    # Enrutador
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    solicitud = PeticionActualizarParticipante(
-        dto_contexto=comunicador.transferir_contexto(),
+    peticion = PeticionActualizarParticipante(
         id=1,
         nombre='Rubén Araya Tagle',
         email='raraya@masexperto.com',
         estado='Activo',
-    ).serializar()
+    )
+    
+    # Controlador (adaptador-api)
+    peticion.agregar_contexto(comunicador.transferir_contexto())
+    solicitud = peticion.serializar()
+
+    # CasosDeUso (omitido)
+
+    # Repositorio (adaptador-spi)
     procedimiento = ProcedimientoActualizarParticipante(
         dto_solicitud_datos=solicitud,
         dto_roles_sesion=sesion.get('roles'),
@@ -301,6 +309,15 @@ def sql():
         plantilla=repo.basedatos.INSTRUCCION.UPDATE_POR_ID,
         procedimiento=procedimiento
     )
-    respuesta = {'instruccion': instruccion, 'parametros': parametros}
+    repo.basedatos.desconectar()
+    resultado = {'instruccion': instruccion, 'parametros': parametros, 'procedimiento': procedimiento}
+
+    # Controlador (adaptador-api)
+    respuesta = Respuesta(
+        T=comunicador.traspasar_traductor(),
+        resultado=resultado
+    ).diccionario()
+
+    # Enrutador
     return jsonify(respuesta)
 

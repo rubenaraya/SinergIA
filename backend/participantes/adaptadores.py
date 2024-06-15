@@ -36,7 +36,7 @@ class ControladorParticipantes(Controlador):
     def buscar_participantes(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
         casosdeuso = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion)
         peticion.agregar_contexto(mi.comunicador.transferir_contexto())
-        resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR_PARTICIPANTES, peticion.serializar())
+        resultado = casosdeuso.solicitar_accion(CasosDeUso.ACCIONES.BUSCAR, peticion.serializar())
         respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
         recurso = Recurso(conversion=mi.comunicador.elegir_conversion(conversion))
         nombre_descarga = mi.comunicador.generar_nombre_descarga(respuesta, recurso.extension)
@@ -64,22 +64,22 @@ class ControladorParticipantes(Controlador):
 
     def agregar_participante(mi, peticion:Peticion):
         resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUso.ACCIONES.AGREGAR_PARTICIPANTE, peticion.serializar())
+            CasosDeUso.ACCIONES.AGREGAR, peticion.serializar())
         return resultado
 
     def ver_participante(mi, peticion:Peticion):
         resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUso.ACCIONES.VER_PARTICIPANTE, peticion.serializar())
+            CasosDeUso.ACCIONES.VER, peticion.serializar())
         return resultado
 
     def actualizar_participante(mi, peticion:Peticion):
         resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUso.ACCIONES.ACTUALIZAR_PARTICIPANTE, peticion.serializar())
+            CasosDeUso.ACCIONES.ACTUALIZAR, peticion.serializar())
         return resultado
 
     def eliminar_participante(mi, peticion:Peticion):
         resultado = CasosDeUso(RepositorioParticipantes(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUso.ACCIONES.ELIMINAR_PARTICIPANTE, peticion.serializar())
+            CasosDeUso.ACCIONES.ELIMINAR, peticion.serializar())
         return resultado
 
 
