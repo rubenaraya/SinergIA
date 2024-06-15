@@ -1,20 +1,7 @@
 # backend\participantes\servicio.py
 
-from pysinergia._dependencias import CasosDeUso
 from abc import (ABCMeta, abstractmethod)
-from typing import S
-
-# --------------------------------------------------
-# Importaciones del Microservicio personalizado
-from .dominio import (
-    PeticionBuscarParticipantes,
-    PeticionParticipante,
-    PeticionActualizarParticipante,
-    PeticionAgregarParticipante,
-    ProcedimientoAgregarParticipante,
-    ProcedimientoActualizarParticipante,
-    ProcedimientoEliminarParticipante,
-)
+from pysinergia._dependencias import CasosDeUso
 
 # --------------------------------------------------
 # Interface: I_RepositorioParticipantes
@@ -56,7 +43,7 @@ class CasosDeUsoParticipantes(CasosDeUso):
         mi.sesion:dict = sesion
 
     # --------------------------------------------------
-    # Clase de constantes: ACCIONES
+    # Clase de constantes
 
     class ACCIONES:
         BUSCAR = 1

@@ -15,17 +15,26 @@ from pysinergia.dominio import autorizar_acceso
 # --------------------------------------------------
 class CasosDeUso(ABC):
 
+    # --------------------------------------------------
+    # Clase de constantes
+
     class ACCIONES:
+        ...
+
+    class PERMISOS:
         ...
 
     def __init__(mi, repositorio, sesion:dict=None):
         mi.repositorio = repositorio
         mi.sesion:dict = sesion
 
+    # --------------------------------------------------
+    # Métodos públicos
+
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         raise NotImplementedError()
 
-    def autorizar_accion(mi, permisos:str, rechazar:bool=False) -> bool:
+    def autorizar_accion(mi, permisos:PERMISOS, rechazar:bool=False) -> bool:
         roles:str = mi.sesion.get('roles')
         autorizacion = autorizar_acceso(roles=roles, permisos=permisos)
         if not autorizacion and rechazar:
@@ -36,7 +45,7 @@ class CasosDeUso(ABC):
             )
         return autorizacion
 
-    def agregar_metadatos(mi, metadatos:dict, info:dict=None) -> dict:
+    def agregar_metadatos(mi, agregados:dict, metadatos:dict=None) -> dict:
         requeridos = {
             'plantilla': 'tabla.html',
             'hoja_estilos': 'tabla.css',
@@ -49,13 +58,13 @@ class CasosDeUso(ABC):
             'descripcion': '',
             'etiquetas': '',
         }
-        if info is None:
-            info = {}
+        if metadatos is None:
+            metadatos = {}
         for clave, valor in requeridos.items():
-            if clave not in info:
-                info[clave] = valor
-        if metadatos is not None:
-            for clave, valor in metadatos.items():
-                info[clave] = valor
-        return info
+            if clave not in metadatos:
+                metadatos[clave] = valor
+        if agregados is not None:
+            for clave, valor in agregados.items():
+                metadatos[clave] = valor
+        return metadatos
 
