@@ -1,4 +1,4 @@
-# pysinergia\interfaces\web_flask.py
+# pysinergia\web\flask.py
 
 import os
 from pathlib import Path

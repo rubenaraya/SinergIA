@@ -1,6 +1,6 @@
 # backend\participantes\web_flask.py
 
-from pysinergia.componentes import (
+from pysinergia.base import (
     configurar_microservicio,
     C,
     Traductor,
@@ -10,7 +10,7 @@ from pysinergia.componentes import (
     Respuesta,
     Repositorio,
 )
-from pysinergia.componentes.web_flask import *
+from pysinergia.base.flask import *
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -26,12 +26,12 @@ from .dominio import (
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
-    ConfigParticipantes as ConfigMicroservicio,
+    ConfigParticipantes,
 )
 
 # --------------------------------------------------
 # Configuración del Microservicio personalizado
-configuracion = configurar_microservicio(ConfigMicroservicio, __file__, 'prueba', None)
+configuracion = configurar_microservicio(ConfigParticipantes, __file__, 'prueba', None)
 
 comunicador = ComunicadorWeb(
     configuracion.web(),

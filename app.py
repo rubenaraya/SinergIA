@@ -1,6 +1,6 @@
 # app.py
 
-from pysinergia.componentes import configurar_servidor_api
+from pysinergia.base import configurar_servidor_api
 
 # --------------------------------------------------
 # Script de inicio ServidorApi y Aplicacion Global

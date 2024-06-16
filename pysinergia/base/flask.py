@@ -1,4 +1,4 @@
-# pysinergia\componentes\web_flask.py
+# pysinergia\base\flask.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -16,7 +16,7 @@ from flask_pydantic import validate
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.interfaces.web_flask import (
+from pysinergia.web.flask import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

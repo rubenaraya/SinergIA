@@ -1,7 +1,7 @@
 # backend\participantes\servicio.py
 
 from abc import (ABCMeta, abstractmethod)
-from pysinergia.componentes import CasosDeUso
+from pysinergia.base import CasosDeUso
 
 # --------------------------------------------------
 # Interface: I_RepositorioParticipantes

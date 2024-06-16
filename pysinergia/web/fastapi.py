@@ -1,4 +1,4 @@
-# pysinergia\interfaces\web_fastapi.py
+# pysinergia\web\fastapi.py
 
 import os
 from pathlib import Path

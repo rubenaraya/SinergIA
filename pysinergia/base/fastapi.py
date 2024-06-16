@@ -1,4 +1,4 @@
-# pysinergia\componentes\web_fastapi.py
+# pysinergia\base\fastapi.py
 
 # --------------------------------------------------
 # Importaciones de Infraestructura Web
@@ -24,7 +24,7 @@ from fastapi.responses import (
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
-from pysinergia.interfaces.web_fastapi import (
+from pysinergia.web.fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

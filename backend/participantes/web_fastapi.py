@@ -1,6 +1,6 @@
 # backend\participantes\web_fastapi.py
 
-from pysinergia.componentes import (
+from pysinergia.base import (
     configurar_microservicio,
     C,
     Traductor,
@@ -9,7 +9,7 @@ from pysinergia.componentes import (
     AudioCargado,
     Respuesta,
 )
-from pysinergia.componentes.web_fastapi import *
+from pysinergia.base.fastapi import *
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -25,12 +25,12 @@ from .dominio import (
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
-    ConfigParticipantes as ConfigMicroservicio,
+    ConfigParticipantes,
 )
 
 # --------------------------------------------------
 # Configuración del Microservicio personalizado
-configuracion = configurar_microservicio(ConfigMicroservicio, __file__, 'prueba', None)
+configuracion = configurar_microservicio(ConfigParticipantes, __file__, 'prueba', None)
 
 comunicador = ComunicadorWeb(
     configuracion.web(),

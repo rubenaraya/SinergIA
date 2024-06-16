@@ -4,7 +4,7 @@ from enum import Enum
 from pydantic import Field
 from typing import Optional
 
-from pysinergia.componentes import (
+from pysinergia.base import (
     Peticion,
     Procedimiento,
 )
