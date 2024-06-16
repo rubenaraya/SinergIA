@@ -2,12 +2,8 @@
 
 import os
 
-# --------------------------------------------------
-# Componentes Globales de PySinergIA
-# --------------------------------------------------
+__pysinergia__ = 'PySinergIA v0.0.1'
 
-__nombre__ = 'PySinergIA'
-__version__ = '0.0.1'
 
 # --------------------------------------------------
 # Clase estática: Constantes
@@ -139,11 +135,13 @@ class RegistradorLogs:
         raise TypeError('Esta es una clase estática')
 
     @staticmethod
-    def crear(nombre:str, ruta_logs=os.getenv('RUTA_LOGS'), nivel:str=os.getenv('NIVEL_REGISTRO')):
+    def crear(nombre:str, ruta_logs=None, nivel_registro:str=None):
         from logging import (Formatter, getLogger)
         from logging.handlers import RotatingFileHandler
+        ruta_logs = ruta_logs if ruta_logs else os.getenv('RUTA_LOGS') if os.getenv('RUTA_LOGS') else 'logs'
+        nivel_registro = nivel_registro if nivel_registro else os.getenv('NIVEL_REGISTRO') if os.getenv('NIVEL_REGISTRO') else Constantes.REGISTRO.ERROR
         registrador = getLogger(nombre)
-        registrador.setLevel(nivel)
+        registrador.setLevel(nivel_registro)
         registrador.propagate = False
         manejador = RotatingFileHandler(
             filename = f'{ruta_logs}/{nombre}.log',
@@ -151,7 +149,7 @@ class RegistradorLogs:
             backupCount = 9,
             encoding = 'utf-8'
         )
-        manejador.setLevel(nivel)
+        manejador.setLevel(nivel_registro)
         manejador.setFormatter(Formatter(
             fmt='%(asctime)s - %(levelname)s - %(message)s | %(module)s.%(funcName)s',
             datefmt="%Y-%m-%d %H:%M"
@@ -172,8 +170,8 @@ class ErrorPersonalizado(Exception):
                 microservicio:str='',
                 recurso:str='',
                 nivel_evento:str=Constantes.REGISTRO.ERROR,
-                dominio_idioma:str=os.getenv('DOMINIO_IDIOMA'),
-                archivo_logs:str=os.getenv('ARCHIVO_LOGS'),
+                dominio_idioma:str=os.getenv('DOMINIO_IDIOMA') or 'base',
+                archivo_logs:str=os.getenv('ARCHIVO_LOGS') or 'app',
             ):
         mensaje = str(mensaje).replace('{','(').replace('}',')')
         super().__init__(mensaje)

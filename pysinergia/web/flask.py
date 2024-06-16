@@ -29,10 +29,7 @@ from pysinergia.web import (
     ErrorAutenticacion,
     Traductor,
 )
-from pysinergia import (
-    __nombre__ as bib_nombre,
-    __version__ as bib_version,
-)
+from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -50,8 +47,8 @@ class ServidorApi:
 
         @api.after_request
         def procesar_salidas(respuesta:Response):
-            global bib_nombre, bib_version
-            respuesta.headers['X-API-Motor'] = f'{bib_nombre} v{bib_version}'
+            global __pysinergia__
+            respuesta.headers['X-API-Motor'] = __pysinergia__
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
@@ -67,11 +64,11 @@ class ServidorApi:
                     print(f'peticion: {content_type}')
 
     def _configurar_endpoints(mi, api:Flask):
-        global bib_nombre, bib_version
+        global __pysinergia__
 
         @api.route('/', methods=['GET'])
         def entrypoint():
-            return {'api-entrypoint': f'{bib_nombre} v{bib_version}'}
+            return {'api-entrypoint': __pysinergia__}
 
         @api.route('/favicon.ico', methods=['GET'])
         def favicon():

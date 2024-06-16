@@ -20,10 +20,7 @@ from pysinergia.adaptadores import (
     Configuracion,
 )
 from pysinergia.conectores.disco import Disco
-from pysinergia import (
-    __nombre__ as bib_nombre,
-    __version__ as bib_version,
-)
+from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: Traductor
@@ -201,12 +198,12 @@ class Comunicador(ABC, I_Comunicador):
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        global bib_nombre, bib_version
+        global __pysinergia__
         idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['IDIOMA'] = idioma
-        mi.contexto['web']['API_MOTOR'] = f'{bib_nombre} v{bib_version}'
+        mi.contexto['web']['API_MOTOR'] = __pysinergia__
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
