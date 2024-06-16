@@ -3,13 +3,13 @@
 from pysinergia.base import configurar_servidor_api
 
 # --------------------------------------------------
-# Script de inicio ServidorApi y Aplicacion Global
+# Script de inicio
 servidor = configurar_servidor_api(__file__, '.config.env')
 api = servidor.crear_api()
 servidor.mapear_microservicios(api)
 
 # --------------------------------------------------
-# Lanza el Servidor Web (solo en DESARROLLO/LOCAL)
+# Lanza el Servidor Web (solo en DESARROLLO o LOCAL)
 if __name__ == '__main__':
     import os
     servidor.iniciar_servicio_web(

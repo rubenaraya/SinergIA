@@ -31,16 +31,8 @@ from .adaptadores import (
 # --------------------------------------------------
 # Configuración del Microservicio personalizado
 configuracion = configurar_microservicio(ConfigParticipantes, __file__, 'prueba', None)
-
-comunicador = ComunicadorWeb(
-    configuracion.web(),
-    configuracion.disco(),
-    Traductor(configuracion.traductor())
-)
-autenticador = AutenticadorWeb(
-    configuracion.autenticacion(),
-    url_login=f'{configuracion.URL_MICROSERVICIO}/login'
-)
+autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
+comunicador = ComunicadorWeb(configuracion)
 enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
 
 # --------------------------------------------------

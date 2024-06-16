@@ -246,9 +246,8 @@ class ComunicadorWeb(Comunicador):
     async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
         super().procesar_peticion(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
-        url_analizada = urlparse(str(request.url))
-        raiz_global = mi.config_web.get('RAIZ_GLOBAL','')
         alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
+        url_analizada = urlparse(str(request.url))
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
         raiz_global = '/' + partes[0] if len(partes) > 0 else ''
@@ -268,6 +267,23 @@ class ComunicadorWeb(Comunicador):
         mi.contexto['web']['DOMINIO'] = url_analizada.hostname
         mi.contexto['web']['ACEPTA'] = request.headers.get('accept', '')
         mi.contexto['peticion'] = await mi._recibir_peticion(request)
+        mi.contexto['cookies'] = {}
+        if request.cookies:
+            for nombre, valor in request.cookies.items():
+                mi.contexto['cookies'][nombre] = valor
+
+    def asignar_cookie(mi, respuesta:Response, nombre:str, valor:str, duracion:int=None):
+        alcance = mi.contexto['url'].get('app') if mi.contexto.get('url') else '/'
+        duracion = mi.config_web.get('DURACION_TOKEN') if not duracion else duracion
+        respuesta.set_cookie(
+            key=nombre,
+            value=valor,
+            max_age=duracion,
+            path=alcance,
+            secure=True,
+            httponly=False
+        )
+        return respuesta
 
 
 # --------------------------------------------------

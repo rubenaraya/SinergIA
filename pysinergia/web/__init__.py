@@ -158,12 +158,17 @@ class Traductor(I_Traductor):
 # --------------------------------------------------
 class Comunicador(ABC, I_Comunicador):
 
-    def __init__(mi, config_web:dict, config_disco:dict, traductor:Traductor=None):
-        mi.config_web:dict = config_web or {}
-        mi.idioma = None
+    def __init__(mi, configuracion:Configuracion):
+        mi.config_web:dict = configuracion.web()
+        mi.disco:Disco = mi._conectar_disco(configuracion.disco())
+        mi.traductor = Traductor({
+            'DOMINIO_IDIOMA': configuracion.DOMINIO_IDIOMA,
+            'RUTA_LOCALES': configuracion.RUTA_LOCALES,
+            'IDIOMAS_DISPONIBLES': configuracion.IDIOMAS_DISPONIBLES,
+            'ZONA_HORARIA': configuracion.ZONA_HORARIA,
+            'FORMATO_FECHA': configuracion.FORMATO_FECHA,
+        })
         mi.contexto:dict = {}
-        mi.disco:Disco = mi._conectar_disco(config_disco)
-        mi.traductor = traductor or Traductor()
 
     # --------------------------------------------------
     # Métodos privados
@@ -197,10 +202,10 @@ class Comunicador(ABC, I_Comunicador):
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
         global bib_nombre, bib_version
-        mi.idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
+        idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
-        mi.contexto['web']['IDIOMA'] = mi.idioma
+        mi.contexto['web']['IDIOMA'] = idioma
         mi.contexto['web']['API_MOTOR'] = f'{bib_nombre} v{bib_version}'
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
@@ -257,7 +262,6 @@ class Comunicador(ABC, I_Comunicador):
         try:
             modo = 't'
             metadatos:dict = info['metadatos']
-            metadatos['idioma'] = mi.idioma
             if conversion == Constantes.CONVERSION.JSON:
                 resultado = json.dumps(info, ensure_ascii=False)
             else:
@@ -320,11 +324,12 @@ class Comunicador(ABC, I_Comunicador):
 # Clase: Autenticador
 # --------------------------------------------------
 class Autenticador(ABC):
-    def __init__(mi, config_autenticacion:dict, url_login:str=''):
-        mi.secret_key = config_autenticacion.get('SECRET_KEY')
-        mi.algoritmo_jwt = config_autenticacion.get('ALGORITMO_JWT')
-        mi.api_keys:dict = config_autenticacion.get('API_KEYS')
-        mi.ruta_temp:str = config_autenticacion.get('RUTA_TEMP')
+    def __init__(mi, configuracion:Configuracion, url_login:str=None):
+        mi.secret_key = configuracion.SECRET_KEY
+        mi.algoritmo_jwt = configuracion.ALGORITMO_JWT
+        mi.api_keys:dict = configuracion.API_KEYS
+        mi.ruta_temp:str = configuracion.RUTA_TEMP
+        mi.duracion_token:int = configuracion.DURACION_TOKEN
         mi.url_login:str = url_login
         mi.token:str = None
 
@@ -359,7 +364,9 @@ class Autenticador(ABC):
             return token_decodificado.get('id_sesion')
         return ''
 
-    def firmar_token(mi, id_sesion:str, duracion:int=30) -> str:
+    def firmar_token(mi, id_sesion:str, duracion:int=None) -> str:
+        if not duracion:
+            duracion = mi.duracion_token
         payload = {
             'id_sesion': id_sesion,
             'caducidad': time.time() + 60 * duracion
@@ -421,7 +428,8 @@ def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_apl
         if archivo.exists():
             valores_configuracion.update(dotenv_values(archivo))
     configuracion:Configuracion = modelo_base(**valores_configuracion)
-    configuracion.iniciar()
+    configuracion.URL_MICROSERVICIO = f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}'
+    configuracion.PREFIJO_MICROSERVICIO = f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
     return configuracion
 
 

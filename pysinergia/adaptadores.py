@@ -89,6 +89,10 @@ class I_Comunicador(metaclass=ABCMeta):
     def traspasar_traductor(mi) -> I_Traductor:
         ...
 
+    @abstractmethod
+    def asignar_cookie(mi, respuesta, nombre:str, valor:str, duracion:int=None):
+        ...
+
 
 # --------------------------------------------------
 # ClaseModelo: Configuracion
@@ -114,6 +118,7 @@ class Configuracion(ABC, BaseSettings):
     API_KEYS: Dict[str,str] = Field(default={})
     SECRET_KEY: str = ''
     ALGORITMO_JWT: str = ''
+    DURACION_TOKEN: int = 5
     ZONA_HORARIA: str = ''
     FORMATO_FECHA: str = ''
     RUTA_TEMP: str = ''
@@ -253,25 +258,9 @@ class Configuracion(ABC, BaseSettings):
             'NOMBRE_PWA': mi.NOMBRE_PWA,
             'TITULO_PWA': mi.TITULO_PWA,
             'DESCRIPCION_PWA': mi.DESCRIPCION_PWA,
+            'DURACION_TOKEN': mi.DURACION_TOKEN,
         }
-    def autenticacion(mi) -> dict:
-        return dict({
-            'ALGORITMO_JWT': mi.ALGORITMO_JWT,
-            'SECRET_KEY': mi.SECRET_KEY,
-            'API_KEYS': mi.API_KEYS,
-            'RUTA_TEMP': mi.RUTA_TEMP,
-        })
-    def traductor(mi) -> dict:
-        return dict({
-            'DOMINIO_IDIOMA': mi.DOMINIO_IDIOMA,
-            'RUTA_LOCALES': mi.RUTA_LOCALES,
-            'IDIOMAS_DISPONIBLES': mi.IDIOMAS_DISPONIBLES,
-            'ZONA_HORARIA': mi.ZONA_HORARIA,
-            'FORMATO_FECHA': mi.FORMATO_FECHA,
-        })
-    def iniciar(mi):
-        mi.URL_MICROSERVICIO = f'/{mi.APP_GLOBAL}/{mi.APLICACION}'
-        mi.PREFIJO_MICROSERVICIO = f'{mi.RAIZ_GLOBAL}/{mi.APLICACION}'
+
 
 # --------------------------------------------------
 # Clase: Repositorio

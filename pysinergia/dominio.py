@@ -125,6 +125,7 @@ class Respuesta(BaseModel):
     url: dict | None = {}
     sesion: dict | None = {}
     esquemas: dict | None = {}
+    cookies: dict | None = {}
 
     @model_validator(mode='after')
     @classmethod
