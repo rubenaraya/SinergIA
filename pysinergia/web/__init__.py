@@ -26,6 +26,25 @@ from pysinergia import __pysinergia__
 # Clase: Traductor
 # --------------------------------------------------
 class Traductor(I_Traductor):
+
+    class _Traduccion:
+        def __init__(mi, dominios, ruta_locales, idioma:str):
+            mi._traducciones = [gettext.translation(dominio, ruta_locales, languages=[idioma], fallback=False) for dominio in dominios]
+
+        def gettext(mi, msgid):
+            for translation in mi._traducciones:
+                result = translation.gettext(msgid)
+                if result != msgid:
+                    return result
+            return msgid
+
+        def ngettext(mi, msgid, msgid_plural, n):
+            for translation in mi._traducciones:
+                result = translation.ngettext(msgid, msgid_plural, n)
+                if result not in [msgid, msgid_plural]:
+                    return result
+            return msgid if n == 1 else msgid_plural
+
     def __init__(mi, config:dict={}):
         mi.dominio_idioma:str = config.get('DOMINIO_IDIOMA', str(os.getenv('DOMINIO_IDIOMA')))
         mi.ruta_locales:str = config.get('RUTA_LOCALES', str(os.getenv('RUTA_LOCALES')))
@@ -74,11 +93,11 @@ class Traductor(I_Traductor):
             ruta_locales = mi.ruta_locales
         mi.ruta_locales = ruta_locales
         try:
-            mi.traduccion = gettext.translation(
-                domain=mi.dominio_idioma,
-                localedir=mi.ruta_locales,
-                languages=[mi.idioma],
-                fallback=False,
+            dominios = [dominio_idioma, 'base'] if dominio_idioma and dominio_idioma != 'base' else ['base']
+            mi.traduccion = mi._Traduccion(
+                dominios=dominios,
+                ruta_locales=mi.ruta_locales,
+                idioma=mi.idioma
             )
         except Exception as e:
             raise e

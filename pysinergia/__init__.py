@@ -125,6 +125,29 @@ class Constantes:
         _192KBPS = '192'
         _256KBPS = '256'
 
+    class CAMPO:
+        CHECKBOX = 'checkbox'
+        DATE = 'date'
+        EMAIL = 'email'
+        HIDDEN = 'hidden'
+        LABEL = 'label'
+        PASSWORD = 'password'
+        SEARCH = 'search'
+        SELECT = 'select'
+        SWITCH = 'switch'
+        TEXT = 'text'
+        TEXTAREA = 'textarea'
+        TIME = 'time'
+
+    class VALIDACION:
+        TEXTO = 'texto'
+        ENTERO = 'entero'
+        DECIMAL = 'decimal'
+        RUT = 'rut'
+        OPCIONES = 'opciones'
+        FECHA = 'fecha'
+        NOVALIDAR = 'novalidar'
+
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs

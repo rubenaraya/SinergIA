@@ -44,6 +44,7 @@ def autorizar_acceso(roles:str, permisos:str=None) -> bool:
 # --------------------------------------------------
 class Peticion(BaseModel):
     dto_contexto: Optional[dict] | None = {}
+    dto_roles_sesion: Optional[str] | None = ''
 
     def agregar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
@@ -52,21 +53,23 @@ class Peticion(BaseModel):
         serializado = {}
         datos = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
-            if field_name not in ['dto_contexto']:
+            if not field_name.startswith('dto_'):
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
                 valor = datos.get(field_name)
                 if field.json_schema_extra:
-                    serializado[field_name] = {
-                        'campo': field_name,
-                        'entrada': entrada or '',
-                        'salida': salida or '',
-                        'etiqueta': field.title or '',
-                        'filtro': field.json_schema_extra.get('filtro', ''),
-                        'orden': field.json_schema_extra.get('orden', ''),
-                        'entidad': field.json_schema_extra.get('entidad', ''),
-                        'valor': valor or ''
-                    }
+                    permisos = field.json_schema_extra.get('permisos', '')
+                    if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
+                        serializado[field_name] = {
+                            'campo': field_name,
+                            'entrada': entrada or '',
+                            'salida': salida or '',
+                            'etiqueta': field.title or '',
+                            'filtro': field.json_schema_extra.get('filtro', ''),
+                            'orden': field.json_schema_extra.get('orden', ''),
+                            'entidad': field.json_schema_extra.get('entidad', ''),
+                            'valor': valor or ''
+                        }
                 else:
                     serializado[field_name] = valor
             else:
@@ -161,7 +164,7 @@ class Respuesta(BaseModel):
         return mi.model_dump(mode='json', exclude_none=True, exclude_unset=True, exclude=('T'))
 
     def json(mi) -> str:
-        return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude={'T'})
+        return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude=('T'))
 
 # --------------------------------------------------
 # ClaseModelo: ArchivoCargado
@@ -393,4 +396,98 @@ class Recurso(BaseModel):
         valores.extension = 'txt'
         valores.conversion = Constantes.CONVERSION.TEXTO
         valores.tipo_mime = Constantes.MIME.TXT
+
+# --------------------------------------------------
+# ClaseModelo: Formulario
+# --------------------------------------------------
+class Formulario(Peticion):
+    dto_titulo:str = ''
+    dto_icono:str = ''
+    dto_intro:str = ''
+    dto_grupos:dict = {}
+    dto_interacciones:dict = {}
+    T: object | None = None
+
+    def _(mi, texto:str) -> str:
+        return texto
+
+    def generar(mi) -> dict:
+        datos = mi.model_dump(mode='json', warnings=False, exclude=('T','dto_grupos','dto_interacciones'))
+        _ = mi.T._ if mi.T else mi._
+        formulario:dict = {
+            'id': mi.__class__,
+            'icono': mi.dto_icono or '',
+            'leyendas': {'titulo': _(mi.dto_titulo), 'intro': _(mi.dto_intro)},
+            'campos': {},
+            'grupos': {},
+            'interacciones': {},
+        }
+        for field_name, field in mi.model_fields.items():
+            if not field_name.startswith('dto_') and field_name not in ['T']:
+                entrada = field.validation_alias if field.validation_alias else ''
+                valor = datos.get(field_name)
+                if field.json_schema_extra:
+                    permisos = field.json_schema_extra.get('permisos', '')
+                    if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
+                        minimo = str(field.json_schema_extra.get('minimo', 0))
+                        maximo = str(field.json_schema_extra.get('maximo', 0))
+                        msg_error = field.json_schema_extra.get('msg_error', '')
+                        if msg_error:
+                            msg_error = _(msg_error)
+                            msg_error = msg_error.replace('(minimo)', minimo)
+                            msg_error = msg_error.replace('(maximo)', maximo)
+                        diccionario = field.json_schema_extra.get('diccionario', None)
+                        if diccionario:
+                            # serializar diccionario
+                            ...
+
+                        formulario['campos'][field_name] = {
+                            'campo': field_name,
+                            'entrada': entrada or '',
+                            'etiqueta': field.title or '',
+                            'descripcion': field.description or '',
+                            'grupo': field.json_schema_extra.get('grupo', ''),
+                            'vista': field.json_schema_extra.get('vista', ''),
+                            'autocompletar': field.json_schema_extra.get('autocompletar', ''),
+                            'tipo_val': field.json_schema_extra.get('tipo_val', ''),
+                            'requerido': '1' if field.json_schema_extra.get('requerido', False) else '0',
+                            'editable': '1' if field.json_schema_extra.get('editable', True) else '0',
+                            'minimo': minimo,
+                            'maximo': maximo,
+                            'msg_error': msg_error or '',
+                            'valor': valor or '',
+                            'diccionario': {}
+                        }
+                else:
+                    formulario['campos'][field_name] = valor
+        # procesar dto_grupos y dto_interacciones
+        
+        return formulario
+
+# --------------------------------------------------
+# ClaseModelo: Diccionario
+# --------------------------------------------------
+class Diccionario(BaseModel):
+    dto_roles_sesion: Optional[str] | None = ''
+
+    def serializar(mi) -> dict:
+        serializado:dict = {}
+
+        return serializado
+
+# --------------------------------------------------
+# ClaseModelo: Informe
+# --------------------------------------------------
+class Informe(BaseModel):
+    dto_roles_sesion: Optional[str] | None = ''
+    dto_titulo:str = ''
+    dto_icono:str = ''
+    dto_intro:str = ''
+    dto_grupos:dict = {}
+    dto_interacciones:dict = {}
+
+    def serializar(mi) -> dict:
+        serializado:dict = {}
+
+        return serializado
 

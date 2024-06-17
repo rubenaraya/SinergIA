@@ -15,6 +15,9 @@ from pysinergia.dominio import (
     Procedimiento,
     Respuesta,
     Recurso,
+    Formulario,
+    Diccionario,
+    Informe,
 )
 from pysinergia.servicio import CasosDeUso
 from pysinergia.adaptadores import (
@@ -41,6 +44,9 @@ __all__ = [
     'Procedimiento',
     'Respuesta',
     'Recurso',
+    'Formulario',
+    'Diccionario',
+    'Informe',
     'CasosDeUso',
     'Controlador',
     'Repositorio',
