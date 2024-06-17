@@ -231,11 +231,9 @@ class Comunicador(ABC, I_Comunicador):
         mi.contexto['peticion'] = {}
 
     def transferir_contexto(mi, datos:dict=None) -> dict:
-        if mi.contexto.get('datos', None) is None:
-            mi.contexto['datos'] = {}
         if datos is not None:
             for clave, valor in datos.items():
-                mi.contexto['datos'][clave] = valor
+                mi.contexto[clave] = valor
         return mi.contexto
 
     def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:

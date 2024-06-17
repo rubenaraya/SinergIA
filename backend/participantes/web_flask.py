@@ -319,7 +319,11 @@ def form():
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    form = FormActualizarParticipante(
+    """
+    Evaluar cómo cargar los atributos en forma similar a **kwargs
+    para usar como peticion (traspasada a procedimiento) y luego cargar los datos obtenidos para mostrar el form
+    """
+    formulario = FormActualizarParticipante(
         dto_contexto=comunicador.transferir_contexto(),
         dto_roles_sesion=sesion.get('roles'),
         T=comunicador.traspasar_traductor(),
@@ -328,9 +332,8 @@ def form():
         email='raraya@masexperto.com',
         estado='Activo',
     )
-    formulario = form.generar()
-    respuesta = Respuesta(
-        T=comunicador.traspasar_traductor(),
-        esquemas={'formulario': formulario}
-    ).diccionario()
-    return jsonify(respuesta)
+    respuesta = comunicador.transformar_contenido(
+        comunicador.transferir_contexto({'formulario': formulario.generar()}),
+        plantilla='formulario.html',
+    )
+    return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)

@@ -10,7 +10,6 @@ from pysinergia.base import (
     Formulario,
     Diccionario,
     Informe,
-    autorizar_acceso,
 )
 
 # --------------------------------------------------
@@ -199,9 +198,9 @@ class ProcedimientoActualizarParticipante(Procedimiento):
 # --------------------------------------------------
 class DiccionarioParticipantes(Diccionario):
     estado:dict = {
-        'activo': {'valor':'Activo', 'etiqueta':'Estado-Activo', 'color':'success', 'titulo':'', 'icono':'', 'permisos':'*'},
-        'inactivo': {'valor':'Inactivo', 'etiqueta':'Estado-Inactivo', 'color':'warning', 'titulo':'', 'icono':'', 'permisos':'*'},
-        'archivado': {'valor':'Archivado', 'etiqueta':'Estado-Archivado', 'color':'secondary', 'titulo':'', 'icono':'', 'permisos':'*'},
+        'activo': {'valor':'Activo', 'etiqueta':'Estado-Activo', 'estilo':'success'},
+        'inactivo': {'valor':'Inactivo', 'etiqueta':'Estado-Inactivo', 'estilo':'warning'},
+        'archivado': {'valor':'Archivado', 'etiqueta':'Estado-Archivado', 'estilo':'secondary'},
     }
 
 # --------------------------------------------------
@@ -210,13 +209,13 @@ class DiccionarioParticipantes(Diccionario):
 class FormActualizarParticipante(Formulario):
     dto_titulo:str = 'Editar-participante'
     dto_icono:str = 'bi-pencil-square'
-    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos', 'icono':'', 'visible':True, 'permisos':'*'}}
-    dto_interacciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'bi-check-square', 'permisos':'*'}}
+    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos'}}
+    dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'bi-check-square'}}
+    dto_diccionario:object = DiccionarioParticipantes 
 
     id: Optional[int] = Field(
         default=None,
         validation_alias='id',
-        serialization_alias='id',
     )
     alias: Optional[str] = Field(
         default=None,
@@ -225,25 +224,22 @@ class FormActualizarParticipante(Formulario):
         title='Nombre-participante',
         description='Alias-del-participante',
         max_length=25,
-        json_schema_extra={'permisos':'*', 'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'autocompletar':'', 'requerido':True, 'editable':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres', 'minimo':5, 'maximo':25, 'diccionario':None}
+        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres', 'minimo':5, 'maximo':25}
     )
     email: Optional[str] = Field(
         default=None,
         validation_alias='email',
-        serialization_alias='email',
         title='Correo-e-participante',
         description='Correo-electronico-del-participante',
-        pattern='[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})',
         max_length=50,
-        json_schema_extra={'permisos':'*', 'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'autocompletar':'', 'requerido':True, 'editable':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-un-correo-electronico-valido', 'minimo':7, 'maximo':50, 'diccionario':None}
+        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-un-correo-electronico-valido', 'minimo':7, 'maximo':50, 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
     )
     estado: Optional[str] = Field(
         default=None,
         validation_alias='estado',
-        serialization_alias='estado',
         title='Estado-participante',
         description='Estado-del-participante',
-        json_schema_extra={'permisos':'*', 'grupo':'basicos', 'vista': C.CAMPO.SELECT, 'autocompletar':'', 'requerido':False, 'editable':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario': DiccionarioParticipantes}
+        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.SELECT, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario':'estado'}
     )
 
 # --------------------------------------------------
