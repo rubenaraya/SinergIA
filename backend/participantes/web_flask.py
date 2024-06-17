@@ -23,6 +23,7 @@ from .dominio import (
     ProcedimientoAgregarParticipante,
     ProcedimientoEliminarParticipante,
     ProcedimientoBuscarParticipantes,
+    FormActualizarParticipante,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -313,3 +314,23 @@ def sql():
     # Enrutador
     return jsonify(respuesta)
 
+@enrutador.route('/form', methods=['GET'])
+def form():
+    sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
+    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
+    comunicador.procesar_peticion(idioma, sesion)
+    form = FormActualizarParticipante(
+        dto_contexto=comunicador.transferir_contexto(),
+        dto_roles_sesion=sesion.get('roles'),
+        T=comunicador.traspasar_traductor(),
+        id=1,
+        nombre='Rubén Araya',
+        email='raraya@masexperto.com',
+        estado='Activo',
+    )
+    formulario = form.generar()
+    respuesta = Respuesta(
+        T=comunicador.traspasar_traductor(),
+        esquemas={'formulario': formulario}
+    ).diccionario()
+    return jsonify(respuesta)

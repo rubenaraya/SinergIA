@@ -13,6 +13,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: web.py:1
+#: dominio.py:1
 msgid "Editar-participante"
 msgstr "Editar datos del participante"
+
+#: dominio.py:2
+msgid "Datos-basicos"
+msgstr "Datos básicos"
+
+#: dominio.py:3
+msgid "Actualizar-participante"
+msgstr "Actualizar participante"
+
+#: dominio.py:4
+msgid "Nombre-participante"
+msgstr "Nombre"
+
+#: dominio.py:5
+msgid "Alias-del-participante"
+msgstr "Alias del participante"
+
+#: dominio.py:6
+msgid "Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres"
+msgstr "Nombre debe tener entre (minimo) y (maximo) caracteres"
+
+#: dominio.py:7
+msgid "Correo-e-participante"
+msgstr "Correo-e"
+
+#: dominio.py:8
+msgid "Correo-electronico-del-participante"
+msgstr "Correo electrónico del participante"
+
+#: dominio.py:9
+msgid "Debe-ingresar-un-correo-electronico-valido"
+msgstr "Debes ingresar un Correo electrónico válido"
+
+#: dominio.py:10
+msgid "Estado-participante"
+msgstr "Estado"
+
+#: dominio.py:11
+msgid "Estado-del-participante"
+msgstr "Estado del participante"
+
+#: dominio.py:12
+msgid "Debe-elegir-un-estado"
+msgstr "Debes elegir un Estado de la lista"
+
+#: dominio.py:13
+msgid "Estado-Activo"
+msgstr "Activo"
+
+#: dominio.py:14
+msgid "Estado-Inactivo"
+msgstr "Inactivo"
+
+#: dominio.py:15
+msgid "Estado-Archivado"
+msgstr "Archivado"
+

@@ -43,20 +43,20 @@ def autorizar_acceso(roles:str, permisos:str=None) -> bool:
 # ClaseModelo: Peticion
 # --------------------------------------------------
 class Peticion(BaseModel):
-    dto_contexto: Optional[dict] | None = {}
-    dto_roles_sesion: Optional[str] | None = ''
+    dto_contexto: Optional[dict] = {}
+    dto_roles_sesion: Optional[str] = ''
 
     def agregar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
 
     def serializar(mi) -> dict:
         serializado = {}
-        datos = mi.model_dump(mode='json', warnings=False)
+        modelo = mi.model_dump(mode='json', warnings=False, exclude=('T'))
         for field_name, field in mi.model_fields.items():
-            if not field_name.startswith('dto_'):
+            if not field_name.startswith('dto_') and field_name not in ['T']:
                 entrada = field.validation_alias if field.validation_alias else ''
                 salida = field.serialization_alias if field.serialization_alias else ''
-                valor = datos.get(field_name)
+                valor = modelo.get(field_name)
                 if field.json_schema_extra:
                     permisos = field.json_schema_extra.get('permisos', '')
                     if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
@@ -73,20 +73,20 @@ class Peticion(BaseModel):
                 else:
                     serializado[field_name] = valor
             else:
-                serializado[f'_{field_name}'] = datos.get(field_name)
+                serializado[f'_{field_name}'] = modelo.get(field_name)
         return serializado
 
 # --------------------------------------------------
 # ClaseModelo: Procedimiento
 # --------------------------------------------------
 class Procedimiento(BaseModel):
-    dto_origen_datos: Optional[str] | None = ''
-    dto_solicitud_datos: Optional[dict] | None = {}
-    dto_roles_sesion: Optional[str] | None = ''
+    dto_origen_datos: Optional[str] = ''
+    dto_solicitud_datos: Optional[dict] = {}
+    dto_roles_sesion: Optional[str] = ''
 
     def serializar(mi) -> dict:
         serializado:dict = {}
-        datos = mi.model_dump(mode='json', warnings=False)
+        modelo = mi.model_dump(mode='json', warnings=False)
         for field_name, field in mi.model_fields.items():
             if not field_name.startswith('dto_'):
                 entrada = field.validation_alias if field.validation_alias else ''
@@ -103,7 +103,7 @@ class Procedimiento(BaseModel):
                             'entidad': field.json_schema_extra.get('entidad', ''),
                         }
             else:
-                serializado[f'_{field_name}'] = datos.get(field_name)
+                serializado[f'_{field_name}'] = modelo.get(field_name)
         return serializado
 
 # --------------------------------------------------
@@ -112,23 +112,23 @@ class Procedimiento(BaseModel):
 class Respuesta(BaseModel):
     model_config = ConfigDict()
 
-    T: object | None = None
-    codigo: Optional[int] | None = None
-    conclusion: Optional[str] | None = None
-    mensaje: Optional[str] | None = None
-    titulo: Optional[str] | None = None
-    descripcion: Optional[str] | None = None
+    T: Optional[object] = None
+    codigo: Optional[int] = None
+    conclusion: Optional[str] = None
+    mensaje: Optional[str] = None
+    titulo: Optional[str] = None
+    descripcion: Optional[str] = None
     fecha_actual:str = ''
     hora_actual:str = ''
     detalles:list = []
-    resultado: dict | None = {}
-    metadatos: dict | None = {}
-    fecha: dict | None = {}
-    web: dict | None = {}
-    url: dict | None = {}
-    sesion: dict | None = {}
-    esquemas: dict | None = {}
-    cookies: dict | None = {}
+    resultado: dict = {}
+    metadatos: dict = {}
+    fecha: dict = {}
+    web: dict = {}
+    url: dict = {}
+    sesion: dict = {}
+    esquemas: dict = {}
+    cookies: dict = {}
 
     @model_validator(mode='after')
     @classmethod
@@ -403,21 +403,21 @@ class Recurso(BaseModel):
 class Formulario(Peticion):
     dto_titulo:str = ''
     dto_icono:str = ''
-    dto_intro:str = ''
+    dto_descripcion:str = ''
     dto_grupos:dict = {}
     dto_interacciones:dict = {}
-    T: object | None = None
+    T: Optional[object] = None
 
     def _(mi, texto:str) -> str:
         return texto
 
     def generar(mi) -> dict:
-        datos = mi.model_dump(mode='json', warnings=False, exclude=('T','dto_grupos','dto_interacciones'))
+        modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','dto_grupos','dto_interacciones'))
         _ = mi.T._ if mi.T else mi._
         formulario:dict = {
-            'id': mi.__class__,
+            'id': mi.__class__.__name__,
             'icono': mi.dto_icono or '',
-            'leyendas': {'titulo': _(mi.dto_titulo), 'intro': _(mi.dto_intro)},
+            'leyendas': {'titulo': _(mi.dto_titulo), 'descripcion': _(mi.dto_descripcion)},
             'campos': {},
             'grupos': {},
             'interacciones': {},
@@ -425,61 +425,95 @@ class Formulario(Peticion):
         for field_name, field in mi.model_fields.items():
             if not field_name.startswith('dto_') and field_name not in ['T']:
                 entrada = field.validation_alias if field.validation_alias else ''
-                valor = datos.get(field_name)
+                valor = modelo.get(field_name)
                 if field.json_schema_extra:
                     permisos = field.json_schema_extra.get('permisos', '')
                     if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
                         minimo = str(field.json_schema_extra.get('minimo', 0))
                         maximo = str(field.json_schema_extra.get('maximo', 0))
-                        msg_error = field.json_schema_extra.get('msg_error', '')
-                        if msg_error:
-                            msg_error = _(msg_error)
-                            msg_error = msg_error.replace('(minimo)', minimo)
-                            msg_error = msg_error.replace('(maximo)', maximo)
+                        error = field.json_schema_extra.get('error', '')
+                        if error:
+                            error = _(error).replace('(minimo)', minimo).replace('(maximo)', maximo)
                         diccionario = field.json_schema_extra.get('diccionario', None)
+                        dic = {}
                         if diccionario:
-                            # serializar diccionario
-                            ...
-
+                            serializado = diccionario(dto_roles_sesion=mi.dto_roles_sesion, dto_valor_actual=valor, t=_).serializar()
+                            dic = serializado.get(field_name, {})
                         formulario['campos'][field_name] = {
                             'campo': field_name,
                             'entrada': entrada or '',
-                            'etiqueta': field.title or '',
-                            'descripcion': field.description or '',
+                            'etiqueta': _(field.title) or '',
+                            'descripcion': _(field.description) or '',
                             'grupo': field.json_schema_extra.get('grupo', ''),
                             'vista': field.json_schema_extra.get('vista', ''),
                             'autocompletar': field.json_schema_extra.get('autocompletar', ''),
-                            'tipo_val': field.json_schema_extra.get('tipo_val', ''),
+                            'validacion': field.json_schema_extra.get('validacion', ''),
                             'requerido': '1' if field.json_schema_extra.get('requerido', False) else '0',
                             'editable': '1' if field.json_schema_extra.get('editable', True) else '0',
                             'minimo': minimo,
                             'maximo': maximo,
-                            'msg_error': msg_error or '',
+                            'error': error or '',
                             'valor': valor or '',
-                            'diccionario': {}
+                            'diccionario': dic
                         }
                 else:
                     formulario['campos'][field_name] = valor
-        # procesar dto_grupos y dto_interacciones
-        
+        for clave, valores in mi.dto_grupos.items():
+            if isinstance(valores, dict):
+                if autorizar_acceso(permisos=valores.get('permisos', ''), roles=mi.dto_roles_sesion):
+                    formulario['grupos'][clave] = {
+                        'icono': valores.get('icono', ''),
+                        'visible': '1' if valores.get('visible', True) else '0',
+                        'etiqueta': _(str(valores.get('etiqueta', ''))),
+                    }
+        for clave, valores in mi.dto_interacciones.items():
+            if isinstance(valores, dict):
+                if autorizar_acceso(permisos=valores.get('permisos', ''), roles=mi.dto_roles_sesion):
+                    formulario['interacciones'][clave] = {
+                        'icono': valores.get('icono', ''),
+                        'etiqueta': _(str(valores.get('etiqueta', ''))),
+                    }
         return formulario
 
 # --------------------------------------------------
 # ClaseModelo: Diccionario
 # --------------------------------------------------
 class Diccionario(BaseModel):
-    dto_roles_sesion: Optional[str] | None = ''
+    dto_roles_sesion: Optional[str] = ''
+    dto_valor_actual: Optional[str] = ''
+    t: Optional[object] = None
+
+    def _(mi, texto:str) -> str:
+        return texto
 
     def serializar(mi) -> dict:
-        serializado:dict = {}
+        diccionario = {}
+        modelo = mi.model_dump(mode='json', warnings=False, exclude=('t'))
+        _ = mi.t if mi.t else mi._
+        for campo, datos in modelo.items():
+            if not campo.startswith('dto_') and campo not in ['t'] and isinstance(datos, dict):
+                diccionario[campo] = {}
+                for clave, valores in datos.items():
+                    if isinstance(valores, dict):
+                        permisos = valores.get('permisos', '')
+                        if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
+                            valor = valores.get('valor', '')
+                            diccionario[campo][clave] = {
+                                'valor': valor,
+                                'etiqueta': _(valores.get('etiqueta', '')),
+                                'titulo': _(valores.get('titulo', '')),
+                                'color': valores.get('color', ''),
+                                'icono': valores.get('icono', ''),
+                                'actual': '1' if valor and valor == mi.dto_valor_actual else ''
+                            }
+        return diccionario
 
-        return serializado
 
 # --------------------------------------------------
 # ClaseModelo: Informe
 # --------------------------------------------------
 class Informe(BaseModel):
-    dto_roles_sesion: Optional[str] | None = ''
+    dto_roles_sesion: Optional[str] = ''
     dto_titulo:str = ''
     dto_icono:str = ''
     dto_intro:str = ''

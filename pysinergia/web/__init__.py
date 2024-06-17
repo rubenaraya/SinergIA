@@ -32,6 +32,8 @@ class Traductor(I_Traductor):
             mi._traducciones = [gettext.translation(dominio, ruta_locales, languages=[idioma], fallback=False) for dominio in dominios]
 
         def gettext(mi, msgid):
+            if not msgid or msgid == '':
+                return ''
             for translation in mi._traducciones:
                 result = translation.gettext(msgid)
                 if result != msgid:
@@ -39,6 +41,8 @@ class Traductor(I_Traductor):
             return msgid
 
         def ngettext(mi, msgid, msgid_plural, n):
+            if not msgid or msgid == '':
+                return ''
             for translation in mi._traducciones:
                 result = translation.ngettext(msgid, msgid_plural, n)
                 if result not in [msgid, msgid_plural]:
