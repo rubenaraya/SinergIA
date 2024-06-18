@@ -271,7 +271,7 @@ class ErrorPersonalizado(Exception):
                     msg = error.get('msg', '')
                     loc = error.get('loc', '')
                     input = error.get('input', '')
-                    input_aux = input if isinstance(input, str) else ''
+                    input_aux = input if isinstance(input, (str, int, float, bool)) else ''
                     if type or msg or loc or input:
                         mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_aux})
                     else:

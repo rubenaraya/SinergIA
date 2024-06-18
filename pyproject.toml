@@ -17,7 +17,8 @@ version = "0.0.1"
 description = "Biblioteca Python para desarrollar Aplicaciones WEB/REST de back-end basadas en una arquitectura limpia de microservicios"
 
 dependencies = [
-    "pydantic >= 2.0",
+    "jinja2 >=3.0.0",
+    "pydantic >= 2.0.0",
     "pydantic-settings",
     "python-dotenv",
     "PyJWT",

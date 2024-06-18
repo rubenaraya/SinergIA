@@ -6,10 +6,10 @@ from typing import (
     List,
     Optional,
     Self,
+    Any,
     #Dict,
     #Tuple,
     #Literal,
-    #Any,
 )
 #from enum import Enum
 from pydantic import (
@@ -38,6 +38,119 @@ def autorizar_acceso(roles:str, permisos:str=None) -> bool:
         if bool(eval_permisos & eval_roles):
             return True
     return False
+
+# --------------------------------------------------
+# Clase: ValidadorDatos
+# --------------------------------------------------
+class ValidadorDatos:
+    def __init__(mi):
+        mi.validaciones = {
+            Constantes.VALIDACION.TEXTO: mi._validar_texto,
+            Constantes.VALIDACION.ENTERO: mi._validar_entero,
+            Constantes.VALIDACION.DECIMAL: mi._validar_decimal,
+            Constantes.VALIDACION.FECHA: mi._validar_fecha,
+            Constantes.VALIDACION.RUT: mi._validar_rut,
+        }
+        mi.errores:list = []
+
+    # --------------------------------------------------
+    # Métodos privados
+
+    def _validar_texto(mi, minimo:float, maximo:float, valor:Any) -> bool:
+        valor = str(valor).strip()
+        if maximo > 0 and minimo <= len(valor) <= maximo:
+            return True
+        elif maximo == 0 and minimo <= len(valor):
+            return True
+        return False
+
+    def _validar_entero(mi, minimo:float, maximo:float, valor:Any) -> bool:
+        valor = int(valor)
+        if maximo > 0 and minimo <= valor <= maximo:
+            return True
+        elif maximo == 0 and minimo <= valor:
+            return True
+        return False
+
+    def _validar_decimal(mi, minimo:float, maximo:float, valor:Any) -> bool:
+        valor = float(valor)
+        if maximo > 0 and minimo <= valor <= maximo:
+            return True
+        elif maximo == 0 and minimo <= valor:
+            return True
+        return False
+
+    def _validar_fecha(mi, minimo:float, maximo:float, valor:Any) -> bool:
+        import datetime
+        estado = False
+        valor = str(valor)
+        if len(valor) > 0 and '-' in valor:
+            year, month, day = map(int, valor.split('-'))
+            try:
+                date = datetime.datetime(year, month, day)
+                estado = True
+                today = datetime.datetime.today()
+                if maximo > 0 and date > today:
+                    estado = False
+                if minimo > 0 and date < today:
+                    estado = False
+            except Exception as e:
+                print(e)
+        elif minimo == 0 and maximo == 0 and len(valor) == 0:
+            estado = True
+        return estado
+
+    def _validar_rut(mi, minimo:float, maximo:float, valor:Any) -> bool:
+        valor = str(valor)
+        if (minimo > 0 or len(valor) > 0) and '-' in valor:
+            rut, dv = valor.split('-')
+            if len(rut) > 0 and len(dv) == 1:
+                m, s = 0, 1
+                for digit in reversed(rut):
+                    s = (s + int(digit) * (9 - m % 6)) % 11
+                    m += 1
+                calculated_dv = 'k' if s == 10 else str(s)
+                if calculated_dv.lower() == dv.lower():
+                    return True
+        elif minimo == 0 and len(valor) == 0:
+            return True
+        return False
+
+    def _validar_expreg(mi, patron:str, valor:Any) -> bool:
+        import re
+        valor = str(valor)
+        try:
+            if patron and len(valor) > 0:
+                while patron.find('\\\\') >0:
+                    patron = patron.replace('\\\\', '\\')
+                expresion = re.compile('^' + patron + '$')
+                if not expresion.match(valor):
+                    return False
+        except Exception as e:
+            print(e)
+        return True
+
+    # --------------------------------------------------
+    # Métodos públicos
+
+    def verificar_campo(mi, criterios:dict, valor:Any) -> bool:
+        if criterios.get('validacion') == 'novalidar':
+            return True
+        estado = False
+        minimo = 0 if not criterios.get('minimo') else float(criterios.get('minimo'))
+        maximo = 0 if not criterios.get('maximo') else float(criterios.get('maximo'))
+        estado = mi.validaciones.get(criterios.get('validacion'))(minimo, maximo, valor)
+        if estado:
+            estado = mi._validar_expreg(criterios.get('patron', ''), valor)
+        if not estado:
+            mensaje = criterios.get('error', '')
+            if len(mensaje) >0:
+                mi.errores.append({
+                    'campo': criterios.get('campo'),
+                    'valor': valor,
+                    'mensaje': mensaje,
+                })
+        return estado
 
 # --------------------------------------------------
 # ClaseModelo: Peticion
@@ -522,6 +635,9 @@ class Formulario(Peticion):
                         'etiqueta': _(str(valores.get('etiqueta', ''))),
                     }
         return formulario
+
+    def validar(mi, formulario:dict) -> dict:
+        validador = ValidadorDatos()
 
 # --------------------------------------------------
 # ClaseModelo: Informe
