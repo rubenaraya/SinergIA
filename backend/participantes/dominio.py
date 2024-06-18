@@ -207,10 +207,10 @@ class DiccionarioParticipantes(Diccionario):
 # ClaseModelo: FormActualizarParticipante
 # --------------------------------------------------
 class FormActualizarParticipante(Formulario):
-    dto_titulo:str = 'Editar-participante'
-    dto_icono:str = 'bi-pencil-square'
+    dto_titulo:str = 'Form-Editar-participante'
+    dto_icono:str = 'pencil-square'
     dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos'},'perfil': {'etiqueta':'Perfil-participante'}}
-    dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'bi-check-square', 'estilo':'btn-primary'}}
+    dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'check-square', 'estilo':'primary'}}
     dto_diccionario:object = DiccionarioParticipantes 
 
     id: Optional[int] = Field(
@@ -240,6 +240,34 @@ class FormActualizarParticipante(Formulario):
         title='Estado-participante',
         description='Estado-del-participante',
         json_schema_extra={'grupo':'perfil', 'vista': C.CAMPO.SELECT, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario':'estado'}
+    )
+
+# --------------------------------------------------
+# ClaseModelo: FormLogin
+# --------------------------------------------------
+class FormLogin(Formulario):
+    dto_titulo:str = 'Form-Autenticacion'
+    dto_icono:str = 'person-exclamation'
+    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-para-iniciar-sesion'}}
+    dto_acciones:dict = {'enviar': {'etiqueta':'Iniciar-sesion', 'icono':'box-arrow-in-right', 'estilo':'primary'}}
+
+    username: Optional[str] = Field(
+        default=None,
+        validation_alias='username',
+        serialization_alias='email',
+        title='Nombre-usuario',
+        description='Nombre-de-usuario',
+        max_length=50,
+        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.EMAIL, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-nombre-de-usuario', 'minimo':7, 'maximo':50, 'autocompletar':'username', 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
+    )
+    password: Optional[str] = Field(
+        default=None,
+        validation_alias='password',
+        serialization_alias='clave',
+        title='Contraseña-usuario',
+        description='Contraseña-del-usuario',
+        max_length=50,
+        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.PASSWORD, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-contraseña', 'minimo':5, 'maximo':15, 'autocompletar':'current-password', 'patron':'[A-Za-z0-9.,_-]+'}
     )
 
 # --------------------------------------------------

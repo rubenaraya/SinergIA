@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="{{ web.IDIOMA }}">
 <html>
 <head>
@@ -9,14 +10,14 @@
 </head>
 <body class="body py-1">
 <div class="container">
-<h3><i class="bi {{formulario.icono}}"></i> {{formulario.titulo}}</h3>
+<h3><i class="bi bi-{{formulario.icono}}"></i> {{formulario.titulo}}</h3>
 <form id="{{formulario.id}}" action="{{formulario.ruta}}" method="post">
 {% for id_grupo, datos_grupo in formulario.grupos.items() %}
 <div class="row mt-3"><div class="col text-secondary small">{{ datos_grupo.etiqueta }}</div></div>
 {% for id_campo, datos_campo in formulario.campos.items() %}{{ form.mostrar_campo(id_campo, datos_campo, id_grupo) }}{% endfor %}
 {% endfor %}
 <div class="text-center mt-4">{% for id_accion, datos_accion in formulario.acciones.items() %}
-<button type="submit" class="btn {{datos_accion.estilo}}"><i class="bi {{datos_accion.icono}}"></i> {{datos_accion.etiqueta}}</button>
+<button type="submit" class="btn btn-{{datos_accion.estilo}}"><i class="bi bi-{{datos_accion.icono}}"></i> {{datos_accion.etiqueta}}</button>
 {% endfor %}</div>
 </form>
 </body>

@@ -21,6 +21,7 @@ from .dominio import (
     ProcedimientoActualizarParticipante,
     ProcedimientoEliminarParticipante,
     ProcedimientoBuscarParticipantes,
+    FormLogin,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -108,16 +109,17 @@ async def get_login(request:Request):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)
+    formulario = FormLogin(dto_contexto=comunicador.transferir_contexto(), T=comunicador.traspasar_traductor())
     return comunicador.transformar_contenido(
-        comunicador.transferir_contexto(),
-        plantilla='form_login.html',
+        comunicador.transferir_contexto({'formulario': formulario.generar()}),
+        plantilla='form_login.html'
     )
 
 @enrutador.post('/login',
                 status_code=C.ESTADO._200_EXITO,
                 response_class=JSONResponse)
 async def post_login(request:Request):
-    respuesta = {}
+    respuesta = 'LOGIN'
     return respuesta
 
 @enrutador.get('/pdf', status_code=C.ESTADO._200_EXITO)

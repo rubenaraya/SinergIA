@@ -145,3 +145,38 @@ msgstr "Hay {total} casos. Lista del {primero} al {ultimo}"
 msgid "Error-en-exportador-Audio"
 msgstr "Error en exportador de Audio"
 
+#: dominio.py:5
+msgid "Form-Autenticacion"
+msgstr "Autenticación"
+
+#: dominio.py:6
+msgid "Datos-para-iniciar-sesion"
+msgstr "Inicia sesión en tu cuenta para continuar"
+
+#: dominio.py:7
+msgid "Iniciar-sesion"
+msgstr "Iniciar sesión"
+
+#: dominio.py:8
+msgid "Nombre-usuario"
+msgstr "Correo-e"
+
+#: dominio.py:9
+msgid "Nombre-de-usuario"
+msgstr "Correo-electrónico"
+
+#: dominio.py:10
+msgid "Debe-ingresar-su-nombre-de-usuario"
+msgstr "Debes ingresar tu nombre de usuario"
+
+#: dominio.py:11
+msgid "Contraseña-usuario"
+msgstr "Contraseña"
+
+#: dominio.py:12
+msgid "Contraseña-del-usuario"
+msgstr "Contraseña del usuario"
+
+#: dominio.py:13
+msgid "Debe-ingresar-su-contraseña"
+msgstr "Debes ingresar tu contraseña"

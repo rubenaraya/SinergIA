@@ -23,6 +23,7 @@ from .dominio import (
     ProcedimientoEliminarParticipante,
     ProcedimientoBuscarParticipantes,
     FormActualizarParticipante,
+    FormLogin,
 )
 from .adaptadores import (
     ControladorParticipantes as Controlador,
@@ -104,15 +105,17 @@ def get_login():
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
+    formulario = FormLogin(dto_contexto=comunicador.transferir_contexto(), T=comunicador.traspasar_traductor())
     respuesta = comunicador.transformar_contenido(
-        comunicador.transferir_contexto(),
+        comunicador.transferir_contexto({'formulario': formulario.generar()}),
         plantilla='form_login.html',
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
 @enrutador.route('/login', methods=['POST'])
 def post_login():
-    ...
+    respuesta = 'LOGIN'
+    return respuesta
 
 @enrutador.route('/token/<email>', methods=['GET'])
 def token(email:str):

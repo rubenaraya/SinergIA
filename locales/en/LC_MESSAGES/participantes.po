@@ -14,7 +14,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: web.py:1
-msgid "Editar-participante"
+msgid "Form-Editar-participante"
 msgstr "Edit participant data"
 
 #: dominio.py:2
