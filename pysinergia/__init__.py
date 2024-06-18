@@ -127,17 +127,23 @@ class Constantes:
 
     class CAMPO:
         CHECKBOX = 'checkbox'
+        COLOR = 'color'
         DATE = 'date'
         EMAIL = 'email'
         HIDDEN = 'hidden'
+        IMAGE = 'image'
         LABEL = 'label'
+        NUMBER = 'number'
         PASSWORD = 'password'
+        RADIO = 'radio'
         SEARCH = 'search'
         SELECT = 'select'
         SWITCH = 'switch'
+        TEL = 'tel'
         TEXT = 'text'
         TEXTAREA = 'textarea'
         TIME = 'time'
+        URL = 'url'
 
     class VALIDACION:
         TEXTO = 'texto'

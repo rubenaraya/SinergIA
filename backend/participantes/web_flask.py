@@ -3,7 +3,6 @@
 from pysinergia.base import (
     configurar_microservicio,
     C,
-    Traductor,
     ImagenCargada,
     DocumentoCargado,
     AudioCargado,
@@ -107,7 +106,7 @@ def get_login():
     comunicador.procesar_peticion(idioma, sesion)
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
-        plantilla='login.html',
+        plantilla='form_login.html',
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)
 
@@ -334,6 +333,6 @@ def form():
     )
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto({'formulario': formulario.generar()}),
-        plantilla='formulario.html',
+        plantilla='form_pagina.html',
     )
     return Response(respuesta, C.ESTADO._200_EXITO, mimetype=C.MIME.HTML)

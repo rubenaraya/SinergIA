@@ -3,7 +3,6 @@
 from pysinergia.base import (
     configurar_microservicio,
     C,
-    Traductor,
     ImagenCargada,
     DocumentoCargado,
     AudioCargado,
@@ -111,7 +110,7 @@ async def get_login(request:Request):
     await comunicador.procesar_peticion(request, idioma, sesion)
     return comunicador.transformar_contenido(
         comunicador.transferir_contexto(),
-        plantilla='login.html',
+        plantilla='form_login.html',
     )
 
 @enrutador.post('/login',

@@ -1,8 +1,8 @@
 <html lang="{{ web.IDIOMA }}">
 <html>
 <head>
-{% import 'form_campos.html' as form with context %}
-{% import 'head.html' as head with context %}{{head.insertar('bootstrap53')}}
+{% import 'macros_form.html' as form with context %}
+{% import 'head.html' as head with context %}{{head.insertar('bootstrap53','')}}
     <title>{{formulario.titulo}}</title>
     <link rel="icon" href="{{url.frontapp}}/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="{{url.frontapp}}/favicon.ico" type="image/x-icon">

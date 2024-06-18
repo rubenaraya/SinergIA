@@ -1,0 +1,89 @@
+{% macro mostrar_campo(id_campo, datos_campo, id_grupo) %}
+{% if datos_campo.grupo == id_grupo %}<div class="row mt-1 mb-2" id="campo_{{datos_campo.campo}}">
+{% if datos_campo.vista == 'text' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="text" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" class="form-control" placeholder="{{datos_campo.descripcion}}" value="{{datos_campo.valor}}"{% if datos_campo.minimo > 0 %} minlength="{{datos_campo.minimo}}"{% endif %}{% if datos_campo.maximo > 0 %} maxlength="{{datos_campo.maximo}}"{% endif %}{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+</div>
+{% elif datos_campo.vista == 'select' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <select name="{{datos_campo.campo}}" id="f_{{datos_campo.campo}}" class="form-select w-auto"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+        {% for id_item, item in datos_campo.diccionario.items() %}<option value="{{item.valor}}"{% if item.valor|string == datos_campo.valor|string %} selected{% endif %}>{{item.etiqueta}}</option>{% endfor %}
+    </select>
+</div>
+{% elif datos_campo.vista == 'hidden' %}
+<input type="hidden" name="{{datos_campo.campo}}" id="f_{{datos_campo.campo}}" value="{{datos_campo.valor}}">
+{% elif datos_campo.vista == 'email' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="email" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" placeholder="{{datos_campo.descripcion}}" value="{{datos_campo.valor}}" class="form-control"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+</div>
+{% elif datos_campo.vista == 'password' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="password" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" class="form-control" placeholder="{{datos_campo.descripcion}}" {% if datos_campo.autocompletar|length >0 %} autocomplete="{{datos_campo.autocompletar}}"{% endif %}{% if datos_campo.requerido %} required{% endif %}>
+</div>
+{% elif datos_campo.vista == 'date' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="date" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" class="form-control w-auto" value="{{datos_campo.valor}}" {% if datos_campo.minimo > 0 %} min="{{fecha.amd}}"{% endif %}{% if datos_campo.maximo > 0 %} max="{{fecha.amd}}"{% endif %}{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+</div>
+{% elif datos_campo.vista == 'time' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="time" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" class="form-control w-auto" value="{{datos_campo.valor}}"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+</div>
+{% elif datos_campo.vista == 'textarea' %}
+<div class="col">
+    <div class="form-floating">
+        {% if datos_campo.etiqueta|length > 0 %}<div>{{datos_campo.etiqueta}}</div>{% endif %}
+        <textarea class="form-control-sm w-100 auto-resize" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" placeholder="{{datos_campo.descripcion}}" maxlength="{{datos_campo.maximo}}"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>{{datos_campo.valor}}</textarea>
+        <label for="f_{{datos_campo.campo}}">{{datos_campo.descripcion}}</label>
+    </div>
+</div>
+{% elif datos_campo.vista == 'label' %}
+<div class="col text-dark small mt-2 mb-2 text-center">
+    {% if datos_campo.etiqueta|length > 0 %}<strong>{{datos_campo.etiqueta}}</strong>: {% endif %}{{datos_campo.descripcion}}
+</div>
+{% elif datos_campo.vista == 'file' %}
+<label for="f_{{datos_campo.campo}}" class="col-4 col-form-label text-end">{{datos_campo.etiqueta}}:</label>
+<div class="col-8">
+    <input type="file" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" accept="{{datos_campo.acepta}}" class="form-control"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>
+</div>
+{% elif datos_campo.vista == 'switch' %}
+<div class="col">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" value="{{datos_campo.valor}}"{% if datos_campo.valor|length >0 %} checked{% endif %}>
+        <label class="form-check-label" for="f_{{datos_campo.campo}}">{{datos_campo.etiqueta}}</label>
+    </div>
+</div>
+{% elif datos_campo.vista == 'checkbox' %}
+<div class="col-4 text-end">{{datos_campo.etiqueta}}:</div>
+<div class="col-8">
+    {% for id_item, item in datos_campo.diccionario.items() %}
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="op_{{datos_campo.campo}}_{{item.valor}}" name="{{datos_campo.campo}}[]" value="{{item.valor}}"{% if (',' ~ item.valor ~ ',') in (',' ~ datos_campo.valor ~ ',')|string %} checked{% endif %}>
+        <label for="op_{{datos_campo.campo}}_{{item.valor}}" class="form-check-label">{{item.etiqueta}}</label>
+    </div>
+    {% endfor %}
+</div>
+{% elif datos_campo.vista == 'search' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'radio' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'url' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'image' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'color' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'number' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% elif datos_campo.vista == 'tel' %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% else %}
+<div class="col">{{datos_campo.campo}} NO DEFINIDO</div>
+{% endif %}
+</div>{% endif %}
+{% endmacro %}
