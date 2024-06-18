@@ -73,3 +73,7 @@ msgstr "Inactive"
 msgid "Estado-Archivado"
 msgstr "Archived"
 
+#: dominio.py:16
+msgid "Perfil-participante"
+msgstr "Participant profile"
+

@@ -1,15 +1,23 @@
 <html lang="{{ web.IDIOMA }}">
 <html>
 <head>
-{% import 'head.html' as head with context %}{{head.insertar()}}
-    <title></title>
+{% import 'form_campos.html' as form with context %}
+{% import 'head.html' as head with context %}{{head.insertar('bootstrap53')}}
+    <title>{{formulario.titulo}}</title>
+    <link rel="icon" href="{{url.frontapp}}/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{url.frontapp}}/favicon.ico" type="image/x-icon">
 </head>
-<body>
-<p>
-
-    <img src="{{url.frontend}}/{{web.APLICACION}}/img/icon-128x128.png" alt="">
-    <div>{{ formulario }}</div>
-
-</p>
+<body class="body py-1">
+<div class="container">
+<h3><i class="bi {{formulario.icono}}"></i> {{formulario.titulo}}</h3>
+<form id="{{formulario.id}}" action="{{formulario.ruta}}" method="post">
+{% for id_grupo, datos_grupo in formulario.grupos.items() %}
+<div class="row mt-3"><div class="col text-secondary small">{{ datos_grupo.etiqueta }}</div></div>
+{% for id_campo, datos_campo in formulario.campos.items() %}{{ form.mostrar_campo(id_campo, datos_campo, id_grupo) }}{% endfor %}
+{% endfor %}
+<div class="text-center mt-4">{% for id_accion, datos_accion in formulario.acciones.items() %}
+<button type="submit" class="btn {{datos_accion.estilo}}"><i class="bi {{datos_accion.icono}}"></i> {{datos_accion.etiqueta}}</button>
+{% endfor %}</div>
+</form>
 </body>
 </html>

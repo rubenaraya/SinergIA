@@ -259,6 +259,7 @@ class ComunicadorWeb(Comunicador):
             'app': f'{raiz_global}{aplicacion}',
             'recurso': recurso,
             'frontend': f'{raiz_global}/{alias_frontend}',
+            'frontapp': f'{raiz_global}/{alias_frontend}{aplicacion}',
         }
         mi.contexto['web']['API_MARCO'] = 'FastAPI'
         mi.contexto['web']['DOMINIO'] = url_analizada.hostname

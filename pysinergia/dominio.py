@@ -507,6 +507,7 @@ class Formulario(Peticion):
                         'icono': valores.get('icono', ''),
                         'estilo': valores.get('estilo', ''),
                         'visible': valores.get('visible', True),
+                        'funcion': valores.get('funcion', ''),
                         'etiqueta': _(str(valores.get('etiqueta', ''))),
                     }
         return formulario

@@ -209,8 +209,8 @@ class DiccionarioParticipantes(Diccionario):
 class FormActualizarParticipante(Formulario):
     dto_titulo:str = 'Editar-participante'
     dto_icono:str = 'bi-pencil-square'
-    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos'}}
-    dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'bi-check-square'}}
+    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos'},'perfil': {'etiqueta':'Perfil-participante'}}
+    dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'bi-check-square', 'estilo':'btn-primary'}}
     dto_diccionario:object = DiccionarioParticipantes 
 
     id: Optional[int] = Field(
@@ -239,7 +239,7 @@ class FormActualizarParticipante(Formulario):
         validation_alias='estado',
         title='Estado-participante',
         description='Estado-del-participante',
-        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.SELECT, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario':'estado'}
+        json_schema_extra={'grupo':'perfil', 'vista': C.CAMPO.SELECT, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario':'estado'}
     )
 
 # --------------------------------------------------
