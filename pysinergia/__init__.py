@@ -203,7 +203,6 @@ class ErrorPersonalizado(Exception):
                 archivo_logs:str=os.getenv('ARCHIVO_LOGS') or 'app',
             ):
         mensaje = str(mensaje).replace('{','(').replace('}',')')
-        super().__init__(mensaje)
         mi.mensaje:str = mensaje
         mi.codigo:int = int(codigo)
         mi.detalles:list = detalles
@@ -214,6 +213,7 @@ class ErrorPersonalizado(Exception):
         mi.nivel_evento:str = nivel_evento
         mi.archivo_logs:str = archivo_logs
         mi.conclusion:str = mi.concluir(mi.codigo)
+        super().__init__(mensaje)
 
     def __str__(mi) -> str:
         return mi.mensaje
@@ -271,8 +271,9 @@ class ErrorPersonalizado(Exception):
                     msg = error.get('msg', '')
                     loc = error.get('loc', '')
                     input = error.get('input', '')
+                    input_aux = input if isinstance(input, str) else ''
                     if type or msg or loc or input:
-                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input})
+                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_aux})
                     else:
                         print(error)
                         continue

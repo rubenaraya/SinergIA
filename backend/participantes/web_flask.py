@@ -16,7 +16,6 @@ from pysinergia.base.flask import *
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
-    PeticionActualizarParticipante,
     PeticionAgregarParticipante,
     ProcedimientoActualizarParticipante,
     ProcedimientoAgregarParticipante,
@@ -78,7 +77,7 @@ def agregar_participante(body:PeticionAgregarParticipante):
     return jsonify(respuesta), C.ESTADO._201_CREADO
 
 @enrutador.route('/participantes/<id>', methods=['PUT'])
-def actualizar_participante(id, body:PeticionActualizarParticipante):
+def actualizar_participante(id, body:FormActualizarParticipante):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
@@ -280,7 +279,7 @@ def sql():
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    peticion = PeticionActualizarParticipante(
+    peticion = FormActualizarParticipante(
         id=1,
         nombre='Rubén Araya Tagle',
         email='raraya@masexperto.com',
@@ -321,18 +320,14 @@ def form():
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    """
-    Evaluar cómo cargar los atributos en forma similar a **kwargs
-    para usar como peticion (traspasada a procedimiento) y luego cargar los datos obtenidos para mostrar el form
-    """
     formulario = FormActualizarParticipante(
         dto_contexto=comunicador.transferir_contexto(),
         dto_roles_sesion=sesion.get('roles'),
         T=comunicador.traspasar_traductor(),
-        id=1,
-        nombre='Rubén Araya',
-        email='raraya@masexperto.com',
-        estado='Activo',
+        #id=1,
+        #nombre='Rubén Araya',
+        #email='raraya@masexperto.com',
+        #estado='Activo',
     )
     respuesta = comunicador.transformar_contenido(
         comunicador.transferir_contexto({'formulario': formulario.generar()}),

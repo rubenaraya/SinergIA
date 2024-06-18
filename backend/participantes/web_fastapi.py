@@ -15,12 +15,12 @@ from pysinergia.base.fastapi import *
 from .dominio import (
     PeticionBuscarParticipantes,
     PeticionParticipante,
-    PeticionActualizarParticipante,
     PeticionAgregarParticipante,
     ProcedimientoAgregarParticipante,
     ProcedimientoActualizarParticipante,
     ProcedimientoEliminarParticipante,
     ProcedimientoBuscarParticipantes,
+    FormActualizarParticipante,
     FormLogin,
 )
 from .adaptadores import (
@@ -75,7 +75,7 @@ async def agregar_participante(request:Request, peticion:PeticionAgregarParticip
 @enrutador.put('/participantes/{id}',
                 status_code=C.ESTADO._204_VACIO,
                 response_class=JSONResponse)
-async def actualizar_participante(request:Request, peticion:PeticionActualizarParticipante=Body()):
+async def actualizar_participante(request:Request, peticion:FormActualizarParticipante=Body()):
     sesion = autenticador.recuperar_sesion('rubenarayatagle@gmail.com')
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     await comunicador.procesar_peticion(request, idioma, sesion)

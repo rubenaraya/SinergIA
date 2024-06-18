@@ -99,42 +99,6 @@ class PeticionParticipante(Peticion):
     )
 
 # --------------------------------------------------
-# ClaseModelo: PeticionActualizarParticipante
-# --------------------------------------------------
-class PeticionActualizarParticipante(PeticionParticipante):
-    id: Optional[int] = Field(
-        default=None,
-        title='ID',
-        validation_alias='id',
-        serialization_alias='id',
-        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
-    )
-    alias: Optional[str] = Field(
-        default=None,
-        title='Alias',
-        max_length=25,
-        validation_alias='nombre',
-        serialization_alias='alias',
-        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
-    )
-    email: Optional[str] = Field(
-        default=None,
-        title='E-Mail',
-        max_length=50,
-        validation_alias='email',
-        serialization_alias='email',
-        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
-    )
-    estado: Optional[str] = Field(
-        default=None,
-        title='Estado',
-        max_length=10,
-        validation_alias='estado',
-        serialization_alias='estado',
-        json_schema_extra={'filtro':'', 'orden':'', 'entidad':''}
-    )
-
-# --------------------------------------------------
 # ClaseModelo: PeticionAgregarParticipante
 # --------------------------------------------------
 class PeticionAgregarParticipante(Peticion):
@@ -209,32 +173,32 @@ class DiccionarioParticipantes(Diccionario):
 class FormActualizarParticipante(Formulario):
     dto_titulo:str = 'Form-Editar-participante'
     dto_icono:str = 'pencil-square'
-    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-basicos'},'perfil': {'etiqueta':'Perfil-participante'}}
+    dto_grupos:dict = {'general': {'etiqueta':'Datos-basicos'}, 'perfil': {'etiqueta':'Perfil-participante'}}
     dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'check-square', 'estilo':'primary'}}
     dto_diccionario:object = DiccionarioParticipantes 
 
-    id: Optional[int] = Field(
+    id:int = Field(
         default=None,
         validation_alias='id',
     )
-    alias: Optional[str] = Field(
+    alias:str = Field(
         default=None,
         validation_alias='nombre',
         serialization_alias='alias',
         title='Nombre-participante',
         description='Alias-del-participante',
         max_length=25,
-        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres', 'minimo':5, 'maximo':25}
+        json_schema_extra={'grupo':'general', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres', 'minimo':5, 'maximo':25}
     )
-    email: Optional[str] = Field(
+    email:str = Field(
         default=None,
         validation_alias='email',
         title='Correo-e-participante',
         description='Correo-electronico-del-participante',
         max_length=50,
-        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-un-correo-electronico-valido', 'minimo':7, 'maximo':50, 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
+        json_schema_extra={'grupo':'general', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-un-correo-electronico-valido', 'minimo':7, 'maximo':50, 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
     )
-    estado: Optional[str] = Field(
+    estado:str = Field(
         default=None,
         validation_alias='estado',
         title='Estado-participante',
@@ -248,7 +212,7 @@ class FormActualizarParticipante(Formulario):
 class FormLogin(Formulario):
     dto_titulo:str = 'Form-Autenticacion'
     dto_icono:str = 'person-exclamation'
-    dto_grupos:dict = {'basicos': {'etiqueta':'Datos-para-iniciar-sesion'}}
+    dto_grupos:dict = {'general': {'etiqueta':'Datos-para-iniciar-sesion'}}
     dto_acciones:dict = {'enviar': {'etiqueta':'Iniciar-sesion', 'icono':'box-arrow-in-right', 'estilo':'primary'}}
 
     username: Optional[str] = Field(
@@ -258,7 +222,7 @@ class FormLogin(Formulario):
         title='Nombre-usuario',
         description='Nombre-de-usuario',
         max_length=50,
-        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.EMAIL, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-nombre-de-usuario', 'minimo':7, 'maximo':50, 'autocompletar':'username', 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
+        json_schema_extra={'grupo':'general', 'vista': C.CAMPO.EMAIL, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-nombre-de-usuario', 'minimo':7, 'maximo':50, 'autocompletar':'username', 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
     )
     password: Optional[str] = Field(
         default=None,
@@ -267,7 +231,7 @@ class FormLogin(Formulario):
         title='Contraseña-usuario',
         description='Contraseña-del-usuario',
         max_length=50,
-        json_schema_extra={'grupo':'basicos', 'vista': C.CAMPO.PASSWORD, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-contraseña', 'minimo':5, 'maximo':15, 'autocompletar':'current-password', 'patron':'[A-Za-z0-9.,_-]+'}
+        json_schema_extra={'grupo':'general', 'vista': C.CAMPO.PASSWORD, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-contraseña', 'minimo':5, 'maximo':15, 'autocompletar':'current-password', 'patron':'[A-Za-z0-9.,_-]+'}
     )
 
 # --------------------------------------------------
