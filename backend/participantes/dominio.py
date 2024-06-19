@@ -175,7 +175,7 @@ class FormActualizarParticipante(Formulario):
     dto_icono:str = 'pencil-square'
     dto_grupos:dict = {'general': {'etiqueta':'Datos-basicos'}, 'perfil': {'etiqueta':'Perfil-participante'}}
     dto_acciones:dict = {'enviar': {'etiqueta':'Actualizar-participante', 'icono':'check-square', 'estilo':'primary'}}
-    dto_diccionario:object = DiccionarioParticipantes 
+    D:object = DiccionarioParticipantes 
 
     id:int = Field(
         default=None,

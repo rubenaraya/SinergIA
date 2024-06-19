@@ -563,11 +563,12 @@ class Basedatos(ABC, I_ConectorBasedatos):
         dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
         plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
         for campo, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and campo not in ['_dto_solicitud_datos','_dto_origen_datos','_dto_roles_sesion'] and dto_origen_datos:
+            if isinstance(contenido, dict) and not str(campo).startswith('_dto_') and dto_origen_datos:
                 salida = contenido.get('salida', '')
                 entidad = contenido.get('entidad', '')
                 formato = contenido.get('formato', '')
-                valor = dto_solicitud_datos[campo].get('valor', '') if dto_solicitud_datos.get(campo) else ''
+                aux = dto_solicitud_datos.get(campo)
+                valor = aux.get('valor', '') if aux and isinstance(aux, dict) else ''
                 if valor:
                     if campo == campo_id:
                         plantilla = plantilla.replace('{id}', f"'{valor}'")
