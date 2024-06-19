@@ -128,7 +128,7 @@ class ServidorApi:
 
         @api.exception_handler(HTTPException)
         async def _error_http(request:Request, err:HTTPException):
-            error = ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code, nivel_evento=C.REGISTRO.ERROR if err.code >= 500 else C.REGISTRO.DEBUG)
+            error = ErrorPersonalizado(mensaje=err.detail, codigo=err.status_code, nivel_evento=C.REGISTRO.ERROR if err.status_code >= 500 else C.REGISTRO.DEBUG)
             registrar = (err.status_code >= 500) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
             error.nivel_evento = C.REGISTRO.DEBUG if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO else C.REGISTRO.INFO
             return mi._crear_respuesta_error(request, error, registrar)

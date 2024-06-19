@@ -1,8 +1,5 @@
 # pysinergia\dominio.py
 
-from abc import ABC
-# --------------------------------------------------
-# Importaciones de bibliotecas (capa de Dominio)
 from typing import (
     List,
     Optional,
@@ -12,7 +9,8 @@ from typing import (
     #Tuple,
     #Literal,
 )
-#from enum import Enum
+# --------------------------------------------------
+# Importaciones de bibliotecas (capa de Dominio)
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -156,7 +154,7 @@ class ValidadorDatos:
 # --------------------------------------------------
 # ClaseModelo: Diccionario
 # --------------------------------------------------
-class Diccionario(ABC, BaseModel):
+class Diccionario(BaseModel):
     dto_roles_sesion: Optional[str] = ''
     t: Optional[object] = None
 
@@ -188,7 +186,7 @@ class Diccionario(ABC, BaseModel):
 # --------------------------------------------------
 # ClaseModelo: Peticion
 # --------------------------------------------------
-class Peticion(ABC, BaseModel):
+class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
 
@@ -226,7 +224,7 @@ class Peticion(ABC, BaseModel):
 # --------------------------------------------------
 # ClaseModelo: Formulario
 # --------------------------------------------------
-class Formulario(ABC, Peticion):
+class Formulario(Peticion):
     dto_titulo:str = ''
     dto_icono:str = ''
     dto_descripcion:str = ''
@@ -321,7 +319,7 @@ class Formulario(ABC, Peticion):
 # --------------------------------------------------
 # ClaseModelo: Informe
 # --------------------------------------------------
-class Informe(ABC, Peticion):
+class Informe(Peticion):
     dto_roles_sesion: Optional[str] = ''
     dto_titulo:str = ''
     dto_icono:str = ''
@@ -340,7 +338,7 @@ class Informe(ABC, Peticion):
 # --------------------------------------------------
 # ClaseModelo: Procedimiento
 # --------------------------------------------------
-class Procedimiento(ABC, BaseModel):
+class Procedimiento(BaseModel):
     dto_origen_datos: Optional[str] = ''
     dto_solicitud_datos: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''

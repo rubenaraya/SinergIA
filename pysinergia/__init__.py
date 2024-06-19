@@ -194,25 +194,27 @@ class ErrorPersonalizado(Exception):
     def __init__(mi,
                 mensaje:str,
                 codigo:int=Constantes.ESTADO._500_ERROR,
-                detalles:list=[],
-                aplicacion:str='',
-                microservicio:str='',
-                recurso:str='',
                 nivel_evento:str=Constantes.REGISTRO.ERROR,
-                dominio_idioma:str=os.getenv('DOMINIO_IDIOMA') or 'base',
-                archivo_logs:str=os.getenv('ARCHIVO_LOGS') or 'app',
+                detalles:list=[],
+                tipo:str='',
+                recurso:str='',
+                dominio_idioma:str=None,
+                archivo_logs:str=None,
             ):
         mensaje = str(mensaje).replace('{','(').replace('}',')')
         mi.mensaje:str = mensaje
         mi.codigo:int = int(codigo)
         mi.detalles:list = detalles
-        mi.aplicacion:str = aplicacion
-        mi.microservicio:str = microservicio
+        mi.tipo:str = tipo
         mi.recurso:str = recurso
-        mi.dominio_idioma:str = dominio_idioma
         mi.nivel_evento:str = nivel_evento
-        mi.archivo_logs:str = archivo_logs
         mi.conclusion:str = mi.concluir(mi.codigo)
+        if not dominio_idioma:
+            dominio_idioma = os.getenv('DOMINIO_IDIOMA', None) or 'base'
+        mi.dominio_idioma:str = dominio_idioma
+        if not archivo_logs:
+            archivo_logs = os.getenv('ARCHIVO_LOGS', None) or 'app'
+        mi.archivo_logs:str = archivo_logs
         super().__init__(mensaje)
 
     def __str__(mi) -> str:
@@ -220,8 +222,8 @@ class ErrorPersonalizado(Exception):
 
     def __repr__(mi) -> str:
         contenido = f'{mi.conclusion} {mi.codigo} | {mi.mensaje}'
-        if mi.aplicacion and mi.microservicio:
-            contenido = f'{mi.aplicacion}/{mi.microservicio} | {contenido}'
+        if mi.tipo:
+            contenido = f'{contenido} ({mi.tipo})'
         if mi.recurso:
             contenido = f'{contenido} | {mi.recurso}'
         return contenido
@@ -237,22 +239,21 @@ class ErrorPersonalizado(Exception):
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
 
-    def registrar(mi, texto_pre:str='', texto_pos:str='') -> str:
-        nombre = f'{mi.aplicacion}_{mi.microservicio}' if mi.aplicacion and mi.microservicio else mi.archivo_logs
+    def registrar(mi, exc_info:bool=False, texto_pre:str='', texto_pos:str='') -> str:
         texto_registrado = mi.__repr__()
         texto_registrado = f'{texto_pre} | {texto_registrado}' if texto_pre else texto_registrado
         texto_registrado = f'{texto_registrado} | {texto_pos}' if texto_pos else texto_registrado
-        registrador = RegistradorLogs.crear(nombre)
+        registrador = RegistradorLogs.crear(mi.archivo_logs)
         if mi.nivel_evento == Constantes.REGISTRO.ERROR:
-            registrador.error(texto_registrado)
+            registrador.error(texto_registrado, exc_info=exc_info)
         elif mi.nivel_evento == Constantes.REGISTRO.WARNING:
-            registrador.warning(texto_registrado)
+            registrador.warning(texto_registrado, exc_info=exc_info)
         elif mi.nivel_evento == Constantes.REGISTRO.DEBUG:
-            registrador.debug(texto_registrado)
+            registrador.debug(texto_registrado, exc_info=exc_info)
         elif mi.nivel_evento == Constantes.REGISTRO.INFO:
-            registrador.info(texto_registrado)
+            registrador.info(texto_registrado, exc_info=exc_info)
         elif mi.nivel_evento == Constantes.REGISTRO.CRITICAL:
-            registrador.critical(texto_registrado)
+            registrador.critical(texto_registrado, exc_info=exc_info)
         return texto_registrado
     
     def serializar(mi) -> dict:
@@ -271,9 +272,9 @@ class ErrorPersonalizado(Exception):
                     msg = error.get('msg', '')
                     loc = error.get('loc', '')
                     input = error.get('input', '')
-                    input_aux = input if isinstance(input, (str, int, float, bool)) else ''
-                    if type or msg or loc or input:
-                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_aux})
+                    input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
+                    if type or msg or loc or input_filtrado:
+                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
                     else:
                         print(error)
                         continue
