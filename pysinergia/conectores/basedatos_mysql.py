@@ -43,7 +43,7 @@ class BasedatosMysql(Basedatos):
                     )
                     return True
                 except Error as e:
-                    raise e
+                    raise
         return False
 
     def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:

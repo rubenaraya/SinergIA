@@ -104,7 +104,7 @@ class DiscoLocal(Disco):
             return ruta_archivo
         except PermissionError as e:
             raise ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
-        except IOError as e:
+        except OSError as e:
             raise ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
         except Exception as e:
             raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])

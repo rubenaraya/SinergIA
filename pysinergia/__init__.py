@@ -202,6 +202,7 @@ class ErrorPersonalizado(Exception):
                 archivo_logs:str=None,
             ):
         mensaje = str(mensaje).replace('{','(').replace('}',')')
+        super().__init__(mensaje)
         mi.mensaje:str = mensaje
         mi.codigo:int = int(codigo)
         mi.detalles:list = detalles
@@ -215,7 +216,6 @@ class ErrorPersonalizado(Exception):
         if not archivo_logs:
             archivo_logs = os.getenv('ARCHIVO_LOGS', None) or 'app'
         mi.archivo_logs:str = archivo_logs
-        super().__init__(mensaje)
 
     def __str__(mi) -> str:
         return mi.mensaje
@@ -256,7 +256,7 @@ class ErrorPersonalizado(Exception):
             registrador.critical(texto_registrado, exc_info=exc_info)
         return texto_registrado
     
-    def serializar(mi) -> dict:
+    def exportar(mi) -> dict:
         return {
             'codigo': mi.codigo,
             'conclusion': mi.conclusion,
@@ -264,19 +264,21 @@ class ErrorPersonalizado(Exception):
             'detalles': mi.detalles,
         }
 
-    def agregar_detalles(mi, errores:list) -> list:
-        if errores and isinstance(errores, list):
-            for error in errores:
-                if isinstance(error, dict):
-                    type = error.get('type', '')
-                    msg = error.get('msg', '')
-                    loc = error.get('loc', '')
-                    input = error.get('input', '')
-                    input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
-                    if type or msg or loc or input_filtrado:
-                        mi.detalles.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
-                    else:
-                        print(error)
-                        continue
-        return mi.detalles
+
+# --------------------------------------------------
+# Funcion: agregar_errores
+# --------------------------------------------------
+def agregar_errores(mi, errores:list) -> list:
+    lista:list = []
+    if errores and isinstance(errores, list):
+        for error in errores:
+            if isinstance(error, dict):
+                type = error.get('type', '')
+                msg = error.get('msg', '')
+                loc = error.get('loc', '')
+                input = error.get('input', '')
+                input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
+                if type or msg or loc or input_filtrado:
+                    lista.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
+    return lista
 

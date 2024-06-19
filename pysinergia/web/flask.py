@@ -21,6 +21,7 @@ from flask import (
 from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
+    agregar_errores,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
@@ -89,12 +90,13 @@ class ServidorApi:
         url = f'{request.url}'
         return f'{request.method} {url}'
 
-    def _crear_respuesta_error(mi, err:ErrorPersonalizado, registrar:bool=False):
+    def _crear_respuesta_error(mi, err:ErrorPersonalizado):
+        registrar_detalles = bool(os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
+        if (err.codigo >= 500) or registrar_detalles:
+            err.registrar(texto_pre=mi._obtener_url(), exc_info=registrar_detalles)
         traductor = Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
         traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'), dominio_idioma=err.dominio_idioma)
-        respuesta = Respuesta(**err.serializar(), T=traductor).diccionario()
-        if registrar:
-            err.registrar(texto_pre=mi._obtener_url())
+        respuesta = Respuesta(**err.exportar(), T=traductor).diccionario()
         return jsonify(respuesta), err.codigo
 
     def _manejar_errores(mi, api:Flask):
@@ -108,41 +110,31 @@ class ServidorApi:
         def _error_autenticacion(err:ErrorAutenticacion):
             if err.url_login:
                 return redirect(err.url_login)
-            return mi._crear_respuesta_error(err, False)
+            return mi._crear_respuesta_error(err)
 
         @api.errorhandler(ErrorPersonalizado)
         def _error_personalizado(err:ErrorPersonalizado):
-            registrar = (err.conclusion == C.CONCLUSION.ERROR) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
-            return mi._crear_respuesta_error(err, registrar)
+            return mi._crear_respuesta_error(err)
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO)
-            error.agregar_detalles(err.errors())
-            registrar = (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
-            return mi._crear_respuesta_error(error, registrar)
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=agregar_errores(err.errors()))
+            return mi._crear_respuesta_error(error)
 
         @api.errorhandler(HTTPException)
         def _error_http(err:HTTPException):
-            error = ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=C.REGISTRO.ERROR if err.code >= 500 else C.REGISTRO.DEBUG)
-            registrar = (err.code >= 500) or (os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
-            return mi._crear_respuesta_error(error, registrar)
+            error = ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=C.REGISTRO.DEBUG if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO else C.REGISTRO.ERROR)
+            return mi._crear_respuesta_error(error)
 
         @api.errorhandler(InternalServerError)
         def _error_interno(err:InternalServerError):
-            original = err.original_exception
-            descripcion = original.args[0] if len(original.args) > 0 else original.__doc__ if original.__doc__ else ''
-            error = ErrorPersonalizado(mensaje=descripcion, codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
-            return mi._crear_respuesta_error(error, True)
-
+            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
+            return mi._crear_respuesta_error(error)
+ 
         @api.errorhandler(Exception)
         def _error_nomanejado(err:Exception):
-            import sys
-            exception_type, exception_value, exception_traceback = sys.exc_info()
-            exception_name = getattr(exception_type, '__name__', None)
-            mensaje = f'{exception_name}: {exception_value}'
-            error = ErrorPersonalizado(mensaje=mensaje, codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
-            return mi._crear_respuesta_error(error, True)
+            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
+            return mi._crear_respuesta_error(error)
 
     # --------------------------------------------------
     # Métodos públicos

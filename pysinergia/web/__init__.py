@@ -103,7 +103,7 @@ class Traductor:
                 idioma=mi.idioma
             )
         except Exception as e:
-            raise e
+            raise
         return mi.idioma
 
     def abrir_traduccion(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None) -> gettext.GNUTranslations:
@@ -199,7 +199,7 @@ class Comunicador(ABC, I_Comunicador):
             componente = getattr(importlib.import_module(f'pysinergia.conectores.{fuente}'), clase)
             return componente(config_disco)
         except Exception as e:
-            raise e
+            raise
 
     def _comprobar_plantilla(mi, metadatos:dict, tipo:str='') -> tuple:
         plantilla = metadatos.get(tipo, '')
@@ -273,7 +273,7 @@ class Comunicador(ABC, I_Comunicador):
                 resultado = template.render(info)
             return resultado
         except Exception as e:
-            raise e
+            raise
 
     def exportar_informacion(mi, conversion:str, info:dict={}, guardar:bool=False):
         try:
@@ -301,7 +301,7 @@ class Comunicador(ABC, I_Comunicador):
                 mi.disco.escribir(resultado, ruta_archivo, modo)
             return resultado
         except Exception as e:
-            raise e
+            raise
 
     def generar_nombre_descarga(mi, info:dict, extension:str='', largo:int=250, auto:bool=False) -> str:
         if 'metadatos' in info:
@@ -469,5 +469,5 @@ def configurar_servidor_api(ruta_origen:str, archivo_env:str):
             from pysinergia.web.fastapi import ServidorApi
         return ServidorApi(ruta_origen)
     except Exception as e:
-        raise e
+        raise
 
