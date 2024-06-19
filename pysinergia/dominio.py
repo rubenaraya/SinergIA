@@ -1,5 +1,6 @@
 # pysinergia\dominio.py
 
+from abc import ABC
 # --------------------------------------------------
 # Importaciones de bibliotecas (capa de Dominio)
 from typing import (
@@ -155,7 +156,7 @@ class ValidadorDatos:
 # --------------------------------------------------
 # ClaseModelo: Diccionario
 # --------------------------------------------------
-class Diccionario(BaseModel):
+class Diccionario(ABC, BaseModel):
     dto_roles_sesion: Optional[str] = ''
     t: Optional[object] = None
 
@@ -187,7 +188,7 @@ class Diccionario(BaseModel):
 # --------------------------------------------------
 # ClaseModelo: Peticion
 # --------------------------------------------------
-class Peticion(BaseModel):
+class Peticion(ABC, BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
 
@@ -225,7 +226,7 @@ class Peticion(BaseModel):
 # --------------------------------------------------
 # ClaseModelo: Formulario
 # --------------------------------------------------
-class Formulario(Peticion):
+class Formulario(ABC, Peticion):
     dto_titulo:str = ''
     dto_icono:str = ''
     dto_descripcion:str = ''
@@ -320,7 +321,7 @@ class Formulario(Peticion):
 # --------------------------------------------------
 # ClaseModelo: Informe
 # --------------------------------------------------
-class Informe(Peticion):
+class Informe(ABC, Peticion):
     dto_roles_sesion: Optional[str] = ''
     dto_titulo:str = ''
     dto_icono:str = ''
@@ -339,7 +340,7 @@ class Informe(Peticion):
 # --------------------------------------------------
 # ClaseModelo: Procedimiento
 # --------------------------------------------------
-class Procedimiento(BaseModel):
+class Procedimiento(ABC, BaseModel):
     dto_origen_datos: Optional[str] = ''
     dto_solicitud_datos: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
@@ -426,6 +427,99 @@ class Respuesta(BaseModel):
 
     def json(mi) -> str:
         return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude=('T','D'))
+
+# --------------------------------------------------
+# ClaseModelo: Archivo
+# --------------------------------------------------
+class Archivo(BaseModel):
+    nombre: Optional[str] = ''
+    ruta: Optional[str] = ''
+    ubicacion: Optional[str] = ''
+    base: Optional[str] = ''
+    extension: Optional[str] = ''
+    peso: Optional[int] = 0
+
+# --------------------------------------------------
+# ClaseModelo: Recurso
+# --------------------------------------------------
+class Recurso(BaseModel):
+    conversion: Optional[str] = ''
+    tipo_mime: Optional[str] = ''
+    extension: Optional[str] = ''
+
+    @model_validator(mode='after')
+    @classmethod
+    def validate_model(cls, valores:Self) -> 'Recurso':
+        if valores.conversion:
+            conversiones = {
+                Constantes.CONVERSION.PDF: cls._pdf,
+                Constantes.CONVERSION.WORD: cls._word,
+                Constantes.CONVERSION.EXCEL: cls._excel,
+                Constantes.CONVERSION.CSV: cls._csv,
+                Constantes.CONVERSION.HTML: cls._html,
+                Constantes.CONVERSION.JSON: cls._json,
+                Constantes.CONVERSION.TEXTO: cls._texto,
+            }
+            conversiones.get(valores.conversion)(valores)
+        elif valores.tipo_mime:
+            tipos = {
+                Constantes.MIME.PDF: cls._pdf,
+                Constantes.MIME.DOCX: cls._word,
+                Constantes.MIME.XLSX: cls._excel,
+                Constantes.MIME.CSV: cls._csv,
+                Constantes.MIME.HTML: cls._html,
+                Constantes.MIME.JSON: cls._json,
+                Constantes.MIME.TXT: cls._texto,
+            }
+            tipos.get(valores.tipo_mime)(valores)
+        elif valores.extension:
+            extensiones = {
+                'pdf': cls._pdf,
+                'docx': cls._word,
+                'xlsx': cls._excel,
+                'csv': cls._csv,
+                'html': cls._html,
+                'json': cls._json,
+                'txt': cls._texto,
+            }
+            extensiones.get(valores.extension)(valores)
+        return valores
+
+    @classmethod
+    def _pdf(cls, valores:Self):
+        valores.extension = 'pdf'
+        valores.conversion = Constantes.CONVERSION.PDF
+        valores.tipo_mime = Constantes.MIME.PDF
+    @classmethod
+    def _word(cls, valores:Self):
+        valores.extension = 'docx'
+        valores.conversion = Constantes.CONVERSION.WORD
+        valores.tipo_mime = Constantes.MIME.DOCX
+    @classmethod
+    def _excel(cls, valores:Self):
+        valores.extension = 'xlsx'
+        valores.conversion = Constantes.CONVERSION.EXCEL
+        valores.tipo_mime = Constantes.MIME.XLSX
+    @classmethod
+    def _csv(cls, valores:Self):
+        valores.extension = 'csv'
+        valores.conversion = Constantes.CONVERSION.CSV
+        valores.tipo_mime = Constantes.MIME.CSV
+    @classmethod
+    def _html(cls, valores:Self):
+        valores.extension = 'html'
+        valores.conversion = Constantes.CONVERSION.HTML
+        valores.tipo_mime = Constantes.MIME.HTML
+    @classmethod
+    def _json(cls, valores:Self):
+        valores.extension = 'json'
+        valores.conversion = Constantes.CONVERSION.JSON
+        valores.tipo_mime = Constantes.MIME.JSON
+    @classmethod
+    def _texto(cls, valores:Self):
+        valores.extension = 'txt'
+        valores.conversion = Constantes.CONVERSION.TEXTO
+        valores.tipo_mime = Constantes.MIME.TXT
 
 # --------------------------------------------------
 # ClaseModelo: ArchivoCargado
@@ -564,97 +658,4 @@ class VideoCargado(ArchivoCargado):
     @classmethod
     def peso_maximo(cls) -> int:
         return 25 * Constantes.PESO.MB
-
-# --------------------------------------------------
-# ClaseModelo: Archivo
-# --------------------------------------------------
-class Archivo(BaseModel):
-    nombre: Optional[str] = ''
-    ruta: Optional[str] = ''
-    ubicacion: Optional[str] = ''
-    base: Optional[str] = ''
-    extension: Optional[str] = ''
-    peso: Optional[int] = 0
-
-# --------------------------------------------------
-# ClaseModelo: Recurso
-# --------------------------------------------------
-class Recurso(BaseModel):
-    conversion: Optional[str] = ''
-    tipo_mime: Optional[str] = ''
-    extension: Optional[str] = ''
-
-    @model_validator(mode='after')
-    @classmethod
-    def validate_model(cls, valores:Self) -> 'Recurso':
-        if valores.conversion:
-            conversiones = {
-                Constantes.CONVERSION.PDF: cls._pdf,
-                Constantes.CONVERSION.WORD: cls._word,
-                Constantes.CONVERSION.EXCEL: cls._excel,
-                Constantes.CONVERSION.CSV: cls._csv,
-                Constantes.CONVERSION.HTML: cls._html,
-                Constantes.CONVERSION.JSON: cls._json,
-                Constantes.CONVERSION.TEXTO: cls._texto,
-            }
-            conversiones.get(valores.conversion)(valores)
-        elif valores.tipo_mime:
-            tipos = {
-                Constantes.MIME.PDF: cls._pdf,
-                Constantes.MIME.DOCX: cls._word,
-                Constantes.MIME.XLSX: cls._excel,
-                Constantes.MIME.CSV: cls._csv,
-                Constantes.MIME.HTML: cls._html,
-                Constantes.MIME.JSON: cls._json,
-                Constantes.MIME.TXT: cls._texto,
-            }
-            tipos.get(valores.tipo_mime)(valores)
-        elif valores.extension:
-            extensiones = {
-                'pdf': cls._pdf,
-                'docx': cls._word,
-                'xlsx': cls._excel,
-                'csv': cls._csv,
-                'html': cls._html,
-                'json': cls._json,
-                'txt': cls._texto,
-            }
-            extensiones.get(valores.extension)(valores)
-        return valores
-
-    @classmethod
-    def _pdf(cls, valores:Self):
-        valores.extension = 'pdf'
-        valores.conversion = Constantes.CONVERSION.PDF
-        valores.tipo_mime = Constantes.MIME.PDF
-    @classmethod
-    def _word(cls, valores:Self):
-        valores.extension = 'docx'
-        valores.conversion = Constantes.CONVERSION.WORD
-        valores.tipo_mime = Constantes.MIME.DOCX
-    @classmethod
-    def _excel(cls, valores:Self):
-        valores.extension = 'xlsx'
-        valores.conversion = Constantes.CONVERSION.EXCEL
-        valores.tipo_mime = Constantes.MIME.XLSX
-    @classmethod
-    def _csv(cls, valores:Self):
-        valores.extension = 'csv'
-        valores.conversion = Constantes.CONVERSION.CSV
-        valores.tipo_mime = Constantes.MIME.CSV
-    @classmethod
-    def _html(cls, valores:Self):
-        valores.extension = 'html'
-        valores.conversion = Constantes.CONVERSION.HTML
-        valores.tipo_mime = Constantes.MIME.HTML
-    @classmethod
-    def _json(cls, valores:Self):
-        valores.extension = 'json'
-        valores.conversion = Constantes.CONVERSION.JSON
-        valores.tipo_mime = Constantes.MIME.JSON
-    @classmethod
-    def _texto(cls, valores:Self):
-        valores.extension = 'txt'
-        valores.conversion = Constantes.CONVERSION.TEXTO
-        valores.tipo_mime = Constantes.MIME.TXT
 

@@ -499,7 +499,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
                     if filtrado:
                         filtrar.append(filtrado)
         for clave, contenido in procedimiento.items():
-            if isinstance(contenido, dict) and clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_sesion']:
+            if isinstance(contenido, dict) and not str(clave).startswith('_dto_'): #clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_sesion']
                 campo = clave
                 entrada = contenido.get('entrada', '')
                 salida = contenido.get('salida', '')

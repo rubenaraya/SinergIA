@@ -1,7 +1,7 @@
 # pysinergia\web\__init__.py
 
 import time, jwt, importlib, gettext, os, json
-from abc import (ABC)
+from abc import ABC
 from pathlib import Path
 from functools import lru_cache
 
@@ -16,7 +16,6 @@ from pysinergia.dominio import (
 )
 from pysinergia.adaptadores import (
     I_Comunicador,
-    I_Traductor,
     Configuracion,
 )
 from pysinergia.conectores.disco import Disco
@@ -25,7 +24,7 @@ from pysinergia import __pysinergia__
 # --------------------------------------------------
 # Clase: Traductor
 # --------------------------------------------------
-class Traductor(I_Traductor):
+class Traductor:
 
     class _Traduccion:
         def __init__(mi, dominios, ruta_locales, idioma:str):
