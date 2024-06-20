@@ -37,7 +37,6 @@ class ExportadorWord(Exportador):
             raise ErrorExportador(
                 mensaje='Error-en-exportador-Word',
                 codigo=Constantes.ESTADO._500_ERROR,
-                detalles=[str(e)],
-                tipo=type(e),
+                tipo=type(e).__name__,
             )
 

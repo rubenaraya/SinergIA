@@ -43,7 +43,6 @@ class ExportadorCsv(Exportador):
             raise ErrorExportador(
                 mensaje='Error-en-exportador-CSV',
                 codigo=Constantes.ESTADO._500_ERROR,
-                detalles=[str(e)],
-                tipo=type(e),
+                tipo=type(e).__name__,
             )
 

@@ -63,8 +63,7 @@ class ConvertidorAudio:
             raise ErrorExportador(
                 mensaje='Error-en-exportador-Audio',
                 codigo=Constantes.ESTADO._500_ERROR,
-                detalles=[str(e)],
-                tipo=type(e),
+                tipo=type(e).__name__,
                 recurso=ruta_audio,
             )
         return resultado

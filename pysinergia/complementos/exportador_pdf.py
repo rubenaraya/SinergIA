@@ -34,7 +34,6 @@ class ExportadorPdf(Exportador):
             raise ErrorExportador(
                 mensaje='Error-en-exportador-PDF',
                 codigo=Constantes.ESTADO._500_ERROR,
-                detalles=[str(e)],
-                tipo=type(e),
+                tipo=type(e).__name__,
             )
 

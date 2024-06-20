@@ -83,11 +83,11 @@ class DiscoLocal(Disco):
             else:
                 return False
         except FileNotFoundError as e:
-            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre)
         except PermissionError as e:
-            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-el-archivo', recurso=nombre)
         except Exception as e:
-            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre)
 
     def escribir(mi, contenido: BinaryIO | TextIO, nombre:str, modo:str='') -> str:
         ruta_archivo = mi._leer_ruta(nombre)
@@ -103,11 +103,11 @@ class DiscoLocal(Disco):
                     archivo.write(contenido)
             return ruta_archivo
         except PermissionError as e:
-            raise ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-escribir-el-archivo', recurso=nombre)
         except OSError as e:
-            raise ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-de-IO-al-escribir-el-archivo', recurso=nombre)
         except Exception as e:
-            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre)
         finally:
             if archivo:
                 archivo.close()
@@ -120,11 +120,11 @@ class DiscoLocal(Disco):
             with open(ruta_archivo, mode=modo_abrir, encoding=codificacion) as archivo:
                 return archivo.read()
         except FileNotFoundError as e:
-            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Archivo-no-encontrado', recurso=nombre)
         except PermissionError as e:
-            raise ErrorDisco(mensaje='Permiso-denegado-para-abrir-el-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-abrir-el-archivo', recurso=nombre)
         except Exception as e:
-            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-al-archivo', recurso=nombre)
 
     def copiar(mi, nombre:str, dir_destino:str, mover:bool=False) -> bool:
         import shutil
@@ -153,11 +153,11 @@ class DiscoLocal(Disco):
                 return str(path.resolve().as_posix())
             return ''
         except PermissionError as e:
-            raise ErrorDisco(mensaje='Permiso-denegado-para-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-crear-la-carpeta', recurso=nombre)
         except OSError as e:
-            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-crear-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-crear-la-carpeta', recurso=nombre)
         except Exception as e:
-            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre)
 
     def eliminar_carpeta(mi, nombre:str) -> bool:
         try:
@@ -168,11 +168,11 @@ class DiscoLocal(Disco):
             else:
                 raise ErrorDisco(mensaje='La-carpeta-no-existe', recurso=nombre)
         except PermissionError as e:
-            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Permiso-denegado-para-eliminar-la-carpeta', recurso=nombre)
         except OSError as e:
-            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-eliminar-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-del-sistema-operativo-al-eliminar-la-carpeta', recurso=nombre)
         except Exception as e:
-            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre, detalles=[str(e)])
+            raise ErrorDisco(mensaje='Error-desconocido-al-acceder-a-la-carpeta', recurso=nombre)
 
     def comprobar_ruta(mi, nombre:str, tipo:str='') -> str:
         path = (mi._path / Path(nombre))
