@@ -324,7 +324,7 @@ def form():
         dto_contexto=comunicador.transferir_contexto(),
         dto_roles_sesion=sesion.get('roles'),
         T=comunicador.traspasar_traductor(),
-        #id=1,
+        #id='a',
         #nombre='Rubén Araya',
         #email='raraya@masexperto.com',
         #estado='Activo',

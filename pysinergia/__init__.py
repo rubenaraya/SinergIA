@@ -1,6 +1,10 @@
 # pysinergia\__init__.py
 
 import os
+from typing import (
+    Tuple,
+    Union,
+)
 
 __pysinergia__ = 'PySinergIA v0.0.1'
 
@@ -208,8 +212,8 @@ class ErrorPersonalizado(Exception):
         mi.tipo:str = tipo
         mi.recurso:str = recurso
         mi.nivel_evento:str = nivel_evento
-        mi.conclusion:str = mi.concluir(mi.codigo)
-        mi.detalles:list = mi.detallar_errores(detalles) if detalles and isinstance(detalles, list) else []
+        mi.conclusion:str = mi._concluir(mi.codigo)
+        mi.detalles:list = mi._detallar_errores(detalles) if detalles and isinstance(detalles, list) else []
         if not dominio_idioma:
             dominio_idioma = os.getenv('DOMINIO_IDIOMA', None) or 'base'
         mi.dominio_idioma:str = dominio_idioma
@@ -228,7 +232,18 @@ class ErrorPersonalizado(Exception):
             contenido = f'{contenido} | {mi.recurso}'
         return contenido
 
-    def concluir(mi, estado:int) -> str:
+    def _transformar_loc(mi, loc:Tuple[Union[str, int], ...]) -> str:
+        path = ''
+        for i, x in enumerate(loc):
+            if isinstance(x, str):
+                if i > 0:
+                    path += '.'
+                path += x
+            elif isinstance(x, int):
+                path += f'[{x}]'
+        return path
+
+    def _concluir(mi, estado:int) -> str:
         if estado < 200:
             return Constantes.CONCLUSION.ERROR
         if estado < 300:
@@ -238,6 +253,22 @@ class ErrorPersonalizado(Exception):
         if estado < 500:
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
+
+    def _detallar_errores(mi, errores:list) -> list:
+        lista:list = []
+        if errores and isinstance(errores, list):
+            for error in errores:
+                if isinstance(error, dict):
+                    input = error.get('input', '')
+                    valor = input if input and isinstance(input, (str, int, float, bool)) else ''
+                    lista.append({
+                        'tipo': error.get('type', ''),
+                        'mensaje': error.get('msg', ''),
+                        'clave': mi._transformar_loc(error.get('loc', [])),
+                        'valor': valor,
+                        'ctx': error.get('ctx', None)
+                    })
+        return lista
 
     def registrar(mi, exc_info:bool=None, texto_pre:str='', texto_pos:str='') -> str:
         if not exc_info:
@@ -265,18 +296,4 @@ class ErrorPersonalizado(Exception):
             'mensaje': mi.mensaje,
             'detalles': mi.detalles,
         }
-
-    def detallar_errores(mi, errores:list) -> list:
-        lista:list = []
-        if errores and isinstance(errores, list):
-            for error in errores:
-                if isinstance(error, dict):
-                    type = error.get('type', '')
-                    msg = error.get('msg', '')
-                    loc = error.get('loc', '')
-                    input = error.get('input', '')
-                    input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
-                    if type or msg or loc or input_filtrado:
-                        lista.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
-        return lista
 

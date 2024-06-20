@@ -5,8 +5,9 @@ from typing import (
     Optional,
     Self,
     Any,
-    #Dict,
     #Tuple,
+    #Union,
+    #Dict,
     #Literal,
 )
 # --------------------------------------------------
@@ -399,7 +400,7 @@ class Respuesta(BaseModel):
             if diccionario and isinstance(diccionario, dict):
                 return {k: v for k, v in diccionario.items() if isinstance(v, (str, int, float, bool))}
             return {}
-        
+
         if not valores.codigo:
             valores.codigo = Constantes.ESTADO._200_EXITO
         if not valores.conclusion:
@@ -416,6 +417,22 @@ class Respuesta(BaseModel):
                     valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else None
                     if isinstance(valores.descripcion, str):
                         valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else None
+                    if valores.detalles and isinstance(valores.detalles, list):
+                        detalles:list = []
+                        for error in valores.detalles:
+                            if isinstance(error, dict):
+                                try:
+                                    traduccion:str = _(error.get('mensaje',''))
+                                    ctx = error.get('ctx', None)
+                                    detalles.append({
+                                        'tipo': error.get('tipo'),
+                                        'clave': error.get('clave'),
+                                        'valor': error.get('valor'),
+                                        'mensaje': traduccion.format(**ctx) if ctx else traduccion,
+                                    })
+                                except Exception:
+                                    continue
+                        valores.detalles = detalles
                 except Exception as e:
                     print(e)
         return valores

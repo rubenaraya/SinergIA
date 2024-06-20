@@ -112,14 +112,14 @@ class ServidorApi:
         async def _error_personalizado(request:Request, err:ErrorPersonalizado):
             return mi._crear_respuesta_error(request, err)
 
-        @api.exception_handler(ValidationError)
-        async def _error_validacion(request:Request, err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
-            return mi._crear_respuesta_error(request, error)
-
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, err:RequestValidationError):
             error = ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
+            return mi._crear_respuesta_error(request, error)
+
+        @api.exception_handler(ValidationError)
+        async def _error_validacion(request:Request, err:ValidationError):
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(request, error)
 
         @api.exception_handler(HTTPException)

@@ -13,67 +13,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: web.py:1
 msgid "Form-Editar-participante"
 msgstr "Edit participant data"
 
-#: dominio.py:2
 msgid "Datos-basicos"
 msgstr "Basic data"
 
-#: dominio.py:3
 msgid "Actualizar-participante"
 msgstr "Update participant"
 
-#: dominio.py:4
 msgid "Nombre-participante"
 msgstr "Name"
 
-#: dominio.py:5
 msgid "Alias-del-participante"
 msgstr "Participant alias"
 
-#: dominio.py:6
 msgid "Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres"
 msgstr "Name must be between (minimo) and (maximo) characters"
 
-#: dominio.py:7
 msgid "Correo-e-participante"
 msgstr "E-mail"
 
-#: dominio.py:8
 msgid "Correo-electronico-del-participante"
 msgstr "Participant E-mail"
 
-#: dominio.py:9
 msgid "Debe-ingresar-un-correo-electronico-valido"
 msgstr "You must enter a valid E-mail"
 
-#: dominio.py:10
 msgid "Estado-participante"
 msgstr "Status"
 
-#: dominio.py:11
 msgid "Estado-del-participante"
 msgstr "Participant Status"
 
-#: dominio.py:12
 msgid "Debe-elegir-un-estado"
 msgstr "You must choose a Status from the list"
 
-#: dominio.py:13
 msgid "Estado-Activo"
 msgstr "Active"
 
-#: dominio.py:14
 msgid "Estado-Inactivo"
 msgstr "Inactive"
 
-#: dominio.py:15
 msgid "Estado-Archivado"
 msgstr "Archived"
 
-#: dominio.py:16
 msgid "Perfil-participante"
 msgstr "Participant profile"
-

@@ -13,183 +13,140 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: web_flask.py:1
 msgid "Los-datos-recibidos-no-se-procesaron"
 msgstr "Los datos recibidos no fueron procesados correctamente"
 
-#: web_flask.py:2
 msgid "Error-no-manejado"
 msgstr "Error interno del Servidor"
 
-#: web_flask.py:3
 msgid "API-key-invalida"
 msgstr "API key no válida"
 
-#: web_flask.py:4
 msgid "Encabezado-de-autorizacion-invalido"
 msgstr "Encabezado de autorización no válido"
 
-#: web_flask.py:5
 msgid "Token-invalido"
 msgstr "Token no válido o caducado"
 
-#: servicio.py:1
 msgid "No-autorizado-para-acceder"
 msgstr "No tiene permisos para realizar esta acción"
 
-#: web_fastapi.py:1
 msgid "Los-datos-recibidos-son-invalidos"
 msgstr "Los datos recibidos no son válidos"
 
-#: exportador_word.py:1
 msgid "Error-en-exportador-Word"
 msgstr "Error en exportador Word"
 
-#: exportador_pdf.py:1
 msgid "Error-en-exportador-PDF"
 msgstr "Error en exportador PDF"
 
-#: exportador_excel.py:1
 msgid "Error-en-exportador-Excel"
 msgstr "Error en exportador Excel"
 
-#: exportador_csv.py:1
 msgid "Error-en-exportador-CSV"
 msgstr "Error en exportador CSV"
 
-#: web.py:1
 msgid "El-archivo-ya-existe"
 msgstr "Ya existe un archivo llamado '{recurso}'"
 
-#: web.py:2
 msgid "Error-al-guardar-el-archivo"
 msgstr "Error al guardar el archivo"
 
-#: adaptadores.py:1
 msgid "Archivo-cargado-con-exito"
 msgstr "El archivo '{recurso}' fue cargado con éxito"
 
-#: web_fastapi.py:2
 msgid "Tipo-de-carga-no-valido"
 msgstr "Tipo de carga no válido"
 
-#: web_flask.py:6
 msgid "No-se-recibio-ninguna-carga"
 msgstr "No se recibió ninguna carga"
 
-#: dominio.py:1
 msgid "La-carga-recibida-no-contiene-archivo"
 msgstr "La carga recibida no contiene archivo"
 
-#: dominio.py:2
 msgid "El-tipo-de-archivo-no-esta-permitido"
 msgstr "El tipo de archivo no está permitido"
 
-#: dominio.py:3
 msgid "El-archivo-supera-el-peso-maximo-aceptado"
 msgstr "El archivo supera el peso máximo aceptado"
 
-#: disco_local.py:1
 msgid "Archivo-no-encontrado"
 msgstr "El archivo '{recurso}' no fue encontrado"
 
-#: disco_local.py:2
 msgid "Permiso-denegado-para-eliminar-el-archivo"
 msgstr "Permiso denegado para eliminar el archivo"
 
-#: disco_local.py:3
 msgid "Error-desconocido-al-acceder-al-archivo"
 msgstr "Error desconocido al acceder al archivo"
 
-#: disco_local.py:4
 msgid "Permiso-denegado-para-escribir-el-archivo"
 msgstr "Permiso denegado para escribir el archivo"
 
-#: disco_local.py:5
 msgid "Permiso-denegado-para-abrir-el-archivo"
 msgstr "Permiso denegado para abrir el archivo"
 
-#: disco_local.py:6
 msgid "Error-de-IO-al-escribir-el-archivo"
 msgstr "Error de I/O al escribir en el archivo"
 
-#: disco_local.py:7
 msgid "La-carpeta-no-existe"
 msgstr "La carpeta no existe"
 
-#: disco_local.py:8
 msgid "Permiso-denegado-para-eliminar-la-carpeta"
 msgstr "Permiso denegado para eliminar la carpeta"
 
-#: disco_local.py:9
 msgid "Error-del-sistema-operativo-al-eliminar-la-carpeta"
 msgstr "Error del sistema operativo al eliminar la carpeta"
 
-#: disco_local.py:10
 msgid "Permiso-denegado-para-crear-la-carpeta"
 msgstr "Permiso denegado para crear la carpeta"
 
-#: disco_local.py:11
 msgid "Error-del-sistema-operativo-al-crear-la-carpeta"
 msgstr "Error del sistema operativo al crear la carpeta"
 
-#: disco_local.py:12
 msgid "Error-desconocido-al-acceder-a-la-carpeta"
 msgstr "Error desconocido al acceder a la carpeta"
 
-#: dominio.py:4
 msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
 msgstr "Hay {total} casos. Lista del {primero} al {ultimo}"
 
-#: convertidor_audio.py:1
 msgid "Error-en-exportador-Audio"
 msgstr "Error en exportador de Audio"
 
-#: dominio.py:5
 msgid "Form-Autenticacion"
 msgstr "Autenticación"
 
-#: dominio.py:6
 msgid "Datos-para-iniciar-sesion"
 msgstr "Inicia sesión en tu cuenta para continuar"
 
-#: dominio.py:7
 msgid "Iniciar-sesion"
 msgstr "Iniciar sesión"
 
-#: dominio.py:8
 msgid "Nombre-usuario"
 msgstr "Correo-e"
 
-#: dominio.py:9
 msgid "Nombre-de-usuario"
 msgstr "Correo-electrónico"
 
-#: dominio.py:10
 msgid "Debe-ingresar-su-nombre-de-usuario"
 msgstr "Debes ingresar tu nombre de usuario"
 
-#: dominio.py:11
 msgid "Contraseña-usuario"
 msgstr "Contraseña"
 
-#: dominio.py:12
 msgid "Contraseña-del-usuario"
 msgstr "Contraseña del usuario"
 
-#: dominio.py:13
 msgid "Debe-ingresar-su-contraseña"
 msgstr "Debes ingresar tu contraseña"
 
-#: web_flask.py:7
 msgid "No-se-pudo-registrar-el-microservicio"
 msgstr "No se pudo registrar el microservicio"
 
-#: adaptadores.py:2
 msgid "No-se-pudo-importar-el-conector"
 msgstr "No se pudo importar el conector"
 
-#: adaptadores.py:3
 msgid "No-se-pudieron-inyectar-los-conectores"
 msgstr "No se pudieron inyectar los conectores"
 
+msgid "Input should be a valid integer, unable to parse string as an integer"
+msgstr "Debe ingresar un número entero válido"
