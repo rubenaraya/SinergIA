@@ -11,7 +11,7 @@ __pysinergia__ = 'PySinergIA v0.0.1'
 class Constantes:
 
     def __new__(cls):
-        raise TypeError('Esta es una clase estática')
+        raise TypeError('No-se-puede-instanciar-una-clase-estatica')
 
     class ENTORNO:
         PRODUCCION = 'PRODUCCION'
@@ -161,7 +161,7 @@ class Constantes:
 class RegistradorLogs:
 
     def __new__(cls):
-        raise TypeError('Esta es una clase estática')
+        raise TypeError('No-se-puede-instanciar-una-clase-estatica')
 
     @staticmethod
     def crear(nombre:str, ruta_logs=None, nivel_registro:str=None):
@@ -239,7 +239,9 @@ class ErrorPersonalizado(Exception):
             return Constantes.CONCLUSION.ALERTA
         return Constantes.CONCLUSION.ERROR
 
-    def registrar(mi, exc_info:bool=False, texto_pre:str='', texto_pos:str='') -> str:
+    def registrar(mi, exc_info:bool=None, texto_pre:str='', texto_pos:str='') -> str:
+        if not exc_info:
+            exc_info = bool(os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO)
         texto_registrado = mi.__repr__()
         texto_registrado = f'{texto_pre} | {texto_registrado}' if texto_pre else texto_registrado
         texto_registrado = f'{texto_registrado} | {texto_pos}' if texto_pos else texto_registrado
@@ -266,9 +268,9 @@ class ErrorPersonalizado(Exception):
 
 
 # --------------------------------------------------
-# Funcion: agregar_errores
+# Funcion: detallar_errores
 # --------------------------------------------------
-def agregar_errores(mi, errores:list) -> list:
+def detallar_errores(mi, errores:list) -> list:
     lista:list = []
     if errores and isinstance(errores, list):
         for error in errores:

@@ -21,7 +21,7 @@ from flask import (
 from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
-    agregar_errores,
+    detallar_errores,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
@@ -118,7 +118,7 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=agregar_errores(err.errors()))
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=detallar_errores(err.errors()))
             return mi._crear_respuesta_error(error)
 
         @api.errorhandler(HTTPException)
@@ -158,11 +158,7 @@ class ServidorApi:
         import importlib
         ruta_backend = Path(os.getenv('DIR_BACKEND'))
         modulo_base = 'web_flask'
-        try:
-            directorios = [d for d in ruta_backend.iterdir() if d.is_dir()]
-        except Exception as e:
-            print(e)
-            return
+        directorios = [d for d in ruta_backend.iterdir() if d.is_dir()]
         for directorio in directorios:
             try:
                 if (directorio / f'{modulo_base}.py').is_file():
@@ -170,8 +166,8 @@ class ServidorApi:
                     modulo = f'{dir_backend}.{directorio.name}.{modulo_base}'
                     enrutador = importlib.import_module(modulo)
                     api.register_blueprint(getattr(enrutador, 'enrutador'))
-            except Exception as e:
-                print(e)
+            except Exception:
+                ErrorPersonalizado(mensaje='No-se-pudo-registrar-el-microservicio', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.WARNING, recurso=str(directorio)).registrar()
                 continue
 
     def iniciar_servicio_web(mi, app:Flask, puerto:int, host:str=None):

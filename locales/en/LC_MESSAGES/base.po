@@ -181,3 +181,15 @@ msgstr "User password"
 msgid "Debe-ingresar-su-contraseña"
 msgstr "You must enter your password"
 
+#: web_flask.py:7
+msgid "No-se-pudo-registrar-el-microservicio"
+msgstr "Could not register microservice"
+
+#: adaptadores.py:2
+msgid "No-se-pudo-importar-el-conector"
+msgstr "Could not import connector"
+
+#: adaptadores.py:3
+msgid "No-se-pudieron-inyectar-los-conectores"
+msgstr "Connectors could not be injected"
+

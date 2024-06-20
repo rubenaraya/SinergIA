@@ -180,3 +180,16 @@ msgstr "Contraseña del usuario"
 #: dominio.py:13
 msgid "Debe-ingresar-su-contraseña"
 msgstr "Debes ingresar tu contraseña"
+
+#: web_flask.py:7
+msgid "No-se-pudo-registrar-el-microservicio"
+msgstr "No se pudo registrar el microservicio"
+
+#: adaptadores.py:2
+msgid "No-se-pudo-importar-el-conector"
+msgstr "No se pudo importar el conector"
+
+#: adaptadores.py:3
+msgid "No-se-pudieron-inyectar-los-conectores"
+msgstr "No se pudieron inyectar los conectores"
+

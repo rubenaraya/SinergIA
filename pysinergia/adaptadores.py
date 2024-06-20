@@ -14,6 +14,10 @@ from pydantic import Field, field_validator
 
 # --------------------------------------------------
 # Importaciones de PySinergIA
+from pysinergia import (
+    ErrorPersonalizado,
+    Constantes,
+)
 from pysinergia.dominio import (
     ArchivoCargado as ArchivoCargado,
 )
@@ -249,8 +253,8 @@ class Repositorio(ABC):
             if modulo:
                 return modulo
             return None
-        except Exception as e:
-            print(e)
+        except Exception:
+            ErrorPersonalizado(mensaje='No-se-pudo-importar-el-conector', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.WARNING, recurso=clase).registrar()
             return None
 
     def inyectar_conectores(mi, configuracion:Configuracion):
@@ -281,7 +285,7 @@ class Repositorio(ABC):
                 if conector_spi:
                     mi.spi:Spi = conector_spi()
         except Exception as e:
-            print(e)
+            ErrorPersonalizado(mensaje='No-se-pudieron-inyectar-los-conectores', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.WARNING).registrar()
 
 
 # --------------------------------------------------
