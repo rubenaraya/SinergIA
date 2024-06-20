@@ -20,7 +20,7 @@ class I_ConectorSpi(metaclass=ABCMeta):
 # Clase: ErrorSpi
 # --------------------------------------------------
 class ErrorSpi(ErrorPersonalizado):
-    ...
+    pass
 
 
 # --------------------------------------------------

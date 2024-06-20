@@ -205,11 +205,11 @@ class ErrorPersonalizado(Exception):
         super().__init__(mensaje)
         mi.mensaje:str = mensaje
         mi.codigo:int = int(codigo)
-        mi.detalles:list = detalles
         mi.tipo:str = tipo
         mi.recurso:str = recurso
         mi.nivel_evento:str = nivel_evento
         mi.conclusion:str = mi.concluir(mi.codigo)
+        mi.detalles:list = mi.detallar_errores(detalles) if detalles and isinstance(detalles, list) else []
         if not dominio_idioma:
             dominio_idioma = os.getenv('DOMINIO_IDIOMA', None) or 'base'
         mi.dominio_idioma:str = dominio_idioma
@@ -266,21 +266,17 @@ class ErrorPersonalizado(Exception):
             'detalles': mi.detalles,
         }
 
-
-# --------------------------------------------------
-# Funcion: detallar_errores
-# --------------------------------------------------
-def detallar_errores(mi, errores:list) -> list:
-    lista:list = []
-    if errores and isinstance(errores, list):
-        for error in errores:
-            if isinstance(error, dict):
-                type = error.get('type', '')
-                msg = error.get('msg', '')
-                loc = error.get('loc', '')
-                input = error.get('input', '')
-                input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
-                if type or msg or loc or input_filtrado:
-                    lista.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
-    return lista
+    def detallar_errores(mi, errores:list) -> list:
+        lista:list = []
+        if errores and isinstance(errores, list):
+            for error in errores:
+                if isinstance(error, dict):
+                    type = error.get('type', '')
+                    msg = error.get('msg', '')
+                    loc = error.get('loc', '')
+                    input = error.get('input', '')
+                    input_filtrado = input if isinstance(input, (str, int, float, bool)) else ''
+                    if type or msg or loc or input_filtrado:
+                        lista.append({'type': type, 'msg': msg, 'loc': loc, 'input': input_filtrado})
+        return lista
 

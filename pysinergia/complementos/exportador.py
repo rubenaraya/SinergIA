@@ -25,7 +25,7 @@ class I_Exportador(metaclass=ABCMeta):
 # Clase: ErrorExportador
 # --------------------------------------------------
 class ErrorExportador(ErrorPersonalizado):
-    ...
+    pass
 
 
 # --------------------------------------------------

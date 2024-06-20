@@ -21,7 +21,6 @@ from flask import (
 from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
-    detallar_errores,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
@@ -118,7 +117,7 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=detallar_errores(err.errors()))
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(error)
 
         @api.errorhandler(HTTPException)

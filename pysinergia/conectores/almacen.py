@@ -20,7 +20,7 @@ class I_ConectorAlmacen(metaclass=ABCMeta):
 # Clase: ErrorAlmacen
 # --------------------------------------------------
 class ErrorAlmacen(ErrorPersonalizado):
-    ...
+    pass
 
 
 # --------------------------------------------------

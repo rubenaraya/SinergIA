@@ -141,6 +141,7 @@ class DiscoLocal(Disco):
                 shutil.copy(str(ruta_archivo_path), str(archivo_destino_path))
             return True
         except Exception as e:
+            """TODO: falta raise"""
             print(e)
             return False
 
@@ -208,6 +209,7 @@ class DiscoLocal(Disco):
                         zipf.write(archivo, ruta_relativa)
             return True
         except Exception as e:
+            """TODO: falta raise"""
             print(e)
             return False
 
@@ -221,6 +223,7 @@ class DiscoLocal(Disco):
                 zipf.extractall(dir_destino_path)
             return True
         except Exception as e:
+            """TODO: falta raise"""
             print(e)
             return False
 
@@ -243,9 +246,11 @@ class DiscoLocal(Disco):
                         imagen.save(ruta_salida, format=formato)
                         resultado.append(ruta_salida.as_posix())
                     except Exception as e:
+                        """TODO: falta raise"""
                         print(e)
             return resultado
         except Exception as e:
+            """TODO: falta raise"""
             print(e)
             return []
 

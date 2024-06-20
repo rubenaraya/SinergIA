@@ -54,7 +54,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 # Clase: ErrorBasedatos
 # --------------------------------------------------
 class ErrorBasedatos(ErrorPersonalizado):
-    ...
+    pass
 
 
 # --------------------------------------------------

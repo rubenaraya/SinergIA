@@ -20,7 +20,7 @@ class I_ConectorLlm(metaclass=ABCMeta):
 # Clase: ErrorLlm
 # --------------------------------------------------
 class ErrorLlm(ErrorPersonalizado):
-    ...
+    pass
 
 
 # --------------------------------------------------

@@ -22,7 +22,6 @@ from fastapi.encoders import jsonable_encoder
 from pysinergia import (
     Constantes as C,
     ErrorPersonalizado,
-    detallar_errores,
 )
 from pysinergia.dominio import Respuesta
 from pysinergia.web import (
@@ -115,12 +114,12 @@ class ServidorApi:
 
         @api.exception_handler(ValidationError)
         async def _error_validacion(request:Request, err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=detallar_errores(err.errors()))
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(request, error)
 
         @api.exception_handler(RequestValidationError)
         async def _error_procesar_peticion(request:Request, err:RequestValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=detallar_errores(err.errors()))
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(request, error)
 
         @api.exception_handler(HTTPException)

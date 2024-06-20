@@ -165,10 +165,8 @@ class Traductor:
         except ValueError as e:
             return mi.fecha_hora()
         except pytz.UnknownTimeZoneError as e:
-            print(e)
             return {}
         except Exception as e:
-            print(e)
             return {}
 
 
