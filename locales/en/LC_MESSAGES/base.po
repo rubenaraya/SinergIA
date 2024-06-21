@@ -162,3 +162,162 @@ msgstr "string should have at most {max_length} characters"
 
 msgid "string_pattern_mismatch"
 msgstr "the text does not comply with the formatting pattern"
+
+msgid "float_type"
+msgstr "Input should be a valid number"
+
+msgid "bool_parsing"
+msgstr "Input should be a valid boolean (true or false)"
+
+msgid "bool_type"
+msgstr "Input should be a valid boolean (true or false)"
+
+msgid "bytes_too_long"
+msgstr "Data should have at most {max_length} bytes"
+
+msgid "bytes_too_short"
+msgstr ""
+
+msgid "bytes_type"
+msgstr ""
+
+msgid "date_from_datetime_parsing"
+msgstr ""
+
+msgid "date_future"
+msgstr ""
+
+msgid "date_parsing"
+msgstr ""
+
+msgid "date_past"
+msgstr ""
+
+msgid "date_type"
+msgstr ""
+
+msgid "datetime_from_date_parsing"
+msgstr ""
+
+msgid "datetime_future"
+msgstr ""
+
+msgid "datetime_parsing"
+msgstr ""
+
+msgid "datetime_past"
+msgstr ""
+
+msgid "datetime_type"
+msgstr ""
+
+msgid "decimal_max_digits"
+msgstr ""
+
+msgid "decimal_max_places"
+msgstr ""
+
+msgid "decimal_parsing"
+msgstr ""
+
+msgid "decimal_type"
+msgstr ""
+
+msgid "decimal_whole_digits"
+msgstr ""
+
+msgid "dict_type"
+msgstr ""
+
+msgid "enum"
+msgstr ""
+
+msgid "float_parsing"
+msgstr ""
+
+msgid "greater_than"
+msgstr ""
+
+msgid "greater_than_equal"
+msgstr ""
+
+msgid "int_from_float"
+msgstr ""
+
+msgid "int_type"
+msgstr ""
+
+msgid "json_invalid"
+msgstr ""
+
+msgid "json_type"
+msgstr ""
+
+msgid "less_than"
+msgstr ""
+
+msgid "less_than_equal"
+msgstr ""
+
+msgid "list_type"
+msgstr ""
+
+msgid "literal_error"
+msgstr ""
+
+msgid "missing"
+msgstr ""
+
+msgid "none_required"
+msgstr ""
+
+msgid "string_type"
+msgstr ""
+
+msgid "string_unicode"
+msgstr ""
+
+msgid "time_parsing"
+msgstr ""
+
+msgid "time_type"
+msgstr ""
+
+msgid "too_long"
+msgstr ""
+
+msgid "too_short"
+msgstr ""
+
+msgid "tuple_type"
+msgstr ""
+
+msgid "union_tag_invalid"
+msgstr ""
+
+msgid "url_parsing"
+msgstr ""
+
+msgid "url_scheme"
+msgstr ""
+
+msgid "url_syntax_violation"
+msgstr ""
+
+msgid "url_too_long"
+msgstr ""
+
+msgid "url_type"
+msgstr ""
+
+msgid "uuid_parsing"
+msgstr ""
+
+msgid "uuid_type"
+msgstr ""
+
+msgid "value_error"
+msgstr ""
+
+msgid "arguments_type"
+msgstr ""
