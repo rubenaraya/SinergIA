@@ -187,6 +187,7 @@ class FormActualizarParticipante(Formulario):
         serialization_alias='alias',
         title='Nombre-participante',
         description='Alias-del-participante',
+        min_length=5,
         max_length=25,
         json_schema_extra={'grupo':'general', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Nombre-debe-tener-entre-(minimo)-y-(maximo)-caracteres', 'minimo':5, 'maximo':25}
     )
@@ -195,7 +196,9 @@ class FormActualizarParticipante(Formulario):
         validation_alias='email',
         title='Correo-e-participante',
         description='Correo-electronico-del-participante',
+        min_length=7,
         max_length=50,
+        pattern='[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})',
         json_schema_extra={'grupo':'general', 'vista': C.CAMPO.TEXT, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-un-correo-electronico-valido', 'minimo':7, 'maximo':50, 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
     )
     estado:str = Field(
@@ -203,6 +206,7 @@ class FormActualizarParticipante(Formulario):
         validation_alias='estado',
         title='Estado-participante',
         description='Estado-del-participante',
+        max_length=10,
         json_schema_extra={'grupo':'perfil', 'vista': C.CAMPO.SELECT, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-elegir-un-estado', 'minimo':1, 'maximo':10, 'diccionario':'estado'}
     )
 
@@ -221,6 +225,7 @@ class FormLogin(Formulario):
         serialization_alias='email',
         title='Nombre-usuario',
         description='Nombre-de-usuario',
+        min_length=7,
         max_length=50,
         json_schema_extra={'grupo':'general', 'vista': C.CAMPO.EMAIL, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-nombre-de-usuario', 'minimo':7, 'maximo':50, 'autocompletar':'username', 'patron':'[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})'}
     )
@@ -230,7 +235,8 @@ class FormLogin(Formulario):
         serialization_alias='clave',
         title='Contraseña-usuario',
         description='Contraseña-del-usuario',
-        max_length=50,
+        min_length=5,
+        max_length=15,
         json_schema_extra={'grupo':'general', 'vista': C.CAMPO.PASSWORD, 'requerido':True, 'validacion': C.VALIDACION.TEXTO, 'error':'Debe-ingresar-su-contraseña', 'minimo':5, 'maximo':15, 'autocompletar':'current-password', 'patron':'[A-Za-z0-9.,_-]+'}
     )
 

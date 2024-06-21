@@ -148,5 +148,17 @@ msgstr "No se pudo importar el conector"
 msgid "No-se-pudieron-inyectar-los-conectores"
 msgstr "No se pudieron inyectar los conectores"
 
-msgid "Input should be a valid integer, unable to parse string as an integer"
-msgstr "Debe ingresar un número entero válido"
+# -----------------------------
+# MENSAJES DE ERROR DE PYDANTIC
+
+msgid "int_parsing"
+msgstr "debe ser un número entero"
+
+msgid "string_too_short"
+msgstr "debe tener al menos {min_length} caracteres"
+
+msgid "string_too_long"
+msgstr "debe tener como máximo {max_length} caracteres"
+
+msgid "string_pattern_mismatch"
+msgstr "el texto no cumple con el patrón de formato"

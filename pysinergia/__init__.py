@@ -262,11 +262,12 @@ class ErrorPersonalizado(Exception):
                     input = error.get('input', '')
                     valor = input if input and isinstance(input, (str, int, float, bool)) else ''
                     lista.append({
-                        'tipo': error.get('type', ''),
-                        'mensaje': error.get('msg', ''),
                         'clave': mi._transformar_loc(error.get('loc', [])),
                         'valor': valor,
-                        'ctx': error.get('ctx', None)
+                        'mensaje': '',
+                        '_type': error.get('type', ''),
+                        '_msg': error.get('msg', ''),
+                        '_ctx': error.get('ctx', None)
                     })
         return lista
 

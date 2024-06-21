@@ -148,5 +148,17 @@ msgstr "Could not import connector"
 msgid "No-se-pudieron-inyectar-los-conectores"
 msgstr "Connectors could not be injected"
 
-msgid "Input should be a valid integer, unable to parse string as an integer"
-msgstr "Input should be a valid integer xxx"
+# -----------------------------
+# PYDANTIC ERROR MESSAGES
+
+msgid "int_parsing"
+msgstr "must be an integer"
+
+msgid "string_too_short"
+msgstr "string should have at least {min_length} characters"
+
+msgid "string_too_long"
+msgstr "string should have at most {max_length} characters"
+
+msgid "string_pattern_mismatch"
+msgstr "the text does not comply with the formatting pattern"

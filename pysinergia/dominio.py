@@ -422,13 +422,15 @@ class Respuesta(BaseModel):
                         for error in valores.detalles:
                             if isinstance(error, dict):
                                 try:
-                                    traduccion:str = _(error.get('mensaje',''))
-                                    ctx = error.get('ctx', None)
+                                    mensaje:str = _(error.get('_type',''))
+                                    ctx = error.get('_ctx', None)
                                     detalles.append({
-                                        'tipo': error.get('tipo'),
                                         'clave': error.get('clave'),
                                         'valor': error.get('valor'),
-                                        'mensaje': traduccion.format(**ctx) if ctx else traduccion,
+                                        'mensaje': mensaje.format(**ctx) if ctx else mensaje,
+                                        '_type': error.get('_type'),
+                                        '_msg': error.get('_msg'),
+                                        '_ctx': str(ctx) if ctx else ''
                                     })
                                 except Exception:
                                     continue

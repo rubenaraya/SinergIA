@@ -258,7 +258,7 @@ def img():
         {"ancho": 256, "alto": 256, "formato": "JPEG", "nombre": "icon-256x256.jpg"},
     ]
     img = comunicador.disco.convertir_imagen(
-        ruta_imagen='imagenes/avatar-rat.jpg',
+        ruta_imagen='imagenes/logo.png',
         dir_destino='documentos/img',
         lista_salidas=salidas
     )
@@ -324,7 +324,6 @@ def form():
         dto_contexto=comunicador.transferir_contexto(),
         dto_roles_sesion=sesion.get('roles'),
         T=comunicador.traspasar_traductor(),
-        #id='a',
         #nombre='Rubén Araya',
         #email='raraya@masexperto.com',
         #estado='Activo',
