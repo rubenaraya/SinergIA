@@ -16,12 +16,6 @@ pydub
 
 [conectores]
 mysql-connector-python
-chromadb
-faiss-cpu
-openai
-langchain
-PyMuPDF
-docx2txt
 
 [flask]
 flask

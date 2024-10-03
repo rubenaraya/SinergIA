@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 packages = [
     "pysinergia",
     "pysinergia.web",
-    "pysinergia.base",
     "pysinergia.conectores",
     "pysinergia.complementos",
 ]
@@ -63,12 +62,6 @@ classifiers = [
 [project.optional-dependencies]
 conectores = [
     "mysql-connector-python",
-    "chromadb",
-    "faiss-cpu",
-    "openai",
-    "langchain",
-    "PyMuPDF",
-    "docx2txt",
 ]
 complementos = [
     "openpyxl",
