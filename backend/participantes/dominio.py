@@ -3,13 +3,14 @@
 from typing import Optional
 from pydantic import Field
 
-from pysinergia.base import (
-    C,
+from pysinergia import (
+    Constantes as C,
+)
+from pysinergia.dominio import (
     Peticion,
     Procedimiento,
     Formulario,
     Diccionario,
-    Informe,
 )
 
 # --------------------------------------------------

@@ -1,14 +1,44 @@
 # backend\participantes\web_fastapi.py
 
-from pysinergia.base import (
-    configurar_microservicio,
-    C,
-    ImagenCargada,
-    DocumentoCargado,
+from pysinergia import (
+    Constantes as C,
+)
+from pysinergia.dominio import (
     AudioCargado,
+    DocumentoCargado,
+    ImagenCargada,
     Respuesta,
 )
-from pysinergia.base.fastapi import *
+from pysinergia.adaptadores import (
+    Controlador,
+)
+from pysinergia.web import (
+    configurar_microservicio,
+)
+
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    Body,
+    File,
+    UploadFile,
+)
+from fastapi.responses import (
+    JSONResponse,
+    PlainTextResponse,
+    HTMLResponse,
+    RedirectResponse,
+    StreamingResponse,
+    Response,
+)
+
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia.web.fastapi import (
+    ComunicadorWeb,
+    AutenticadorWeb,
+)
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -218,13 +248,4 @@ async def manifest(request:Request):
         plantilla='manifest.json',
     )
     return Response(content=respuesta, media_type=C.MIME.MANIFEST)
-
-@enrutador.get('/audio', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse)
-async def audio(request:Request):
-    from pysinergia.complementos.convertidor_audio import ConvertidorAudio
-    idioma = request.headers.get('Accept-Language')
-    await comunicador.procesar_peticion(request, idioma)
-    convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)
-    respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
-    return JSONResponse(respuesta, status_code=C.ESTADO._200_EXITO)
 

@@ -1,13 +1,16 @@
 # backend\participantes\adaptadores.py
 
-from pysinergia.base import (
-    Configuracion,
-    Controlador,
-    Repositorio,
-    Peticion,
+from pysinergia.dominio import (
     ArchivoCargado,
+    Peticion,
     Respuesta,
     Recurso,
+)
+from pysinergia.servicio import CasosDeUso
+from pysinergia.adaptadores import (
+    Controlador,
+    Repositorio,
+    Configuracion,
 )
 
 # --------------------------------------------------

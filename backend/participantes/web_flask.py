@@ -1,15 +1,36 @@
 # backend\participantes\web_flask.py
 
-from pysinergia.base import (
-    configurar_microservicio,
-    C,
-    ImagenCargada,
-    DocumentoCargado,
+from pysinergia import (
+    Constantes as C,
+)
+from pysinergia.dominio import (
     AudioCargado,
+    DocumentoCargado,
+    ImagenCargada,
     Respuesta,
+)
+from pysinergia.adaptadores import (
+    Controlador,
     Repositorio,
 )
-from pysinergia.base.flask import *
+from pysinergia.web import (
+    configurar_microservicio,
+)
+from flask import (
+    Response,
+    Blueprint,
+    request,
+    redirect,
+    jsonify
+)
+from flask_pydantic import validate
+
+# --------------------------------------------------
+# Importaciones de PySinergIA
+from pysinergia.web.flask import (
+    ComunicadorWeb,
+    AutenticadorWeb,
+)
 
 # --------------------------------------------------
 # Importaciones del Microservicio personalizado
@@ -252,10 +273,18 @@ def img():
     idioma = request.headers.get('Accept-Language')
     comunicador.procesar_peticion(idioma)
     salidas = [
-        {"ancho": 32, "alto": 32, "formato": "ICO", "nombre": "favicon-32x32.ico"},
-        {"ancho": 64, "alto": 64, "formato": "ICO", "nombre": "favicon.ico"},
+        {"ancho": 32, "alto": 32, "formato": "PNG", "nombre": "icon-32x32.png"},
+        {"ancho": 48, "alto": 48, "formato": "PNG", "nombre": "icon-48x48.png"},
+        {"ancho": 64, "alto": 64, "formato": "PNG", "nombre": "icon-64x64.png"},
+        {"ancho": 72, "alto": 72, "formato": "PNG", "nombre": "icon-72x72.png"},
+        {"ancho": 96, "alto": 96, "formato": "PNG", "nombre": "icon-96x96.png"},
         {"ancho": 128, "alto": 128, "formato": "PNG", "nombre": "icon-128x128.png"},
-        {"ancho": 256, "alto": 256, "formato": "JPEG", "nombre": "icon-256x256.jpg"},
+        {"ancho": 144, "alto": 144, "formato": "PNG", "nombre": "icon-144x144.png"},
+        {"ancho": 152, "alto": 152, "formato": "PNG", "nombre": "icon-152x152.png"},
+        {"ancho": 192, "alto": 192, "formato": "PNG", "nombre": "icon-192x192.png"},
+        {"ancho": 256, "alto": 256, "formato": "PNG", "nombre": "icon-256x256.png"},
+        {"ancho": 384, "alto": 384, "formato": "PNG", "nombre": "icon-384x384.png"},
+        {"ancho": 512, "alto": 512, "formato": "PNG", "nombre": "icon-512x512.png"},
     ]
     img = comunicador.disco.convertir_imagen(
         ruta_imagen='imagenes/logo.png',
@@ -263,15 +292,6 @@ def img():
         lista_salidas=salidas
     )
     return jsonify(img)
-
-@enrutador.route('/audio', methods=['GET'])
-def audio():
-    from pysinergia.complementos.convertidor_audio import ConvertidorAudio
-    idioma = request.headers.get('Accept-Language')
-    comunicador.procesar_peticion(idioma)
-    convertidor = ConvertidorAudio(configuracion.DISCO_RUTA)
-    respuesta = convertidor.convertir(ruta_audio='audios/prueba1.opus', dir_destino='audios/convertidos')
-    return jsonify(respuesta)
 
 @enrutador.route('/sql', methods=['GET'])
 def sql():

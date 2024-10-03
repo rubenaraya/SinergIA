@@ -107,14 +107,6 @@ class Configuracion(ABC, BaseSettings):
     BASEDATOS_RUTA: str = ''
     BASEDATOS_USUARIO: str = ''
     BASEDATOS_PASSWORD: str = ''
-    ALMACEN_FUENTE: str = ''
-    ALMACEN_CLASE: str = ''
-    ALMACEN_NOMBRE: str = ''
-    ALMACEN_RUTA: str = ''
-    ALMACEN_APIKEY: str = ''
-    ALMACEN_URL: str = ''
-    ALMACEN_USUARIO: str = ''
-    ALMACEN_PASSWORD: str = ''
     DISCO_FUENTE: str = ''
     DISCO_CLASE: str = ''
     DISCO_NOMBRE: str = ''
@@ -123,18 +115,6 @@ class Configuracion(ABC, BaseSettings):
     DISCO_LOCATION: str = ''
     DISCO_KEY: str = ''
     DISCO_SECRET: str = ''
-    LLM_FUENTE: str = ''
-    LLM_CLASE: str = ''
-    LLM_NOMBRE: str = ''
-    LLM_RUTA: str = ''
-    LLM_APIKEY: str = ''
-    LLM_URL: str = ''
-    SPI_FUENTE: str = ''
-    SPI_CLASE: str = ''
-    SPI_NOMBRE: str = ''
-    SPI_RUTA: str = ''
-    SPI_APIKEY: str = ''
-    SPI_URL: str = ''
     model_config = SettingsConfigDict(
         env_prefix='',
         extra='ignore',
@@ -182,35 +162,6 @@ class Configuracion(ABC, BaseSettings):
             'location': mi.DISCO_LOCATION,
             'key': mi.DISCO_KEY,
             'secret': mi.DISCO_SECRET,
-        })
-    def almacen(mi) -> dict:
-        return dict({
-            'fuente': mi.ALMACEN_FUENTE,
-            'clase': mi.ALMACEN_CLASE,
-            'nombre': mi.ALMACEN_NOMBRE,
-            'ruta': mi.ALMACEN_RUTA,
-            'url': mi.ALMACEN_URL,
-            'apikey': mi.ALMACEN_APIKEY,
-            'usuario': mi.ALMACEN_USUARIO,
-            'password': mi.ALMACEN_PASSWORD,
-        })
-    def llm(mi) -> dict:
-        return dict({
-            'fuente': mi.LLM_FUENTE,
-            'clase': mi.LLM_CLASE,
-            'nombre': mi.LLM_NOMBRE,
-            'ruta': mi.LLM_RUTA,
-            'url': mi.LLM_URL,
-            'apikey': mi.LLM_APIKEY,
-        })
-    def spi(mi) -> dict:
-        return dict({
-            'fuente': mi.SPI_FUENTE,
-            'clase': mi.SPI_CLASE,
-            'nombre': mi.SPI_NOMBRE,
-            'ruta': mi.SPI_RUTA,
-            'url': mi.SPI_URL,
-            'apikey': mi.SPI_APIKEY,
         })
     def web(mi) -> dict:
         return {
@@ -264,26 +215,11 @@ class Repositorio(ABC):
                 conector_basedatos = mi._importar_conector(mi.configuracion.basedatos())
                 if conector_basedatos:
                     mi.basedatos:Basedatos = conector_basedatos()
-            if configuracion.ALMACEN_CLASE:
-                from pysinergia.conectores.almacen import Almacen
-                conector_almacen = mi._importar_conector(mi.configuracion.almacen())
-                if conector_almacen:
-                    mi.almacen:Almacen = conector_almacen()
             if configuracion.DISCO_CLASE:
                 from pysinergia.conectores.disco import Disco
                 conector_disco = mi._importar_conector(mi.configuracion.disco())
                 if conector_disco:
                     mi.disco:Disco = conector_disco(mi.configuracion.disco())
-            if configuracion.LLM_CLASE:
-                from pysinergia.conectores.llm import Llm
-                conector_llm = mi._importar_conector(mi.configuracion.llm())
-                if conector_llm:
-                    mi.llm:Llm = conector_llm()
-            if configuracion.SPI_CLASE:
-                from pysinergia.conectores.spi import Spi
-                conector_spi = mi._importar_conector(mi.configuracion.spi())
-                if conector_spi:
-                    mi.spi:Spi = conector_spi()
         except Exception as e:
             ErrorPersonalizado(mensaje='No-se-pudieron-inyectar-los-conectores', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.WARNING).registrar()
 

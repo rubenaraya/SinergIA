@@ -78,7 +78,7 @@ complementos = [
     "pydub",
 ]
 fastapi = [
-    "fastpi",
+    "fastapi",
 ]
 flask = [
     "flask",
