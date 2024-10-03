@@ -1,15 +1,15 @@
+# --------------------------------------------------
 # pysinergia\conectores\disco.py
+# --------------------------------------------------
 
 from abc import (ABC, ABCMeta, abstractmethod)
 from typing import (List, BinaryIO, TextIO)
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorDisco
-# --------------------------------------------------
 class I_ConectorDisco(metaclass=ABCMeta):
 
     @abstractmethod
@@ -64,17 +64,13 @@ class I_ConectorDisco(metaclass=ABCMeta):
     def convertir_imagen(mi, ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
         ...
 
-
 # --------------------------------------------------
 # Clase: ErrorDisco
-# --------------------------------------------------
 class ErrorDisco(ErrorPersonalizado):
     pass
 
-
 # --------------------------------------------------
 # Clase: Disco
-# --------------------------------------------------
 class Disco(ABC, I_ConectorDisco):
     def __init__(mi, config:dict):
         mi._config:dict = config or {}

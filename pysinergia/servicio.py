@@ -1,8 +1,9 @@
+# --------------------------------------------------
 # pysinergia\servicio.py
+# --------------------------------------------------
 
 from abc import (ABC)
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes,
@@ -12,11 +13,9 @@ from pysinergia.dominio import autorizar_acceso
 
 # --------------------------------------------------
 # Clase: CasosDeUso
-# --------------------------------------------------
 class CasosDeUso(ABC):
 
-    # --------------------------------------------------
-    # Clase de constantes
+    # Clases de constantes
 
     class ACCIONES:
         ...
@@ -28,7 +27,6 @@ class CasosDeUso(ABC):
         mi.repositorio = repositorio
         mi.sesion:dict = sesion
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:

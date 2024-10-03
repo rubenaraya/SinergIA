@@ -1,18 +1,18 @@
+# --------------------------------------------------
 # pysinergia\adaptadores.py
+# --------------------------------------------------
 
 import json
 from abc import (ABC, ABCMeta, abstractmethod)
 from typing import (List, Dict)
 
-# --------------------------------------------------
-# Importaciones de bibliotecas (capa de Adaptadores)
+# Importaciones de Pydantic
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
 from pydantic import Field, field_validator
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
     ErrorPersonalizado,
@@ -24,7 +24,6 @@ from pysinergia.dominio import (
 
 # --------------------------------------------------
 # Interface: I_Comunicador
-# --------------------------------------------------
 class I_Comunicador(metaclass=ABCMeta):
 
     @abstractmethod
@@ -67,10 +66,8 @@ class I_Comunicador(metaclass=ABCMeta):
     def asignar_cookie(mi, respuesta, nombre:str, valor:str, duracion:int=None):
         ...
 
-
 # --------------------------------------------------
-# ClaseModelo: Configuracion
-# --------------------------------------------------
+# Modelo: Configuracion
 class Configuracion(ABC, BaseSettings):
     # Aplicacion Global
     APP_GLOBAL: str = Field(default='')
@@ -186,10 +183,8 @@ class Configuracion(ABC, BaseSettings):
             'DURACION_TOKEN': mi.DURACION_TOKEN,
         }
 
-
 # --------------------------------------------------
 # Clase: Repositorio
-# --------------------------------------------------
 class Repositorio(ABC):
     def __init__(mi, configuracion:Configuracion):
         mi.configuracion:Configuracion = configuracion
@@ -223,10 +218,8 @@ class Repositorio(ABC):
         except Exception as e:
             ErrorPersonalizado(mensaje='No-se-pudieron-inyectar-los-conectores', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.WARNING).registrar()
 
-
 # --------------------------------------------------
 # Clase: Controlador
-# --------------------------------------------------
 class Controlador(ABC):
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion

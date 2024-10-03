@@ -1,11 +1,12 @@
+# --------------------------------------------------
 # pysinergia\web\__init__.py
+# --------------------------------------------------
 
 import time, jwt, importlib, gettext, os, json
 from abc import ABC
 from pathlib import Path
 from functools import lru_cache
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes,
@@ -23,7 +24,6 @@ from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: Traductor
-# --------------------------------------------------
 class Traductor:
 
     class _Traduccion:
@@ -57,7 +57,6 @@ class Traductor:
         mi.idioma = ''
         mi.traduccion = None
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _negociar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None) -> str:
@@ -84,7 +83,6 @@ class Traductor:
         mi.idioma = idiomas_disponibles[0]
         return mi.idioma
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def asignar_idioma(mi, idiomas_aceptados:str=None, idiomas_disponibles:list=None, dominio_idioma:str=None, ruta_locales:str=None) -> str:
@@ -169,10 +167,8 @@ class Traductor:
         except Exception as e:
             return {}
 
-
 # --------------------------------------------------
 # Clase: Comunicador
-# --------------------------------------------------
 class Comunicador(ABC, I_Comunicador):
 
     def __init__(mi, configuracion:Configuracion):
@@ -187,7 +183,6 @@ class Comunicador(ABC, I_Comunicador):
         })
         mi.contexto:dict = {}
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _conectar_disco(mi, config_disco:dict) -> Disco:
@@ -214,7 +209,6 @@ class Comunicador(ABC, I_Comunicador):
         metadatos['ruta_plantillas'] = ruta_plantillas
         return (plantilla, ruta_plantillas)
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
@@ -252,8 +246,6 @@ class Comunicador(ABC, I_Comunicador):
                     portador.conclusion = Constantes.CONCLUSION.ERROR
                 portador.ruta = ruta
         return portador
-
-    # --------------------------------------------------
 
     def transformar_contenido(mi, info:dict, plantilla:str, ruta_plantillas:str='.') -> str:
         from jinja2 import (Environment, FileSystemLoader)
@@ -334,10 +326,8 @@ class Comunicador(ABC, I_Comunicador):
             return mi.traductor
         return None
 
-
 # --------------------------------------------------
 # Clase: Autenticador
-# --------------------------------------------------
 class Autenticador(ABC):
     def __init__(mi, configuracion:Configuracion, url_login:str=None):
         mi.secret_key = configuracion.SECRET_KEY
@@ -348,7 +338,6 @@ class Autenticador(ABC):
         mi.url_login:str = url_login
         mi.token:str = None
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _verificar_jwt(mi) -> bool:
@@ -370,7 +359,6 @@ class Autenticador(ABC):
         except:
             return {}
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def obtener_id_sesion(mi) -> str:
@@ -410,10 +398,8 @@ class Autenticador(ABC):
             return True
         return False
 
-
 # --------------------------------------------------
 # Clase: ErrorAutenticacion
-# --------------------------------------------------
 class ErrorAutenticacion(ErrorPersonalizado):
     def __init__(mi, mensaje:str, codigo:int, url_login:str=''):
         super().__init__(
@@ -423,10 +409,8 @@ class ErrorAutenticacion(ErrorPersonalizado):
         )
         mi.url_login = url_login
 
-
 # --------------------------------------------------
 # Funcion: configurar_microservicio
-# --------------------------------------------------
 @lru_cache
 def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> Configuracion:
     from dotenv import dotenv_values
@@ -447,10 +431,8 @@ def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_apl
     configuracion.PREFIJO_MICROSERVICIO = f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
     return configuracion
 
-
 # --------------------------------------------------
 # Funcion: configurar_servidor_api
-# --------------------------------------------------
 def configurar_servidor_api(ruta_origen:str, archivo_env:str):
     from dotenv import dotenv_values
     try:

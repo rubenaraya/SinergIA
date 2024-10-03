@@ -14,7 +14,7 @@ from pysinergia.dominio import (
 )
 
 # --------------------------------------------------
-# ClaseModelo: PeticionBuscarParticipantes
+# Modelo: PeticionBuscarParticipantes
 # --------------------------------------------------
 class PeticionBuscarParticipantes(Peticion):
     id: Optional[int] = Field(
@@ -54,7 +54,7 @@ class PeticionBuscarParticipantes(Peticion):
     pagina: Optional[int] = Field(serialization_alias='pagina', default=0)
 
 # --------------------------------------------------
-# ClaseModelo: ProcedimientoBuscarParticipantes
+# Modelo: ProcedimientoBuscarParticipantes
 # --------------------------------------------------
 class ProcedimientoBuscarParticipantes(Procedimiento):
     dto_origen_datos: Optional[str] = Field('participantes')
@@ -88,7 +88,7 @@ class ProcedimientoBuscarParticipantes(Procedimiento):
     )
 
 # --------------------------------------------------
-# ClaseModelo: PeticionParticipante
+# Modelo: PeticionParticipante
 # --------------------------------------------------
 class PeticionParticipante(Peticion):
     id: Optional[int] = Field(
@@ -100,7 +100,7 @@ class PeticionParticipante(Peticion):
     )
 
 # --------------------------------------------------
-# ClaseModelo: PeticionAgregarParticipante
+# Modelo: PeticionAgregarParticipante
 # --------------------------------------------------
 class PeticionAgregarParticipante(Peticion):
     alias: Optional[str] = Field(
@@ -129,7 +129,7 @@ class PeticionAgregarParticipante(Peticion):
     )
 
 # --------------------------------------------------
-# ClaseModelo: ProcedimientoActualizarParticipante
+# Modelo: ProcedimientoActualizarParticipante
 # --------------------------------------------------
 class ProcedimientoActualizarParticipante(Procedimiento):
     dto_origen_datos: Optional[str] = Field('participantes')
@@ -159,7 +159,7 @@ class ProcedimientoActualizarParticipante(Procedimiento):
     )
 
 # --------------------------------------------------
-# ClaseModelo: DiccionarioParticipantes
+# Modelo: DiccionarioParticipantes
 # --------------------------------------------------
 class DiccionarioParticipantes(Diccionario):
     estado:dict = {
@@ -169,7 +169,7 @@ class DiccionarioParticipantes(Diccionario):
     }
 
 # --------------------------------------------------
-# ClaseModelo: FormActualizarParticipante
+# Modelo: FormActualizarParticipante
 # --------------------------------------------------
 class FormActualizarParticipante(Formulario):
     dto_titulo:str = 'Form-Editar-participante'
@@ -212,7 +212,7 @@ class FormActualizarParticipante(Formulario):
     )
 
 # --------------------------------------------------
-# ClaseModelo: FormLogin
+# Modelo: FormLogin
 # --------------------------------------------------
 class FormLogin(Formulario):
     dto_titulo:str = 'Form-Autenticacion'
@@ -242,7 +242,7 @@ class FormLogin(Formulario):
     )
 
 # --------------------------------------------------
-# ClaseModelo: ProcedimientoAgregarParticipante
+# Modelo: ProcedimientoAgregarParticipante
 # --------------------------------------------------
 class ProcedimientoAgregarParticipante(Procedimiento):
     dto_origen_datos: Optional[str] = Field('participantes')
@@ -266,7 +266,7 @@ class ProcedimientoAgregarParticipante(Procedimiento):
     )
 
 # --------------------------------------------------
-# ClaseModelo: ProcedimientoEliminarParticipante
+# Modelo: ProcedimientoEliminarParticipante
 # --------------------------------------------------
 class ProcedimientoEliminarParticipante(Procedimiento):
     dto_origen_datos: Optional[str] = Field('participantes')

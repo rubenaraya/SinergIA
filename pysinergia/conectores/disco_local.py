@@ -1,9 +1,10 @@
+# --------------------------------------------------
 # pysinergia\conectores\disco_local.py
+# --------------------------------------------------
 
 from pathlib import Path
 from typing import (BinaryIO, TextIO, List)
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia.dominio import Archivo
 from pysinergia.conectores.disco import (
@@ -13,14 +14,12 @@ from pysinergia.conectores.disco import (
 
 # --------------------------------------------------
 # Clase: DiscoLocal
-# --------------------------------------------------
 class DiscoLocal(Disco):
 
     def __init__(mi, config:dict):
         super().__init__(config)
         mi._path = Path(mi._config.get('ruta'))
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _leer_nombre(mi, nombre:str) -> str:
@@ -32,7 +31,6 @@ class DiscoLocal(Disco):
     def _leer_peso(mi, nombre:str) -> int:
         return (mi._path / Path(nombre)).stat().st_size
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def generar_nombre(mi, nombre:str, unico:bool=False) -> str:

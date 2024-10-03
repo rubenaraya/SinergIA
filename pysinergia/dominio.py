@@ -1,32 +1,26 @@
+# --------------------------------------------------
 # pysinergia\dominio.py
+# --------------------------------------------------
 
 from typing import (
     List,
     Optional,
     Self,
     Any,
-    #Tuple,
-    #Union,
-    #Dict,
-    #Literal,
 )
-# --------------------------------------------------
-# Importaciones de bibliotecas (capa de Dominio)
+
+# Importaciones de Pydantic
 from pydantic import (
     BaseModel,
     ConfigDict,
     model_validator,
-    #field_validator,
-    #Field,
 )
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import Constantes
 
 # --------------------------------------------------
 # Funcion: autorizar_acceso
-# --------------------------------------------------
 def autorizar_acceso(roles:str, permisos:str=None) -> bool:
     if permisos == '':
         return True
@@ -41,7 +35,6 @@ def autorizar_acceso(roles:str, permisos:str=None) -> bool:
 
 # --------------------------------------------------
 # Clase: ValidadorDatos
-# --------------------------------------------------
 class ValidadorDatos:
     def __init__(mi):
         mi.validaciones = {
@@ -53,7 +46,6 @@ class ValidadorDatos:
         }
         mi.errores:list = []
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _validar_texto(mi, minimo:float, maximo:float, valor:Any) -> bool:
@@ -130,7 +122,6 @@ class ValidadorDatos:
             print(e)
         return True
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def verificar_campo(mi, criterios:dict, valor:Any) -> bool:
@@ -153,8 +144,7 @@ class ValidadorDatos:
         return estado
 
 # --------------------------------------------------
-# ClaseModelo: Diccionario
-# --------------------------------------------------
+# Modelo: Diccionario
 class Diccionario(BaseModel):
     dto_roles_sesion: Optional[str] = ''
     t: Optional[object] = None
@@ -185,8 +175,7 @@ class Diccionario(BaseModel):
         return diccionario
 
 # --------------------------------------------------
-# ClaseModelo: Peticion
-# --------------------------------------------------
+# Modelo: Peticion
 class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
@@ -223,8 +212,7 @@ class Peticion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# ClaseModelo: Formulario
-# --------------------------------------------------
+# Modelo: Formulario
 class Formulario(Peticion):
     dto_titulo:str = ''
     dto_icono:str = ''
@@ -318,8 +306,7 @@ class Formulario(Peticion):
         validador = ValidadorDatos()
 
 # --------------------------------------------------
-# ClaseModelo: Informe
-# --------------------------------------------------
+# Modelo: Informe
 class Informe(Peticion):
     dto_roles_sesion: Optional[str] = ''
     dto_titulo:str = ''
@@ -337,8 +324,7 @@ class Informe(Peticion):
         return {}
 
 # --------------------------------------------------
-# ClaseModelo: Procedimiento
-# --------------------------------------------------
+# Modelo: Procedimiento
 class Procedimiento(BaseModel):
     dto_origen_datos: Optional[str] = ''
     dto_solicitud_datos: Optional[dict] = {}
@@ -368,8 +354,7 @@ class Procedimiento(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# ClaseModelo: Respuesta
-# --------------------------------------------------
+# Modelo: Respuesta
 class Respuesta(BaseModel):
     model_config = ConfigDict()
 
@@ -446,8 +431,7 @@ class Respuesta(BaseModel):
         return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude=('T','D'))
 
 # --------------------------------------------------
-# ClaseModelo: Archivo
-# --------------------------------------------------
+# Modelo: Archivo
 class Archivo(BaseModel):
     nombre: Optional[str] = ''
     ruta: Optional[str] = ''
@@ -457,8 +441,7 @@ class Archivo(BaseModel):
     peso: Optional[int] = 0
 
 # --------------------------------------------------
-# ClaseModelo: Recurso
-# --------------------------------------------------
+# Modelo: Recurso
 class Recurso(BaseModel):
     conversion: Optional[str] = ''
     tipo_mime: Optional[str] = ''
@@ -539,8 +522,7 @@ class Recurso(BaseModel):
         valores.tipo_mime = Constantes.MIME.TXT
 
 # --------------------------------------------------
-# ClaseModelo: ArchivoCargado
-# --------------------------------------------------
+# Modelo: ArchivoCargado
 class ArchivoCargado(BaseModel):
     origen: object
     contenido: object = None
@@ -602,8 +584,7 @@ class ArchivoCargado(BaseModel):
         return valores
 
 # --------------------------------------------------
-# ClaseModelo: ImagenCargada
-# --------------------------------------------------
+# Modelo: ImagenCargada
 class ImagenCargada(ArchivoCargado):
     carpeta: Optional[str] = 'imagenes'
 
@@ -619,8 +600,7 @@ class ImagenCargada(ArchivoCargado):
         return 5 * Constantes.PESO.MB
 
 # --------------------------------------------------
-# ClaseModelo: DocumentoCargado
-# --------------------------------------------------
+# Modelo: DocumentoCargado
 class DocumentoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'documentos'
 
@@ -641,8 +621,7 @@ class DocumentoCargado(ArchivoCargado):
         return 2 * Constantes.PESO.MB
 
 # --------------------------------------------------
-# ClaseModelo: AudioCargado
-# --------------------------------------------------
+# Modelo: AudioCargado
 class AudioCargado(ArchivoCargado):
     carpeta: Optional[str] = 'audios'
 
@@ -661,8 +640,7 @@ class AudioCargado(ArchivoCargado):
         return 25 * Constantes.PESO.MB
 
 # --------------------------------------------------
-# ClaseModelo: VideoCargado
-# --------------------------------------------------
+# Modelo: VideoCargado
 class VideoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'videos'
     @classmethod

@@ -1,12 +1,12 @@
+# --------------------------------------------------
 # pysinergia\web\flask.py
+# --------------------------------------------------
 
 import os
 from pathlib import Path
 from functools import wraps
 
-# --------------------------------------------------
-# Importaciones de Infraestructura Web
-
+# Importaciones de Flask
 from flask import (
     Flask,
     Response,
@@ -16,7 +16,6 @@ from flask import (
     jsonify,
 )
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as C,
@@ -33,14 +32,12 @@ from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: ServidorApi
-# --------------------------------------------------
 class ServidorApi:
     def __init__(mi, ruta_script:str):
         ruta_script_path = Path(ruta_script)
         os.environ['RUTA_RAIZ'] = ruta_script_path.parent.as_posix()
         mi.nombre_script = ruta_script_path.stem
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _configurar_encabezados(mi, api:Flask):
@@ -135,7 +132,6 @@ class ServidorApi:
             error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error)
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def crear_api(mi) -> Flask:
@@ -188,13 +184,10 @@ class ServidorApi:
                 debug=os.getenv('MODO_DEBUG')
             )
 
-
 # --------------------------------------------------
 # Clase: ComunicadorWeb
-# --------------------------------------------------
 class ComunicadorWeb(Comunicador):
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _recibir_peticion(mi) -> dict:
@@ -216,7 +209,6 @@ class ComunicadorWeb(Comunicador):
             pass
         return peticion
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
@@ -262,13 +254,10 @@ class ComunicadorWeb(Comunicador):
         )
         return respuesta
 
-
 # --------------------------------------------------
 # Clase: AutenticadorWeb
-# --------------------------------------------------
 class AutenticadorWeb(Autenticador):
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _validar_apikey(mi) -> str:
@@ -298,7 +287,6 @@ class AutenticadorWeb(Autenticador):
             url_login=mi.url_login
         )
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def validar_todo(mi, f):

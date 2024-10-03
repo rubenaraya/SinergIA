@@ -1,10 +1,11 @@
+# --------------------------------------------------
 # pysinergia\web\fastapi.py
+# --------------------------------------------------
 
 import os
 from pathlib import Path
 
-# --------------------------------------------------
-# Importaciones de Infraestructura Web
+# Importaciones de FastAPI
 from fastapi import (
     FastAPI,
     Request,
@@ -17,7 +18,6 @@ from fastapi.responses import (
 )
 from fastapi.encoders import jsonable_encoder
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import (
     Constantes as C,
@@ -34,14 +34,12 @@ from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: ServidorApi
-# --------------------------------------------------
 class ServidorApi:
     def __init__(mi, ruta_script:str):
         ruta_script_path = Path(ruta_script)
         os.environ['RUTA_RAIZ'] = ruta_script_path.parent.as_posix()
         mi.nombre_script = ruta_script_path.stem
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _configurar_encabezados(mi, api:FastAPI):
@@ -132,7 +130,6 @@ class ServidorApi:
             error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
             return mi._crear_respuesta_error(request, error)
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def crear_api(mi) -> FastAPI:
@@ -181,13 +178,10 @@ class ServidorApi:
                 reload=os.getenv('MODO_DEBUG')
             )
 
-
 # --------------------------------------------------
 # Clase: ComunicadorWeb
-# --------------------------------------------------
 class ComunicadorWeb(Comunicador):
 
-    # --------------------------------------------------
     # Métodos privados
 
     async def _recibir_peticion(mi, request:Request) -> dict:
@@ -223,7 +217,6 @@ class ComunicadorWeb(Comunicador):
             pass
         return peticion
 
-    # --------------------------------------------------
     # Métodos públicos
 
     async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
@@ -269,14 +262,9 @@ class ComunicadorWeb(Comunicador):
         )
         return respuesta
 
-
 # --------------------------------------------------
 # Clase: AutenticadorWeb
-# --------------------------------------------------
 class AutenticadorWeb(Autenticador):
-
-    # --------------------------------------------------
-    # Métodos públicos
 
     async def validar_apikey(mi, request:Request) -> str:
         if 'Authorization' in request.headers:

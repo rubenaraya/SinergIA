@@ -22,7 +22,7 @@ from .servicio import (
 from .dominio import ProcedimientoBuscarParticipantes
 
 # --------------------------------------------------
-# ClaseModelo: ConfigParticipantes
+# Modelo: ConfigParticipantes
 # --------------------------------------------------
 class ConfigParticipantes(Configuracion):
     ...

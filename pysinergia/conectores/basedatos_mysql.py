@@ -1,8 +1,12 @@
 # --------------------------------------------------
-# pysinergia\conectores\basedatos_sqlite.py
+# pysinergia\conectores\basedatos_mysql.py
 # --------------------------------------------------
 
-import sqlite3
+from mysql.connector import (
+    connect,
+    MySQLConnection,
+    Error,
+)
 
 # Importaciones de PySinergIA
 from pysinergia.conectores.basedatos import (
@@ -10,37 +14,35 @@ from pysinergia.conectores.basedatos import (
 )
 
 # --------------------------------------------------
-# Clase: BasedatosSqlite
-class BasedatosSqlite(Basedatos):
+# Clase: BasedatosMysql
+class BasedatosMysql(Basedatos):
     def __init__(mi):
         super().__init__()
-        mi.marca:str = '?'
-        mi.conexion:sqlite3.Connection = None
+        mi.marca = '%s'
+        mi.conexion:MySQLConnection = None
 
     def conectar(mi, config:dict) -> bool:
-        from pathlib import Path
-        import os
         if mi.conexion and mi.basedatos == config.get('nombre'):
             return True
         if mi.conexion:
             mi.conexion.close()
         mi.basedatos = config.get('nombre')
-        mi.ruta = config.get('ruta')
-        if mi.basedatos and mi.ruta:
-            ruta_basedatos = Path(f"{mi.ruta}/{mi.basedatos}.db")
-            if ruta_basedatos.is_file():
-                mi.conexion = sqlite3.connect(str(ruta_basedatos.resolve()))
-                mi.conexion.enable_load_extension(True)
-                ruta_lib_sqlean = os.getenv('RUTA_LIB_SQLEAN')
-                extension_lib_sqlean = Path(f'{ruta_lib_sqlean}/regexp').resolve()
-                if extension_lib_sqlean.is_file():
-                    mi.conexion.load_extension(str(extension_lib_sqlean))
-                return True
+        if mi.basedatos:
+                try:
+                    mi.conexion = connect(
+                        user=config.get('usuario'),
+                        password=config.get('password'),
+                        host=config.get('ruta'),
+                        database=mi.basedatos
+                    )
+                    return True
+                except Error as e:
+                    raise
         return False
 
     def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
         cursor = mi.conexion.cursor()
-        sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
+        sql_total = f"SELECT COUNT(*) FROM ({instruccion}) as aux"
         cursor.execute(sql_total, parametros)
         total = cursor.fetchone()[0]
         if maximo < 1:
@@ -55,13 +57,13 @@ class BasedatosSqlite(Basedatos):
         if primero > ultimo:
             primero = ultimo
         if not " LIMIT " in instruccion and not " OFFSET " in instruccion:
-            instruccion += " LIMIT ? OFFSET ?"
+            instruccion += " LIMIT %s OFFSET %s"
             parametros.extend([maximo, (pagina - 1) * maximo])
-        cursor.execute(instruccion, parametros)
         if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor.row_factory = sqlite3.Row
+            cursor = mi.conexion.cursor(dictionary=True)
+            cursor.execute(instruccion, parametros)
             lista = [dict(fila) for fila in cursor.fetchall()]
-            columnas = list(map(lambda x: x[0], cursor.description))
+            columnas = cursor.column_names
             paginador = []
             for pag in range(paginas):
                 paginador.append(pag + 1)
@@ -81,12 +83,13 @@ class BasedatosSqlite(Basedatos):
             return (cursor.fetchall(), total)
 
     def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
-        cursor = mi.conexion.cursor()
-        cursor.execute(instruccion, parametros)
         if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor.row_factory = sqlite3.Row
+            cursor = mi.conexion.cursor(dictionary=True)
+            cursor.execute(instruccion, parametros)
             lista = [dict(fila) for fila in cursor.fetchall()]
             return lista[0], 1
         elif estructura == Basedatos.ESTRUCTURA.TUPLA:
+            cursor = mi.conexion.cursor()
+            cursor.execute(instruccion, parametros)
             return (cursor.fetchone(), 1)
 

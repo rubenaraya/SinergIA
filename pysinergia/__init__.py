@@ -1,4 +1,6 @@
+# --------------------------------------------------
 # pysinergia\__init__.py
+# --------------------------------------------------
 
 import os
 from typing import (
@@ -8,10 +10,8 @@ from typing import (
 
 __pysinergia__ = 'PySinergIA v0.0.1'
 
-
 # --------------------------------------------------
 # Clase estática: Constantes
-# --------------------------------------------------
 class Constantes:
 
     def __new__(cls):
@@ -158,10 +158,8 @@ class Constantes:
         FECHA = 'fecha'
         NOVALIDAR = 'novalidar'
 
-
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
-# --------------------------------------------------
 class RegistradorLogs:
 
     def __new__(cls):
@@ -190,10 +188,8 @@ class RegistradorLogs:
         registrador.addHandler(manejador)
         return registrador
 
-
 # --------------------------------------------------
 # Clase: ErrorPersonalizado
-# --------------------------------------------------
 class ErrorPersonalizado(Exception):
     def __init__(mi,
                 mensaje:str,

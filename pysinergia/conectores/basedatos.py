@@ -1,16 +1,16 @@
+# --------------------------------------------------
 # pysinergia\conectores\basedatos.py
+# --------------------------------------------------
 
 import re
 from abc import (ABC, ABCMeta, abstractmethod)
 from datetime import (datetime, timedelta)
 
-# --------------------------------------------------
 # Importaciones de PySinergIA
 from pysinergia import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorBasedatos
-# --------------------------------------------------
 class I_ConectorBasedatos(metaclass=ABCMeta):
 
     @abstractmethod
@@ -49,17 +49,8 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
     def generar_consulta(mi, plantilla:str, procedimiento:dict={}) -> tuple:
         ...
 
-
-# --------------------------------------------------
-# Clase: ErrorBasedatos
-# --------------------------------------------------
-class ErrorBasedatos(ErrorPersonalizado):
-    pass
-
-
 # --------------------------------------------------
 # Clase: Basedatos
-# --------------------------------------------------
 class Basedatos(ABC, I_ConectorBasedatos):
     def __init__(mi):
         mi.conexion = None
@@ -80,7 +71,6 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.FILTRO.NUMERO: mi._filtro_NUMERO
         }
 
-    # --------------------------------------------------
     # Clases de constantes
 
     class ESTRUCTURA:
@@ -126,7 +116,6 @@ class Basedatos(ABC, I_ConectorBasedatos):
         ANTERIOR_MES = 'F_ANTERIOR_MES'
         ANTERIOR_ANO = 'F_ANTERIOR_ANO'
 
-    # --------------------------------------------------
     # Métodos privados
 
     def _limpiar_texto(mi, texto:str) -> str:
@@ -438,7 +427,6 @@ class Basedatos(ABC, I_ConectorBasedatos):
             exp = f"(strftime('%m', {campo}) = '{mes}' AND strftime('%Y', {campo}) = '{ano}')"
         return exp
 
-    # --------------------------------------------------
     # Métodos públicos
 
     def desconectar(mi):
