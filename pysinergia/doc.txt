@@ -1,0 +1,62 @@
+------------------------------------------------
+DOCUMENTACION BASICA DE LA BIBLIOTECA PYSINERGIA
+------------------------------------------------
+
+pysinergia/
+├── __init__.py
+├── dominio.py
+├── servicio.py
+├── adaptadores.py
+├── web/
+│   ├── __init__.py
+│   ├── fastapi.py
+│   └── flask.py
+├── conectores/
+│   ├── __init__.py
+│   ├── basedatos.py
+│   ├── basedatos_mysql.py
+│   ├── basedatos_sqlite.py
+│   ├── disco.py
+│   └── disco_local.py
+└── complementos/
+    ├── __init__.py
+    ├── exportador.py
+    ├── exportador_csv.py
+    ├── exportador_excel.py
+    ├── exportador_pdf.py
+    ├── exportador_word.py
+    └── convertidor_audio.py
+
+<proyecto>/
+├── backend/
+│   ├── _config/
+│   │   └── .config.<aplicacion>.env
+│   ├── _plantillas/
+│   └── <microservicio>/
+│       ├── __init__.py
+│       ├── dominio.py
+│       ├── servicio.py
+│       ├── adaptadores.py
+│       ├── web_fastapi.py
+│       ├── web_flask.py
+│       ├── .config.env
+│       └── plantillas/
+├── locales/
+│   └── <idioma>/
+│       └── LC_MESSAGES/
+│           ├── base.po
+│           ├── base.mo
+│           ├── <microservicio>.po
+│           └── <microservicio>.mo
+├── repositorios/
+│   └── <aplicacion>/
+│       ├── basedatos/
+│       │   └── <microservicio>.db
+│       └── disco/
+├── tmp/
+│   └── <aplicacion>/
+│       └── sesiones/
+├── logs/
+├── app.py
+├── .config.env
+└── requirements.txt

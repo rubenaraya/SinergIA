@@ -28,7 +28,6 @@ from pysinergia.web import (
     ErrorAutenticacion,
     Traductor,
 )
-from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -44,8 +43,7 @@ class ServidorApi:
 
         @api.after_request
         def procesar_salidas(respuesta:Response):
-            global __pysinergia__
-            respuesta.headers['X-API-Motor'] = __pysinergia__
+            respuesta.headers['X-API-Motor'] = 'PySinergIA'
             if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
@@ -61,11 +59,10 @@ class ServidorApi:
                     print(f'peticion: {content_type}')
 
     def _configurar_endpoints(mi, api:Flask):
-        global __pysinergia__
 
         @api.route('/', methods=['GET'])
         def entrypoint():
-            return {'api-entrypoint': __pysinergia__}
+            return {'api-entrypoint': 'PySinergIA'}
 
         @api.route('/favicon.ico', methods=['GET'])
         def favicon():

@@ -8,8 +8,6 @@ from typing import (
     Union,
 )
 
-__pysinergia__ = 'PySinergIA v0.0.1'
-
 # --------------------------------------------------
 # Clase estática: Constantes
 class Constantes:
