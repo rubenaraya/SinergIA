@@ -30,7 +30,7 @@ class CasosDeUsoDocumentos(CasosDeUso):
         VER = 3
 
     class PERMISOS:
-        BUSCAR = '*'
+        BUSCAR = ''
         AGREGAR = '*'
         VER = '*'
 

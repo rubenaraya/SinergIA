@@ -6,7 +6,7 @@ from abc import (ABC, ABCMeta, abstractmethod)
 from typing import (List, BinaryIO, TextIO)
 
 # Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado
+from pysinergia.globales import ErrorPersonalizado
 
 # --------------------------------------------------
 # Interface: I_ConectorDisco

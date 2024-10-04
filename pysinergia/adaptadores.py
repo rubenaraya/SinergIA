@@ -14,7 +14,7 @@ from pydantic_settings import (
 from pydantic import Field, field_validator
 
 # Importaciones de PySinergIA
-from pysinergia import (
+from pysinergia.globales import (
     ErrorPersonalizado,
     Constantes,
 )

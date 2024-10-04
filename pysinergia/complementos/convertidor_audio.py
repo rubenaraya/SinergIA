@@ -7,7 +7,7 @@ from pathlib import Path
 from pydub import AudioSegment
 
 # Importaciones de PySinergIA
-from pysinergia import Constantes
+from pysinergia.globales import Constantes
 from pysinergia.complementos.exportador import ErrorExportador
 
 # --------------------------------------------------

@@ -6,9 +6,6 @@ import re
 from abc import (ABC, ABCMeta, abstractmethod)
 from datetime import (datetime, timedelta)
 
-# Importaciones de PySinergIA
-from pysinergia import ErrorPersonalizado
-
 # --------------------------------------------------
 # Interface: I_ConectorBasedatos
 class I_ConectorBasedatos(metaclass=ABCMeta):

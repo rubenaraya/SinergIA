@@ -17,12 +17,12 @@ from flask import (
 )
 
 # Importaciones de PySinergIA
-from pysinergia import (
+from pysinergia.globales import (
     Constantes as C,
     ErrorPersonalizado,
 )
 from pysinergia.dominio import Respuesta
-from pysinergia.web import (
+from pysinergia.web.base import (
     Comunicador,
     Autenticador,
     ErrorAutenticacion,

@@ -14,10 +14,10 @@ from fastapi.responses import (
 )
 
 # Importaciones de PySinergIA
-from pysinergia import (
+from pysinergia.globales import (
     Constantes as C,
 )
-from pysinergia.web import (
+from pysinergia.web.base import (
     configurar_microservicio,
 )
 from pysinergia.web.flask import (

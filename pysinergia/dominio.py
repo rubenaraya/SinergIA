@@ -17,7 +17,7 @@ from pydantic import (
 )
 
 # Importaciones de PySinergIA
-from pysinergia import Constantes
+from pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Funcion: autorizar_acceso

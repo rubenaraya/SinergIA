@@ -7,7 +7,7 @@ from pysinergia.complementos.exportador import (
     Exportador,
     ErrorExportador,
 )
-from pysinergia import Constantes
+from pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorPdf

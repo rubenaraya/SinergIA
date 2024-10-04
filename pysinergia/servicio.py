@@ -5,7 +5,7 @@
 from abc import (ABC)
 
 # Importaciones de PySinergIA
-from pysinergia import (
+from pysinergia.globales import (
     Constantes,
     ErrorPersonalizado,
 )
@@ -38,7 +38,6 @@ class CasosDeUso(ABC):
         if not autorizacion and rechazar:
             raise ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
-                conclusion=Constantes.CONCLUSION.ALERTA,
                 codigo=Constantes.ESTADO._403_NO_AUTORIZADO,
             )
         return autorizacion
