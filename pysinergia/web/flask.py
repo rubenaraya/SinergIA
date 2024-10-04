@@ -216,18 +216,18 @@ class ComunicadorWeb(Comunicador):
         servidor = f'{url_analizada.scheme}://{url_analizada.netloc}'
         partes = url_analizada.path.lstrip('/').split('/')
         raiz_global = '/' + partes[0] if len(partes) > 0 else ''
-        aplicacion = '/' + partes[1] if len(partes) > 1 else ''
+        app_pwa = '/' + partes[1] if len(partes) > 1 else ''
         recurso = '/' + '/'.join(partes[2:]) if len(partes) > 2 else '/'
         mi.contexto['url'] = {
             'servidor': servidor,
             'absoluta': f'{servidor}{url_analizada.path}',
             'relativa': url_analizada.path,
             'puntoentrada': f'{servidor}{raiz_global}',
-            'puntofinal': f'{aplicacion}{recurso}',
-            'app': f'{raiz_global}{aplicacion}',
+            'puntofinal': f'{app_pwa}{recurso}',
+            'app': f'{raiz_global}{app_pwa}',
             'recurso': recurso,
             'frontend': f'{raiz_global}/{alias_frontend}',
-            'frontapp': f'{raiz_global}/{alias_frontend}{aplicacion}',
+            'frontapp': f'{raiz_global}/{alias_frontend}{app_pwa}',
         }
         mi.contexto['web']['API_MARCO'] = 'Flask'
         mi.contexto['web']['DOMINIO'] = url_analizada.hostname

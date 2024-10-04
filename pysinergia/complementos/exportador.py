@@ -22,11 +22,19 @@ class I_Exportador(metaclass=ABCMeta):
 
 # --------------------------------------------------
 # Clase: ErrorExportador
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ErrorExportador(ErrorPersonalizado):
     pass
 
 # --------------------------------------------------
 # Clase: Exportador
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Exportador(ABC, I_Exportador):
     def __init__(mi, config_web:dict):
         mi.config_web:dict = config_web or {}

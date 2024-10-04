@@ -35,8 +35,8 @@ from .adaptadores import (
 
 # --------------------------------------------------
 # Configuración del Microservicio
-aplicacion = 'sinergia'
-configuracion = configurar_microservicio(Configuracion, __file__, aplicacion, None)
+app_pwa = 'sinergia'
+configuracion = configurar_microservicio(Configuracion, __file__, app_pwa, None)
 autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
 comunicador = ComunicadorWeb(configuracion)
 enrutador = Blueprint(

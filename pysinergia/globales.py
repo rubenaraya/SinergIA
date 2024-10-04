@@ -11,6 +11,10 @@ from typing import (
 
 # --------------------------------------------------
 # Clase estática: Constantes
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Constantes:
 
     def __new__(cls):
@@ -159,6 +163,10 @@ class Constantes:
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class RegistradorLogs:
 
     def __new__(cls):
@@ -189,6 +197,10 @@ class RegistradorLogs:
 
 # --------------------------------------------------
 # Clase: ErrorPersonalizado
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ErrorPersonalizado(Exception):
     def __init__(mi,
                 mensaje:str,
@@ -295,6 +307,10 @@ class ErrorPersonalizado(Exception):
 
 # --------------------------------------------------
 # Clase: ValidadorDatos
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ValidadorDatos:
     def __init__(mi):
         mi.validaciones = {
@@ -405,6 +421,10 @@ class ValidadorDatos:
 
 # --------------------------------------------------
 # Funcion: autorizar_acceso
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 def autorizar_acceso(roles:str, permisos:str=None) -> bool:
     if permisos == '':
         return True

@@ -1,6 +1,13 @@
-------------------------------------------------
+------------------------------------------------------------
 DOCUMENTACION BASICA DE LA BIBLIOTECA PYSINERGIA
-------------------------------------------------
+------------------------------------------------------------
+
+La biblioteca PySinergIA está diseñada para simplificar el desarrollo de aplicaciones backend WEB/REST mediante una arquitectura de microservicios limpia y modular. Está construida para ser compatible tanto con Flask como con FastAPI, facilitando así su integración en diferentes entornos de desarrollo web en Python.
+
+------------------------------------------------------------
+ESTRUCTURA DE LA BIBLIOTECA:
+
+La biblioteca se organiza de la siguiente manera:
 
 pysinergia/
 ├── __init__.py
@@ -28,10 +35,37 @@ pysinergia/
     ├── exportador_word.py
     └── convertidor_audio.py
 
+DESCRIPCIÓN DE LOS COMPONENTES:
+
+dominio.py: Define las clases base para la capa de dominio, donde se modelan las entidades y reglas de negocio.
+
+adaptadores.py: Provee clases base para los adaptadores, que coordinan operaciones con el dominio y actúan como intermediarios entre la aplicación y fuentes externas de datos o servicios.
+
+conectores/: Directorio que agrupa los conectores a bases de datos y sistemas de archivos.
+- basedatos.py: Clase base para conexiones a bases de datos.
+- basedatos_mysql.py: Implementación específica para MySQL.
+- basedatos_sqlite.py: Implementación específica para SQLite.
+- disco.py: Clase base para interacciones con el sistema de archivos.
+- disco_local.py: Implementación para sistemas de archivos locales.
+
+web/: Contiene las integraciones con frameworks web.
+- fastapi.py: Soporte específico para aplicaciones FastAPI.
+- flask.py: Soporte específico para aplicaciones Flask.
+
+complementos/: Módulos adicionales que extienden las funcionalidades de la biblioteca.
+- exportador.py: Clase base para exportar datos.
+- exportador_csv.py, exportador_excel.py, exportador_pdf.py, exportador_word.py: Exportadores específicos para diferentes formatos.
+- convertidor_audio.py: Módulo para convertir o manipular archivos de audio.
+
+------------------------------------------------------------
+ESTRUCTURA DE UN PROYECTO WEB:
+
+El proyecto se organiza para maximizar la modularidad y facilitar la escalabilidad:
+
 <proyecto>/
 ├── backend/
 │   ├── _config/
-│   │   └── .config.<aplicacion>.env
+│   │   └── .config.<app_pwa>.env
 │   ├── _plantillas/
 │   └── <microservicio>/
 │       ├── __init__.py
@@ -43,7 +77,7 @@ pysinergia/
 │       └── plantillas/
 ├── frontend/
 │   ├── favicon.ico
-│   └── <aplicacion>/
+│   └── <app_pwa>/
 │       └── index.html
 ├── locales/
 │   └── <idioma>/
@@ -53,14 +87,57 @@ pysinergia/
 │           ├── <microservicio>.po
 │           └── <microservicio>.mo
 ├── repositorios/
-│   └── <aplicacion>/
+│   └── <app_pwa>/
 │       ├── basedatos/
 │       │   └── <microservicio>.db
 │       └── disco/
 ├── tmp/
-│   └── <aplicacion>/
+│   └── <app_pwa>/
 │       └── sesiones/
 ├── logs/
 ├── app.py
 ├── .config.env
 └── requirements.txt
+
+DESCRIPCIÓN DE LOS COMPONENTES:
+
+backend/: Contiene la lógica del lado del servidor.
+- _config/: Directorio para archivos de configuración de la aplicación.
+  - .config.<aplicacion>.env: Archivo de variables de entorno específicas de la aplicación.
+- _plantillas/: Plantillas compartidas para generar código o vistas.
+- <microservicio>/: Cada microservicio se encuentra en su propio directorio.
+  - dominio.py, adaptadores.py: Módulos específicos del microservicio, extendiendo las clases base de PySinergIA.
+  - web_fastapi.py, web_flask.py: Implementaciones web específicas para cada framework.
+  - .config.env: Configuraciones específicas del microservicio.
+  - plantillas/: Plantillas específicas del microservicio.
+
+frontend/: Contiene los archivos del lado del cliente.
+- favicon.ico: Ícono de la aplicación.
+- <aplicacion>/: Directorio para archivos HTML, CSS y JavaScript.
+  - index.html, estilos.css, scripts.js: Archivos principales de la interfaz.
+  - img/: Imágenes utilizadas en la aplicación.
+
+locales/: Soporte para internacionalización (i18n).
+- <idioma>/: Directorio para cada idioma soportado.
+  - LC_MESSAGES/: Archivos de traducción.
+    - base.po, base.mo: Archivos de mensajes para la base de la aplicación.
+    - <microservicio>.po, <microservicio>.mo: Archivos de mensajes específicos de cada microservicio.
+
+repositorios/: Almacena datos persistentes.
+- <aplicacion>/:
+  - basedatos/: Bases de datos de la aplicación.
+    - <microservicio>.db: Base de datos específica del microservicio.
+  - disco/: Archivos almacenados en el sistema.
+
+tmp/: Archivos temporales.
+- <aplicacion>/:
+  - sesiones/: Datos de sesión de la aplicación.
+
+logs/: Archivos de registro para monitorear y depurar la aplicación.
+
+app.py: Punto de entrada principal de la aplicación.
+.config.env: Variables de entorno globales para el proyecto.
+requirements.txt: Lista de dependencias del proyecto.
+
+------------------------------------------------------------
+

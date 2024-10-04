@@ -11,6 +11,10 @@ from pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorWord
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ExportadorWord(Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):

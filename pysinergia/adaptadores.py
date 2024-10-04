@@ -69,6 +69,10 @@ class I_Comunicador(metaclass=ABCMeta):
 
 # --------------------------------------------------
 # Modelo: Configuracion
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Configuracion(ABC, BaseSettings):
     # Aplicacion Global
     APP_GLOBAL: str = Field(default='')
@@ -82,8 +86,8 @@ class Configuracion(ABC, BaseSettings):
     DOMINIO_IDIOMA: str = Field(default='')
     RUTA_LOCALES: str = Field(default='')
     NIVEL_REGISTRO: str = Field(default='')
-    # Aplicacion Web
-    APLICACION: str = Field(default='')
+    # Aplicacion PWA
+    APP_PWA: str = Field(default='')
     NOMBRE_PWA: str = ''
     TITULO_PWA: str = ''
     DESCRIPCION_PWA: str = ''
@@ -155,7 +159,7 @@ class Configuracion(ABC, BaseSettings):
         })
     def web(mi) -> dict:
         return {
-            'APLICACION': mi.APLICACION,
+            'APP_PWA': mi.APP_PWA,
             'MICROSERVICIO': mi.MICROSERVICIO,
             'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
             'URL_MICROSERVICIO': mi.URL_MICROSERVICIO,
@@ -178,6 +182,10 @@ class Configuracion(ABC, BaseSettings):
 
 # --------------------------------------------------
 # Clase: Repositorio
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Repositorio(ABC):
     def __init__(mi, configuracion:Configuracion):
         mi.configuracion:Configuracion = configuracion
@@ -213,6 +221,10 @@ class Repositorio(ABC):
 
 # --------------------------------------------------
 # Clase: Controlador
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Controlador(ABC):
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
@@ -223,6 +235,10 @@ class Controlador(ABC):
 
 # --------------------------------------------------
 # Clase: CasosDeUso
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class CasosDeUso(ABC):
 
     # Clases de constantes

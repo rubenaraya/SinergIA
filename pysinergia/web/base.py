@@ -425,8 +425,8 @@ def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_apl
         if archivo.exists():
             valores_configuracion.update(dotenv_values(archivo))
     configuracion:Configuracion = modelo_base(**valores_configuracion)
-    configuracion.URL_MICROSERVICIO = f'/{configuracion.APP_GLOBAL}/{configuracion.APLICACION}'
-    configuracion.PREFIJO_MICROSERVICIO = f'{configuracion.RAIZ_GLOBAL}/{configuracion.APLICACION}'
+    configuracion.URL_MICROSERVICIO = f'/{configuracion.APP_GLOBAL}/{configuracion.APP_PWA}'
+    configuracion.PREFIJO_MICROSERVICIO = f'{configuracion.RAIZ_GLOBAL}/{configuracion.APP_PWA}'
     return configuracion
 
 # --------------------------------------------------
