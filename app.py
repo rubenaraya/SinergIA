@@ -5,7 +5,7 @@
 from pysinergia.web import configurar_servidor_api
 
 # Script de inicio
-servidor = configurar_servidor_api(__file__, '.config.env')
+servidor = configurar_servidor_api(__file__)
 api = servidor.crear_api()
 servidor.mapear_microservicios(api)
 

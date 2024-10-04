@@ -20,7 +20,6 @@ from pysinergia.adaptadores import (
     Configuracion,
 )
 from pysinergia.conectores.disco import Disco
-from pysinergia import __pysinergia__
 
 # --------------------------------------------------
 # Clase: Traductor
@@ -212,12 +211,11 @@ class Comunicador(ABC, I_Comunicador):
     # Métodos públicos
 
     def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        global __pysinergia__
         idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
         mi.contexto['web']['IDIOMA'] = idioma
-        mi.contexto['web']['API_MOTOR'] = __pysinergia__
+        mi.contexto['web']['API_MOTOR'] = 'PySinergIA'
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
@@ -433,7 +431,7 @@ def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_apl
 
 # --------------------------------------------------
 # Funcion: configurar_servidor_api
-def configurar_servidor_api(ruta_origen:str, archivo_env:str):
+def configurar_servidor_api(ruta_origen:str, archivo_env:str='.config.env'):
     from dotenv import dotenv_values
     try:
         archivo_env_path = Path(archivo_env)
