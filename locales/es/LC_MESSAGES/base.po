@@ -147,3 +147,6 @@ msgstr "No se pudo importar el conector"
 
 msgid "No-se-pudieron-inyectar-los-conectores"
 msgstr "No se pudieron inyectar los conectores"
+
+msgid "No-hay-casos"
+msgstr "No se encontraron casos"

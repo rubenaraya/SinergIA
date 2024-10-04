@@ -10,22 +10,13 @@ from pysinergia.dominio import (
 from pysinergia.adaptadores import (
     Controlador,
     Repositorio,
-    Configuracion,
+    CasosDeUso,
 )
 
-# Importaciones del Microservicio personalizado
-from .servicio import (
-    CasosDeUsoDocumentos, 
-    I_RepositorioDocumentos,
-)
+# Importaciones del Microservicio
 from .dominio import (
     ProcedimientoBuscarDocumentos,
 )
-
-# --------------------------------------------------
-# Modelo: ConfigDocumentos
-class ConfigDocumentos(Configuracion):
-    ...
 
 # --------------------------------------------------
 # Clase: ControladorDocumentos
@@ -50,7 +41,7 @@ class ControladorDocumentos(Controlador):
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos
-class RepositorioDocumentos(Repositorio, I_RepositorioDocumentos):
+class RepositorioDocumentos(Repositorio):
 
     def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str='') -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
@@ -67,5 +58,51 @@ class RepositorioDocumentos(Repositorio, I_RepositorioDocumentos):
         ...
 
     def insertar_nuevo_documento(mi, solicitud:dict) -> dict:
+        ...
+
+# --------------------------------------------------
+# Clase: CasosDeUsoDocumentos
+class CasosDeUsoDocumentos(CasosDeUso):
+    def __init__(mi, repositorio:RepositorioDocumentos, sesion:dict=None):
+        mi.repositorio:RepositorioDocumentos = repositorio
+        mi.sesion:dict = sesion
+
+    # Clases de constantes
+
+    class ACCIONES:
+        BUSCAR = 1
+        AGREGAR = 2
+        VER = 3
+
+    class PERMISOS:
+        BUSCAR = ''
+        AGREGAR = '*'
+        VER = '*'
+
+    # Métodos
+
+    def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
+        realizar = {
+            mi.ACCIONES.BUSCAR: mi._buscar_documentos,
+            mi.ACCIONES.AGREGAR: mi._agregar_documento,
+            mi.ACCIONES.VER: mi._ver_documento,
+        }
+        return realizar.get(accion)(solicitud)
+
+    def _buscar_documentos(mi, solicitud:dict):
+        entrega:dict = solicitud.get('_dto_contexto', {})
+        if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
+            resultado = mi.repositorio.recuperar_lista_documentos(solicitud, roles_sesion=mi.sesion.get('roles'))
+            if resultado.get('total', 0) > 0:
+                entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}'
+            else:
+                entrega['descripcion'] = 'No-hay-casos'
+            entrega['resultado'] = resultado
+        return entrega
+
+    def _agregar_documento(mi, solicitud:dict):
+        ...
+    
+    def _ver_documento(mi, solicitud:dict):
         ...
 

@@ -4,11 +4,12 @@ DOCUMENTACION BASICA DE LA BIBLIOTECA PYSINERGIA
 
 pysinergia/
 ├── __init__.py
+├── globales.py
 ├── dominio.py
-├── servicio.py
 ├── adaptadores.py
 ├── web/
 │   ├── __init__.py
+│   ├── base.py
 │   ├── fastapi.py
 │   └── flask.py
 ├── conectores/
@@ -35,7 +36,6 @@ pysinergia/
 │   └── <microservicio>/
 │       ├── __init__.py
 │       ├── dominio.py
-│       ├── servicio.py
 │       ├── adaptadores.py
 │       ├── web_fastapi.py
 │       ├── web_flask.py

@@ -147,3 +147,6 @@ msgstr "Could not import connector"
 
 msgid "No-se-pudieron-inyectar-los-conectores"
 msgstr "Connectors could not be injected"
+
+msgid "No-hay-casos"
+msgstr "No cases found"

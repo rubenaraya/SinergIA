@@ -14,6 +14,7 @@ from flask_pydantic import validate
 from pysinergia.globales import (
     Constantes as C,
 )
+from pysinergia.adaptadores import Configuracion
 from pysinergia.web.base import (
     configurar_microservicio,
 )
@@ -29,14 +30,13 @@ from .dominio import (
     PeticionAgregarDocumento,
 )
 from .adaptadores import (
-    ConfigDocumentos,
     ControladorDocumentos,
 )
 
 # --------------------------------------------------
 # Configuración del Microservicio
 aplicacion = 'sinergia'
-configuracion = configurar_microservicio(ConfigDocumentos, __file__, aplicacion, None)
+configuracion = configurar_microservicio(Configuracion, __file__, aplicacion, None)
 autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
 comunicador = ComunicadorWeb(configuracion)
 enrutador = Blueprint(

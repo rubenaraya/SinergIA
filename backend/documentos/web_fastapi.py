@@ -17,10 +17,11 @@ from fastapi.responses import (
 from pysinergia.globales import (
     Constantes as C,
 )
+from pysinergia.adaptadores import Configuracion
 from pysinergia.web.base import (
     configurar_microservicio,
 )
-from pysinergia.web.flask import (
+from pysinergia.web.fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
 )
@@ -32,14 +33,13 @@ from .dominio import (
     PeticionAgregarDocumento,
 )
 from .adaptadores import (
-    ConfigDocumentos,
     ControladorDocumentos,
 )
 
 # --------------------------------------------------
 # Configuración del Microservicio
 aplicacion = 'sinergia'
-configuracion = configurar_microservicio(ConfigDocumentos, __file__, aplicacion, None)
+configuracion = configurar_microservicio(Configuracion, __file__, aplicacion, None)
 autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
 comunicador = ComunicadorWeb(configuracion)
 enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
@@ -47,6 +47,7 @@ enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
 # --------------------------------------------------
 # Rutas del Microservicio
 
+@enrutador.get('/documentos', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse) #dependencies=[Depends(autenticador.validar_token)]
 async def buscar_documentos(request:Request, peticion:PeticionBuscarDocumentos=Depends()):
     sesion = autenticador.recuperar_sesion()
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
