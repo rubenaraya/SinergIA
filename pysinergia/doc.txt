@@ -41,6 +41,10 @@ pysinergia/
 │       ├── web_flask.py
 │       ├── .config.env
 │       └── plantillas/
+├── frontend/
+│   ├── favicon.ico
+│   └── <aplicacion>/
+│       └── index.html
 ├── locales/
 │   └── <idioma>/
 │       └── LC_MESSAGES/

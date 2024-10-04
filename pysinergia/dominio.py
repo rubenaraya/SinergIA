@@ -306,24 +306,6 @@ class Formulario(Peticion):
         validador = ValidadorDatos()
 
 # --------------------------------------------------
-# Modelo: Informe
-class Informe(Peticion):
-    dto_roles_sesion: Optional[str] = ''
-    dto_titulo:str = ''
-    dto_icono:str = ''
-    dto_descripcion:str = ''
-    dto_grupos:dict = {}
-    dto_acciones:dict = {}
-    D: Optional[object] = None
-    T: Optional[object] = None
-
-    def _(mi, texto:str) -> str:
-        return texto
-
-    def generar(mi) -> dict:
-        return {}
-
-# --------------------------------------------------
 # Modelo: Procedimiento
 class Procedimiento(BaseModel):
     dto_origen_datos: Optional[str] = ''
