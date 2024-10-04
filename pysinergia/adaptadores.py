@@ -81,7 +81,7 @@ class Configuracion(ABC, BaseSettings):
     DOMINIO_IDIOMA: str = Field(default='')
     RUTA_LOCALES: str = Field(default='')
     NIVEL_REGISTRO: str = Field(default='')
-    # Aplicacion Personalizada
+    # Aplicacion Web
     APLICACION: str = Field(default='')
     NOMBRE_PWA: str = ''
     TITULO_PWA: str = ''
@@ -108,10 +108,6 @@ class Configuracion(ABC, BaseSettings):
     DISCO_CLASE: str = ''
     DISCO_NOMBRE: str = ''
     DISCO_RUTA: str = ''
-    DISCO_ID: str = ''
-    DISCO_LOCATION: str = ''
-    DISCO_KEY: str = ''
-    DISCO_SECRET: str = ''
     model_config = SettingsConfigDict(
         env_prefix='',
         extra='ignore',
@@ -155,10 +151,6 @@ class Configuracion(ABC, BaseSettings):
             'clase': mi.DISCO_CLASE,
             'nombre': mi.DISCO_NOMBRE,
             'ruta': mi.DISCO_RUTA,
-            'id': mi.DISCO_ID,
-            'location': mi.DISCO_LOCATION,
-            'key': mi.DISCO_KEY,
-            'secret': mi.DISCO_SECRET,
         })
     def web(mi) -> dict:
         return {

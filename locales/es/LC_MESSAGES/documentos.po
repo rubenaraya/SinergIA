@@ -13,6 +13,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid ""
-msgstr ""
+msgid "Estado-Activo"
+msgstr "Activo"
+
+msgid "Estado-Inactivo"
+msgstr "Inactivo"
+
+msgid "Estado-Archivado"
+msgstr "Archivado"
 

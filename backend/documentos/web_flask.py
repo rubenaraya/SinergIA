@@ -23,7 +23,7 @@ from pysinergia.web.flask import (
     AutenticadorWeb,
 )
 
-# Importaciones del Microservicio personalizado
+# Importaciones del Microservicio
 from .dominio import (
     PeticionBuscarDocumentos,
     PeticionVerDocumento,
@@ -35,7 +35,7 @@ from .adaptadores import (
 )
 
 # --------------------------------------------------
-# Configuración del Microservicio personalizado
+# Configuración del Microservicio
 aplicacion = 'sinergia'
 configuracion = configurar_microservicio(ConfigDocumentos, __file__, aplicacion, None)
 autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
@@ -47,11 +47,7 @@ enrutador = Blueprint(
 )
 
 # --------------------------------------------------
-# Rutas del Microservicio personalizado
-
-@enrutador.route('/', methods=['GET'])
-def get_inicio():
-    return redirect(f'/{configuracion.APP_GLOBAL}/{configuracion.ALIAS_FRONTEND}/{configuracion.APLICACION}/index.html')
+# Rutas del Microservicio
 
 @enrutador.route('/documentos', methods=['GET'])
 #@autenticador.validar_token
@@ -61,7 +57,7 @@ def buscar_documentos(query:PeticionBuscarDocumentos):
     sesion = autenticador.recuperar_sesion()
     idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
     comunicador.procesar_peticion(idioma, sesion)
-    respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query, conversion=C.CONVERSION.JSON)
+    respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
     return jsonify(respuesta)
 
 @enrutador.route('/documentos/<id>', methods=['GET'])
