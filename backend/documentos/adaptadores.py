@@ -3,7 +3,7 @@
 # --------------------------------------------------
 
 # Importaciones de PySinergIA
-from pysinergia.dominio import (
+from pysinergia.modelos import (
     Peticion,
     Respuesta,
 )
@@ -14,7 +14,7 @@ from pysinergia.adaptadores import (
 )
 
 # Importaciones del Microservicio
-from .dominio import (
+from .modelos import (
     ProcedimientoBuscarDocumentos,
 )
 

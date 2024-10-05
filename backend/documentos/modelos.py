@@ -1,12 +1,12 @@
 # --------------------------------------------------
-# backend\documentos\dominio.py
+# backend\documentos\modelos.py
 # --------------------------------------------------
 
 from typing import Optional
 from pydantic import Field
 
 # Importaciones de PySinergIA
-from pysinergia.dominio import (
+from pysinergia.modelos import (
     Peticion,
     Procedimiento,
 )

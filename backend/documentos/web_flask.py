@@ -24,7 +24,7 @@ from pysinergia.web.flask import (
 )
 
 # Importaciones del Microservicio
-from .dominio import (
+from .modelos import (
     PeticionBuscarDocumentos,
     PeticionVerDocumento,
     PeticionAgregarDocumento,

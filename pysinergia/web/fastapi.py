@@ -22,7 +22,7 @@ from pysinergia.globales import (
     Constantes as C,
     ErrorPersonalizado,
 )
-from pysinergia.dominio import Respuesta
+from pysinergia.modelos import Respuesta
 from pysinergia.web.base import (
     Comunicador,
     Autenticador,

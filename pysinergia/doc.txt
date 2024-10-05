@@ -12,7 +12,7 @@ La biblioteca se organiza de la siguiente manera:
 pysinergia/
 ├── __init__.py
 ├── globales.py
-├── dominio.py
+├── modelos.py
 ├── adaptadores.py
 ├── archivos.py
 ├── web/
@@ -38,9 +38,9 @@ pysinergia/
 
 DESCRIPCIÓN DE LOS COMPONENTES:
 
-dominio.py: Define las clases base para la capa de dominio, donde se modelan las entidades y reglas de negocio.
+modelos.py: Define las clases base para la capa de modelo, donde se modelan las entidades y reglas de negocio.
 
-adaptadores.py: Provee clases base para los adaptadores, que coordinan operaciones con el dominio y actúan como intermediarios entre la aplicación y fuentes externas de datos o servicios.
+adaptadores.py: Provee clases base para los adaptadores, que coordinan operaciones con el modelo y actúan como intermediarios entre la aplicación y fuentes externas de datos o servicios.
 
 archivos.py: 
 
@@ -72,7 +72,7 @@ El proyecto se organiza para maximizar la modularidad y facilitar la escalabilid
 │   ├── _plantillas/
 │   └── <microservicio>/
 │       ├── __init__.py
-│       ├── dominio.py
+│       ├── modelos.py
 │       ├── adaptadores.py
 │       ├── web_fastapi.py
 │       ├── web_flask.py
@@ -109,7 +109,7 @@ backend/: Contiene la lógica del lado del servidor.
   - .config.<aplicacion>.env: Archivo de variables de entorno específicas de la aplicación.
 - _plantillas/: Plantillas compartidas para generar código o vistas.
 - <microservicio>/: Cada microservicio se encuentra en su propio directorio.
-  - dominio.py, adaptadores.py: Módulos específicos del microservicio, extendiendo las clases base de PySinergIA.
+  - modelos.py, adaptadores.py: Módulos específicos del microservicio, extendiendo las clases base de PySinergIA.
   - web_fastapi.py, web_flask.py: Implementaciones web específicas para cada framework.
   - .config.env: Configuraciones específicas del microservicio.
   - plantillas/: Plantillas específicas del microservicio.

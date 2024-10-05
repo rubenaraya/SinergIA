@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\dominio.py
+# pysinergia\modelos.py
 # --------------------------------------------------
 
 from typing import (
