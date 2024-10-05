@@ -14,6 +14,7 @@ pysinergia/
 ├── globales.py
 ├── dominio.py
 ├── adaptadores.py
+├── archivos.py
 ├── web/
 │   ├── __init__.py
 │   ├── base.py
@@ -40,6 +41,8 @@ DESCRIPCIÓN DE LOS COMPONENTES:
 dominio.py: Define las clases base para la capa de dominio, donde se modelan las entidades y reglas de negocio.
 
 adaptadores.py: Provee clases base para los adaptadores, que coordinan operaciones con el dominio y actúan como intermediarios entre la aplicación y fuentes externas de datos o servicios.
+
+archivos.py: 
 
 conectores/: Directorio que agrupa los conectores a bases de datos y sistemas de archivos.
 - basedatos.py: Clase base para conexiones a bases de datos.

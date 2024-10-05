@@ -21,6 +21,10 @@ from pysinergia.globales import (
 
 # --------------------------------------------------
 # Modelo: Archivo
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Archivo(BaseModel):
     nombre: Optional[str] = ''
     ruta: Optional[str] = ''
@@ -31,6 +35,10 @@ class Archivo(BaseModel):
 
 # --------------------------------------------------
 # Modelo: Recurso
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class Recurso(BaseModel):
     conversion: Optional[str] = ''
     tipo_mime: Optional[str] = ''
@@ -112,6 +120,10 @@ class Recurso(BaseModel):
 
 # --------------------------------------------------
 # Modelo: ArchivoCargado
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ArchivoCargado(BaseModel):
     origen: object
     contenido: object = None
@@ -174,6 +186,10 @@ class ArchivoCargado(BaseModel):
 
 # --------------------------------------------------
 # Modelo: ImagenCargada
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class ImagenCargada(ArchivoCargado):
     carpeta: Optional[str] = 'imagenes'
 
@@ -190,6 +206,10 @@ class ImagenCargada(ArchivoCargado):
 
 # --------------------------------------------------
 # Modelo: DocumentoCargado
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class DocumentoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'documentos'
 
@@ -211,6 +231,10 @@ class DocumentoCargado(ArchivoCargado):
 
 # --------------------------------------------------
 # Modelo: AudioCargado
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class AudioCargado(ArchivoCargado):
     carpeta: Optional[str] = 'audios'
 
@@ -230,6 +254,10 @@ class AudioCargado(ArchivoCargado):
 
 # --------------------------------------------------
 # Modelo: VideoCargado
+"""
+PROPOSITO:
+RESPONSABILIDADES:
+"""
 class VideoCargado(ArchivoCargado):
     carpeta: Optional[str] = 'videos'
     @classmethod
