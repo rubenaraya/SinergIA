@@ -19,7 +19,7 @@ from pysinergia.globales import (
     Constantes,
     autorizar_acceso,
 )
-from pysinergia.dominio import (
+from pysinergia.archivos import (
     ArchivoCargado as ArchivoCargado,
 )
 

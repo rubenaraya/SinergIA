@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import (BinaryIO, TextIO, List)
 
 # Importaciones de PySinergIA
-from pysinergia.dominio import Archivo
+from pysinergia.archivos import Archivo
 from pysinergia.conectores.disco import (
     Disco as Disco,
     ErrorDisco,

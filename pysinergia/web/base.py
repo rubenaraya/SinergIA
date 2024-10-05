@@ -12,7 +12,7 @@ from pysinergia.globales import (
     Constantes,
     ErrorPersonalizado,
 )
-from pysinergia.dominio import (
+from pysinergia.archivos import (
     ArchivoCargado,
 )
 from pysinergia.adaptadores import (
