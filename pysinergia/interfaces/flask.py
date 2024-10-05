@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\web\flask.py
+# pysinergia\interfaces\flask.py
 # --------------------------------------------------
 
 import os
@@ -22,7 +22,7 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.modelos import Respuesta
-from pysinergia.web.base import (
+from pysinergia.interfaces.web import (
     Comunicador,
     Autenticador,
     ErrorAutenticacion,

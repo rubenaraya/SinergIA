@@ -15,10 +15,10 @@ from pysinergia.globales import (
     Constantes as C,
 )
 from pysinergia.adaptadores import Configuracion
-from pysinergia.web.base import (
+from pysinergia.interfaces.web import (
     configurar_microservicio,
 )
-from pysinergia.web.flask import (
+from pysinergia.interfaces.flask import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

@@ -18,10 +18,10 @@ from pysinergia.globales import (
     Constantes as C,
 )
 from pysinergia.adaptadores import Configuracion
-from pysinergia.web.base import (
+from pysinergia.interfaces.web import (
     configurar_microservicio,
 )
-from pysinergia.web.fastapi import (
+from pysinergia.interfaces.fastapi import (
     ComunicadorWeb,
     AutenticadorWeb,
 )

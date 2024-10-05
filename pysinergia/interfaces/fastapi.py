@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\web\fastapi.py
+# pysinergia\interfaces\fastapi.py
 # --------------------------------------------------
 
 import os
@@ -23,7 +23,7 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.modelos import Respuesta
-from pysinergia.web.base import (
+from pysinergia.interfaces.web import (
     Comunicador,
     Autenticador,
     ErrorAutenticacion,

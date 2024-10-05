@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\web\web.py
+# pysinergia\interfaces\web.py
 # --------------------------------------------------
 
 import time, jwt, importlib, gettext, os, json
@@ -442,9 +442,9 @@ def configurar_servidor_api(ruta_origen:str, archivo_env:str='.config.env'):
         if ruta_lib_ffmpeg.is_dir():
             os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
         if os.getenv('FRAMEWORK') == 'flask':
-            from pysinergia.web.flask import ServidorApi
+            from pysinergia.interfaces.flask import ServidorApi
         elif os.getenv('FRAMEWORK') == 'fastapi':
-            from pysinergia.web.fastapi import ServidorApi
+            from pysinergia.interfaces.fastapi import ServidorApi
         return ServidorApi(ruta_origen)
     except Exception as e:
         raise

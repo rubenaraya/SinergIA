@@ -2,7 +2,7 @@
 # app.py
 # --------------------------------------------------
 
-from pysinergia.web.base import configurar_servidor_api
+from pysinergia.interfaces.web import configurar_servidor_api
 
 # Script de inicio (Aplicación Global)
 servidor = configurar_servidor_api(__file__)
