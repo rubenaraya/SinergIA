@@ -15,7 +15,7 @@ from pysinergia.globales import (
 from pysinergia.archivos import (
     ArchivoCargado,
 )
-from pysinergia.adaptadores import (
+from pysinergia.operaciones import (
     I_Comunicador,
     Configuracion,
 )

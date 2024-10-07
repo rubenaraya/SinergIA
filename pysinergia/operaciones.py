@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\adaptadores.py
+# pysinergia\operaciones.py
 # --------------------------------------------------
 
 import json
@@ -69,10 +69,6 @@ class I_Comunicador(metaclass=ABCMeta):
 
 # --------------------------------------------------
 # Modelo: Configuracion
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Configuracion(ABC, BaseSettings):
     # Aplicacion Global
     APP_GLOBAL: str = Field(default='')
@@ -182,10 +178,6 @@ class Configuracion(ABC, BaseSettings):
 
 # --------------------------------------------------
 # Clase: Repositorio
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Repositorio(ABC):
     def __init__(mi, configuracion:Configuracion):
         mi.configuracion:Configuracion = configuracion
@@ -221,10 +213,6 @@ class Repositorio(ABC):
 
 # --------------------------------------------------
 # Clase: Controlador
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Controlador(ABC):
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
@@ -235,10 +223,6 @@ class Controlador(ABC):
 
 # --------------------------------------------------
 # Clase: CasosDeUso
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class CasosDeUso(ABC):
 
     # Clases de constantes

@@ -15,10 +15,6 @@ from pysinergia.conectores.basedatos import (
 
 # --------------------------------------------------
 # Clase: BasedatosMysql
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class BasedatosMysql(Basedatos):
     def __init__(mi):
         super().__init__()

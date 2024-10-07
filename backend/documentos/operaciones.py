@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# backend\documentos\adaptadores.py
+# backend\documentos\operaciones.py
 # --------------------------------------------------
 
 # Importaciones de PySinergIA
@@ -7,7 +7,7 @@ from pysinergia.modelos import (
     Peticion,
     Respuesta,
 )
-from pysinergia.adaptadores import (
+from pysinergia.operaciones import (
     Controlador,
     Repositorio,
     CasosDeUso,
@@ -15,7 +15,7 @@ from pysinergia.adaptadores import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    ProcedimientoBuscarDocumentos,
+    ProcedimientoConsultarDocumentos,
 )
 
 # --------------------------------------------------
@@ -45,7 +45,7 @@ class RepositorioDocumentos(Repositorio):
 
     def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str='') -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        procedimiento = ProcedimientoBuscarDocumentos(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
+        procedimiento = ProcedimientoConsultarDocumentos(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
             plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
             procedimiento=procedimiento

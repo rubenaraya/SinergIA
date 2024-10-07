@@ -66,19 +66,11 @@ class I_ConectorDisco(metaclass=ABCMeta):
 
 # --------------------------------------------------
 # Clase: ErrorDisco
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class ErrorDisco(ErrorPersonalizado):
     pass
 
 # --------------------------------------------------
 # Clase: Disco
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Disco(ABC, I_ConectorDisco):
     def __init__(mi, config:dict):
         mi._config:dict = config or {}

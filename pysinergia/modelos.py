@@ -23,10 +23,6 @@ from pysinergia.globales import (
 
 # --------------------------------------------------
 # Modelo: Diccionario
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Diccionario(BaseModel):
     dto_roles_sesion: Optional[str] = ''
     t: Optional[object] = None
@@ -58,10 +54,6 @@ class Diccionario(BaseModel):
 
 # --------------------------------------------------
 # Modelo: Peticion
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
@@ -99,10 +91,6 @@ class Peticion(BaseModel):
 
 # --------------------------------------------------
 # Modelo: Formulario
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Formulario(Peticion):
     dto_titulo:str = ''
     dto_icono:str = ''
@@ -197,10 +185,6 @@ class Formulario(Peticion):
 
 # --------------------------------------------------
 # Modelo: Procedimiento
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Procedimiento(BaseModel):
     dto_origen_datos: Optional[str] = ''
     dto_solicitud_datos: Optional[dict] = {}
@@ -231,10 +215,6 @@ class Procedimiento(BaseModel):
 
 # --------------------------------------------------
 # Modelo: Respuesta
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Respuesta(BaseModel):
     model_config = ConfigDict()
 

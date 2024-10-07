@@ -51,7 +51,7 @@ class PeticionBuscarDocumentos(Peticion):
     pagina: Optional[int] = Field(serialization_alias='pagina', default=0)
 
 # --------------------------------------------------
-# Modelo: PeticionDocumento
+# Modelo: PeticionVerDocumento
 class PeticionVerDocumento(Peticion):
     id: Optional[int] = Field(
         default=None,
@@ -90,8 +90,8 @@ class PeticionAgregarDocumento(Peticion):
     )
 
 # --------------------------------------------------
-# Modelo: ProcedimientoBuscarDocumentos
-class ProcedimientoBuscarDocumentos(Procedimiento):
+# Modelo: ProcedimientoConsultarDocumentos
+class ProcedimientoConsultarDocumentos(Procedimiento):
     dto_origen_datos: Optional[str] = Field('catalogo')
     id: Optional[int] = Field(
         default=None,
@@ -123,8 +123,8 @@ class ProcedimientoBuscarDocumentos(Procedimiento):
     )
 
 # --------------------------------------------------
-# Modelo: ProcedimientoAgregarDocumento
-class ProcedimientoAgregarDocumento(Procedimiento):
+# Modelo: ProcedimientoInsertarDocumento
+class ProcedimientoInsertarDocumento(Procedimiento):
     dto_origen_datos: Optional[str] = Field('catalogo')
     titulo: Optional[str] = Field(
         default=None,

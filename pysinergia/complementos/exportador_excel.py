@@ -11,10 +11,6 @@ from pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorExcel
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class ExportadorExcel(Exportador):
 
     def generar(mi, contenido:str, opciones:dict={}):

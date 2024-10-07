@@ -12,10 +12,6 @@ from pysinergia.complementos.exportador import ErrorExportador
 
 # --------------------------------------------------
 # Clase: ConvertidorAudio
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class ConvertidorAudio:
     def __init__(mi, ruta_base:str):
         mi.ruta_base:str = ruta_base

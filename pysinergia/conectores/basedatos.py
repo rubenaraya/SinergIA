@@ -48,10 +48,6 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
 
 # --------------------------------------------------
 # Clase: Basedatos
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class Basedatos(ABC, I_ConectorBasedatos):
     def __init__(mi):
         mi.conexion = None

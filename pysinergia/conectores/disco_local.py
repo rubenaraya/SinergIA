@@ -14,10 +14,6 @@ from pysinergia.conectores.disco import (
 
 # --------------------------------------------------
 # Clase: DiscoLocal
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class DiscoLocal(Disco):
 
     def __init__(mi, config:dict):

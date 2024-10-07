@@ -17,7 +17,7 @@ from fastapi.responses import (
 from pysinergia.globales import (
     Constantes as C,
 )
-from pysinergia.adaptadores import Configuracion
+from pysinergia.operaciones import Configuracion
 from pysinergia.interfaces.web import (
     configurar_microservicio,
 )
@@ -32,7 +32,7 @@ from .modelos import (
     PeticionVerDocumento,
     PeticionAgregarDocumento,
 )
-from .adaptadores import (
+from .operaciones import (
     ControladorDocumentos,
 )
 

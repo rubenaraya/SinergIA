@@ -11,10 +11,6 @@ from pysinergia.globales import Constantes
 
 # --------------------------------------------------
 # Clase: ExportadorCsv
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class ExportadorCsv(Exportador):
 
     def generar(mi, contenido:str='', opciones:dict={}):

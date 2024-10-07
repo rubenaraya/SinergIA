@@ -11,10 +11,6 @@ from pysinergia.conectores.basedatos import (
 
 # --------------------------------------------------
 # Clase: BasedatosSqlite
-"""
-PROPOSITO:
-RESPONSABILIDADES:
-"""
 class BasedatosSqlite(Basedatos):
     def __init__(mi):
         super().__init__()
