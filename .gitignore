@@ -154,6 +154,8 @@ _lib/
 _mkcert/
 logs/
 repositorios/
+repositorios/*/basedatos/
+repositorios/*/disco/
 tmp/
 src/
 frontend/jsinergia/_encriptar.js

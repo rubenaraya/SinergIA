@@ -125,7 +125,7 @@ class CasosDeUso(ABC):
 
     def autorizar_accion(mi, permisos:PERMISOS, rechazar:bool=False) -> bool:
         roles:str = mi.sesion.get('roles')
-        autorizacion = autorizar_acceso(roles=roles, permisos=permisos)
+        autorizacion = autorizar_acceso(permisos=permisos, roles=roles)
         if not autorizacion and rechazar:
             raise ErrorPersonalizado(
                 mensaje='No-autorizado-para-acceder',
