@@ -18,75 +18,49 @@ from pysinergia.modelos import (
 class PeticionBuscarDocumentos(Peticion):
     titulo: Optional[str] = Field(
         default=None,
-        title='Título',
-        description='Título del Documento',
         max_length=200,
         validation_alias='titulo',
-        serialization_alias='titulo',
         json_schema_extra={'filtro':'CONTIENE'}
     )
     autores: Optional[str] = Field(
         default=None,
-        title='Autores',
-        description='Autores del Documento',
         max_length=100,
         validation_alias='autores',
-        serialization_alias='autores',
         json_schema_extra={'filtro':'CONTIENE'}
     )
     editor: Optional[str] = Field(
         default=None,
-        title='Editor',
-        description='Editor del Documento',
         max_length=100,
         validation_alias='editor',
-        serialization_alias='editor',
         json_schema_extra={'filtro':'CONTIENE'}
     )
     etiquetas: Optional[str] = Field(
         default=None,
-        title='Etiquetas',
-        description='Etiquetas del Documento',
         max_length=100,
         validation_alias='etiquetas',
-        serialization_alias='etiquetas',
         json_schema_extra={'filtro':'CONTIENE'}
     )
     palabras: Optional[str] = Field(
         default=None,
-        title='Palabras',
-        description='Palabras Clave del Documento',
         max_length=100,
         validation_alias='palabras',
-        serialization_alias='palabras',
         json_schema_extra={'filtro':'CONTIENE'}
     )
     tipodoc: Optional[str] = Field(
         default=None,
-        title='Tipo',
-        description='Tipo de Documento',
-        max_length=50,
+        max_length=20,
         validation_alias='tipodoc',
-        serialization_alias='tipodoc',
         json_schema_extra={'filtro':'COINCIDE'}
     )
     coleccion: Optional[str] = Field(
         default=None,
-        title='Colección',
-        description='Colección',
-        max_length=50,
+        max_length=20,
         validation_alias='coleccion',
-        serialization_alias='coleccion',
         json_schema_extra={'filtro':'COINCIDE'}
     )
-    id: Optional[int] = Field(
-        default=None,
-        serialization_alias='id',
-        validation_alias='id',
-        json_schema_extra={'orden':'DESC'}
-    )
-    maximo: Optional[int] = Field(serialization_alias='maximo', default=10)
-    pagina: Optional[int] = Field(serialization_alias='pagina', default=1)
+    id: int = Field(json_schema_extra={'orden':'ASC'}, default=0)
+    maximo: int = Field(validation_alias='maximo', default=10)
+    pagina: int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
 # Modelo: RespuestaBuscarDocumentos
@@ -102,43 +76,31 @@ class ProcedimientoConsultarDocumentos(Procedimiento):
     dto_origen_datos: Optional[str] = Field('catalogo')
     uid: Optional[str] = Field(
         default=None,
-        title='UID',
-        validation_alias='uid',
         serialization_alias='uid',
         json_schema_extra={'permisos':''}
     )
     titulo: Optional[str] = Field(
         default=None,
-        title='Título',
-        validation_alias='titulo',
         serialization_alias='titulo',
         json_schema_extra={'permisos':''}
     )
     autores: Optional[str] = Field(
         default=None,
-        title='Autores',
-        validation_alias='autores',
         serialization_alias='autores',
         json_schema_extra={'permisos':''}
     )
     editor: Optional[str] = Field(
         default=None,
-        title='Editor',
-        validation_alias='editor',
         serialization_alias='editor',
         json_schema_extra={'permisos':''}
     )
     tipodoc: Optional[str] = Field(
         default=None,
-        title='Tipo Documento',
-        validation_alias='tipodoc',
         serialization_alias='tipodoc',
         json_schema_extra={'permisos':''}
     )
     etiquetas: Optional[str] = Field(
         default=None,
-        title='Etiquetas',
-        validation_alias='etiquetas',
         serialization_alias='etiquetas',
         json_schema_extra={'permisos':''}
     )
@@ -146,6 +108,7 @@ class ProcedimientoConsultarDocumentos(Procedimiento):
 
 # --------------------------------------------------
 # Modelo: PeticionVerDocumento
+#TODO: Pendiente
 class PeticionVerDocumento(Peticion):
     uid: Optional[str] = Field(
         default=None,
@@ -157,6 +120,7 @@ class PeticionVerDocumento(Peticion):
 
 # --------------------------------------------------
 # Modelo: PeticionAgregarDocumento
+#TODO: Pendiente
 class PeticionAgregarDocumento(Peticion):
     titulo: Optional[str] = Field(
         default=None,
@@ -169,6 +133,7 @@ class PeticionAgregarDocumento(Peticion):
 
 # --------------------------------------------------
 # Modelo: ProcedimientoInsertarDocumento
+#TODO: Pendiente
 class ProcedimientoInsertarDocumento(Procedimiento):
     dto_origen_datos: Optional[str] = Field('catalogo')
     uid: Optional[str] = Field(

@@ -57,11 +57,12 @@ def buscar_documentos(query:PeticionBuscarDocumentos):
     respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
     return jsonify(respuesta)
 
-@enrutador.route('/documentos/<id>', methods=['GET'])
+
+@enrutador.route('/documentos/<uid>', methods=['GET'])
 #@validate()
-def ver_documento(id):
+def ver_documento(uid):
     comunicador.procesar_solicitud()
-    peticion = PeticionVerDocumento(id=id)
+    peticion = PeticionVerDocumento(uid=uid)
     respuesta = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return jsonify(respuesta)
 

@@ -36,7 +36,7 @@ class Peticion(BaseModel):
         for field_name, field in mi.model_fields.items():
             if field_name not in ['T','D']:
                 if not field_name.startswith('dto_'):
-                    entrada = field.validation_alias if field.validation_alias else ''
+                    entrada = field.validation_alias if field.validation_alias else field_name
                     salida = field.serialization_alias if field.serialization_alias else entrada
                     valor = modelo.get(field_name)
                     if field.json_schema_extra:
@@ -44,8 +44,8 @@ class Peticion(BaseModel):
                         if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
                             serializado[field_name] = {
                                 'campo': field_name,
-                                'entrada': entrada or '',
-                                'salida': salida or '',
+                                'entrada': entrada,
+                                'salida': salida,
                                 'etiqueta': field.title or '',
                                 'filtro': field.json_schema_extra.get('filtro', ''),
                                 'orden': field.json_schema_extra.get('orden', ''),
@@ -61,9 +61,9 @@ class Peticion(BaseModel):
 # --------------------------------------------------
 # Modelo: Procedimiento
 class Procedimiento(BaseModel):
-    dto_origen_datos: Optional[str] = ''
     dto_solicitud_datos: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
+    dto_origen_datos: Optional[str] = ''
 
     def serializar(mi) -> dict:
         serializado:dict = {}

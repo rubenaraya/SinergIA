@@ -22,7 +22,7 @@ from .modelos import (
 # Clase: ControladorDocumentos
 class ControladorDocumentos(Controlador):
 
-    def buscar_documentos(mi, peticion:Peticion, conversion:str=None, guardar:bool=False) -> tuple:
+    def buscar_documentos(mi, peticion:Peticion) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
         resultado = casosdeuso.solicitar_accion(CasosDeUsoDocumentos.ACCIONES.BUSCAR, peticion.serializar())
