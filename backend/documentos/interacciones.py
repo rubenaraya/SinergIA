@@ -1,13 +1,16 @@
 # --------------------------------------------------
-# backend\documentos\operaciones.py
+# backend\documentos\interacciones.py
 # --------------------------------------------------
 
 # Importaciones de PySinergIA
+from pysinergia.globales import (
+    Constantes as C,
+)
 from pysinergia.modelos import (
     Peticion,
     Respuesta,
 )
-from pysinergia.operaciones import (
+from pysinergia.interacciones import (
     Controlador,
     Repositorio,
     CasosDeUso,
@@ -24,23 +27,32 @@ from .modelos import (
 # Clase: ControladorDocumentos
 class ControladorDocumentos(Controlador):
 
-    def buscar_documentos(mi, peticion:Peticion):
+    def buscar_documentos(mi, peticion:Peticion) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.serializar())
-        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        return (respuesta, codigo)
 
-    def ver_documento(mi, peticion:Peticion):
+    def ver_documento(mi, peticion:Peticion) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.serializar())
-        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        return (respuesta, codigo)
 
-    def agregar_documento(mi, peticion:Peticion):
+    def agregar_documento(mi, peticion:Peticion) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.serializar())
-        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
+        return (respuesta, codigo)
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos
@@ -48,29 +60,35 @@ class RepositorioDocumentos(Repositorio):
 
     def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionConsultarDocumentos(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
+        operacion = OperacionConsultarDocumentos(
+                dto_solicitud_datos=solicitud,
+                dto_roles_sesion=roles_sesion
+            ).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
-            plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-            operacion=operacion
-        )
+                plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
+                operacion=operacion
+            )
         datos = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
     def recuperar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionVerDocumento(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
+        operacion = OperacionVerDocumento(
+                dto_solicitud_datos=solicitud,
+                dto_roles_sesion=roles_sesion
+            ).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
-            plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-            operacion=operacion
-        )
+                plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
+                operacion=operacion
+            )
         datos = mi.basedatos.ver_caso(instruccion, [])
         mi.basedatos.desconectar()
         return datos
 
 
     #TODO: Pendiente
-    def insertar_nuevo_documento(mi, solicitud:dict) -> dict:
+    def insertar_nuevo_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         ...
 
 # --------------------------------------------------
@@ -105,7 +123,10 @@ class CasosDeUsoDocumentos(CasosDeUso):
     def _buscar_documentos(mi, solicitud:dict):
         entrega:dict = solicitud.get('_dto_contexto', {})
         if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
-            resultado = mi.repositorio.recuperar_lista_documentos(solicitud, roles_sesion=mi.sesion.get('roles'))
+            resultado = mi.repositorio.recuperar_lista_documentos(
+                    solicitud,
+                    roles_sesion=mi.sesion.get('roles')
+                )
             entrega['resultado'] = resultado
             entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
         return entrega
@@ -113,7 +134,10 @@ class CasosDeUsoDocumentos(CasosDeUso):
     def _ver_documento(mi, solicitud:dict):
         entrega:dict = solicitud.get('_dto_contexto', {})
         if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
-            resultado = mi.repositorio.recuperar_documento(solicitud, roles_sesion=mi.sesion.get('roles'))
+            resultado = mi.repositorio.recuperar_documento(
+                    solicitud,
+                    roles_sesion=mi.sesion.get('roles')
+                )
             entrega['resultado'] = resultado
             if len(resultado) == 0:
                 entrega['mensaje'] = 'Recurso-no-encontrado'

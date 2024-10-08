@@ -6,14 +6,11 @@
 from flask import (
     Blueprint,
     jsonify,
-    #request,
+    make_response,
 )
 from flask_pydantic import validate
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes as C,
-)
 from pysinergia.config import (
     Configuracion,
     configurar_microservicio,
@@ -29,7 +26,7 @@ from .modelos import (
     PeticionVerDocumento,
     PeticionAgregarDocumento,
 )
-from .operaciones import (
+from .interacciones import (
     ControladorDocumentos,
 )
 
@@ -55,24 +52,20 @@ enrutador = Blueprint(
 @validate()
 def buscar_documentos(query:PeticionBuscarDocumentos):
     comunicador.procesar_solicitud()
-    respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
-    codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
-    return jsonify(respuesta), codigo
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
+    return make_response(jsonify(respuesta), codigo)
 
 @enrutador.route('/documentos/<uid>', methods=['GET'])
 def ver_documento(uid):
     comunicador.procesar_solicitud()
     peticion = PeticionVerDocumento(uid=uid)
-    respuesta = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
-    codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
-    return jsonify(respuesta), codigo
-
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
+    return make_response(jsonify(respuesta), codigo)
 
 @enrutador.route('/documentos', methods=['POST'])
 @validate()
 def agregar_documento(body:PeticionAgregarDocumento):
     comunicador.procesar_solicitud()
-    respuesta = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
-    codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
-    return jsonify(respuesta), codigo
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
+    return make_response(jsonify(respuesta), codigo)
 

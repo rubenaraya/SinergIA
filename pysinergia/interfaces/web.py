@@ -15,7 +15,7 @@ from pysinergia.config import Configuracion
 from pysinergia.archivos import (
     ArchivoCargado,
 )
-from pysinergia.operaciones import (
+from pysinergia.interacciones import (
     I_Comunicador,
 )
 from pysinergia.conectores.disco import Disco

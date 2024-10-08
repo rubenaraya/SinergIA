@@ -10,7 +10,6 @@ from pydantic import Field, model_validator
 from pysinergia.modelos import (
     Peticion,
     Operacion,
-    Respuesta,
 )
 
 # --------------------------------------------------

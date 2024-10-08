@@ -1,5 +1,5 @@
 # --------------------------------------------------
-# pysinergia\operaciones.py
+# pysinergia\interacciones.py
 # --------------------------------------------------
 
 from abc import (ABC, ABCMeta, abstractmethod)

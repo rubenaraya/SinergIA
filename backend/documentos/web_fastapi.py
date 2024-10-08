@@ -32,7 +32,7 @@ from .modelos import (
     PeticionVerDocumento,
     PeticionAgregarDocumento,
 )
-from .operaciones import (
+from .interacciones import (
     ControladorDocumentos,
 )
 
@@ -47,18 +47,22 @@ enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
 # --------------------------------------------------
 # Rutas del Microservicio
 
-@enrutador.get('/documentos', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse) #dependencies=[Depends(autenticador.validar_token)]
+@enrutador.get('/documentos') #dependencies=[Depends(autenticador.validar_token), Depends(autenticador.validar_apikey)]
 async def buscar_documentos(request:Request, peticion:PeticionBuscarDocumentos=Depends()):
     await comunicador.procesar_solicitud(request)
-    return ControladorDocumentos(configuracion, comunicador).buscar_documentos(peticion)
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).buscar_documentos(peticion)
+    return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.get('/documentos/{id}', status_code=C.ESTADO._200_EXITO, response_class=JSONResponse)
-async def ver_documento(request:Request, peticion:PeticionVerDocumento=Depends()):
+@enrutador.get('/documentos/{uid}')
+async def ver_documento(request:Request, uid:str):
     await comunicador.procesar_solicitud(request)
-    return ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
+    peticion = PeticionVerDocumento(uid=uid)
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
+    return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.post('/documentos', status_code=C.ESTADO._201_CREADO,response_class=JSONResponse)
+@enrutador.post('/documentos')
 async def agregar_documento(request:Request, peticion:PeticionAgregarDocumento=Body()):
     await comunicador.procesar_solicitud(request)
-    return ControladorDocumentos(configuracion, comunicador).agregar_documento(peticion)
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(peticion)
+    return JSONResponse(respuesta, status_code=codigo)
 
