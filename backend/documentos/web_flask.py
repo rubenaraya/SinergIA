@@ -23,7 +23,7 @@ from pysinergia.interfaces.flask import (
 # Importaciones del Microservicio
 from .modelos import (
     PeticionBuscarDocumentos,
-    PeticionVerDocumento,
+    PeticionDocumento,
     PeticionAgregarDocumento,
 )
 from .interacciones import (
@@ -58,7 +58,7 @@ def buscar_documentos(query:PeticionBuscarDocumentos):
 @enrutador.route('/documentos/<uid>', methods=['GET'])
 def ver_documento(uid):
     comunicador.procesar_solicitud()
-    peticion = PeticionVerDocumento(uid=uid)
+    peticion = PeticionDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 

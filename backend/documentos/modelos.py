@@ -7,6 +7,10 @@ from typing import Optional
 from pydantic import Field, model_validator
 
 # Importaciones de PySinergIA
+from pysinergia.globales import (
+    ErrorPersonalizado,
+    Constantes as C,
+)
 from pysinergia.modelos import (
     Peticion,
     Operacion,
@@ -80,6 +84,11 @@ class DocumentoMetadatos(Operacion):
         serialization_alias='editor',
         json_schema_extra={'permisos':''}
     )
+    fechapub: Optional[str] = Field(
+        default=None,
+        serialization_alias='fechapub',
+        json_schema_extra={'permisos':''}
+    )
     etiquetas: Optional[str] = Field(
         default=None,
         serialization_alias='etiquetas',
@@ -90,9 +99,19 @@ class DocumentoMetadatos(Operacion):
         serialization_alias='palabras',
         json_schema_extra={'permisos':''}
     )
+    temasrel: Optional[str] = Field(
+        default=None,
+        serialization_alias='temasrel',
+        json_schema_extra={'permisos':''}
+    )
     tipodoc: Optional[str] = Field(
         default=None,
         serialization_alias='tipodoc',
+        json_schema_extra={'permisos':''}
+    )
+    nivcomplejidad: Optional[str] = Field(
+        default=None,
+        serialization_alias='nivcomplejidad',
         json_schema_extra={'permisos':''}
     )
     coleccion: Optional[str] = Field(
@@ -107,21 +126,11 @@ class DocumentoMetadatos(Operacion):
     )
 
 # --------------------------------------------------
-# Modelo: DocumentoCompleto
-class DocumentoCompleto(DocumentoMetadatos):
-    fechapub: Optional[str] = Field(
-        default=None,
-        serialization_alias='fechapub',
-        json_schema_extra={'permisos':''}
-    )
+# Modelo: DocumentoDatos
+class DocumentoDatos(DocumentoMetadatos):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
-        json_schema_extra={'permisos':''}
-    )
-    nivcomplejidad: Optional[str] = Field(
-        default=None,
-        serialization_alias='nivcomplejidad',
         json_schema_extra={'permisos':''}
     )
     descripcion: Optional[str] = Field(
@@ -134,11 +143,6 @@ class DocumentoCompleto(DocumentoMetadatos):
         serialization_alias='pubobjetivo',
         json_schema_extra={'permisos':''}
     )
-    temasrel: Optional[str] = Field(
-        default=None,
-        serialization_alias='temasrel',
-        json_schema_extra={'permisos':''}
-    )
     resumen: Optional[str] = Field(
         default=None,
         serialization_alias='resumen',
@@ -146,8 +150,8 @@ class DocumentoCompleto(DocumentoMetadatos):
     )
 
 # --------------------------------------------------
-# Modelo: OperacionConsultarDocumentos
-class OperacionConsultarDocumentos(DocumentoMetadatos):
+# Modelo: OperacionListaDocumentos
+class OperacionListaDocumentos(DocumentoMetadatos):
     uid: Optional[str] = Field(
         default=None,
         serialization_alias='uid',
@@ -155,8 +159,8 @@ class OperacionConsultarDocumentos(DocumentoMetadatos):
     )
 
 # --------------------------------------------------
-# Modelo: PeticionVerDocumento
-class PeticionVerDocumento(Peticion):
+# Modelo: PeticionDocumento
+class PeticionDocumento(Peticion):
     uid: str = Field(
         validation_alias='uid',
         json_schema_extra={'filtro':'COINCIDE'}
@@ -165,13 +169,17 @@ class PeticionVerDocumento(Peticion):
     def validar_uid(cls, values):
         uid = values.get('uid')
         if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
-            raise ValueError("El-uid-debe-ser-una-cadena-de-16-caracteres")
+            raise ErrorPersonalizado(
+                    mensaje='El-uid-no-es-valido',
+                    codigo=C.ESTADO._400_NO_VALIDO,
+                    nivel_evento=C.REGISTRO.DEBUG
+                )
         return values
 
 # --------------------------------------------------
-# Modelo: OperacionVerDocumento
-class OperacionVerDocumento(DocumentoCompleto):
-    uid: Optional[str] = Field(
+# Modelo: OperacionDocumento
+class OperacionDocumento(DocumentoDatos):
+    uid: str = Field(
         default=None,
         serialization_alias='uid',
         json_schema_extra={'permisos':''}
@@ -191,7 +199,7 @@ class PeticionAgregarDocumento(Peticion):
 # --------------------------------------------------
 # Modelo: OperacionInsertarDocumento
 #TODO: Pendiente
-class OperacionInsertarDocumento(DocumentoCompleto):
+class OperacionInsertarDocumento(DocumentoDatos):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',

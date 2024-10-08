@@ -22,3 +22,12 @@ msgstr "Inactivo"
 msgid "Estado-Archivado"
 msgstr "Archivado"
 
+msgid "No-hay-casos"
+msgstr "No se encontraron documentos"
+
+msgid "Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}"
+msgstr "Hay {total} documentos. Lista del {primero} al {ultimo}"
+
+msgid "Recurso-no-encontrado"
+msgstr "El documento solicitado no fue encontrado"
+

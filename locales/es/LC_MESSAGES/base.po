@@ -153,3 +153,7 @@ msgstr "No se encontraron casos"
 
 msgid "Recurso-no-encontrado"
 msgstr "El recurso solicitado no fue encontrado"
+
+msgid "El-uid-no-es-valido"
+msgstr "El UID solicitado no es válido"
+

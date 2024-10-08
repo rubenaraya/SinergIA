@@ -18,8 +18,8 @@ from pysinergia.interacciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    OperacionConsultarDocumentos,
-    OperacionVerDocumento,
+    OperacionListaDocumentos,
+    OperacionDocumento,
     OperacionInsertarDocumento,
 )
 
@@ -60,7 +60,7 @@ class RepositorioDocumentos(Repositorio):
 
     def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionConsultarDocumentos(
+        operacion = OperacionListaDocumentos(
                 dto_solicitud_datos=solicitud,
                 dto_roles_sesion=roles_sesion
             ).serializar()
@@ -74,7 +74,7 @@ class RepositorioDocumentos(Repositorio):
 
     def recuperar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionVerDocumento(
+        operacion = OperacionDocumento(
                 dto_solicitud_datos=solicitud,
                 dto_roles_sesion=roles_sesion
             ).serializar()
