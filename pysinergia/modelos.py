@@ -19,6 +19,7 @@ from pydantic import (
 from pysinergia.globales import (
     Constantes,
     autorizar_acceso,
+    concluir_estado,
 )
 
 # --------------------------------------------------
@@ -59,8 +60,8 @@ class Peticion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Procedimiento
-class Procedimiento(BaseModel):
+# Modelo: Operacion
+class Operacion(BaseModel):
     dto_solicitud_datos: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
     dto_origen_datos: Optional[str] = ''
@@ -122,9 +123,12 @@ class Respuesta(BaseModel):
             return {}
 
         if not valores.codigo:
-            valores.codigo = Constantes.ESTADO._200_EXITO
+            if valores.resultado:
+                valores.codigo = Constantes.ESTADO._200_EXITO
+            else:
+                valores.codigo = Constantes.ESTADO._404_NO_ENCONTRADO
         if not valores.conclusion:
-            valores.conclusion = Constantes.CONCLUSION.EXITO
+            valores.conclusion = concluir_estado(valores.codigo)
         if valores.T:
             fechahora = valores.T.fecha_hora()
             valores.fecha_actual = fechahora.get('fecha')
@@ -159,8 +163,9 @@ class Respuesta(BaseModel):
                     print(e)
         return valores
 
-    def diccionario(mi) -> dict:
-        return mi.model_dump(mode='json', warnings=False, exclude_none=True, exclude_unset=True, exclude=('T','D'))
+    def diccionario(mi, tipo:str='base') -> dict:
+        excluir = ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web') if tipo == 'base' else ('T','D')
+        return mi.model_dump(mode='json', warnings=False, exclude_none=True, exclude_unset=True, exclude=excluir)
 
     def json(mi) -> str:
         return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude=('T','D'))

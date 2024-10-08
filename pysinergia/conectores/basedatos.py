@@ -31,19 +31,19 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=1) -> tuple:
+    def ver_caso(mi, instruccion:str, parametros:list=[]) -> dict:
         ...
 
     @abstractmethod
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=1) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
         ...
 
     @abstractmethod
-    def generar_comando(mi, plantilla:str, procedimiento:dict={}, campo_id:str='id') -> tuple:
+    def generar_comando(mi, plantilla:str, operacion:dict={}, campo_uid:str='id') -> tuple:
         ...
 
     @abstractmethod
-    def generar_consulta(mi, plantilla:str, procedimiento:dict={}) -> tuple:
+    def generar_consulta(mi, plantilla:str, operacion:dict={}) -> tuple:
         ...
 
 # --------------------------------------------------
@@ -70,10 +70,6 @@ class Basedatos(ABC, I_ConectorBasedatos):
 
     # Clases de constantes
 
-    class ESTRUCTURA:
-        DICCIONARIO = 1
-        TUPLA = 2
-
     class FILTRO:
         CONTIENE = "CONTIENE"
         COINCIDE = "COINCIDE"
@@ -88,11 +84,10 @@ class Basedatos(ABC, I_ConectorBasedatos):
         NUMERO = "NUMERO"
 
     class INSTRUCCION:
-        SELECT_POR_ID = 'SELECT {lista_campos} FROM {origen_datos} WHERE id={id}'
         SELECT_CON_FILTROS = 'SELECT {mostrar} FROM {origen_datos} WHERE {filtrar} {ordenar}'
         INSERT_FILA = 'INSERT INTO {origen_datos} ({lista_campos}) VALUES ({lista_marcas})'
-        UPDATE_POR_ID = 'UPDATE {origen_datos} SET {lista_campos} WHERE id={id}'
-        DELETE_POR_ID = 'DELETE FROM {origen_datos} WHERE id={id}'
+        UPDATE_POR_UID = 'UPDATE {origen_datos} SET {lista_campos} WHERE ({campo_uid}={id})'
+        DELETE_POR_UID = 'DELETE FROM {origen_datos} WHERE ({campo_uid}={id})'
 
     class VALOR:
         NULO = 'F_NULO'
@@ -453,14 +448,14 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.conexion.commit()
         return total
 
-    def generar_consulta(mi, plantilla:str=None, procedimiento:dict={}) -> tuple:
-        if not plantilla or not procedimiento:
+    def generar_consulta(mi, plantilla:str=None, operacion:dict={}) -> tuple:
+        if not plantilla or not operacion:
             return None
         mostrar:list[str] = []
         filtrar:list[str] = []
         ordenar:list[str] = []
-        dto_solicitud_datos:dict = procedimiento.get('_dto_solicitud_datos', {})
-        dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
+        dto_solicitud_datos:dict = operacion.get('_dto_solicitud_datos', {})
+        dto_origen_datos = operacion.get('_dto_origen_datos', '')
         pagina = int(dto_solicitud_datos.get('pagina', 1))
         maximo = int(dto_solicitud_datos.get('maximo', 25))
         plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
@@ -483,7 +478,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
                     filtrado = mi._crear_filtro(filtro)(campo, valor)
                     if filtrado:
                         filtrar.append(filtrado)
-        for clave, contenido in procedimiento.items():
+        for clave, contenido in operacion.items():
             if isinstance(contenido, dict) and not str(clave).startswith('_dto_'): #clave not in ['_dto_origen_datos','_dto_solicitud_datos','_dto_roles_sesion']
                 campo = clave
                 entrada = contenido.get('entrada', '')
@@ -501,8 +496,8 @@ class Basedatos(ABC, I_ConectorBasedatos):
         plantilla = plantilla.replace('{ordenar}', ordenar_texto)
         return (plantilla, pagina, maximo)
 
-    def generar_comando(mi, plantilla:str, procedimiento:dict={}, campo_id:str='id') -> tuple:
-        if not plantilla or not procedimiento:
+    def generar_comando(mi, plantilla:str, operacion:dict={}, campo_uid:str='id') -> tuple:
+        if not plantilla or not operacion:
             return None
 
         def _formato_text(valor):
@@ -544,10 +539,10 @@ class Basedatos(ABC, I_ConectorBasedatos):
         parametros:list = []
         campos:list[str] = []
         marcas:list[str] = []
-        dto_solicitud_datos:dict = procedimiento.get('_dto_solicitud_datos', {})
-        dto_origen_datos = procedimiento.get('_dto_origen_datos', '')
+        dto_solicitud_datos:dict = operacion.get('_dto_solicitud_datos', {})
+        dto_origen_datos = operacion.get('_dto_origen_datos', '')
         plantilla = plantilla.replace('{origen_datos}', dto_origen_datos)
-        for campo, contenido in procedimiento.items():
+        for campo, contenido in operacion.items():
             if isinstance(contenido, dict) and not str(campo).startswith('_dto_') and dto_origen_datos:
                 salida = contenido.get('salida', '')
                 entidad = contenido.get('entidad', '')
@@ -555,17 +550,15 @@ class Basedatos(ABC, I_ConectorBasedatos):
                 aux = dto_solicitud_datos.get(campo)
                 valor = aux.get('valor', '') if aux and isinstance(aux, dict) else ''
                 if valor:
-                    if campo == campo_id:
-                        plantilla = plantilla.replace('{id}', f"'{valor}'")
+                    if campo == campo_uid:
+                        plantilla = plantilla.replace('{id}', f"'{valor}'").replace('{campo_uid}', campo_uid)
                     else:
                         if isinstance(valor, list):
                             valor = ','.join(valor)
                         if not entidad or entidad == dto_origen_datos:
                             if valor and formato:
                                 valor = formatos.get(formato)(valor)
-                        if plantilla.startswith('SELECT '):
-                            campos.append(salida)
-                        elif plantilla.startswith('UPDATE ') and valor:
+                        if plantilla.startswith('UPDATE ') and valor:
                             campos.append(f'{salida}={mi.marca}')
                             parametros.append(valor)
                         elif plantilla.startswith('INSERT ') and valor:

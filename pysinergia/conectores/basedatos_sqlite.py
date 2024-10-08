@@ -37,7 +37,7 @@ class BasedatosSqlite(Basedatos):
                 return True
         return False
 
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
         cursor.execute(sql_total, parametros)
@@ -57,35 +57,31 @@ class BasedatosSqlite(Basedatos):
             instruccion += " LIMIT ? OFFSET ?"
             parametros.extend([maximo, (pagina - 1) * maximo])
         cursor.execute(instruccion, parametros)
-        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor.row_factory = sqlite3.Row
-            lista = [dict(fila) for fila in cursor.fetchall()]
-            columnas = list(map(lambda x: x[0], cursor.description))
-            paginador = []
-            for pag in range(paginas):
-                paginador.append(pag + 1)
-            datos = {
-                "total": total,
-                "primero": primero,
-                "ultimo": ultimo,
-                "paginas": paginas,
-                "pagina": pagina,
-                "maximo": maximo,
-                "lista": lista,
-                "columnas": columnas,
-                "paginador": paginador
-            }
-            return datos, total
-        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
-            return (cursor.fetchall(), total)
+        cursor.row_factory = sqlite3.Row
+        lista = [dict(fila) for fila in cursor.fetchall()]
+        columnas = list(map(lambda x: x[0], cursor.description))
+        paginador = []
+        for pag in range(paginas):
+            paginador.append(pag + 1)
+        datos = {
+            "total": total,
+            "primero": primero,
+            "ultimo": ultimo,
+            "paginas": paginas,
+            "pagina": pagina,
+            "maximo": maximo,
+            "lista": lista,
+            "columnas": columnas,
+            "paginador": paginador
+        }
+        return datos
 
-    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_caso(mi, instruccion:str, parametros:list=[]) -> dict:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
-        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor.row_factory = sqlite3.Row
-            lista = [dict(fila) for fila in cursor.fetchall()]
-            return lista[0], 1
-        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
-            return (cursor.fetchone(), 1)
+        cursor.row_factory = sqlite3.Row
+        caso = [dict(fila) for fila in cursor.fetchall()]
+        if len(caso) > 0:
+            return caso[0]
+        return {}
 

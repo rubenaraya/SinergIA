@@ -5,6 +5,7 @@
 # Importaciones de PySinergIA
 from pysinergia.modelos import (
     Peticion,
+    Respuesta,
 )
 from pysinergia.operaciones import (
     Controlador,
@@ -14,33 +15,32 @@ from pysinergia.operaciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    ProcedimientoConsultarDocumentos,
-    RespuestaBuscarDocumentos,
+    OperacionConsultarDocumentos,
+    OperacionVerDocumento,
+    OperacionInsertarDocumento,
 )
 
 # --------------------------------------------------
 # Clase: ControladorDocumentos
 class ControladorDocumentos(Controlador):
 
-    def buscar_documentos(mi, peticion:Peticion) -> tuple:
+    def buscar_documentos(mi, peticion:Peticion):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
-        resultado = casosdeuso.solicitar_accion(CasosDeUsoDocumentos.ACCIONES.BUSCAR, peticion.serializar())
-        respuesta = RespuestaBuscarDocumentos(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
-        return respuesta
+        resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.serializar())
+        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
 
-
-    #TODO: Pendiente
-    def agregar_documento(mi, peticion:Peticion):
-        resultado = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUsoDocumentos.ACCIONES.AGREGAR, peticion.serializar())
-        return resultado
-
-    #TODO: Pendiente
     def ver_documento(mi, peticion:Peticion):
-        resultado = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion).solicitar_accion(
-            CasosDeUsoDocumentos.ACCIONES.VER, peticion.serializar())
-        return resultado
+        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
+        resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.serializar())
+        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+
+    def agregar_documento(mi, peticion:Peticion):
+        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        casosdeuso = CasosDeUsoDocumentos(RepositorioDocumentos(mi.configuracion), mi.sesion)
+        resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.serializar())
+        return Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos
@@ -48,19 +48,26 @@ class RepositorioDocumentos(Repositorio):
 
     def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        procedimiento = ProcedimientoConsultarDocumentos(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
+        operacion = OperacionConsultarDocumentos(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
             plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-            procedimiento=procedimiento
+            operacion=operacion
         )
-        datos, total = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
+        datos = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
+    def recuperar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+        mi.basedatos.conectar(mi.configuracion.basedatos())
+        operacion = OperacionVerDocumento(dto_solicitud_datos=solicitud, dto_roles_sesion=roles_sesion).serializar()
+        instruccion, pagina, maximo = mi.basedatos.generar_consulta(
+            plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
+            operacion=operacion
+        )
+        datos = mi.basedatos.ver_caso(instruccion, [])
+        mi.basedatos.desconectar()
+        return datos
 
-    #TODO: Pendiente
-    def recuperar_documento_por_id(mi, solicitud:dict) -> dict:
-        ...
 
     #TODO: Pendiente
     def insertar_nuevo_documento(mi, solicitud:dict) -> dict:
@@ -103,12 +110,18 @@ class CasosDeUsoDocumentos(CasosDeUso):
             entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
         return entrega
 
+    def _ver_documento(mi, solicitud:dict):
+        entrega:dict = solicitud.get('_dto_contexto', {})
+        if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
+            resultado = mi.repositorio.recuperar_documento(solicitud, roles_sesion=mi.sesion.get('roles'))
+            entrega['resultado'] = resultado
+            if len(resultado) == 0:
+                entrega['mensaje'] = 'Recurso-no-encontrado'
+        return entrega
+
 
     #TODO: Pendiente
     def _agregar_documento(mi, solicitud:dict):
         ...
-    
-    #TODO: Pendiente
-    def _ver_documento(mi, solicitud:dict):
-        ...
 
+ACCIONES = CasosDeUsoDocumentos.ACCIONES

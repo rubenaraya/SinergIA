@@ -40,7 +40,7 @@ class BasedatosMysql(Basedatos):
                     raise
         return False
 
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25, estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
+    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion}) as aux"
         cursor.execute(sql_total, parametros)
@@ -59,37 +59,30 @@ class BasedatosMysql(Basedatos):
         if not " LIMIT " in instruccion and not " OFFSET " in instruccion:
             instruccion += " LIMIT %s OFFSET %s"
             parametros.extend([maximo, (pagina - 1) * maximo])
-        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor = mi.conexion.cursor(dictionary=True)
-            cursor.execute(instruccion, parametros)
-            lista = [dict(fila) for fila in cursor.fetchall()]
-            columnas = cursor.column_names
-            paginador = []
-            for pag in range(paginas):
-                paginador.append(pag + 1)
-            datos = {
-                "total": total,
-                "primero": primero,
-                "ultimo": ultimo,
-                "paginas": paginas,
-                "pagina": pagina,
-                "maximo": maximo,
-                "lista": lista,
-                "columnas": columnas,
-                "paginador": paginador
-            }
-            return datos, total
-        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
-            return (cursor.fetchall(), total)
+        cursor = mi.conexion.cursor(dictionary=True)
+        cursor.execute(instruccion, parametros)
+        lista = [dict(fila) for fila in cursor.fetchall()]
+        columnas = cursor.column_names
+        paginador = []
+        for pag in range(paginas):
+            paginador.append(pag + 1)
+        datos = {
+            "total": total,
+            "primero": primero,
+            "ultimo": ultimo,
+            "paginas": paginas,
+            "pagina": pagina,
+            "maximo": maximo,
+            "lista": lista,
+            "columnas": columnas,
+            "paginador": paginador
+        }
+        return datos
 
-    def ver_caso(mi, instruccion:str, parametros:list=[], estructura:int=Basedatos.ESTRUCTURA.DICCIONARIO) -> tuple:
-        if estructura == Basedatos.ESTRUCTURA.DICCIONARIO:
-            cursor = mi.conexion.cursor(dictionary=True)
-            cursor.execute(instruccion, parametros)
-            lista = [dict(fila) for fila in cursor.fetchall()]
-            return lista[0], 1
-        elif estructura == Basedatos.ESTRUCTURA.TUPLA:
-            cursor = mi.conexion.cursor()
-            cursor.execute(instruccion, parametros)
-            return (cursor.fetchone(), 1)
-
+    def ver_caso(mi, instruccion:str, parametros:list=[]) -> dict:
+        cursor = mi.conexion.cursor(dictionary=True)
+        cursor.execute(instruccion, parametros)
+        caso = [dict(fila) for fila in cursor.fetchall()]
+        if len(caso) > 0:
+            return caso[0]
+        return {}

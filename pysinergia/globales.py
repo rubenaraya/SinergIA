@@ -206,7 +206,7 @@ class ErrorPersonalizado(Exception):
         mi.tipo:str = tipo
         mi.recurso:str = recurso
         mi.nivel_evento:str = nivel_evento
-        mi.conclusion:str = mi._concluir(mi.codigo)
+        mi.conclusion:str = concluir_estado(mi.codigo)
         mi.detalles:list = mi._detallar_errores(detalles) if detalles and isinstance(detalles, list) else []
         if not dominio_idioma:
             dominio_idioma = os.getenv('DOMINIO_IDIOMA', None) or 'base'
@@ -236,17 +236,6 @@ class ErrorPersonalizado(Exception):
             elif isinstance(x, int):
                 path += f'[{x}]'
         return path
-
-    def _concluir(mi, estado:int) -> str:
-        if estado < 200:
-            return Constantes.CONCLUSION.ERROR
-        if estado < 300:
-            return Constantes.CONCLUSION.EXITO
-        if estado < 400:
-            return Constantes.CONCLUSION.AVISO
-        if estado < 500:
-            return Constantes.CONCLUSION.ALERTA
-        return Constantes.CONCLUSION.ERROR
 
     def _detallar_errores(mi, errores:list) -> list:
         lista:list = []
@@ -306,3 +295,13 @@ def autorizar_acceso(permisos:str=None, roles:str=None) -> bool:
             return True
     return False
 
+def concluir_estado(estado:int) -> str:
+    if estado < 200:
+        return Constantes.CONCLUSION.ERROR
+    if estado < 300:
+        return Constantes.CONCLUSION.EXITO
+    if estado < 400:
+        return Constantes.CONCLUSION.AVISO
+    if estado < 500:
+        return Constantes.CONCLUSION.ALERTA
+    return Constantes.CONCLUSION.ERROR

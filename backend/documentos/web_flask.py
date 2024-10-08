@@ -48,28 +48,31 @@ enrutador = Blueprint(
 # --------------------------------------------------
 # Rutas del Microservicio
 
-@enrutador.route('/documentos', methods=['GET'])
 #@autenticador.validar_token
 #@autenticador.validar_apikey
+
+@enrutador.route('/documentos', methods=['GET'])
 @validate()
 def buscar_documentos(query:PeticionBuscarDocumentos):
     comunicador.procesar_solicitud()
     respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
-    return jsonify(respuesta)
-
+    codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+    return jsonify(respuesta), codigo
 
 @enrutador.route('/documentos/<uid>', methods=['GET'])
-#@validate()
 def ver_documento(uid):
     comunicador.procesar_solicitud()
     peticion = PeticionVerDocumento(uid=uid)
     respuesta = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
-    return jsonify(respuesta)
+    codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+    return jsonify(respuesta), codigo
+
 
 @enrutador.route('/documentos', methods=['POST'])
 @validate()
 def agregar_documento(body:PeticionAgregarDocumento):
     comunicador.procesar_solicitud()
     respuesta = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
-    return jsonify(respuesta), C.ESTADO._201_CREADO
+    codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
+    return jsonify(respuesta), codigo
 

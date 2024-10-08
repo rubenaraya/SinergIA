@@ -4,12 +4,12 @@
 
 import secrets
 from typing import Optional
-from pydantic import Field
+from pydantic import Field, model_validator
 
 # Importaciones de PySinergIA
 from pysinergia.modelos import (
     Peticion,
-    Procedimiento,
+    Operacion,
     Respuesta,
 )
 
@@ -63,22 +63,9 @@ class PeticionBuscarDocumentos(Peticion):
     pagina: int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
-# Modelo: RespuestaBuscarDocumentos
-class RespuestaBuscarDocumentos(Respuesta):
-    def diccionario(mi) -> dict:
-        return mi.model_dump(mode='json', warnings=False, exclude_none=True, exclude_unset=True, 
-            exclude=('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web')
-        )
-
-# --------------------------------------------------
-# Modelo: ProcedimientoConsultarDocumentos
-class ProcedimientoConsultarDocumentos(Procedimiento):
+# Modelo: DocumentoMetadatos
+class DocumentoMetadatos(Operacion):
     dto_origen_datos: Optional[str] = Field('catalogo')
-    uid: Optional[str] = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
     titulo: Optional[str] = Field(
         default=None,
         serialization_alias='titulo',
@@ -94,59 +81,121 @@ class ProcedimientoConsultarDocumentos(Procedimiento):
         serialization_alias='editor',
         json_schema_extra={'permisos':''}
     )
-    tipodoc: Optional[str] = Field(
-        default=None,
-        serialization_alias='tipodoc',
-        json_schema_extra={'permisos':''}
-    )
     etiquetas: Optional[str] = Field(
         default=None,
         serialization_alias='etiquetas',
         json_schema_extra={'permisos':''}
     )
+    palabras: Optional[str] = Field(
+        default=None,
+        serialization_alias='palabras',
+        json_schema_extra={'permisos':''}
+    )
+    tipodoc: Optional[str] = Field(
+        default=None,
+        serialization_alias='tipodoc',
+        json_schema_extra={'permisos':''}
+    )
+    coleccion: Optional[str] = Field(
+        default=None,
+        serialization_alias='coleccion',
+        json_schema_extra={'permisos':''}
+    )
+    estado: Optional[str] = Field(
+        default='Activo',
+        serialization_alias='estado',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
 
+# --------------------------------------------------
+# Modelo: DocumentoCompleto
+class DocumentoCompleto(DocumentoMetadatos):
+    fechapub: Optional[str] = Field(
+        default=None,
+        serialization_alias='fechapub',
+        json_schema_extra={'permisos':''}
+    )
+    fuente: Optional[str] = Field(
+        default=None,
+        serialization_alias='fuente',
+        json_schema_extra={'permisos':''}
+    )
+    nivcomplejidad: Optional[str] = Field(
+        default=None,
+        serialization_alias='nivcomplejidad',
+        json_schema_extra={'permisos':''}
+    )
+    descripcion: Optional[str] = Field(
+        default=None,
+        serialization_alias='descripcion',
+        json_schema_extra={'permisos':''}
+    )
+    pubobjetivo: Optional[str] = Field(
+        default=None,
+        serialization_alias='pubobjetivo',
+        json_schema_extra={'permisos':''}
+    )
+    temasrel: Optional[str] = Field(
+        default=None,
+        serialization_alias='temasrel',
+        json_schema_extra={'permisos':''}
+    )
+    resumen: Optional[str] = Field(
+        default=None,
+        serialization_alias='resumen',
+        json_schema_extra={'permisos':''}
+    )
+
+# --------------------------------------------------
+# Modelo: OperacionConsultarDocumentos
+class OperacionConsultarDocumentos(DocumentoMetadatos):
+    uid: Optional[str] = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
 
 # --------------------------------------------------
 # Modelo: PeticionVerDocumento
-#TODO: Pendiente
 class PeticionVerDocumento(Peticion):
-    uid: Optional[str] = Field(
-        default=None,
-        title='UID',
+    uid: str = Field(
         validation_alias='uid',
-        serialization_alias='uid',
         json_schema_extra={'filtro':'COINCIDE'}
     )
+    @model_validator(mode='before')
+    def validar_uid(cls, values):
+        uid = values.get('uid')
+        if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
+            raise ValueError("El-uid-debe-ser-una-cadena-de-16-caracteres")
+        return values
+
+# --------------------------------------------------
+# Modelo: OperacionVerDocumento
+class OperacionVerDocumento(DocumentoCompleto):
+    uid: Optional[str] = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
+
 
 # --------------------------------------------------
 # Modelo: PeticionAgregarDocumento
 #TODO: Pendiente
 class PeticionAgregarDocumento(Peticion):
-    titulo: Optional[str] = Field(
-        default=None,
-        title='Título',
+    titulo: str = Field(
         max_length=200,
         validation_alias='titulo',
-        serialization_alias='titulo',
         json_schema_extra={}
     )
 
 # --------------------------------------------------
-# Modelo: ProcedimientoInsertarDocumento
+# Modelo: OperacionInsertarDocumento
 #TODO: Pendiente
-class ProcedimientoInsertarDocumento(Procedimiento):
-    dto_origen_datos: Optional[str] = Field('catalogo')
-    uid: Optional[str] = Field(
+class OperacionInsertarDocumento(DocumentoCompleto):
+    uid: str = Field(
         default=secrets.token_hex(8),
-        title='UID',
-        validation_alias='uid',
         serialization_alias='uid',
-        json_schema_extra={'formato':'text', 'permisos':''}
-    )
-    titulo: Optional[str] = Field(
-        default=None,
-        validation_alias='titulo',
-        serialization_alias='titulo',
         json_schema_extra={'formato':'text', 'permisos':''}
     )
 

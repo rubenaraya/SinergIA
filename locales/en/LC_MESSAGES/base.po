@@ -150,3 +150,6 @@ msgstr "Connectors could not be injected"
 
 msgid "No-hay-casos"
 msgstr "No cases found"
+
+msgid "Recurso-no-encontrado"
+msgstr "The requested resource was not found"

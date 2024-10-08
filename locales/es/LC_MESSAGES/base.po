@@ -150,3 +150,6 @@ msgstr "No se pudieron inyectar los conectores"
 
 msgid "No-hay-casos"
 msgstr "No se encontraron casos"
+
+msgid "Recurso-no-encontrado"
+msgstr "El recurso solicitado no fue encontrado"
