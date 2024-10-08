@@ -16,6 +16,18 @@ from pysinergia.modelos import (
     Operacion,
 )
 
+"""
+PENDIENTES:
+- Restaurar el title del Field en cada campo de Peticion, para que aparezca en el mensaje de error de validación.
+- Revisar dónde se reemplazan los mensajes de error de Pydantic por sus traducciones, asegurarse que se muestren.
+
+- Agregar peticiones para agregar y editar documento, en forma modular (agregar, editar, ambas)
+- Completar operacion para insertar documento
+
+- Agregar rutas y todo lo demás para: actualizar y eliminar documento
++ Agregar rutas y todo lo demás para: agregar contenidos a un documento.
+"""
+
 # --------------------------------------------------
 # Modelo: PeticionBuscarDocumentos
 class PeticionBuscarDocumentos(Peticion):
@@ -232,7 +244,5 @@ CREATE TABLE "catalogo" (
     "archivo"	TEXT,
 	"tipoarch"	TEXT,
 	"peso"	INTEGER,
-	
-    PRIMARY KEY("id" AUTOINCREMENT)
 )
 """
