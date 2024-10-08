@@ -107,7 +107,7 @@ class ServidorApi:
             return mi._crear_respuesta_error(request, err)
 
         @api.exception_handler(RequestValidationError)
-        async def _error_procesar_peticion(request:Request, err:RequestValidationError):
+        async def _error_procesar_solicitud(request:Request, err:RequestValidationError):
             error = ErrorPersonalizado(mensaje='Los-datos-recibidos-no-se-procesaron', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(request, error)
 
@@ -215,8 +215,8 @@ class ComunicadorWeb(Comunicador):
 
     # Métodos públicos
 
-    async def procesar_peticion(mi, request:Request, idiomas_aceptados:str, sesion:dict=None):
-        super().procesar_peticion(idiomas_aceptados, sesion)
+    async def procesar_solicitud(mi, request:Request, idiomas_aceptados:str=None, sesion:dict=None):
+        super().procesar_solicitud(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         url_analizada = urlparse(str(request.url))

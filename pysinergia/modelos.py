@@ -58,7 +58,7 @@ class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
 
-    def agregar_contexto(mi, contexto:dict={}):
+    def adjuntar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
 
     def serializar(mi) -> dict:

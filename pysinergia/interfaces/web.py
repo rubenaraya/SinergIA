@@ -5,19 +5,18 @@
 import time, jwt, importlib, gettext, os, json
 from abc import ABC
 from pathlib import Path
-from functools import lru_cache
 
 # Importaciones de PySinergIA
 from pysinergia.globales import (
     Constantes,
     ErrorPersonalizado,
 )
+from pysinergia.config import Configuracion
 from pysinergia.archivos import (
     ArchivoCargado,
 )
 from pysinergia.operaciones import (
     I_Comunicador,
-    Configuracion,
 )
 from pysinergia.conectores.disco import Disco
 
@@ -210,7 +209,7 @@ class Comunicador(ABC, I_Comunicador):
 
     # Métodos públicos
 
-    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
+    def procesar_solicitud(mi, idiomas_aceptados:str=None, sesion:dict=None):
         idioma = mi.traductor.asignar_idioma(idiomas_aceptados=idiomas_aceptados)
         mi.contexto['sesion'] = sesion or {}
         mi.contexto['web'] = mi.config_web
@@ -218,12 +217,6 @@ class Comunicador(ABC, I_Comunicador):
         mi.contexto['web']['API_MOTOR'] = 'PySinergIA'
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
-
-    def transferir_contexto(mi, datos:dict=None) -> dict:
-        if datos is not None:
-            for clave, valor in datos.items():
-                mi.contexto[clave] = valor
-        return mi.contexto
 
     def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:
         if portador and portador.es_valido:
@@ -406,46 +399,4 @@ class ErrorAutenticacion(ErrorPersonalizado):
             nivel_registro=Constantes.REGISTRO.INFO
         )
         mi.url_login = url_login
-
-# --------------------------------------------------
-# Funcion: configurar_microservicio
-@lru_cache
-def configurar_microservicio(modelo_base:Configuracion, ruta_origen:str, env_aplicacion:str=None, entorno:str=None) -> Configuracion:
-    from dotenv import dotenv_values
-    prefijo_entorno = f'{entorno.lower()}' if entorno else 'config'
-    ruta_microservicio_path = Path(ruta_origen).parent
-    lista_env:list[Path] = [(ruta_microservicio_path / f'.{prefijo_entorno}.env')]
-    if env_aplicacion:
-        lista_env.append((ruta_microservicio_path.parent / f'_config/.{prefijo_entorno}.{env_aplicacion}.env'))
-    valores_configuracion = {
-        'RUTA_MICROSERVICIO': ruta_microservicio_path.as_posix(),
-        'MICROSERVICIO': ruta_microservicio_path.name,
-    }
-    for archivo in lista_env:
-        if archivo.exists():
-            valores_configuracion.update(dotenv_values(archivo))
-    configuracion:Configuracion = modelo_base(**valores_configuracion)
-    configuracion.URL_MICROSERVICIO = f'/{configuracion.APP_GLOBAL}/{configuracion.APP_PWA}'
-    configuracion.PREFIJO_MICROSERVICIO = f'{configuracion.RAIZ_GLOBAL}/{configuracion.APP_PWA}'
-    return configuracion
-
-# --------------------------------------------------
-# Funcion: configurar_servidor_api
-def configurar_servidor_api(ruta_origen:str, archivo_env:str='.config.env'):
-    from dotenv import dotenv_values
-    try:
-        archivo_env_path = Path(archivo_env)
-        claves = dotenv_values(archivo_env_path)
-        for clave, valor in claves.items():
-            os.environ[clave] = valor
-        ruta_lib_ffmpeg = Path(os.getenv('RUTA_LIB_FFMPEG','')).resolve()
-        if ruta_lib_ffmpeg.is_dir():
-            os.environ['PATH'] = str(ruta_lib_ffmpeg) + os.pathsep + os.getenv('PATH')
-        if os.getenv('FRAMEWORK') == 'flask':
-            from pysinergia.interfaces.flask import ServidorApi
-        elif os.getenv('FRAMEWORK') == 'fastapi':
-            from pysinergia.interfaces.fastapi import ServidorApi
-        return ServidorApi(ruta_origen)
-    except Exception as e:
-        raise
 

@@ -5,8 +5,8 @@
 # Importaciones de Flask
 from flask import (
     Blueprint,
-    request,
-    jsonify
+    jsonify,
+    #request,
 )
 from flask_pydantic import validate
 
@@ -14,8 +14,8 @@ from flask_pydantic import validate
 from pysinergia.globales import (
     Constantes as C,
 )
-from pysinergia.operaciones import Configuracion
-from pysinergia.interfaces.web import (
+from pysinergia.config import (
+    Configuracion,
     configurar_microservicio,
 )
 from pysinergia.interfaces.flask import (
@@ -53,18 +53,14 @@ enrutador = Blueprint(
 #@autenticador.validar_apikey
 @validate()
 def buscar_documentos(query:PeticionBuscarDocumentos):
-    sesion = autenticador.recuperar_sesion()
-    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
-    comunicador.procesar_peticion(idioma, sesion)
+    comunicador.procesar_solicitud()
     respuesta = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
     return jsonify(respuesta)
 
 @enrutador.route('/documentos/<id>', methods=['GET'])
-@validate()
+#@validate()
 def ver_documento(id):
-    sesion = autenticador.recuperar_sesion()
-    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
-    comunicador.procesar_peticion(idioma, sesion)
+    comunicador.procesar_solicitud()
     peticion = PeticionVerDocumento(id=id)
     respuesta = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return jsonify(respuesta)
@@ -72,9 +68,7 @@ def ver_documento(id):
 @enrutador.route('/documentos', methods=['POST'])
 @validate()
 def agregar_documento(body:PeticionAgregarDocumento):
-    sesion = autenticador.recuperar_sesion()
-    idioma = sesion.get('idioma', request.headers.get('Accept-Language'))
-    comunicador.procesar_peticion(idioma, sesion)
+    comunicador.procesar_solicitud()
     respuesta = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
     return jsonify(respuesta), C.ESTADO._201_CREADO
 

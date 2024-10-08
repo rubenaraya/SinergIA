@@ -2,16 +2,7 @@
 # pysinergia\operaciones.py
 # --------------------------------------------------
 
-import json
 from abc import (ABC, ABCMeta, abstractmethod)
-from typing import (List, Dict)
-
-# Importaciones de Pydantic
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict,
-)
-from pydantic import Field, field_validator
 
 # Importaciones de PySinergIA
 from pysinergia.globales import (
@@ -19,6 +10,7 @@ from pysinergia.globales import (
     Constantes,
     autorizar_acceso,
 )
+from pysinergia.config import Configuracion
 from pysinergia.archivos import (
     ArchivoCargado as ArchivoCargado,
 )
@@ -27,8 +19,10 @@ from pysinergia.archivos import (
 # Interface: I_Comunicador
 class I_Comunicador(metaclass=ABCMeta):
 
+    contexto = dict()
+
     @abstractmethod
-    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
+    def procesar_solicitud(mi, idiomas_aceptados:str=None, sesion:dict=None):
         ...
 
     @abstractmethod
@@ -56,125 +50,12 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def transferir_contexto(mi, datos:dict=None) -> dict:
-        ...
-
-    @abstractmethod
     def traspasar_traductor(mi):
         ...
 
     @abstractmethod
     def asignar_cookie(mi, respuesta, nombre:str, valor:str, duracion:int=None):
         ...
-
-# --------------------------------------------------
-# Modelo: Configuracion
-class Configuracion(ABC, BaseSettings):
-    # Aplicacion Global
-    APP_GLOBAL: str = Field(default='')
-    RAIZ_GLOBAL: str = Field(default='')
-    RUTA_RAIZ: str = Field(default='')
-    RUTA_PLANTILLAS: str = Field(default='')
-    RUTA_LOGS: str = Field(default='')
-    IDIOMAS_DISPONIBLES: List[str] = Field(default=[])
-    ARCHIVO_LOGS: str = Field(default='')
-    ALIAS_FRONTEND: str = Field(default='')
-    DOMINIO_IDIOMA: str = Field(default='')
-    RUTA_LOCALES: str = Field(default='')
-    NIVEL_REGISTRO: str = Field(default='')
-    # Aplicacion PWA
-    APP_PWA: str = Field(default='')
-    NOMBRE_PWA: str = ''
-    TITULO_PWA: str = ''
-    DESCRIPCION_PWA: str = ''
-    API_KEYS: Dict[str,str] = Field(default={})
-    SECRET_KEY: str = ''
-    ALGORITMO_JWT: str = ''
-    DURACION_TOKEN: int = 5
-    ZONA_HORARIA: str = ''
-    FORMATO_FECHA: str = ''
-    RUTA_TEMP: str = ''
-    # Microservicio especifico
-    MICROSERVICIO: str = Field(default='')
-    RUTA_MICROSERVICIO: str = Field(default='')
-    URL_MICROSERVICIO: str = ''
-    PREFIJO_MICROSERVICIO: str = ''
-    BASEDATOS_FUENTE: str = ''
-    BASEDATOS_CLASE: str = ''
-    BASEDATOS_NOMBRE: str = ''
-    BASEDATOS_RUTA: str = ''
-    BASEDATOS_USUARIO: str = ''
-    BASEDATOS_PASSWORD: str = ''
-    DISCO_FUENTE: str = ''
-    DISCO_CLASE: str = ''
-    DISCO_NOMBRE: str = ''
-    DISCO_RUTA: str = ''
-    model_config = SettingsConfigDict(
-        env_prefix='',
-        extra='ignore',
-        case_sensitive=True,
-        validate_assignment=True,
-        validate_default=True,
-    )
-
-    @field_validator('IDIOMAS_DISPONIBLES', mode='before')
-    @classmethod
-    def parse_json_list(cls, v):
-        if isinstance(v, str):
-            try:
-                return json.loads(v)
-            except ValueError:
-                pass
-        return v or []
-
-    @field_validator('API_KEYS', mode='before')
-    @classmethod
-    def parse_json_dict(cls, v):
-        if isinstance(v, str):
-            try:
-                return json.loads(v)
-            except ValueError:
-                pass
-        return v or {}
-
-    def basedatos(mi) -> dict:
-        return dict({
-            'fuente': mi.BASEDATOS_FUENTE,
-            'clase': mi.BASEDATOS_CLASE,
-            'nombre': mi.BASEDATOS_NOMBRE,
-            'ruta': mi.BASEDATOS_RUTA,
-            'usuario': mi.BASEDATOS_USUARIO,
-            'password': mi.BASEDATOS_PASSWORD,
-        })
-    def disco(mi) -> dict:
-        return dict({
-            'fuente': mi.DISCO_FUENTE,
-            'clase': mi.DISCO_CLASE,
-            'nombre': mi.DISCO_NOMBRE,
-            'ruta': mi.DISCO_RUTA,
-        })
-    def web(mi) -> dict:
-        return {
-            'APP_PWA': mi.APP_PWA,
-            'MICROSERVICIO': mi.MICROSERVICIO,
-            'RUTA_MICROSERVICIO': mi.RUTA_MICROSERVICIO,
-            'URL_MICROSERVICIO': mi.URL_MICROSERVICIO,
-            'PREFIJO_MICROSERVICIO': mi.PREFIJO_MICROSERVICIO,
-            'RUTA_RAIZ': mi.RUTA_RAIZ,
-            'RUTA_TEMP': mi.RUTA_TEMP,
-            'RUTA_PLANTILLAS': mi.RUTA_PLANTILLAS,
-            'APP_GLOBAL': mi.APP_GLOBAL,
-            'RAIZ_GLOBAL': mi.RAIZ_GLOBAL,
-            'ALIAS_FRONTEND': mi.ALIAS_FRONTEND,
-            'IDIOMAS_DISPONIBLES': mi.IDIOMAS_DISPONIBLES,
-            'ARCHIVO_LOGS': mi.ARCHIVO_LOGS,
-            'ZONA_HORARIA': mi.ZONA_HORARIA,
-            'FORMATO_FECHA': mi.FORMATO_FECHA,
-            'NOMBRE_PWA': mi.NOMBRE_PWA,
-            'TITULO_PWA': mi.TITULO_PWA,
-            'DESCRIPCION_PWA': mi.DESCRIPCION_PWA,
-            'DURACION_TOKEN': mi.DURACION_TOKEN,
-        }
 
 # --------------------------------------------------
 # Clase: Repositorio
@@ -217,7 +98,7 @@ class Controlador(ABC):
     def __init__(mi, configuracion:Configuracion, comunicador:I_Comunicador):
         mi.configuracion:Configuracion = configuracion
         mi.comunicador:I_Comunicador = comunicador
-        contexto = mi.comunicador.transferir_contexto()
+        contexto = mi.comunicador.contexto
         sesion = contexto.get('sesion')
         mi.sesion:dict = sesion or {}
 

@@ -208,8 +208,8 @@ class ComunicadorWeb(Comunicador):
 
     # Métodos públicos
 
-    def procesar_peticion(mi, idiomas_aceptados:str, sesion:dict=None):
-        super().procesar_peticion(idiomas_aceptados, sesion)
+    def procesar_solicitud(mi, idiomas_aceptados:str=None, sesion:dict=None):
+        super().procesar_solicitud(idiomas_aceptados, sesion)
         from urllib.parse import urlparse
         alias_frontend = mi.config_web.get('ALIAS_FRONTEND')
         url_analizada = urlparse(str(request.base_url))
