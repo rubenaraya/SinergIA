@@ -4,6 +4,8 @@
 
 import secrets
 from typing import Optional
+
+# Importaciones de Pydantic
 from pydantic import Field, model_validator
 
 # Importaciones de PySinergIA
@@ -29,57 +31,8 @@ PENDIENTES:
 """
 
 # --------------------------------------------------
-# Modelo: PeticionBuscarDocumentos
-class PeticionBuscarDocumentos(Peticion):
-    titulo: Optional[str] = Field(
-        default=None,
-        max_length=200,
-        validation_alias='titulo',
-        json_schema_extra={'filtro':'CONTIENE'}
-    )
-    autores: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        validation_alias='autores',
-        json_schema_extra={'filtro':'CONTIENE'}
-    )
-    editor: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        validation_alias='editor',
-        json_schema_extra={'filtro':'CONTIENE'}
-    )
-    etiquetas: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        validation_alias='etiquetas',
-        json_schema_extra={'filtro':'CONTIENE'}
-    )
-    palabras: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        validation_alias='palabras',
-        json_schema_extra={'filtro':'CONTIENE'}
-    )
-    tipodoc: Optional[str] = Field(
-        default=None,
-        max_length=20,
-        validation_alias='tipodoc',
-        json_schema_extra={'filtro':'COINCIDE'}
-    )
-    coleccion: Optional[str] = Field(
-        default=None,
-        max_length=20,
-        validation_alias='coleccion',
-        json_schema_extra={'filtro':'COINCIDE'}
-    )
-    id: int = Field(json_schema_extra={'orden':'ASC'}, default=0)
-    maximo: int = Field(validation_alias='maximo', default=10)
-    pagina: int = Field(validation_alias='pagina', default=1)
-
-# --------------------------------------------------
-# Modelo: DocumentoMetadatos
-class DocumentoMetadatos(Operacion):
+# Modelo: DocumentoIndices
+class DocumentoIndices(Operacion):
     dto_origen_datos: Optional[str] = Field('catalogo')
     titulo: Optional[str] = Field(
         default=None,
@@ -138,8 +91,8 @@ class DocumentoMetadatos(Operacion):
     )
 
 # --------------------------------------------------
-# Modelo: DocumentoDatos
-class DocumentoDatos(DocumentoMetadatos):
+# Modelo: DocumentoContenidos
+class DocumentoContenidos(DocumentoIndices):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
@@ -161,18 +114,59 @@ class DocumentoDatos(DocumentoMetadatos):
         json_schema_extra={'permisos':''}
     )
 
-# --------------------------------------------------
-# Modelo: OperacionListaDocumentos
-class OperacionListaDocumentos(DocumentoMetadatos):
-    uid: Optional[str] = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
 
 # --------------------------------------------------
-# Modelo: PeticionDocumento
-class PeticionDocumento(Peticion):
+# Modelo: PeticionBuscarDocumentos
+class PeticionBuscarDocumentos(Peticion):
+    titulo: Optional[str] = Field(
+        default=None,
+        max_length=200,
+        validation_alias='titulo',
+        json_schema_extra={'filtro':'CONTIENE'}
+    )
+    autores: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        validation_alias='autores',
+        json_schema_extra={'filtro':'CONTIENE'}
+    )
+    editor: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        validation_alias='editor',
+        json_schema_extra={'filtro':'CONTIENE'}
+    )
+    etiquetas: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        validation_alias='etiquetas',
+        json_schema_extra={'filtro':'CONTIENE'}
+    )
+    palabras: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        validation_alias='palabras',
+        json_schema_extra={'filtro':'CONTIENE'}
+    )
+    tipodoc: Optional[str] = Field(
+        default=None,
+        max_length=20,
+        validation_alias='tipodoc',
+        json_schema_extra={'filtro':'COINCIDE'}
+    )
+    coleccion: Optional[str] = Field(
+        default=None,
+        max_length=20,
+        validation_alias='coleccion',
+        json_schema_extra={'filtro':'COINCIDE'}
+    )
+    id: int = Field(json_schema_extra={'orden':'ASC'}, default=0)
+    maximo: int = Field(validation_alias='maximo', default=10)
+    pagina: int = Field(validation_alias='pagina', default=1)
+
+# --------------------------------------------------
+# Modelo: PeticionAbrirDocumento
+class PeticionAbrirDocumento(Peticion):
     uid: str = Field(
         validation_alias='uid',
         json_schema_extra={'filtro':'COINCIDE'}
@@ -188,14 +182,27 @@ class PeticionDocumento(Peticion):
                 )
         return values
 
+
+# --------------------------------------------------
+# Modelo: OperacionListaDocumentos
+class OperacionListaDocumentos(DocumentoIndices):
+    uid: Optional[str] = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
+
 # --------------------------------------------------
 # Modelo: OperacionDocumento
-class OperacionDocumento(DocumentoDatos):
+class OperacionDocumento(DocumentoContenidos):
     uid: str = Field(
         default=None,
         serialization_alias='uid',
         json_schema_extra={'permisos':''}
     )
+
+
+
 
 
 # --------------------------------------------------
@@ -211,7 +218,7 @@ class PeticionAgregarDocumento(Peticion):
 # --------------------------------------------------
 # Modelo: OperacionInsertarDocumento
 #TODO: Pendiente
-class OperacionInsertarDocumento(DocumentoDatos):
+class OperacionInsertarDocumento(DocumentoContenidos):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',

@@ -86,7 +86,7 @@ class ServidorApi:
             err.registrar(texto_pre=mi._obtener_url(request), exc_info=registrar_detalles)
         traductor = Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
         traductor.asignar_idioma(idiomas_aceptados=request.headers.get('Accept-Language'), dominio_idioma=err.dominio_idioma)
-        respuesta = Respuesta(**err.exportar(), T=traductor).diccionario()
+        respuesta = Respuesta(**err.exportar(), T=traductor).extraer()
         return JSONResponse(content=respuesta, status_code=err.codigo)
 
     def _manejar_errores(mi, api:FastAPI):

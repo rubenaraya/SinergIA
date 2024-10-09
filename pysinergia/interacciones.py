@@ -20,6 +20,7 @@ from pysinergia.archivos import (
 class I_Comunicador(metaclass=ABCMeta):
 
     contexto = dict()
+    traductor = None
 
     @abstractmethod
     def procesar_solicitud(mi, idiomas_aceptados:str=None, sesion:dict=None):
@@ -46,11 +47,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
-        ...
-
-    @abstractmethod
-    def traspasar_traductor(mi):
+    def crear_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         ...
 
     @abstractmethod

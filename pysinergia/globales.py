@@ -155,6 +155,12 @@ class Constantes:
         OPCIONES = 'opciones'
         FECHA = 'fecha'
         NOVALIDAR = 'novalidar'
+    
+    class RESPUESTA:
+        BASE = 'BASE'
+        API = 'API'
+        WEB = 'WEB'
+        TODO = 'TODO'
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs

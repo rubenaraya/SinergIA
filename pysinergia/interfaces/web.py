@@ -293,7 +293,7 @@ class Comunicador(ABC, I_Comunicador):
             nombre = mi.disco.normalizar_nombre('', extension, largo, auto)
         return nombre
 
-    def generar_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
+    def crear_encabezados(mi, tipo_mime:str, charset:str='', disposicion:str='inline', nombre_descarga:str='') -> dict:
         content_type = f"{tipo_mime}; charset={charset}" if charset else tipo_mime
         encabezados = {'Content-Type': content_type}
         if nombre_descarga:
@@ -311,11 +311,6 @@ class Comunicador(ABC, I_Comunicador):
             if 'application/json' in acepta:
                 return Constantes.CONVERSION.JSON
         return Constantes.CONVERSION.HTML
-
-    def traspasar_traductor(mi) -> Traductor:
-        if mi.traductor:
-            return mi.traductor
-        return None
 
 # --------------------------------------------------
 # Clase: Autenticador

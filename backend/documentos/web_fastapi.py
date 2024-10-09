@@ -29,7 +29,7 @@ from pysinergia.interfaces.fastapi import (
 # Importaciones del Microservicio
 from .modelos import (
     PeticionBuscarDocumentos,
-    PeticionDocumento,
+    PeticionAbrirDocumento,
     PeticionAgregarDocumento,
 )
 from .interacciones import (
@@ -56,7 +56,7 @@ async def buscar_documentos(request:Request, peticion:PeticionBuscarDocumentos=D
 @enrutador.get('/documentos/{uid}')
 async def ver_documento(request:Request, uid:str):
     await comunicador.procesar_solicitud(request)
-    peticion = PeticionDocumento(uid=uid)
+    peticion = PeticionAbrirDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 

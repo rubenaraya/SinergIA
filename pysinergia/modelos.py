@@ -5,7 +5,6 @@
 from typing import (
     Optional,
     Self,
-    Any,
 )
 
 # Importaciones de Pydantic
@@ -23,7 +22,7 @@ from pysinergia.globales import (
 )
 
 # --------------------------------------------------
-# Modelo: Peticion
+# Modelo: Peticion (Validador de Entradas)
 class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
@@ -31,7 +30,7 @@ class Peticion(BaseModel):
     def adjuntar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
 
-    def serializar(mi) -> dict:
+    def convertir(mi) -> dict:
         serializado = {}
         modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D'))
         for field_name, field in mi.model_fields.items():
@@ -60,13 +59,13 @@ class Peticion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Operacion
+# Modelo: Operacion (Organizador de Salidas)
 class Operacion(BaseModel):
     dto_solicitud_datos: Optional[dict] = {}
     dto_roles_sesion: Optional[str] = ''
     dto_origen_datos: Optional[str] = ''
 
-    def serializar(mi) -> dict:
+    def preparar(mi) -> dict:
         serializado:dict = {}
         modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D'))
         for field_name, field in mi.model_fields.items():
@@ -90,7 +89,7 @@ class Operacion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Respuesta
+# Modelo: Respuesta (Generador de Respuestas)
 class Respuesta(BaseModel):
     model_config = ConfigDict()
 
@@ -163,8 +162,14 @@ class Respuesta(BaseModel):
                     print(e)
         return valores
 
-    def diccionario(mi, tipo:str='base') -> dict:
-        excluir = ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web') if tipo == 'base' else ('T','D')
+    def extraer(mi, tipo:str=Constantes.RESPUESTA.BASE) -> dict:
+        filtrar = {
+            Constantes.RESPUESTA.BASE: ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web'),
+            Constantes.RESPUESTA.API: ('T','D','cookies','fecha','sesion','url','web'),
+            Constantes.RESPUESTA.WEB: ('T','D','cookies','web','sesion'),
+            Constantes.RESPUESTA.TODO: ('T','D'),
+        }
+        excluir = filtrar.get(tipo)
         return mi.model_dump(mode='json', warnings=False, exclude_none=True, exclude_unset=True, exclude=excluir)
 
     def json(mi) -> str:

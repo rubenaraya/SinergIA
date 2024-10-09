@@ -31,8 +31,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.serializar())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.convertir())
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
@@ -40,8 +40,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.serializar())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer(tipo=C.RESPUESTA.WEB)
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
@@ -49,8 +49,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.serializar())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traspasar_traductor()).diccionario()
+        resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
         codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
@@ -63,7 +63,7 @@ class RepositorioDocumentos(Repositorio):
         operacion = OperacionListaDocumentos(
                 dto_solicitud_datos=solicitud,
                 dto_roles_sesion=roles_sesion
-            ).serializar()
+            ).preparar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
                 plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
                 operacion=operacion
@@ -77,7 +77,7 @@ class RepositorioDocumentos(Repositorio):
         operacion = OperacionDocumento(
                 dto_solicitud_datos=solicitud,
                 dto_roles_sesion=roles_sesion
-            ).serializar()
+            ).preparar()
         instruccion, pagina, maximo = mi.basedatos.generar_consulta(
                 plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
                 operacion=operacion
