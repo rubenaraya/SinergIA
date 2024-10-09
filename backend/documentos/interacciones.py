@@ -41,7 +41,7 @@ class ControladorDocumentos(Controlador):
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer(tipo=C.RESPUESTA.WEB)
+        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
