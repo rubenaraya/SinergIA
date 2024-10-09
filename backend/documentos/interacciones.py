@@ -19,8 +19,9 @@ from pysinergia.interacciones import (
 # Importaciones del Microservicio
 from .modelos import (
     OperacionListaDocumentos,
-    OperacionDocumento,
+    OperacionAbrirDocumento,
     OperacionInsertarDocumento,
+    OperacionActualizarDocumento,
 )
 
 # --------------------------------------------------
@@ -54,6 +55,14 @@ class ControladorDocumentos(Controlador):
         codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
+    #TODO: Pendiente
+    def actualizar_documento(mi, peticion:Peticion) -> tuple:
+        ...
+
+    #TODO: Pendiente
+    def eliminar_documento(mi, peticion:Peticion) -> tuple:
+        ...
+
 # --------------------------------------------------
 # Clase: RepositorioDocumentos
 class RepositorioDocumentos(Repositorio):
@@ -68,13 +77,13 @@ class RepositorioDocumentos(Repositorio):
                 plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
                 operacion=operacion
             )
-        datos = mi.basedatos.ver_lista(instruccion, [], pagina, maximo)
+        datos = mi.basedatos.lista_casos(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
-    def recuperar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def ver_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionDocumento(
+        operacion = OperacionAbrirDocumento(
                 dto_solicitud_datos=solicitud,
                 dto_roles_sesion=roles_sesion
             ).preparar()
@@ -82,13 +91,20 @@ class RepositorioDocumentos(Repositorio):
                 plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
                 operacion=operacion
             )
-        datos = mi.basedatos.ver_caso(instruccion, [])
+        datos = mi.basedatos.abrir_caso(instruccion, [])
         mi.basedatos.desconectar()
         return datos
 
+    #TODO: Pendiente
+    def agregar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+        ...
 
     #TODO: Pendiente
-    def insertar_nuevo_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def actualizar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+        ...
+
+    #TODO: Pendiente
+    def eliminar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         ...
 
 # --------------------------------------------------
@@ -134,7 +150,7 @@ class CasosDeUsoDocumentos(CasosDeUso):
     def _ver_documento(mi, solicitud:dict):
         entrega:dict = solicitud.get('_dto_contexto', {})
         if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
-            resultado = mi.repositorio.recuperar_documento(
+            resultado = mi.repositorio.ver_documento(
                     solicitud,
                     roles_sesion=mi.sesion.get('roles')
                 )
@@ -143,9 +159,16 @@ class CasosDeUsoDocumentos(CasosDeUso):
                 entrega['mensaje'] = 'Recurso-no-encontrado'
         return entrega
 
-
     #TODO: Pendiente
     def _agregar_documento(mi, solicitud:dict):
+        ...
+
+    #TODO: Pendiente
+    def _actualizar_documento(mi, solicitud:dict):
+        ...
+
+    #TODO: Pendiente
+    def _eliminar_documento(mi, solicitud:dict):
         ...
 
 ACCIONES = CasosDeUsoDocumentos.ACCIONES

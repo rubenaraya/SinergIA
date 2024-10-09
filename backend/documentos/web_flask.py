@@ -25,6 +25,8 @@ from .modelos import (
     PeticionBuscarDocumentos,
     PeticionRevisarDocumento,
     PeticionAgregarDocumento,
+    PeticionActualizarDocumento,
+    
 )
 from .interacciones import (
     ControladorDocumentos,
@@ -55,17 +57,30 @@ def buscar_documentos(query:PeticionBuscarDocumentos):
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
     return make_response(jsonify(respuesta), codigo)
 
-@enrutador.route('/documentos/<uid>', methods=['GET'])
-def ver_documento(uid):
-    comunicador.procesar_solicitud()
-    peticion = PeticionRevisarDocumento(uid=uid)
-    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
-    return make_response(jsonify(respuesta), codigo)
-
 @enrutador.route('/documentos', methods=['POST'])
 @validate()
 def agregar_documento(body:PeticionAgregarDocumento):
     comunicador.procesar_solicitud()
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
+    return make_response(jsonify(respuesta), codigo)
+
+@enrutador.route('/documentos/<uid>', methods=['GET'])
+def ver_documento(uid:str):
+    comunicador.procesar_solicitud()
+    peticion = PeticionRevisarDocumento(uid=uid)
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
+    return make_response(jsonify(respuesta), codigo)
+
+@enrutador.route('/documentos/<uid>', methods=['PUT'])
+def actualizar_documento(body:PeticionActualizarDocumento, uid:str):
+    comunicador.procesar_solicitud()
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).actualizar_documento(body)
+    return make_response(jsonify(respuesta), codigo)
+
+@enrutador.route('/documentos/<uid>', methods=['DELETE'])
+def eliminar_documento(uid:str):
+    comunicador.procesar_solicitud()
+    peticion = PeticionRevisarDocumento(uid=uid)
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 

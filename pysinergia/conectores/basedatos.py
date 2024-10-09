@@ -19,7 +19,7 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def crear_caso(mi, instruccion:str, parametros:list=[]) -> int:
+    def agregar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         ...
 
     @abstractmethod
@@ -31,11 +31,11 @@ class I_ConectorBasedatos(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def ver_caso(mi, instruccion:str, parametros:list=[]) -> dict:
+    def abrir_caso(mi, instruccion:str, parametros:list=[]) -> dict:
         ...
 
     @abstractmethod
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
+    def lista_casos(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
         ...
 
     @abstractmethod
@@ -426,7 +426,7 @@ class Basedatos(ABC, I_ConectorBasedatos):
             mi.conexion.close()
             mi.conexion = None
 
-    def crear_caso(mi, instruccion:str, parametros:list=[]) -> int:
+    def agregar_caso(mi, instruccion:str, parametros:list=[]) -> int:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         mi.conexion.commit()

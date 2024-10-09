@@ -23,7 +23,6 @@ PENDIENTES:
 - Restaurar el title del Field en cada campo de Peticion, para que aparezca en el mensaje de error de validación de Pydantic (?).
 - Revisar cómo se reemplazan los mensajes de error de Pydantic por sus traducciones en el model_validator de "Respuesta": asegurarse que se muestre el mensaje original si no encuentra traducción.
 
-- Agregar rutas y todo lo demás para: actualizar y eliminar documento
 + Agregar rutas y todo lo demás para: agregar contenidos a un documento.
 """
 
@@ -111,6 +110,42 @@ class DocumentoContenidos(DocumentoIndices):
         json_schema_extra={'permisos':''}
     )
 
+# --------------------------------------------------
+# Modelo: OperacionListaDocumentos
+class OperacionListaDocumentos(DocumentoIndices):
+    uid: Optional[str] = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
+
+# --------------------------------------------------
+# Modelo: OperacionAbrirDocumento
+class OperacionAbrirDocumento(DocumentoContenidos):
+    uid: str = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
+
+# --------------------------------------------------
+# Modelo: OperacionInsertarDocumento
+class OperacionInsertarDocumento(DocumentoContenidos):
+    uid: str = Field(
+        default=secrets.token_hex(8),
+        serialization_alias='uid',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
+
+# --------------------------------------------------
+# Modelo: OperacionActualizarDocumento
+class OperacionActualizarDocumento(DocumentoContenidos):
+    uid: str = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'formato':'text', 'permisos':''}
+    )
+
 
 # --------------------------------------------------
 # Modelo: PeticionBuscarDocumentos
@@ -179,7 +214,6 @@ class PeticionRevisarDocumento(Peticion):
                 )
         return values
 
-
 # --------------------------------------------------
 # Modelo: PeticionIngresarDocumento (TODO: Pendiente)
 class PeticionIngresarDocumento(Peticion):
@@ -188,53 +222,16 @@ class PeticionIngresarDocumento(Peticion):
         validation_alias='titulo',
         json_schema_extra={'permisos':''}
     )
+
 # --------------------------------------------------
 # Modelo: PeticionAgregarDocumento (TODO: Pendiente)
 class PeticionAgregarDocumento(PeticionIngresarDocumento):
     ...
+
 # --------------------------------------------------
-# Modelo: PeticionEditarDocumento (TODO: Pendiente)
-class PeticionEditarDocumento(PeticionIngresarDocumento):
+# Modelo: PeticionActualizarDocumento (TODO: Pendiente)
+class PeticionActualizarDocumento(PeticionIngresarDocumento):
     ...
-
-
-
-# --------------------------------------------------
-# Modelo: OperacionListaDocumentos
-class OperacionListaDocumentos(DocumentoIndices):
-    uid: Optional[str] = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
-
-# --------------------------------------------------
-# Modelo: OperacionDocumento
-class OperacionDocumento(DocumentoContenidos):
-    uid: str = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
-
-
-
-# --------------------------------------------------
-# Modelo: OperacionInsertarDocumento (TODO: Pendiente)...?
-class OperacionInsertarDocumento(DocumentoContenidos):
-    uid: str = Field(
-        default=secrets.token_hex(8),
-        serialization_alias='uid',
-        json_schema_extra={'formato':'text', 'permisos':''}
-    )
-# --------------------------------------------------
-# Modelo: OperacionActualizarDocumento (TODO: Pendiente)...?
-class OperacionActualizarDocumento(DocumentoContenidos):
-    uid: str = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'formato':'text', 'permisos':''}
-    )
 
 
 """

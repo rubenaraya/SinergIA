@@ -37,7 +37,7 @@ class BasedatosSqlite(Basedatos):
                 return True
         return False
 
-    def ver_lista(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
+    def lista_casos(mi, instruccion:str, parametros:list=[], pagina:int=1, maximo:int=25) -> dict:
         cursor = mi.conexion.cursor()
         sql_total = f"SELECT COUNT(*) FROM ({instruccion})"
         cursor.execute(sql_total, parametros)
@@ -76,7 +76,7 @@ class BasedatosSqlite(Basedatos):
         }
         return datos
 
-    def ver_caso(mi, instruccion:str, parametros:list=[]) -> dict:
+    def abrir_caso(mi, instruccion:str, parametros:list=[]) -> dict:
         cursor = mi.conexion.cursor()
         cursor.execute(instruccion, parametros)
         cursor.row_factory = sqlite3.Row
