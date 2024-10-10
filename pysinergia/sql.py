@@ -378,14 +378,14 @@ class GeneradorSQL(ABC):
 
     # Métodos públicos
 
-    def generar_consulta(mi, plantilla:str=None, operacion:dict={}) -> tuple:
-        if not plantilla or not operacion:
+    def generar_consulta(mi, plantilla:str=None, operador:dict={}) -> tuple:
+        if not plantilla or not operador:
             return None
         mostrar:list[str] = []
         filtrar:list[str] = []
         ordenar:list[str] = []
-        dto_solicitud:dict = operacion.get('_dto_solicitud', {})
-        dto_fuente = operacion.get('_dto_fuente', '')
+        dto_solicitud:dict = operador.get('_dto_solicitud', {})
+        dto_fuente = operador.get('_dto_fuente', '')
         pagina = int(dto_solicitud.get('pagina', 1))
         maximo = int(dto_solicitud.get('maximo', 25))
         plantilla = plantilla.replace('{origen_datos}', dto_fuente)
@@ -408,7 +408,7 @@ class GeneradorSQL(ABC):
                     filtrado = mi._crear_filtro(filtro)(campo, valor)
                     if filtrado:
                         filtrar.append(filtrado)
-        for clave, contenido in operacion.items():
+        for clave, contenido in operador.items():
             if isinstance(contenido, dict) and not str(clave).startswith('_dto_'): #clave not in ['_dto_fuente','_dto_solicitud','_dto_roles']
                 campo = clave
                 entrada = contenido.get('entrada', '')
@@ -426,8 +426,8 @@ class GeneradorSQL(ABC):
         plantilla = plantilla.replace('{ordenar}', ordenar_texto)
         return (plantilla, pagina, maximo)
 
-    def generar_comando(mi, plantilla:str, operacion:dict={}, campo_uid:str='id') -> tuple:
-        if not plantilla or not operacion:
+    def generar_comando(mi, plantilla:str, operador:dict={}, campo_uid:str='id') -> tuple:
+        if not plantilla or not operador:
             return None
 
         def _formato_text(valor):
@@ -469,10 +469,10 @@ class GeneradorSQL(ABC):
         parametros:list = []
         campos:list[str] = []
         marcas:list[str] = []
-        dto_solicitud:dict = operacion.get('_dto_solicitud', {})
-        dto_fuente = operacion.get('_dto_fuente', '')
+        dto_solicitud:dict = operador.get('_dto_solicitud', {})
+        dto_fuente = operador.get('_dto_fuente', '')
         plantilla = plantilla.replace('{origen_datos}', dto_fuente)
-        for campo, contenido in operacion.items():
+        for campo, contenido in operador.items():
             if isinstance(contenido, dict) and not str(campo).startswith('_dto_') and dto_fuente:
                 salida = contenido.get('salida', '')
                 entidad = contenido.get('entidad', '')

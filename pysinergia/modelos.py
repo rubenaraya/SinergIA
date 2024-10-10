@@ -22,8 +22,8 @@ from pysinergia.globales import (
 )
 
 # --------------------------------------------------
-# Modelo: Peticion (Validador de Entradas)
-class Peticion(BaseModel):
+# Modelo: Validador
+class Validador(BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles: Optional[str] = ''
 
@@ -59,10 +59,10 @@ class Peticion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Operacion (Organizador de Salidas)
-class Operacion(BaseModel):
+# Modelo: Operador
+class Operador(BaseModel):
     dto_solicitud: dict = {}
-    dto_roles: Optional[str] = None
+    dto_roles: Optional[str] = ''
     dto_fuente: Optional[str] = ''
 
     def preparar(mi) -> dict:
@@ -89,8 +89,8 @@ class Operacion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Respuesta (Formateador de Respuestas)
-class Respuesta(BaseModel):
+# Modelo: Presentador
+class Presentador(BaseModel):
     model_config = ConfigDict()
 
     T: Optional[object] = None
@@ -113,7 +113,7 @@ class Respuesta(BaseModel):
 
     @model_validator(mode='after')
     @classmethod
-    def model_validator(cls, valores:Self) -> 'Respuesta':
+    def model_validator(cls, valores:Self) -> 'Presentador':
         from collections import ChainMap
 
         def _filtrar_diccionario(diccionario:dict):
@@ -162,7 +162,7 @@ class Respuesta(BaseModel):
                     print(e)
         return valores
 
-    def extraer(mi, tipo:str=Constantes.RESPUESTA.BASE) -> dict:
+    def componer(mi, tipo:str=Constantes.RESPUESTA.BASE) -> dict:
         filtrar = {
             Constantes.RESPUESTA.BASE: ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web'),
             Constantes.RESPUESTA.API: ('T','D','cookies','fecha','sesion','url','web'),

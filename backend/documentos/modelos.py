@@ -9,8 +9,6 @@ from typing import Optional
 from pydantic import (
     Field,
     model_validator,
-    BaseModel,
-    ValidationError,
 )
 
 # Importaciones de PySinergIA
@@ -19,19 +17,19 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.modelos import (
-    Peticion,
-    Operacion,
+    Validador,
+    Operador,
 )
 
 """
 PENDIENTES:
-- Restaurar el title del Field en cada campo de Peticion, para que aparezca en el mensaje de error de validación de Pydantic?.
+- Restaurar el title del Field en cada campo de Validador, para que aparezca en el mensaje de error de validación de Pydantic?.
 + Agregar rutas y todo lo demás para: agregar contenidos a un documento.
 """
 
 # --------------------------------------------------
 # Modelo: DocumentoIndices
-class DocumentoIndices(Operacion):
+class DocumentoIndices(Operador):
     dto_fuente: str = Field('catalogo')
     uid: Optional[str] = Field(
         default=None,
@@ -96,7 +94,7 @@ class DocumentoIndices(Operacion):
 
 # --------------------------------------------------
 # Modelo: DocumentoContenidos
-class DocumentoContenidos(Operacion):
+class DocumentoContenidos(Operador):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
@@ -119,18 +117,18 @@ class DocumentoContenidos(Operacion):
     )
 
 # --------------------------------------------------
-# Modelo: OperacionListarDocumentos
-class OperacionListarDocumentos(DocumentoIndices):
+# Modelo: OperadorListarDocumentos
+class OperadorListarDocumentos(DocumentoIndices):
     ...
 
 # --------------------------------------------------
-# Modelo: OperacionAbrirDocumento
-class OperacionAbrirDocumento(DocumentoIndices, DocumentoContenidos):
+# Modelo: OperadorAbrirDocumento
+class OperadorAbrirDocumento(DocumentoIndices, DocumentoContenidos):
     ...
 
 # --------------------------------------------------
-# Modelo: OperacionAgregarDocumento
-class OperacionAgregarDocumento(DocumentoIndices):
+# Modelo: OperadorAgregarDocumento
+class OperadorAgregarDocumento(DocumentoIndices):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',
@@ -138,13 +136,13 @@ class OperacionAgregarDocumento(DocumentoIndices):
     )
 
 # --------------------------------------------------
-# Modelo: OperacionActualizarDocumento
-class OperacionActualizarDocumento(DocumentoIndices, DocumentoContenidos):
+# Modelo: OperadorActualizarDocumento
+class OperadorActualizarDocumento(DocumentoIndices, DocumentoContenidos):
     ...
 
 # --------------------------------------------------
-# Modelo: PeticionBuscarDocumentos
-class PeticionBuscarDocumentos(Peticion):
+# Modelo: ValidadorBuscarDocumentos
+class ValidadorBuscarDocumentos(Validador):
     titulo: Optional[str] = Field(
         default=None,
         max_length=200,
@@ -192,8 +190,8 @@ class PeticionBuscarDocumentos(Peticion):
     pagina: int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
-# Modelo: PeticionConsultarDocumento
-class PeticionConsultarDocumento(Peticion):
+# Modelo: ValidadorConsultarDocumento
+class ValidadorConsultarDocumento(Validador):
     uid: str = Field(
         validation_alias='uid',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
@@ -202,19 +200,16 @@ class PeticionConsultarDocumento(Peticion):
     def validar_uid(cls, values):
         uid = values.get('uid')
         if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
-
             raise ErrorPersonalizado(
                     mensaje='El-uid-no-es-valido',
                     codigo=C.ESTADO._400_NO_VALIDO,
                     nivel_evento=C.REGISTRO.DEBUG
                 )
-
-            #raise ValidationError(msg='El-uid-no-es-valido',type='value_error', loc=('uid',))
         return values
 
 # --------------------------------------------------
-# Modelo: PeticionDocumento
-class PeticionDocumento(Peticion):
+# Modelo: ValidadorDocumento (TODO: Pendiente)
+class ValidadorDocumento(Validador):
     titulo: str = Field(
         max_length=200,
         validation_alias='titulo',
@@ -222,13 +217,13 @@ class PeticionDocumento(Peticion):
     )
 
 # --------------------------------------------------
-# Modelo: PeticionAgregarDocumento (TODO: Pendiente)
-class PeticionAgregarDocumento(PeticionDocumento):
+# Modelo: ValidadorAgregarDocumento (TODO: Pendiente)
+class ValidadorAgregarDocumento(ValidadorDocumento):
     ...
 
 # --------------------------------------------------
-# Modelo: PeticionActualizarDocumento (TODO: Pendiente)
-class PeticionActualizarDocumento(PeticionDocumento):
+# Modelo: ValidadorActualizarDocumento (TODO: Pendiente)
+class ValidadorActualizarDocumento(ValidadorDocumento):
     ...
 
 

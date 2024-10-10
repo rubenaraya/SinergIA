@@ -7,8 +7,8 @@ from pysinergia.globales import (
     Constantes as C,
 )
 from pysinergia.modelos import (
-    Peticion,
-    Respuesta,
+    Validador,
+    Presentador,
 )
 from pysinergia.sql import GeneradorSQL
 from pysinergia.interacciones import (
@@ -19,49 +19,49 @@ from pysinergia.interacciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    OperacionListarDocumentos,
-    OperacionAbrirDocumento,
-    OperacionAgregarDocumento,
-    OperacionActualizarDocumento,
+    OperadorListarDocumentos,
+    OperadorAbrirDocumento,
+    OperadorAgregarDocumento,
+    OperadorActualizarDocumento,
 )
 
 # --------------------------------------------------
 # Clase: ControladorDocumentos
 class ControladorDocumentos(Controlador):
 
-    def buscar_documentos(mi, peticion:Peticion) -> tuple:
+    def buscar_documentos(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.convertir())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
+        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
-    def ver_documento(mi, peticion:Peticion) -> tuple:
+    def ver_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
+        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
-    def agregar_documento(mi, peticion:Peticion) -> tuple:
+    def agregar_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
-        respuesta = Respuesta(**resultado, T=mi.comunicador.traductor).extraer()
+        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
     #TODO: Pendiente
-    def actualizar_documento(mi, peticion:Peticion) -> tuple:
+    def actualizar_documento(mi, peticion:Validador) -> tuple:
         ...
 
     #TODO: Pendiente
-    def eliminar_documento(mi, peticion:Peticion) -> tuple:
+    def eliminar_documento(mi, peticion:Validador) -> tuple:
         ...
 
 # --------------------------------------------------
@@ -71,8 +71,8 @@ class RepositorioDocumentos(Repositorio):
     def consultar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operacion)
+        operador = OperadorListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operador)
         datos = mi.basedatos.lista_casos(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
@@ -80,10 +80,13 @@ class RepositorioDocumentos(Repositorio):
     def consultar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operacion)
+        operador = OperadorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operador)
         datos = mi.basedatos.abrir_caso(instruccion, [])
         mi.basedatos.desconectar()
+        """
+        
+        """
         return datos
 
     #TODO: Pendiente

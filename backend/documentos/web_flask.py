@@ -22,10 +22,10 @@ from pysinergia.interfaces.flask import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    PeticionBuscarDocumentos,
-    PeticionConsultarDocumento,
-    PeticionAgregarDocumento,
-    PeticionActualizarDocumento,
+    ValidadorBuscarDocumentos,
+    ValidadorConsultarDocumento,
+    ValidadorAgregarDocumento,
+    ValidadorActualizarDocumento,
     
 )
 from .interacciones import (
@@ -52,14 +52,14 @@ enrutador = Blueprint(
 
 @enrutador.route('/documentos', methods=['GET'])
 @validate()
-def buscar_documentos(query:PeticionBuscarDocumentos):
+def buscar_documentos(query:ValidadorBuscarDocumentos):
     comunicador.procesar_solicitud()
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).buscar_documentos(query)
     return make_response(jsonify(respuesta), codigo)
 
 @enrutador.route('/documentos', methods=['POST'])
 @validate()
-def agregar_documento(body:PeticionAgregarDocumento):
+def agregar_documento(body:ValidadorAgregarDocumento):
     comunicador.procesar_solicitud()
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
     return make_response(jsonify(respuesta), codigo)
@@ -67,12 +67,12 @@ def agregar_documento(body:PeticionAgregarDocumento):
 @enrutador.route('/documentos/<uid>', methods=['GET'])
 def ver_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = PeticionConsultarDocumento(uid=uid)
+    peticion = ValidadorConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
 @enrutador.route('/documentos/<uid>', methods=['PUT'])
-def actualizar_documento(body:PeticionActualizarDocumento, uid:str):
+def actualizar_documento(body:ValidadorActualizarDocumento, uid:str):
     comunicador.procesar_solicitud()
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).actualizar_documento(body)
     return make_response(jsonify(respuesta), codigo)
@@ -80,7 +80,7 @@ def actualizar_documento(body:PeticionActualizarDocumento, uid:str):
 @enrutador.route('/documentos/<uid>', methods=['DELETE'])
 def eliminar_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = PeticionConsultarDocumento(uid=uid)
+    peticion = ValidadorConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
