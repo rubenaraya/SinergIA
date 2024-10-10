@@ -19,10 +19,10 @@ from pysinergia.interacciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    OperadorListarDocumentos,
-    OperadorAbrirDocumento,
-    OperadorAgregarDocumento,
-    OperadorActualizarDocumento,
+    ConstructorListarDocumentos,
+    ConstructorAbrirDocumento,
+    ConstructorAgregarDocumento,
+    ConstructorActualizarDocumento,
 )
 
 # --------------------------------------------------
@@ -71,8 +71,8 @@ class RepositorioDocumentos(Repositorio):
     def consultar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operador = OperadorListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operador)
+        constructor = ConstructorListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, constructor)
         datos = mi.basedatos.lista_casos(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
@@ -80,8 +80,8 @@ class RepositorioDocumentos(Repositorio):
     def consultar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operador = OperadorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operador)
+        constructor = ConstructorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, constructor)
         datos = mi.basedatos.abrir_caso(instruccion, [])
         mi.basedatos.desconectar()
         """

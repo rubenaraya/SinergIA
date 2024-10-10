@@ -18,7 +18,7 @@ from pysinergia.globales import (
 )
 from pysinergia.modelos import (
     Validador,
-    Operador,
+    Constructor,
 )
 
 """
@@ -29,7 +29,7 @@ PENDIENTES:
 
 # --------------------------------------------------
 # Modelo: DocumentoIndices
-class DocumentoIndices(Operador):
+class DocumentoIndices(Constructor):
     dto_fuente: str = Field('catalogo')
     uid: Optional[str] = Field(
         default=None,
@@ -94,7 +94,7 @@ class DocumentoIndices(Operador):
 
 # --------------------------------------------------
 # Modelo: DocumentoContenidos
-class DocumentoContenidos(Operador):
+class DocumentoContenidos(Constructor):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
@@ -116,19 +116,21 @@ class DocumentoContenidos(Operador):
         json_schema_extra={'permisos':''}
     )
 
+
+
 # --------------------------------------------------
-# Modelo: OperadorListarDocumentos
-class OperadorListarDocumentos(DocumentoIndices):
+# Modelo: ConstructorListarDocumentos
+class ConstructorListarDocumentos(DocumentoIndices):
     ...
 
 # --------------------------------------------------
-# Modelo: OperadorAbrirDocumento
-class OperadorAbrirDocumento(DocumentoIndices, DocumentoContenidos):
+# Modelo: ConstructorAbrirDocumento
+class ConstructorAbrirDocumento(DocumentoIndices, DocumentoContenidos):
     ...
 
 # --------------------------------------------------
-# Modelo: OperadorAgregarDocumento
-class OperadorAgregarDocumento(DocumentoIndices):
+# Modelo: ConstructorAgregarDocumento
+class ConstructorAgregarDocumento(DocumentoIndices):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',
@@ -136,9 +138,11 @@ class OperadorAgregarDocumento(DocumentoIndices):
     )
 
 # --------------------------------------------------
-# Modelo: OperadorActualizarDocumento
-class OperadorActualizarDocumento(DocumentoIndices, DocumentoContenidos):
+# Modelo: ConstructorActualizarDocumento
+class ConstructorActualizarDocumento(DocumentoIndices, DocumentoContenidos):
     ...
+
+
 
 # --------------------------------------------------
 # Modelo: ValidadorBuscarDocumentos

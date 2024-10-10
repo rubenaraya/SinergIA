@@ -59,13 +59,13 @@ class Validador(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Operador
-class Operador(BaseModel):
+# Modelo: Constructor
+class Constructor(BaseModel):
     dto_solicitud: dict = {}
     dto_roles: Optional[str] = ''
     dto_fuente: Optional[str] = ''
 
-    def preparar(mi) -> dict:
+    def organizar(mi) -> dict:
         serializado:dict = {}
         modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D'))
         for field_name, field in mi.model_fields.items():
