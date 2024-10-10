@@ -55,6 +55,7 @@ class Configuracion(ABC, BaseSettings):
     BASEDATOS_RUTA: str = ''
     BASEDATOS_USUARIO: str = ''
     BASEDATOS_PASSWORD: str = ''
+    BASEDATOS_MARCA: str = ''
     DISCO_FUENTE: str = ''
     DISCO_CLASE: str = ''
     DISCO_NOMBRE: str = ''
@@ -95,6 +96,7 @@ class Configuracion(ABC, BaseSettings):
             'ruta': mi.BASEDATOS_RUTA,
             'usuario': mi.BASEDATOS_USUARIO,
             'password': mi.BASEDATOS_PASSWORD,
+            'marca': mi.BASEDATOS_MARCA,
         })
     def disco(mi) -> dict:
         return dict({

@@ -311,3 +311,4 @@ def concluir_estado(estado:int) -> str:
     if estado < 500:
         return Constantes.CONCLUSION.ALERTA
     return Constantes.CONCLUSION.ERROR
+

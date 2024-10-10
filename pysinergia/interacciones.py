@@ -153,3 +153,9 @@ class CasosDeUso(ABC):
                 metadatos[clave] = valor
         return metadatos
 
+    def preparar_entrega(mi, solicitud:dict=None) -> dict:
+        entrega:dict = {}
+        if isinstance(solicitud, dict):
+            entrega = solicitud.get('_dto_contexto', {})
+        return entrega
+

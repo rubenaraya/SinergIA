@@ -10,6 +10,7 @@ from pysinergia.modelos import (
     Peticion,
     Respuesta,
 )
+from pysinergia.sql import GeneradorSQL
 from pysinergia.interacciones import (
     Controlador,
     Repositorio,
@@ -18,9 +19,9 @@ from pysinergia.interacciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
-    OperacionListaDocumentos,
+    OperacionListarDocumentos,
     OperacionAbrirDocumento,
-    OperacionInsertarDocumento,
+    OperacionAgregarDocumento,
     OperacionActualizarDocumento,
 )
 
@@ -67,44 +68,34 @@ class ControladorDocumentos(Controlador):
 # Clase: RepositorioDocumentos
 class RepositorioDocumentos(Repositorio):
 
-    def recuperar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def consultar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionListaDocumentos(
-                dto_solicitud_datos=solicitud,
-                dto_roles_sesion=roles_sesion
-            ).preparar()
-        instruccion, pagina, maximo = mi.basedatos.generar_consulta(
-                plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-                operacion=operacion
-            )
+        operacion = OperacionListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operacion)
         datos = mi.basedatos.lista_casos(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
 
-    def ver_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def consultar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
-        operacion = OperacionAbrirDocumento(
-                dto_solicitud_datos=solicitud,
-                dto_roles_sesion=roles_sesion
-            ).preparar()
-        instruccion, pagina, maximo = mi.basedatos.generar_consulta(
-                plantilla=mi.basedatos.INSTRUCCION.SELECT_CON_FILTROS,
-                operacion=operacion
-            )
+        operacion = OperacionAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).preparar()
+        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, operacion)
         datos = mi.basedatos.abrir_caso(instruccion, [])
         mi.basedatos.desconectar()
         return datos
 
     #TODO: Pendiente
-    def agregar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def agregar_documento_nuevo(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         ...
 
     #TODO: Pendiente
-    def actualizar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def actualizar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         ...
 
     #TODO: Pendiente
-    def eliminar_documento(mi, solicitud:dict, roles_sesion:str=None) -> dict:
+    def eliminar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
         ...
 
 # --------------------------------------------------
@@ -120,55 +111,55 @@ class CasosDeUsoDocumentos(CasosDeUso):
         BUSCAR = 1
         AGREGAR = 2
         VER = 3
+        ACTUALIZAR = 4
+        ELIMINAR = 5
 
     class PERMISOS:
         BUSCAR = ''
         AGREGAR = ''
         VER = ''
+        ACTUALIZAR = ''
+        ELIMINAR = ''
 
     # Métodos
 
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
         realizar = {
-            mi.ACCIONES.BUSCAR: mi._buscar_documentos,
-            mi.ACCIONES.AGREGAR: mi._agregar_documento,
-            mi.ACCIONES.VER: mi._ver_documento,
+            mi.ACCIONES.BUSCAR: mi._buscar,
+            mi.ACCIONES.AGREGAR: mi._agregar,
+            mi.ACCIONES.VER: mi._ver,
+            mi.ACCIONES.ACTUALIZAR: mi._actualizar,
+            mi.ACCIONES.ELIMINAR: mi._eliminar,
         }
         return realizar.get(accion)(solicitud)
 
-    def _buscar_documentos(mi, solicitud:dict):
-        entrega:dict = solicitud.get('_dto_contexto', {})
+    def _buscar(mi, solicitud:dict):
+        entrega = mi.preparar_entrega(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
-            resultado = mi.repositorio.recuperar_lista_documentos(
-                    solicitud,
-                    roles_sesion=mi.sesion.get('roles')
-                )
+            resultado = mi.repositorio.consultar_lista_documentos(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
             entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
         return entrega
 
-    def _ver_documento(mi, solicitud:dict):
-        entrega:dict = solicitud.get('_dto_contexto', {})
+    def _ver(mi, solicitud:dict):
+        entrega = mi.preparar_entrega(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
-            resultado = mi.repositorio.ver_documento(
-                    solicitud,
-                    roles_sesion=mi.sesion.get('roles')
-                )
+            resultado = mi.repositorio.consultar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
             if len(resultado) == 0:
                 entrega['mensaje'] = 'Recurso-no-encontrado'
         return entrega
 
     #TODO: Pendiente
-    def _agregar_documento(mi, solicitud:dict):
+    def _agregar(mi, solicitud:dict):
         ...
 
     #TODO: Pendiente
-    def _actualizar_documento(mi, solicitud:dict):
+    def _actualizar(mi, solicitud:dict):
         ...
 
     #TODO: Pendiente
-    def _eliminar_documento(mi, solicitud:dict):
+    def _eliminar(mi, solicitud:dict):
         ...
 
 ACCIONES = CasosDeUsoDocumentos.ACCIONES

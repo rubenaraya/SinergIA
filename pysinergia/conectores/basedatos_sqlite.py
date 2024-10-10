@@ -14,7 +14,6 @@ from pysinergia.conectores.basedatos import (
 class BasedatosSqlite(Basedatos):
     def __init__(mi):
         super().__init__()
-        mi.marca:str = '?'
         mi.conexion:sqlite3.Connection = None
 
     def conectar(mi, config:dict) -> bool:

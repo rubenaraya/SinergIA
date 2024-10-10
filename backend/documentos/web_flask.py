@@ -23,7 +23,7 @@ from pysinergia.interfaces.flask import (
 # Importaciones del Microservicio
 from .modelos import (
     PeticionBuscarDocumentos,
-    PeticionRevisarDocumento,
+    PeticionConsultarDocumento,
     PeticionAgregarDocumento,
     PeticionActualizarDocumento,
     
@@ -67,7 +67,7 @@ def agregar_documento(body:PeticionAgregarDocumento):
 @enrutador.route('/documentos/<uid>', methods=['GET'])
 def ver_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = PeticionRevisarDocumento(uid=uid)
+    peticion = PeticionConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
@@ -80,7 +80,7 @@ def actualizar_documento(body:PeticionActualizarDocumento, uid:str):
 @enrutador.route('/documentos/<uid>', methods=['DELETE'])
 def eliminar_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = PeticionRevisarDocumento(uid=uid)
+    peticion = PeticionConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 

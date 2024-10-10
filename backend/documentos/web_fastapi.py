@@ -26,7 +26,7 @@ from pysinergia.interfaces.fastapi import (
 # Importaciones del Microservicio
 from .modelos import (
     PeticionBuscarDocumentos,
-    PeticionRevisarDocumento,
+    PeticionConsultarDocumento,
     PeticionAgregarDocumento,
     PeticionActualizarDocumento,
 )
@@ -60,7 +60,7 @@ async def agregar_documento(request:Request, peticion:PeticionAgregarDocumento=B
 @enrutador.get('/documentos/{uid}')
 async def ver_documento(request:Request, uid:str):
     await comunicador.procesar_solicitud(request)
-    peticion = PeticionRevisarDocumento(uid=uid)
+    peticion = PeticionConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
@@ -73,7 +73,7 @@ async def actualizar_documento(request:Request, uid:str, peticion:PeticionActual
 @enrutador.delete('/documentos/{uid}')
 async def eliminar_documento(request:Request, uid:str):
     await comunicador.procesar_solicitud(request)
-    peticion = PeticionRevisarDocumento(uid=uid)
+    peticion = PeticionConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 

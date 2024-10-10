@@ -18,7 +18,6 @@ from pysinergia.conectores.basedatos import (
 class BasedatosMysql(Basedatos):
     def __init__(mi):
         super().__init__()
-        mi.marca = '%s'
         mi.conexion:MySQLConnection = None
 
     def conectar(mi, config:dict) -> bool:
@@ -86,3 +85,4 @@ class BasedatosMysql(Basedatos):
         if len(caso) > 0:
             return caso[0]
         return {}
+

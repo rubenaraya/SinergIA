@@ -25,7 +25,7 @@ from pysinergia.globales import (
 # Modelo: Peticion (Validador de Entradas)
 class Peticion(BaseModel):
     dto_contexto: Optional[dict] = {}
-    dto_roles_sesion: Optional[str] = ''
+    dto_roles: Optional[str] = ''
 
     def adjuntar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
@@ -41,7 +41,7 @@ class Peticion(BaseModel):
                     valor = modelo.get(field_name)
                     if field.json_schema_extra:
                         permisos = field.json_schema_extra.get('permisos', '')
-                        if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
+                        if autorizar_acceso(permisos=permisos, roles=mi.dto_roles):
                             serializado[field_name] = {
                                 'campo': field_name,
                                 'entrada': entrada,
@@ -61,9 +61,9 @@ class Peticion(BaseModel):
 # --------------------------------------------------
 # Modelo: Operacion (Organizador de Salidas)
 class Operacion(BaseModel):
-    dto_solicitud_datos: Optional[dict] = {}
-    dto_roles_sesion: Optional[str] = ''
-    dto_origen_datos: Optional[str] = ''
+    dto_solicitud: dict = {}
+    dto_roles: Optional[str] = None
+    dto_fuente: Optional[str] = ''
 
     def preparar(mi) -> dict:
         serializado:dict = {}
@@ -75,7 +75,7 @@ class Operacion(BaseModel):
                     salida = field.serialization_alias if field.serialization_alias else ''
                     if field.json_schema_extra:
                         permisos = field.json_schema_extra.get('permisos', '')
-                        if autorizar_acceso(permisos=permisos, roles=mi.dto_roles_sesion):
+                        if autorizar_acceso(permisos=permisos, roles=mi.dto_roles):
                             serializado[field_name] = {
                                 'campo': field_name,
                                 'entrada': entrada or '',
@@ -89,7 +89,7 @@ class Operacion(BaseModel):
         return serializado
 
 # --------------------------------------------------
-# Modelo: Respuesta (Generador de Respuestas)
+# Modelo: Respuesta (Formateador de Respuestas)
 class Respuesta(BaseModel):
     model_config = ConfigDict()
 
@@ -145,7 +145,7 @@ class Respuesta(BaseModel):
                         for error in valores.detalles:
                             if isinstance(error, dict):
                                 try:
-                                    mensaje:str = _(error.get('_type',''))
+                                    mensaje:str = _(error.get('_msg',''))
                                     ctx = error.get('_ctx', None)
                                     detalles.append({
                                         'clave': error.get('clave'),

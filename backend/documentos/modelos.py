@@ -6,12 +6,17 @@ import secrets
 from typing import Optional
 
 # Importaciones de Pydantic
-from pydantic import Field, model_validator
+from pydantic import (
+    Field,
+    model_validator,
+    BaseModel,
+    ValidationError,
+)
 
 # Importaciones de PySinergIA
 from pysinergia.globales import (
-    ErrorPersonalizado,
     Constantes as C,
+    ErrorPersonalizado,
 )
 from pysinergia.modelos import (
     Peticion,
@@ -20,16 +25,19 @@ from pysinergia.modelos import (
 
 """
 PENDIENTES:
-- Restaurar el title del Field en cada campo de Peticion, para que aparezca en el mensaje de error de validación de Pydantic (?).
-- Revisar cómo se reemplazan los mensajes de error de Pydantic por sus traducciones en el model_validator de "Respuesta": asegurarse que se muestre el mensaje original si no encuentra traducción.
-
+- Restaurar el title del Field en cada campo de Peticion, para que aparezca en el mensaje de error de validación de Pydantic?.
 + Agregar rutas y todo lo demás para: agregar contenidos a un documento.
 """
 
 # --------------------------------------------------
 # Modelo: DocumentoIndices
 class DocumentoIndices(Operacion):
-    dto_origen_datos: Optional[str] = Field('catalogo')
+    dto_fuente: str = Field('catalogo')
+    uid: Optional[str] = Field(
+        default=None,
+        serialization_alias='uid',
+        json_schema_extra={'permisos':''}
+    )
     titulo: Optional[str] = Field(
         default=None,
         serialization_alias='titulo',
@@ -88,7 +96,7 @@ class DocumentoIndices(Operacion):
 
 # --------------------------------------------------
 # Modelo: DocumentoContenidos
-class DocumentoContenidos(DocumentoIndices):
+class DocumentoContenidos(Operacion):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
@@ -111,26 +119,18 @@ class DocumentoContenidos(DocumentoIndices):
     )
 
 # --------------------------------------------------
-# Modelo: OperacionListaDocumentos
-class OperacionListaDocumentos(DocumentoIndices):
-    uid: Optional[str] = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
+# Modelo: OperacionListarDocumentos
+class OperacionListarDocumentos(DocumentoIndices):
+    ...
 
 # --------------------------------------------------
 # Modelo: OperacionAbrirDocumento
-class OperacionAbrirDocumento(DocumentoContenidos):
-    uid: str = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'permisos':''}
-    )
+class OperacionAbrirDocumento(DocumentoIndices, DocumentoContenidos):
+    ...
 
 # --------------------------------------------------
-# Modelo: OperacionInsertarDocumento
-class OperacionInsertarDocumento(DocumentoContenidos):
+# Modelo: OperacionAgregarDocumento
+class OperacionAgregarDocumento(DocumentoIndices):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',
@@ -139,13 +139,8 @@ class OperacionInsertarDocumento(DocumentoContenidos):
 
 # --------------------------------------------------
 # Modelo: OperacionActualizarDocumento
-class OperacionActualizarDocumento(DocumentoContenidos):
-    uid: str = Field(
-        default=None,
-        serialization_alias='uid',
-        json_schema_extra={'formato':'text', 'permisos':''}
-    )
-
+class OperacionActualizarDocumento(DocumentoIndices, DocumentoContenidos):
+    ...
 
 # --------------------------------------------------
 # Modelo: PeticionBuscarDocumentos
@@ -197,8 +192,8 @@ class PeticionBuscarDocumentos(Peticion):
     pagina: int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
-# Modelo: PeticionRevisarDocumento
-class PeticionRevisarDocumento(Peticion):
+# Modelo: PeticionConsultarDocumento
+class PeticionConsultarDocumento(Peticion):
     uid: str = Field(
         validation_alias='uid',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
@@ -207,16 +202,19 @@ class PeticionRevisarDocumento(Peticion):
     def validar_uid(cls, values):
         uid = values.get('uid')
         if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
+
             raise ErrorPersonalizado(
                     mensaje='El-uid-no-es-valido',
                     codigo=C.ESTADO._400_NO_VALIDO,
                     nivel_evento=C.REGISTRO.DEBUG
                 )
+
+            #raise ValidationError(msg='El-uid-no-es-valido',type='value_error', loc=('uid',))
         return values
 
 # --------------------------------------------------
-# Modelo: PeticionIngresarDocumento (TODO: Pendiente)
-class PeticionIngresarDocumento(Peticion):
+# Modelo: PeticionDocumento
+class PeticionDocumento(Peticion):
     titulo: str = Field(
         max_length=200,
         validation_alias='titulo',
@@ -225,12 +223,12 @@ class PeticionIngresarDocumento(Peticion):
 
 # --------------------------------------------------
 # Modelo: PeticionAgregarDocumento (TODO: Pendiente)
-class PeticionAgregarDocumento(PeticionIngresarDocumento):
+class PeticionAgregarDocumento(PeticionDocumento):
     ...
 
 # --------------------------------------------------
 # Modelo: PeticionActualizarDocumento (TODO: Pendiente)
-class PeticionActualizarDocumento(PeticionIngresarDocumento):
+class PeticionActualizarDocumento(PeticionDocumento):
     ...
 
 
