@@ -72,7 +72,7 @@ class RepositorioDocumentos(Repositorio):
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
         constructor = ConstructorListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, constructor)
+        instruccion, pagina, maximo = sql.generar_consulta(sql.CONSULTA.SELECT_FILTRADO, constructor)
         datos = mi.basedatos.lista_casos(instruccion, [], pagina, maximo)
         mi.basedatos.desconectar()
         return datos
@@ -81,12 +81,9 @@ class RepositorioDocumentos(Repositorio):
         sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
         mi.basedatos.conectar(mi.configuracion.basedatos())
         constructor = ConstructorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
-        instruccion, pagina, maximo = sql.generar_consulta(sql.INSTRUCCION.SELECT_FILTRADO, constructor)
+        instruccion, pagina, maximo = sql.generar_consulta(sql.CONSULTA.SELECT_FILTRADO, constructor)
         datos = mi.basedatos.abrir_caso(instruccion, [])
         mi.basedatos.desconectar()
-        """
-        
-        """
         return datos
 
     #TODO: Pendiente

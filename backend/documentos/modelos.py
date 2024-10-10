@@ -28,9 +28,9 @@ PENDIENTES:
 """
 
 # --------------------------------------------------
-# Modelo: DocumentoIndices
-class DocumentoIndices(Constructor):
-    dto_fuente: str = Field('catalogo')
+# Modelo: DocumentoBase
+class DocumentoBase(Constructor):
+    dto_fuente:str = 'catalogo'
     uid: Optional[str] = Field(
         default=None,
         serialization_alias='uid',
@@ -89,12 +89,12 @@ class DocumentoIndices(Constructor):
     estado: Optional[str] = Field(
         default='Activo',
         serialization_alias='estado',
-        json_schema_extra={'formato':'text', 'permisos':''}
+        json_schema_extra={'permisos':''}
     )
 
 # --------------------------------------------------
-# Modelo: DocumentoContenidos
-class DocumentoContenidos(Constructor):
+# Modelo: DocumentoExtra
+class DocumentoExtra(Constructor):
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
@@ -120,17 +120,18 @@ class DocumentoContenidos(Constructor):
 
 # --------------------------------------------------
 # Modelo: ConstructorListarDocumentos
-class ConstructorListarDocumentos(DocumentoIndices):
+class ConstructorListarDocumentos(DocumentoBase):
     ...
 
 # --------------------------------------------------
 # Modelo: ConstructorAbrirDocumento
-class ConstructorAbrirDocumento(DocumentoIndices, DocumentoContenidos):
+class ConstructorAbrirDocumento(DocumentoBase, DocumentoExtra):
     ...
 
+
 # --------------------------------------------------
-# Modelo: ConstructorAgregarDocumento
-class ConstructorAgregarDocumento(DocumentoIndices):
+# Modelo: ConstructorAgregarDocumento (TODO: Pendiente)
+class ConstructorAgregarDocumento(DocumentoBase):
     uid: str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',
@@ -138,8 +139,8 @@ class ConstructorAgregarDocumento(DocumentoIndices):
     )
 
 # --------------------------------------------------
-# Modelo: ConstructorActualizarDocumento
-class ConstructorActualizarDocumento(DocumentoIndices, DocumentoContenidos):
+# Modelo: ConstructorActualizarDocumento (TODO: Pendiente)
+class ConstructorActualizarDocumento(DocumentoBase, DocumentoExtra):
     ...
 
 
@@ -211,23 +212,24 @@ class ValidadorConsultarDocumento(Validador):
                 )
         return values
 
+
 # --------------------------------------------------
-# Modelo: ValidadorDocumento (TODO: Pendiente)
-class ValidadorDocumento(Validador):
+# Modelo: ValidadorBaseDocumento (TODO: Pendiente)
+class ValidadorBaseDocumento(Validador):
     titulo: str = Field(
-        max_length=200,
+        max_length=250,
         validation_alias='titulo',
         json_schema_extra={'permisos':''}
     )
 
 # --------------------------------------------------
 # Modelo: ValidadorAgregarDocumento (TODO: Pendiente)
-class ValidadorAgregarDocumento(ValidadorDocumento):
+class ValidadorAgregarDocumento(ValidadorBaseDocumento):
     ...
 
 # --------------------------------------------------
 # Modelo: ValidadorActualizarDocumento (TODO: Pendiente)
-class ValidadorActualizarDocumento(ValidadorDocumento):
+class ValidadorActualizarDocumento(ValidadorBaseDocumento):
     ...
 
 

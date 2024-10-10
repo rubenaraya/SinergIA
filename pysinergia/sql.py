@@ -40,8 +40,10 @@ class GeneradorSQL(ABC):
         LISTA_DATOS = "LISTA_DATOS"
         NUMERO = "NUMERO"
 
-    class INSTRUCCION:
+    class CONSULTA:
         SELECT_FILTRADO = 'SELECT {mostrar} FROM {origen_datos} WHERE {filtrar} {ordenar}'
+
+    class COMANDO:
         INSERT_FILA = 'INSERT INTO {origen_datos} ({lista_campos}) VALUES ({lista_marcas})'
         UPDATE_POR_UID = 'UPDATE {origen_datos} SET {lista_campos} WHERE ({campo_uid}={id})'
         DELETE_POR_UID = 'DELETE FROM {origen_datos} WHERE ({campo_uid}={id})'
