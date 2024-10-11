@@ -69,7 +69,7 @@ class ControladorDocumentos(Controlador):
 class RepositorioDocumentos(Repositorio):
 
     def consultar_lista_documentos(mi, solicitud:dict, roles_sesion:str=None) -> dict:
-        sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_CLASE)
         mi.basedatos.conectar(mi.configuracion.basedatos())
         constructor = ConstructorListarDocumentos(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
         instruccion, pagina, maximo = sql.generar_consulta(sql.CONSULTA.SELECT_FILTRADO, constructor)
@@ -78,7 +78,7 @@ class RepositorioDocumentos(Repositorio):
         return datos
 
     def consultar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
-        sql = GeneradorSQL(mi.configuracion.BASEDATOS_MARCA)
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_CLASE)
         mi.basedatos.conectar(mi.configuracion.basedatos())
         constructor = ConstructorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
         instruccion, pagina, maximo = sql.generar_consulta(sql.CONSULTA.SELECT_FILTRADO, constructor)

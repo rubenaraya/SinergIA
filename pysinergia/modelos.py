@@ -61,7 +61,7 @@ class Validador(BaseModel):
 # --------------------------------------------------
 # Modelo: Constructor
 class Constructor(BaseModel):
-    dto_solicitud: dict = {}
+    dto_solicitud:dict = {}
     dto_roles: Optional[str] = ''
     dto_fuente: Optional[str] = ''
 
@@ -102,14 +102,14 @@ class Presentador(BaseModel):
     fecha_actual:str = ''
     hora_actual:str = ''
     detalles:list = []
-    resultado: dict = {}
-    metadatos: dict = {}
-    fecha: dict = {}
-    web: dict = {}
-    url: dict = {}
-    sesion: dict = {}
-    esquemas: dict = {}
-    cookies: dict = {}
+    resultado:dict = {}
+    metadatos:dict = {}
+    fecha:dict = {}
+    web:dict = {}
+    url:dict = {}
+    sesion:dict = {}
+    esquemas:dict = {}
+    cookies:dict = {}
 
     @model_validator(mode='after')
     @classmethod

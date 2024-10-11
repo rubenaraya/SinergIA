@@ -132,7 +132,7 @@ class ConstructorAbrirDocumento(DocumentoBase, DocumentoExtra):
 # --------------------------------------------------
 # Modelo: ConstructorAgregarDocumento (TODO: Pendiente)
 class ConstructorAgregarDocumento(DocumentoBase):
-    uid: str = Field(
+    uid:str = Field(
         default=secrets.token_hex(8),
         serialization_alias='uid',
         json_schema_extra={'formato':'text', 'permisos':''}
@@ -190,14 +190,14 @@ class ValidadorBuscarDocumentos(Validador):
         validation_alias='coleccion',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
     )
-    id: int = Field(json_schema_extra={'orden':'ASC'}, default=0)
-    maximo: int = Field(validation_alias='maximo', default=10)
-    pagina: int = Field(validation_alias='pagina', default=1)
+    id:int = Field(json_schema_extra={'orden':'ASC'}, default=0)
+    maximo:int = Field(validation_alias='maximo', default=10)
+    pagina:int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
 # Modelo: ValidadorConsultarDocumento
 class ValidadorConsultarDocumento(Validador):
-    uid: str = Field(
+    uid:str = Field(
         validation_alias='uid',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
     )
@@ -216,7 +216,7 @@ class ValidadorConsultarDocumento(Validador):
 # --------------------------------------------------
 # Modelo: ValidadorBaseDocumento (TODO: Pendiente)
 class ValidadorBaseDocumento(Validador):
-    titulo: str = Field(
+    titulo:str = Field(
         max_length=250,
         validation_alias='titulo',
         json_schema_extra={'permisos':''}

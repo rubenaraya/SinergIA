@@ -9,8 +9,32 @@ from datetime import (datetime, timedelta)
 # --------------------------------------------------
 # Clase: GeneradorSQL
 class GeneradorSQL(ABC):
-    def __init__(mi, marca:str='?'):
-        mi.marca:str = marca # '%s' para MySql, '?' para SQLite
+    def __init__(mi, clase:str):
+        mi.clase:str = clase
+        if mi.clase == 'BasedatosSqlite':
+            mi.marca = '?'
+        elif mi.clase == 'BasedatosMysql':
+            mi.marca = '%s'
+        mi.tipos = {
+            'BasedatosSqlite': {
+                'str': 'TEXT',
+                'int': 'INTEGER',
+                'float': 'REAL',
+                'bool': 'INTEGER',
+                'date': 'TEXT',
+                'datetime': 'TEXT',
+                'uuid': 'TEXT',
+            },
+            'BasedatosMysql': {
+                'str': 'VARCHAR(255)',
+                'int': 'INT',
+                'float': 'DOUBLE',
+                'bool': 'BOOLEAN',
+                'date': 'DATE',
+                'datetime': 'DATETIME',
+                'uuid': 'CHAR(36)',
+            }
+        }
         mi._filtros = {
             mi.FILTRO.CONTIENE: mi._filtro_CONTIENE,
             mi.FILTRO.COINCIDE: mi._filtro_COINCIDE,
