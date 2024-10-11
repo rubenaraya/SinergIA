@@ -56,13 +56,23 @@ class ControladorDocumentos(Controlador):
         codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
-    #TODO: Pendiente
     def actualizar_documento(mi, peticion:Validador) -> tuple:
-        ...
+        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        resultado = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
+        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        return (respuesta, codigo)
 
-    #TODO: Pendiente
     def eliminar_documento(mi, peticion:Validador) -> tuple:
-        ...
+        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        resultado = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
+        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        return (respuesta, codigo)
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos
@@ -86,17 +96,32 @@ class RepositorioDocumentos(Repositorio):
         mi.basedatos.desconectar()
         return datos
 
-    #TODO: Pendiente
     def agregar_documento_nuevo(mi, solicitud:dict, roles_sesion:str=None) -> dict:
-        ...
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_CLASE)
+        mi.basedatos.conectar(mi.configuracion.basedatos())
+        constructor = ConstructorAgregarDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
+        instruccion, parametros = sql.generar_comando(sql.COMANDO.INSERT_FILA, constructor, 'uid')
+        datos = mi.basedatos.agregar_caso(instruccion, parametros)
+        mi.basedatos.desconectar()
+        return datos
 
-    #TODO: Pendiente
     def actualizar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
-        ...
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_CLASE)
+        mi.basedatos.conectar(mi.configuracion.basedatos())
+        constructor = ConstructorActualizarDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
+        instruccion, parametros = sql.generar_comando(sql.COMANDO.UPDATE_POR_UID, constructor, 'uid')
+        datos = mi.basedatos.actualizar_caso(instruccion, parametros)
+        mi.basedatos.desconectar()
+        return datos
 
-    #TODO: Pendiente
     def eliminar_documento_seleccionado(mi, solicitud:dict, roles_sesion:str=None) -> dict:
-        ...
+        sql = GeneradorSQL(mi.configuracion.BASEDATOS_CLASE)
+        mi.basedatos.conectar(mi.configuracion.basedatos())
+        constructor = ConstructorAbrirDocumento(dto_solicitud=solicitud, dto_roles=roles_sesion).organizar()
+        instruccion, parametros = sql.generar_comando(sql.COMANDO.DELETE_POR_UID, constructor, 'uid')
+        datos = mi.basedatos.eliminar_caso(instruccion, parametros)
+        mi.basedatos.desconectar()
+        return datos
 
 # --------------------------------------------------
 # Clase: CasosDeUsoDocumentos
@@ -150,16 +175,25 @@ class CasosDeUsoDocumentos(CasosDeUso):
                 entrega['mensaje'] = 'Recurso-no-encontrado'
         return entrega
 
-    #TODO: Pendiente
     def _agregar(mi, solicitud:dict):
-        ...
+        entrega = mi.preparar_entrega(solicitud)
+        if mi.autorizar_accion(permisos=mi.PERMISOS.AGREGAR, rechazar=True):
+            resultado = mi.repositorio.agregar_documento_nuevo(solicitud, mi.sesion.get('roles'))
+            entrega['resultado'] = resultado
+        return entrega
 
-    #TODO: Pendiente
     def _actualizar(mi, solicitud:dict):
-        ...
+        entrega = mi.preparar_entrega(solicitud)
+        if mi.autorizar_accion(permisos=mi.PERMISOS.ACTUALIZAR, rechazar=True):
+            resultado = mi.repositorio.actualizar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
+            entrega['resultado'] = resultado
+        return entrega
 
-    #TODO: Pendiente
     def _eliminar(mi, solicitud:dict):
-        ...
+        entrega = mi.preparar_entrega(solicitud)
+        if mi.autorizar_accion(permisos=mi.PERMISOS.ELIMINAR, rechazar=True):
+            resultado = mi.repositorio.eliminar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
+            entrega['resultado'] = resultado
+        return entrega
 
 ACCIONES = CasosDeUsoDocumentos.ACCIONES
