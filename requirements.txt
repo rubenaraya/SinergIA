@@ -16,6 +16,7 @@ pydub
 
 [conectores]
 mysql-connector-python
+psycopg2
 
 [flask]
 flask

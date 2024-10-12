@@ -1,46 +1,41 @@
 # --------------------------------------------------
-# pysinergia\conectores\basedatos_mysql.py
+# pysinergia\conectores\basedatos_postgresql.py
 # --------------------------------------------------
 
-from mysql.connector import (
-    connect,
-    MySQLConnection,
-    Error,
-)
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # Importaciones de PySinergIA
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
-# Clase: BasedatosMysql
-class BasedatosMysql(Basedatos):
+# Clase: BasedatosPostgresql
+class BasedatosPostgresql(Basedatos):
     def __init__(mi):
         super().__init__()
-        mi.conexion:MySQLConnection = None
         mi.marca_param = '%s'
 
     def _obtener_datos(mi, cursor) -> tuple:
-        cursor = mi.conexion.cursor(dictionary=True)
+        cursor = mi.conexion.cursor(cursor_factory=RealDictCursor)
         lista = [dict(fila) for fila in cursor.fetchall()]
-        columnas = cursor.column_names
+        columnas = [desc[0] for desc in cursor.description]
         return lista, columnas
 
-    def conectar(mi, config:dict) -> bool:
+    def conectar(mi, config: dict) -> bool:
         try:
             if mi.conexion and mi.basedatos == config.get('nombre'):
                 return True
             if mi.conexion:
                 mi.conexion.close()
             mi.basedatos = config.get('nombre')
-            if mi.basedatos:
-                mi.conexion = connect(
-                    user=config.get('usuario'),
-                    password=config.get('password'),
-                    host=config.get('ruta'),
-                    database=mi.basedatos
-                )
-                return mi.conexion.is_connected()
-        except Error as e:
+            mi.conexion = psycopg2.connect(
+                dbname=mi.basedatos,
+                user=config.get('usuario'),
+                password=config.get('password'),
+                host=config.get('ruta')
+            )
+            return True
+        except psycopg2.Error as e:
             print(f"ERROR: {e}")
             mi.conexion = None
         return False

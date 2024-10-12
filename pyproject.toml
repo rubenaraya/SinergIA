@@ -62,6 +62,7 @@ classifiers = [
 [project.optional-dependencies]
 conectores = [
     "mysql-connector-python",
+    "psycopg2",
 ]
 complementos = [
     "openpyxl",
