@@ -200,7 +200,6 @@ class ErrorPersonalizado(Exception):
                 codigo:int=Constantes.ESTADO._500_ERROR,
                 nivel_evento:str=Constantes.REGISTRO.ERROR,
                 detalles:list=[],
-                tipo:str='',
                 recurso:str='',
                 dominio_idioma:str=None,
                 archivo_logs:str=None,
@@ -209,7 +208,6 @@ class ErrorPersonalizado(Exception):
         super().__init__(mensaje)
         mi.mensaje:str = mensaje
         mi.codigo:int = int(codigo)
-        mi.tipo:str = tipo
         mi.recurso:str = recurso
         mi.nivel_evento:str = nivel_evento
         mi.conclusion:str = concluir_estado(mi.codigo)
@@ -226,8 +224,6 @@ class ErrorPersonalizado(Exception):
 
     def __repr__(mi) -> str:
         contenido = f'{mi.conclusion} {mi.codigo} | {mi.mensaje}'
-        if mi.tipo:
-            contenido = f'{contenido} ({mi.tipo})'
         if mi.recurso:
             contenido = f'{contenido} | {mi.recurso}'
         return contenido

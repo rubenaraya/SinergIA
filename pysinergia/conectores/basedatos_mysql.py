@@ -9,6 +9,7 @@ from mysql.connector import (
 )
 
 # Importaciones de PySinergIA
+from pysinergia.globales import (ErrorPersonalizado, Constantes)
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
@@ -41,7 +42,9 @@ class BasedatosMysql(Basedatos):
                 )
                 return mi.conexion.is_connected()
         except Error as e:
-            print(f"ERROR: {e}")
-            mi.conexion = None
+            raise ErrorPersonalizado(
+                mensaje=str(e),
+                codigo=Constantes.ESTADO._500_ERROR
+            )
         return False
 

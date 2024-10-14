@@ -12,29 +12,9 @@ class GeneradorSQL(ABC):
     def __init__(mi, clase:str):
         mi.clase:str = clase
         if mi.clase == 'BasedatosSqlite':
-            mi.marca = '?'
-        elif mi.clase == 'BasedatosMysql':
-            mi.marca = '%s'
-        mi.tipos = {
-            'BasedatosSqlite': {
-                'str': 'TEXT',
-                'int': 'INTEGER',
-                'float': 'REAL',
-                'bool': 'INTEGER',
-                'date': 'TEXT',
-                'datetime': 'TEXT',
-                'uuid': 'TEXT',
-            },
-            'BasedatosMysql': {
-                'str': 'VARCHAR(255)',
-                'int': 'INT',
-                'float': 'DOUBLE',
-                'bool': 'BOOLEAN',
-                'date': 'DATE',
-                'datetime': 'DATETIME',
-                'uuid': 'CHAR(36)',
-            }
-        }
+            mi.marca_param = '?'
+        else:
+            mi.marca_param = '%s'
         mi._filtros = {
             mi.FILTRO.CONTIENE: mi._filtro_CONTIENE,
             mi.FILTRO.COINCIDE: mi._filtro_COINCIDE,
@@ -450,6 +430,8 @@ class GeneradorSQL(ABC):
         plantilla = plantilla.replace('{filtrar}', filtrar_texto)
         ordenar_texto = ' ORDER BY ' + ', '.join(ordenar) if ordenar else ''
         plantilla = plantilla.replace('{ordenar}', ordenar_texto)
+        if mi.clase != 'BasedatosSqlite':
+            plantilla = plantilla.replace(' regexp ', ' REGEXP ')
         return (plantilla, pagina, maximo)
 
     def generar_comando(mi, plantilla:str, constructor:dict={}, campo_uid:str='id') -> tuple:
@@ -515,11 +497,11 @@ class GeneradorSQL(ABC):
                             if valor and formato:
                                 valor = formatos.get(formato)(valor)
                         if plantilla.startswith('UPDATE ') and valor:
-                            campos.append(f'{salida}={mi.marca}')
+                            campos.append(f'{salida}={mi.marca_param}')
                             parametros.append(valor)
                         elif plantilla.startswith('INSERT ') and valor:
                             campos.append(salida)
-                            marcas.append(mi.marca)
+                            marcas.append(mi.marca_param)
                             parametros.append(valor)
         lista_campos = ', '.join(campos) if campos else ''
         lista_marcas = ', '.join(marcas) if marcas else ''

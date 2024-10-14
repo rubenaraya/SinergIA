@@ -6,6 +6,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 # Importaciones de PySinergIA
+from pysinergia.globales import (ErrorPersonalizado, Constantes)
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
@@ -36,7 +37,9 @@ class BasedatosPostgresql(Basedatos):
             )
             return True
         except psycopg2.Error as e:
-            print(f"ERROR: {e}")
-            mi.conexion = None
+            raise ErrorPersonalizado(
+                mensaje=str(e),
+                codigo=Constantes.ESTADO._500_ERROR
+            )
         return False
 

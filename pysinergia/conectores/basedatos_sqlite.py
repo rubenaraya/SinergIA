@@ -8,6 +8,7 @@ from sqlite3 import Error
 from pathlib import Path
 
 # Importaciones de PySinergIA
+from pysinergia.globales import (ErrorPersonalizado, Constantes)
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
@@ -19,10 +20,13 @@ class BasedatosSqlite(Basedatos):
         mi.marca_param = '?'
 
     def _cargar_extension_sqlean(mi):
-        mi.conexion.enable_load_extension(True)
-        ruta_lib_sqlean = os.getenv('RUTA_LIB_SQLEAN')
-        extension_lib_sqlean = Path(f'{ruta_lib_sqlean}/regexp').resolve()
-        mi.conexion.load_extension(str(extension_lib_sqlean))
+        try:
+            mi.conexion.enable_load_extension(True)
+            ruta_lib_sqlean = os.getenv('RUTA_LIB_SQLEAN')
+            extension_lib_sqlean = Path(f'{ruta_lib_sqlean}/regexp').resolve()
+            mi.conexion.load_extension(str(extension_lib_sqlean))
+        except Exception as e:
+            print(f"ERROR: {e}")
 
     def _obtener_datos(mi, cursor) -> tuple:
         cursor.row_factory = sqlite3.Row
@@ -45,7 +49,9 @@ class BasedatosSqlite(Basedatos):
                     mi._cargar_extension_sqlean()
                     return True
         except Error as e:
-            print(f"ERROR: {e}")
-            mi.conexion = None
+            raise ErrorPersonalizado(
+                mensaje=str(e),
+                codigo=Constantes.ESTADO._500_ERROR
+            )
         return False
 
