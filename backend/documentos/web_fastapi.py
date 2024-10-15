@@ -8,6 +8,8 @@ from fastapi import (
     Request,
     Depends,
     Body,
+    Path,
+    Query,
 )
 from fastapi.responses import (
     JSONResponse,
@@ -58,20 +60,20 @@ async def agregar_documento(request:Request, peticion:ValidadorAgregarDocumento=
     return JSONResponse(respuesta, status_code=codigo)
 
 @enrutador.get('/documentos/{uid}')
-async def ver_documento(request:Request, uid:str):
+async def ver_documento(request:Request, uid:str=Path(...)):
     await comunicador.procesar_solicitud(request)
     peticion = ValidadorConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
 @enrutador.put('/documentos/{uid}')
-async def actualizar_documento(request:Request, uid:str, peticion:ValidadorActualizarDocumento=Body()):
+async def actualizar_documento(request:Request, uid:str=Path(...), peticion:ValidadorActualizarDocumento=Body()):
     await comunicador.procesar_solicitud(request)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).actualizar_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
 @enrutador.delete('/documentos/{uid}')
-async def eliminar_documento(request:Request, uid:str):
+async def eliminar_documento(request:Request, uid:str=Path(...)):
     await comunicador.procesar_solicitud(request)
     peticion = ValidadorConsultarDocumento(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)

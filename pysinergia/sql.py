@@ -73,8 +73,7 @@ class InstructorSQL(ABC):
 
     # Métodos privados
 
-    def _limpiar_texto(mi, texto:str) -> str:
-        #texto = re.sub(r'[\']', "", str(texto))
+    def _sanitizar_texto(mi, texto:str) -> str:
         texto = re.sub(r"[\x00\x0A\x0D\x1A\x22\x27\x5C]", lambda m: '\\' + m.group(0), texto)
         return texto
 
@@ -112,7 +111,7 @@ class InstructorSQL(ABC):
         return mi._filtros.get(filtro)
 
     def _filtro_FRASE(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         valor = valor.lower()
         valor = re.sub(r"['\"]", "", valor)
         valor = re.sub(r"\.", "", valor)
@@ -130,7 +129,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_PALABRAS(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         valor = valor.lower()
         valor = re.sub(r"['\"]", "", valor)
         valor = re.sub(r"\.", "", valor)
@@ -152,7 +151,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_COINCIDE(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         if valor == mi.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
         elif valor == mi.VALOR.VACIO:
@@ -175,7 +174,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_CONTIENE(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         aux = valor.lower()
         aux = re.sub(r'[aáàäâ]', '(a|á|à|ä|â)', aux)
         aux = re.sub(r'[eéëèê]', '(e|é|è|ë|ê)', aux)
@@ -189,7 +188,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_INCLUYE(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         if valor == mi.VALOR.NULO:
             expresion = f"( {campo} IS NULL )"
         elif valor == mi.VALOR.VACIO:
@@ -202,7 +201,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_NUMERO(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         expresion = ""
         valor = valor.strip()
         if valor == mi.VALOR.NULO:
@@ -216,7 +215,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_RANGO_NUMEROS(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         expresion = ""
         valor = valor.strip()
         valores = valor.split(",")
@@ -228,7 +227,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_RANGO_FECHAS(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         expresion = ""
         valor = valor.strip()
         valores = valor.split(",")
@@ -240,7 +239,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_LISTA_DATOS(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         valor = valor.strip()
         valor = valor.replace('\n', '\r').replace('\r', ',').replace(' ', ',').replace(',,', ',')
         lista = [f"'{palabra.strip()}'" for palabra in valor.split(',') if len(palabra.strip()) > 0]
@@ -251,7 +250,7 @@ class InstructorSQL(ABC):
         return expresion
 
     def _filtro_FECHA(mi, campo:str, valor:str) -> str:
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         expresion = ""
         valor = valor.strip()
         if valor == mi.VALOR.HOY:
@@ -372,7 +371,7 @@ class InstructorSQL(ABC):
             mi.VALOR.ANTERIOR_ANO: __periodo_ant_ano
         }
         exp = ''
-        valor = mi._limpiar_texto(valor)
+        valor = mi._sanitizar_texto(valor)
         valor = valor.strip()
         if valor.startswith("F_"):
             exp = periodos.get(valor)(campo)
@@ -439,7 +438,7 @@ class InstructorSQL(ABC):
             return None
 
         def _formato_text(valor):
-            return mi._limpiar_texto(valor)
+            return mi._sanitizar_texto(valor)
         def _formato_integer(valor):
             return int(valor)
         def _formato_rounded(valor):

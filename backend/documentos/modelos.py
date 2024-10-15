@@ -26,6 +26,8 @@ PENDIENTES:
 - Restaurar el title del Field en cada campo de Validador, para que aparezca en el mensaje de error de validación de Pydantic?.
 + Agregar rutas y todo lo demás para: agregar contenidos a un documento.
 """
+# --------------------------------------------------
+# MODELOS CONSTRUCTORES
 
 # --------------------------------------------------
 # Modelo: DocumentoBase
@@ -121,8 +123,6 @@ class DocumentoExtra(Constructor):
         json_schema_extra={'permisos':''}
     )
 
-
-
 # --------------------------------------------------
 # Modelo: ConstructorListarDocumentos
 class ConstructorListarDocumentos(DocumentoBase):
@@ -132,7 +132,6 @@ class ConstructorListarDocumentos(DocumentoBase):
 # Modelo: ConstructorAbrirDocumento
 class ConstructorAbrirDocumento(DocumentoBase, DocumentoExtra):
     ...
-
 
 # --------------------------------------------------
 # Modelo: ConstructorAgregarDocumento (TODO: Pendiente)
@@ -148,7 +147,8 @@ class ConstructorAgregarDocumento(DocumentoBase):
 class ConstructorActualizarDocumento(DocumentoBase, DocumentoExtra):
     ...
 
-
+# --------------------------------------------------
+# MODELOS VALIDADORES
 
 # --------------------------------------------------
 # Modelo: ValidadorBuscarDocumentos
@@ -217,7 +217,6 @@ class ValidadorConsultarDocumento(Validador):
                 )
         return values
 
-
 # --------------------------------------------------
 # Modelo: ValidadorBaseDocumento (TODO: Pendiente)
 class ValidadorBaseDocumento(Validador):
@@ -237,32 +236,3 @@ class ValidadorAgregarDocumento(ValidadorBaseDocumento):
 class ValidadorActualizarDocumento(ValidadorBaseDocumento):
     ...
 
-
-"""
-CREATE TABLE "catalogo" (
-	"id"	INTEGER NOT NULL UNIQUE,
-    "uid"	TEXT NOT NULL UNIQUE,
-
-    "titulo"	TEXT,
-	"autores"	TEXT,
-	"editor"	TEXT,
-	"fechapub"	TEXT,
-	"tipodoc"	TEXT,
-	"fuente"	TEXT,
-    "etiquetas"	TEXT,
-	"nivcomplejidad"	TEXT,
-
-    "descripcion"	TEXT,
-	"pubobjetivo"	TEXT,
-	"temasrel"	TEXT,
-	"resumen"	TEXT,
-	"palabras"	TEXT,
-	
-    "coleccion"	TEXT,
-	"estado"	TEXT,
-	
-    "archivo"	TEXT,
-	"tipoarch"	TEXT,
-	"peso"	INTEGER,
-)
-"""

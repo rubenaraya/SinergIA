@@ -95,7 +95,7 @@ class Constructor(BaseModel):
                     serializado[f'_{field_name}'] = modelo.get(field_name)
         return serializado
 
-    def extraer(mi) -> dict:
+    def definiciones(mi) -> dict:
         serializado:dict = {}
         tipos_aceptados = {str, int, float, bool, date, datetime}
         for field_name, field in mi.model_fields.items():

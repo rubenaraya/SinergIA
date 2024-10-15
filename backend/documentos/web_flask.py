@@ -7,6 +7,7 @@ from flask import (
     Blueprint,
     jsonify,
     make_response,
+    request,
 )
 from flask_pydantic import validate
 
@@ -61,6 +62,7 @@ def buscar_documentos(query:ValidadorBuscarDocumentos):
 @validate()
 def agregar_documento(body:ValidadorAgregarDocumento):
     comunicador.procesar_solicitud()
+    # body = ValidadorAgregarDocumento.model_validate_json(request.data) #request.get_json(silent=True)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(body)
     return make_response(jsonify(respuesta), codigo)
 
@@ -72,8 +74,10 @@ def ver_documento(uid:str):
     return make_response(jsonify(respuesta), codigo)
 
 @enrutador.route('/documentos/<uid>', methods=['PUT'])
+@validate()
 def actualizar_documento(body:ValidadorActualizarDocumento, uid:str):
     comunicador.procesar_solicitud()
+    # body = ValidadorActualizarDocumento.model_validate_json(request.data) #request.get_json(silent=True)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).actualizar_documento(body)
     return make_response(jsonify(respuesta), codigo)
 
@@ -85,7 +89,7 @@ def eliminar_documento(uid:str):
     return make_response(jsonify(respuesta), codigo)
 
 # --------------------------------------------------
-# Rutas de ejemplo
+# Rutas de ejemplo y pruebas
 
 @enrutador.route('/documentos/crear', methods=['GET'])
 def crear_tabla():
