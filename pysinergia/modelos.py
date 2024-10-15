@@ -5,7 +5,11 @@
 from typing import (
     Optional,
     Self,
+    Union,
+    get_args,
+    get_origin,
 )
+from datetime import (date, datetime)
 
 # Importaciones de Pydantic
 from pydantic import (
@@ -93,18 +97,19 @@ class Constructor(BaseModel):
 
     def extraer(mi) -> dict:
         serializado:dict = {}
-        modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D'))
+        tipos_aceptados = {str, int, float, bool, date, datetime}
         for field_name, field in mi.model_fields.items():
             if field_name not in ['T','D']:
-                if not field_name.startswith('dto_'):
-                    if field.json_schema_extra:
-                        serializado[field_name] = {
-                            'campo': field.serialization_alias if field.serialization_alias else field_name,
-                            'default': field.default,
-                            'tipo': field.json_schema_extra.get('tipo', 'str'),
-                            'indice': field.json_schema_extra.get('indice', ''),
-                            'largo': field.json_schema_extra.get('largo', 0),
-                        }
+                if not field_name.startswith('dto_') and field.json_schema_extra:
+                    field_type = mi.__annotations__.get(field_name)
+                    if get_origin(field_type) is Union:
+                        field_type = next(t for t in get_args(field_type) if t is not type(None))
+                    serializado[field_name] = {
+                        'default': field.default,
+                        'tipo': field_type.__name__ if field_type in tipos_aceptados else '',
+                        'indice': field.json_schema_extra.get('indice', ''),
+                        'largo': field.json_schema_extra.get('largo', 0),
+                    }
         return serializado
 
 # --------------------------------------------------
