@@ -8,7 +8,10 @@ from sqlite3 import Error
 from pathlib import Path
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (ErrorPersonalizado, Constantes)
+from pysinergia.globales import (
+    ErrorPersonalizado,
+    Constantes
+)
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
@@ -39,8 +42,9 @@ class BasedatosSqlite(Basedatos):
     def _obtener_datos(mi, cursor) -> tuple:
         cursor.row_factory = sqlite3.Row
         lista = [dict(fila) for fila in cursor.fetchall()]
-        columnas = [desc[0] for desc in cursor.description] #list(map(lambda x: x[0], cursor.description))
-        return lista, columnas
+        columnas = [desc[0] for desc in cursor.description]
+        #columnas = list(map(lambda x: x[0], cursor.description))
+        return (lista, columnas)
 
     def conectar(mi, config:dict) -> bool:
         try:

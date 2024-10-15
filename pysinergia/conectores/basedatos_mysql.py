@@ -9,7 +9,10 @@ from mysql.connector import (
 )
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (ErrorPersonalizado, Constantes)
+from pysinergia.globales import (
+    ErrorPersonalizado,
+    Constantes
+)
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------
@@ -32,7 +35,7 @@ class BasedatosMysql(Basedatos):
         cursor = mi.conexion.cursor(dictionary=True)
         lista = [dict(fila) for fila in cursor.fetchall()]
         columnas = cursor.column_names
-        return lista, columnas
+        return (lista, columnas)
 
     def conectar(mi, config:dict) -> bool:
         try:
@@ -46,6 +49,7 @@ class BasedatosMysql(Basedatos):
                     user=config.get('usuario'),
                     password=config.get('password'),
                     host=config.get('ruta'),
+                    port=config.get('puerto', 3306),
                     database=mi.basedatos
                 )
                 return mi.conexion.is_connected()
