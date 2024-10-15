@@ -97,8 +97,7 @@ class ControladorDocumentos(Controlador):
         repositorio = RepositorioDocumentos(mi.configuracion)
         repositorio.basedatos.conectar(repositorio.configuracion.basedatos())
         constructor = DocumentoBase().extraer()
-        datos = {'resultado': repositorio.basedatos.crear_tabla(constructor)}
-        print(constructor)
+        datos = {'resultado': repositorio.basedatos.crear_tabla('catalogo', constructor)}
         repositorio.basedatos.desconectar()
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         return (respuesta, C.ESTADO._200_EXITO)

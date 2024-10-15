@@ -125,6 +125,6 @@ class Basedatos(ABC):
             return {"total": -1, "error": str(e)}
 
     @abstractmethod
-    def crear_tabla(mi, constructor:dict={}):
+    def crear_tabla(mi, nombre:str, constructor:dict={}):
         ...
 
