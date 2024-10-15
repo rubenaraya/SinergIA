@@ -7,8 +7,8 @@ from abc import ABC
 from datetime import (datetime, timedelta)
 
 # --------------------------------------------------
-# Clase: GeneradorSQL
-class GeneradorSQL(ABC):
+# Clase: InstructorSQL
+class InstructorSQL(ABC):
     def __init__(mi, clase:str):
         mi.clase:str = clase
         if mi.clase == 'BasedatosSqlite':

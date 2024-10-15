@@ -128,3 +128,12 @@ class Basedatos(ABC):
     def crear_tabla(mi, nombre:str, constructor:dict={}):
         ...
 
+"""
+TODO: MEJORAR [EN LAS SUBCLASES]:
+- Logging detallado (consultas, errores)
+- Monitoreo de desempeño (tiempo de ejecución)
+- Gestión de errores con excepciones más específicas (información más detallada)
+- Documentación y Ejemplos de uso
+- Implementación Sistema de Testing (pruebas unitarias y de integración)
+"""
+
