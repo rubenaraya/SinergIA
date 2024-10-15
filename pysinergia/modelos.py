@@ -81,8 +81,10 @@ class Constructor(BaseModel):
                                 'entrada': entrada or '',
                                 'salida': salida or '',
                                 'etiqueta': field.title or '',
+                                'default': field.default,
                                 'formato': field.json_schema_extra.get('formato', 'text'),
                                 'entidad': field.json_schema_extra.get('entidad', ''),
+                                'indice': field.json_schema_extra.get('indice', ''),
                                 'largo': field.json_schema_extra.get('largo', 255),
                             }
                 else:

@@ -297,6 +297,8 @@ def autorizar_acceso(permisos:str=None, roles:str=None) -> bool:
             return True
     return False
 
+# --------------------------------------------------
+# Funcion: concluir_estado
 def concluir_estado(estado:int) -> str:
     if estado < 200:
         return Constantes.CONCLUSION.ERROR

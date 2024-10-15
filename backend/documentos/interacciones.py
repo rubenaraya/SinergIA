@@ -15,6 +15,7 @@ from pysinergia.interacciones import (
     Controlador,
     Repositorio,
     CasosDeUso,
+    preparar_datos,
 )
 
 # Importaciones del Microservicio
@@ -32,18 +33,35 @@ class ControladorDocumentos(Controlador):
     def buscar_documentos(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
+        """
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.convertir())
-        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        datos = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.convertir())
+        """
+        solicitud = peticion.convertir()
+        datos = preparar_datos(solicitud)
+        resultado = repositorio.consultar_lista_documentos(solicitud, mi.sesion.get('roles'))
+        datos['resultado'] = resultado
+        datos['mensaje'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
+
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
     def ver_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
+        """
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
-        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        datos = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
+        """
+        solicitud = peticion.convertir()
+        datos = preparar_datos(solicitud)
+        resultado = repositorio.consultar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
+        datos['resultado'] = resultado
+        if resultado.get('total', 0) <= 0:
+            datos['mensaje'] = 'Recurso-no-encontrado'
+
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
@@ -51,8 +69,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
-        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        datos = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
@@ -60,8 +78,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
-        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        datos = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
@@ -69,8 +87,8 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
-        resultado = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
-        respuesta = Presentador(**resultado, T=mi.comunicador.traductor).componer()
+        datos = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
@@ -159,47 +177,47 @@ class CasosDeUsoDocumentos(CasosDeUso):
         return realizar.get(accion)(solicitud)
 
     def _buscar(mi, solicitud:dict):
-        entrega = mi.preparar_entrega(solicitud)
+        datos = preparar_datos(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
             resultado = mi.repositorio.consultar_lista_documentos(solicitud, mi.sesion.get('roles'))
-            entrega['resultado'] = resultado
-            entrega['mensaje'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
-        return entrega
+            datos['resultado'] = resultado
+            datos['mensaje'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
+        return datos
 
     def _ver(mi, solicitud:dict):
-        entrega = mi.preparar_entrega(solicitud)
+        datos = preparar_datos(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
             resultado = mi.repositorio.consultar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
-            entrega['resultado'] = resultado
+            datos['resultado'] = resultado
             if resultado.get('total', 0) <= 0:
-                entrega['mensaje'] = 'Recurso-no-encontrado'
-        return entrega
+                datos['mensaje'] = 'Recurso-no-encontrado'
+        return datos
 
     def _agregar(mi, solicitud:dict):
-        entrega = mi.preparar_entrega(solicitud)
+        datos = preparar_datos(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.AGREGAR, rechazar=True):
             resultado = mi.repositorio.agregar_documento_nuevo(solicitud, mi.sesion.get('roles'))
-            entrega['resultado'] = resultado
+            datos['resultado'] = resultado
             if resultado.get('total', 0) <= 0:
-                entrega['mensaje'] = 'Recurso-no-agregado'
-        return entrega
+                datos['mensaje'] = 'Recurso-no-agregado'
+        return datos
 
     def _actualizar(mi, solicitud:dict):
-        entrega = mi.preparar_entrega(solicitud)
+        datos = preparar_datos(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.ACTUALIZAR, rechazar=True):
             resultado = mi.repositorio.actualizar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
-            entrega['resultado'] = resultado
+            datos['resultado'] = resultado
             if resultado.get('total', 0) <= 0:
-                entrega['mensaje'] = 'Recurso-no-actualizado'
-        return entrega
+                datos['mensaje'] = 'Recurso-no-actualizado'
+        return datos
 
     def _eliminar(mi, solicitud:dict):
-        entrega = mi.preparar_entrega(solicitud)
+        datos = preparar_datos(solicitud)
         if mi.autorizar_accion(permisos=mi.PERMISOS.ELIMINAR, rechazar=True):
             resultado = mi.repositorio.eliminar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
-            entrega['resultado'] = resultado
+            datos['resultado'] = resultado
             if resultado.get('total', 0) <= 0:
-                entrega['mensaje'] = 'Recurso-no-eliminado'
-        return entrega
+                datos['mensaje'] = 'Recurso-no-eliminado'
+        return datos
 
 ACCIONES = CasosDeUsoDocumentos.ACCIONES

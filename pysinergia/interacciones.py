@@ -16,6 +16,14 @@ from pysinergia.archivos import (
 )
 
 # --------------------------------------------------
+# Funcion: preparar_datos
+def preparar_datos(solicitud:dict=None) -> dict:
+    datos:dict = {}
+    if isinstance(solicitud, dict):
+        datos = solicitud.get('_dto_contexto', {})
+    return datos
+
+# --------------------------------------------------
 # Interface: I_Comunicador
 class I_Comunicador(metaclass=ABCMeta):
 
@@ -103,6 +111,8 @@ class Controlador(ABC):
 # Clase: CasosDeUso
 class CasosDeUso(ABC):
 
+    sesion:dict
+
     # Clases de constantes
 
     class ACCIONES:
@@ -111,14 +121,11 @@ class CasosDeUso(ABC):
     class PERMISOS:
         ...
 
-    def __init__(mi, repositorio, sesion:dict=None):
-        mi.repositorio = repositorio
-        mi.sesion:dict = sesion
-
     # Métodos públicos
 
+    @abstractmethod
     def solicitar_accion(mi, accion:ACCIONES, solicitud:dict) -> dict:
-        raise NotImplementedError()
+        ...
 
     def autorizar_accion(mi, permisos:PERMISOS, rechazar:bool=False) -> bool:
         roles:str = mi.sesion.get('roles')
@@ -149,10 +156,4 @@ class CasosDeUso(ABC):
             for clave, valor in agregados.items():
                 metadatos[clave] = valor
         return metadatos
-
-    def preparar_entrega(mi, solicitud:dict=None) -> dict:
-        entrega:dict = {}
-        if isinstance(solicitud, dict):
-            entrega = solicitud.get('_dto_contexto', {})
-        return entrega
 
