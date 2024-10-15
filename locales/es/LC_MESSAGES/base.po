@@ -157,3 +157,12 @@ msgstr "El recurso solicitado no fue encontrado"
 msgid "El-uid-no-es-valido"
 msgstr "El UID solicitado no es válido"
 
+msgid "Recurso-no-agregado"
+msgstr "El recurso no se pudo agregar"
+
+msgid "Recurso-no-actualizado"
+msgstr "El recurso no se pudo actualizar"
+
+msgid "Recurso-no-eliminado"
+msgstr "El recurso no se pudo eliminar"
+

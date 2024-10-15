@@ -83,6 +83,7 @@ class Constructor(BaseModel):
                                 'etiqueta': field.title or '',
                                 'formato': field.json_schema_extra.get('formato', 'text'),
                                 'entidad': field.json_schema_extra.get('entidad', ''),
+                                'largo': field.json_schema_extra.get('largo', 255),
                             }
                 else:
                     serializado[f'_{field_name}'] = modelo.get(field_name)
@@ -98,7 +99,6 @@ class Presentador(BaseModel):
     conclusion: Optional[str] = None
     mensaje: Optional[str] = None
     titulo: Optional[str] = None
-    descripcion: Optional[str] = None
     fecha_actual:str = ''
     hora_actual:str = ''
     detalles:list = []
@@ -123,7 +123,13 @@ class Presentador(BaseModel):
 
         if not valores.codigo:
             if valores.resultado:
-                valores.codigo = Constantes.ESTADO._200_EXITO
+                total = valores.resultado.get('total', 0)
+                if total == -1:
+                    valores.codigo = Constantes.ESTADO._500_ERROR
+                elif total == 0:
+                    valores.codigo = Constantes.ESTADO._404_NO_ENCONTRADO
+                else:
+                    valores.codigo = Constantes.ESTADO._200_EXITO
             else:
                 valores.codigo = Constantes.ESTADO._404_NO_ENCONTRADO
         if not valores.conclusion:
@@ -138,8 +144,6 @@ class Presentador(BaseModel):
                 try:
                     valores.mensaje = str(_(valores.mensaje)).format(**datos) if valores.mensaje else None
                     valores.titulo = str(_(valores.titulo)).format(**datos) if valores.titulo else None
-                    if isinstance(valores.descripcion, str):
-                        valores.descripcion = str(_(valores.descripcion)).format(**datos) if valores.descripcion else None
                     if valores.detalles and isinstance(valores.detalles, list):
                         detalles:list = []
                         for error in valores.detalles:

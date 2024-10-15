@@ -114,7 +114,7 @@ class Traductor:
 
     def traducir_textos(mi, info:dict={}, claves:list=[]) -> dict:
         if info and mi.traduccion:
-            seleccion = ['mensaje','titulo','descripcion']
+            seleccion = ['mensaje','titulo']
             for clave, valor in info.items():
                 if clave in seleccion or clave in claves:
                     info[clave] = mi.traduccion.gettext(valor)

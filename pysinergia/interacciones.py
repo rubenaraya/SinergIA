@@ -139,9 +139,6 @@ class CasosDeUso(ABC):
             'carpeta_guardar': '',
             'nombre_descarga': '',
             'titulo': '',
-            'autor': '',
-            'descripcion': '',
-            'etiquetas': '',
         }
         if metadatos is None:
             metadatos = {}

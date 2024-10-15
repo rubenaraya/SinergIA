@@ -39,7 +39,7 @@ class DocumentoBase(Constructor):
     titulo: Optional[str] = Field(
         default=None,
         serialization_alias='titulo',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','largo':250}
     )
     autores: Optional[str] = Field(
         default=None,
@@ -150,7 +150,7 @@ class ConstructorActualizarDocumento(DocumentoBase, DocumentoExtra):
 class ValidadorBuscarDocumentos(Validador):
     titulo: Optional[str] = Field(
         default=None,
-        max_length=200,
+        max_length=250,
         validation_alias='titulo',
         json_schema_extra={'filtro':'CONTIENE', 'permisos':''}
     )
@@ -168,25 +168,25 @@ class ValidadorBuscarDocumentos(Validador):
     )
     etiquetas: Optional[str] = Field(
         default=None,
-        max_length=100,
+        max_length=250,
         validation_alias='etiquetas',
         json_schema_extra={'filtro':'CONTIENE', 'permisos':''}
     )
     palabras: Optional[str] = Field(
         default=None,
-        max_length=100,
+        max_length=250,
         validation_alias='palabras',
         json_schema_extra={'filtro':'CONTIENE', 'permisos':''}
     )
     tipodoc: Optional[str] = Field(
         default=None,
-        max_length=20,
+        max_length=30,
         validation_alias='tipodoc',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
     )
     coleccion: Optional[str] = Field(
         default=None,
-        max_length=20,
+        max_length=30,
         validation_alias='coleccion',
         json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
     )

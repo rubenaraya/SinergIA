@@ -163,7 +163,7 @@ class CasosDeUsoDocumentos(CasosDeUso):
         if mi.autorizar_accion(permisos=mi.PERMISOS.BUSCAR, rechazar=True):
             resultado = mi.repositorio.consultar_lista_documentos(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
-            entrega['descripcion'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
+            entrega['mensaje'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
         return entrega
 
     def _ver(mi, solicitud:dict):
@@ -171,7 +171,7 @@ class CasosDeUsoDocumentos(CasosDeUso):
         if mi.autorizar_accion(permisos=mi.PERMISOS.VER, rechazar=True):
             resultado = mi.repositorio.consultar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
-            if len(resultado) == 0:
+            if resultado.get('total', 0) <= 0:
                 entrega['mensaje'] = 'Recurso-no-encontrado'
         return entrega
 
@@ -180,6 +180,8 @@ class CasosDeUsoDocumentos(CasosDeUso):
         if mi.autorizar_accion(permisos=mi.PERMISOS.AGREGAR, rechazar=True):
             resultado = mi.repositorio.agregar_documento_nuevo(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
+            if resultado.get('total', 0) <= 0:
+                entrega['mensaje'] = 'Recurso-no-agregado'
         return entrega
 
     def _actualizar(mi, solicitud:dict):
@@ -187,6 +189,8 @@ class CasosDeUsoDocumentos(CasosDeUso):
         if mi.autorizar_accion(permisos=mi.PERMISOS.ACTUALIZAR, rechazar=True):
             resultado = mi.repositorio.actualizar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
+            if resultado.get('total', 0) <= 0:
+                entrega['mensaje'] = 'Recurso-no-actualizado'
         return entrega
 
     def _eliminar(mi, solicitud:dict):
@@ -194,6 +198,8 @@ class CasosDeUsoDocumentos(CasosDeUso):
         if mi.autorizar_accion(permisos=mi.PERMISOS.ELIMINAR, rechazar=True):
             resultado = mi.repositorio.eliminar_documento_seleccionado(solicitud, mi.sesion.get('roles'))
             entrega['resultado'] = resultado
+            if resultado.get('total', 0) <= 0:
+                entrega['mensaje'] = 'Recurso-no-eliminado'
         return entrega
 
 ACCIONES = CasosDeUsoDocumentos.ACCIONES

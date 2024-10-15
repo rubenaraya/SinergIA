@@ -31,3 +31,12 @@ msgstr "Hay {total} documentos. Lista del {primero} al {ultimo}"
 msgid "Recurso-no-encontrado"
 msgstr "El documento solicitado no fue encontrado"
 
+msgid "Recurso-no-agregado"
+msgstr "El documento no se pudo agregar"
+
+msgid "Recurso-no-actualizado"
+msgstr "El documento no se pudo actualizar"
+
+msgid "Recurso-no-eliminado"
+msgstr "El documento no se pudo eliminar"
+
