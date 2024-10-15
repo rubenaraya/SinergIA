@@ -55,3 +55,6 @@ class BasedatosSqlite(Basedatos):
             )
         return False
 
+    def crear_tabla(mi, constructor:dict={}):
+        return {}
+

@@ -32,64 +32,69 @@ PENDIENTES:
 class DocumentoBase(Constructor):
     dto_fuente:str = 'catalogo'
     uid: Optional[str] = Field(
-        default=None,
+        default='',
         serialization_alias='uid',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'unico','largo':16}
     )
     titulo: Optional[str] = Field(
         default=None,
         serialization_alias='titulo',
-        json_schema_extra={'permisos':'','largo':250}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':250}
     )
     autores: Optional[str] = Field(
         default=None,
         serialization_alias='autores',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':100}
     )
     editor: Optional[str] = Field(
         default=None,
         serialization_alias='editor',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':100}
     )
     fechapub: Optional[str] = Field(
         default=None,
         serialization_alias='fechapub',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':30}
     )
     etiquetas: Optional[str] = Field(
         default=None,
         serialization_alias='etiquetas',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':250}
     )
     palabras: Optional[str] = Field(
         default=None,
         serialization_alias='palabras',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':250}
     )
     temasrel: Optional[str] = Field(
         default=None,
         serialization_alias='temasrel',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':250}
     )
     tipodoc: Optional[str] = Field(
         default=None,
         serialization_alias='tipodoc',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':30}
     )
     nivcomplejidad: Optional[str] = Field(
         default=None,
         serialization_alias='nivcomplejidad',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':10}
     )
     coleccion: Optional[str] = Field(
         default=None,
         serialization_alias='coleccion',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':30}
     )
     estado: Optional[str] = Field(
         default='Activo',
         serialization_alias='estado',
-        json_schema_extra={'permisos':''}
+        json_schema_extra={'permisos':'','tipo':'str','indice':'simple','largo':10}
+    )
+    peso: Optional[int] = Field(
+        default=0,
+        serialization_alias='peso',
+        json_schema_extra={'permisos':'','tipo':'int','indice':'','largo':11}
     )
 
 # --------------------------------------------------

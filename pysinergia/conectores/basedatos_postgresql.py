@@ -43,3 +43,6 @@ class BasedatosPostgresql(Basedatos):
             )
         return False
 
+    def crear_tabla(mi, constructor:dict={}):
+        raise NotImplementedError('Metodo-no-implementado')
+

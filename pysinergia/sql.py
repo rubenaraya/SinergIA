@@ -74,7 +74,7 @@ class GeneradorSQL(ABC):
     # Métodos privados
 
     def _limpiar_texto(mi, texto:str) -> str:
-        texto = re.sub(r'[\']', "", str(texto))
+        #texto = re.sub(r'[\']', "", str(texto))
         texto = re.sub(r"[\x00\x0A\x0D\x1A\x22\x27\x5C]", lambda m: '\\' + m.group(0), texto)
         return texto
 

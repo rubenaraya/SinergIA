@@ -84,3 +84,12 @@ def eliminar_documento(uid:str):
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
+# --------------------------------------------------
+# Rutas de ejemplo
+
+@enrutador.route('/documentos/crear', methods=['GET'])
+def crear_tabla():
+    comunicador.procesar_solicitud()
+    respuesta, codigo = ControladorDocumentos(configuracion, comunicador).crear_tabla()
+    return make_response(jsonify(respuesta), codigo)
+

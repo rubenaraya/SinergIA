@@ -91,6 +91,22 @@ class Constructor(BaseModel):
                     serializado[f'_{field_name}'] = modelo.get(field_name)
         return serializado
 
+    def extraer(mi) -> dict:
+        serializado:dict = {}
+        modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D'))
+        for field_name, field in mi.model_fields.items():
+            if field_name not in ['T','D']:
+                if not field_name.startswith('dto_'):
+                    if field.json_schema_extra:
+                        serializado[field_name] = {
+                            'campo': field.serialization_alias if field.serialization_alias else field_name,
+                            'default': field.default,
+                            'tipo': field.json_schema_extra.get('tipo', 'str'),
+                            'indice': field.json_schema_extra.get('indice', ''),
+                            'largo': field.json_schema_extra.get('largo', 0),
+                        }
+        return serializado
+
 # --------------------------------------------------
 # Modelo: Presentador
 class Presentador(BaseModel):
@@ -110,7 +126,6 @@ class Presentador(BaseModel):
     web:dict = {}
     url:dict = {}
     sesion:dict = {}
-    esquemas:dict = {}
     cookies:dict = {}
 
     @model_validator(mode='after')

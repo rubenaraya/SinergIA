@@ -13,6 +13,7 @@ pandas
 pandoc
 weasyprint
 pydub
+md2pdf
 
 [conectores]
 mysql-connector-python

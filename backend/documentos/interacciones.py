@@ -20,6 +20,7 @@ from pysinergia.interacciones import (
 
 # Importaciones del Microservicio
 from .modelos import (
+    DocumentoBase,
     ConstructorListarDocumentos,
     ConstructorAbrirDocumento,
     ConstructorAgregarDocumento,
@@ -91,6 +92,16 @@ class ControladorDocumentos(Controlador):
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
         return (respuesta, codigo)
+
+    def crear_tabla(mi) -> tuple:
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        repositorio.basedatos.conectar(repositorio.configuracion.basedatos())
+        constructor = DocumentoBase().extraer()
+        datos = {'resultado': repositorio.basedatos.crear_tabla(constructor)}
+        datos['metadatos'] = constructor
+        repositorio.basedatos.desconectar()
+        respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
+        return (respuesta, C.ESTADO._200_EXITO)
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos

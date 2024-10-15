@@ -124,3 +124,7 @@ class Basedatos(ABC):
             mi.conexion.rollback()
             return {"total": -1, "error": str(e)}
 
+    @abstractmethod
+    def crear_tabla(mi, constructor:dict={}):
+        ...
+

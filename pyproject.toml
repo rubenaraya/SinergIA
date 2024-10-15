@@ -70,6 +70,7 @@ complementos = [
     "pandoc",
     "weasyprint",
     "pydub",
+    "md2pdf",
 ]
 fastapi = [
     "fastapi",
