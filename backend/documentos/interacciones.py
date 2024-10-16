@@ -10,7 +10,7 @@ from pysinergia.modelos import (
     Validador,
     Presentador,
 )
-from pysinergia.sql import InstructorSQL
+from pysinergia.conectores.sql import InstructorSQL
 from pysinergia.interacciones import (
     Controlador,
     Repositorio,

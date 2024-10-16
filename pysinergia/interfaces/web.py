@@ -12,9 +12,6 @@ from pysinergia.globales import (
     ErrorPersonalizado,
 )
 from pysinergia.config import Configuracion
-from pysinergia.archivos import (
-    ArchivoCargado,
-)
 from pysinergia.interacciones import (
     I_Comunicador,
 )
@@ -218,7 +215,7 @@ class Comunicador(ABC, I_Comunicador):
         mi.contexto['fecha'] = mi.traductor.fecha_hora()
         mi.contexto['peticion'] = {}
 
-    def cargar_archivo(mi, portador:ArchivoCargado, si_existe:str='RECHAZAR') -> ArchivoCargado:
+    def cargar_archivo(mi, portador, si_existe:str='RECHAZAR'):
         if portador and portador.es_valido:
             unico = True if si_existe == portador.RENOMBRAR else False
             portador.nombre = mi.disco.generar_nombre(portador.nombre, unico=unico)

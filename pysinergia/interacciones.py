@@ -11,9 +11,6 @@ from pysinergia.globales import (
     autorizar_acceso,
 )
 from pysinergia.config import Configuracion
-from pysinergia.archivos import (
-    ArchivoCargado as ArchivoCargado,
-)
 
 # --------------------------------------------------
 # Funcion: preparar_datos
@@ -39,7 +36,7 @@ class I_Comunicador(metaclass=ABCMeta):
         ...
 
     @abstractmethod
-    def cargar_archivo(mi, portador:ArchivoCargado, unico:bool=False) -> ArchivoCargado:
+    def cargar_archivo(mi, portador, unico:bool=False):
         ...
     
     @abstractmethod
