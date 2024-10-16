@@ -81,7 +81,7 @@ class ControladorDocumentos(Controlador):
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        codigo = respuesta.get('codigo', C.ESTADO._204_VACIO)
         return (respuesta, codigo)
 
     def eliminar_documento(mi, peticion:Validador) -> tuple:
@@ -90,7 +90,7 @@ class ControladorDocumentos(Controlador):
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        codigo = respuesta.get('codigo', C.ESTADO._204_VACIO)
         return (respuesta, codigo)
 
     def crear_tabla(mi) -> tuple:
@@ -101,6 +101,10 @@ class ControladorDocumentos(Controlador):
         repositorio.basedatos.desconectar()
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         return (respuesta, C.ESTADO._200_EXITO)
+
+    # TODO: Pendiente
+    def exportar_documentos(mi, peticion:Validador) -> tuple:
+        ...
 
 # --------------------------------------------------
 # Clase: RepositorioDocumentos

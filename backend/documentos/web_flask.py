@@ -88,6 +88,12 @@ def eliminar_documento(uid:str):
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
+# TODO: Pendiente
+@enrutador.route('/documentos/exportar/<conversion>', methods=['GET'])
+@validate()
+def exportar_documentos(query:ValidadorBuscarDocumentos):
+    comunicador.procesar_solicitud()
+
 # --------------------------------------------------
 # Rutas de ejemplo y pruebas
 

@@ -201,3 +201,19 @@ class Presentador(BaseModel):
     def json(mi) -> str:
         return mi.model_dump_json(exclude_none=True, exclude_unset=True, exclude=('T','D'))
 
+
+# --------------------------------------------------
+# Modelo: Diccionario
+class Diccionario(BaseModel): # TODO: Pendiente
+    ...
+
+# --------------------------------------------------
+# Modelo: Formulario
+class Formulario(Validador): # TODO: Pendiente
+    ...
+
+# --------------------------------------------------
+# Clase: VerificadorFormulario
+class VerificadorFormulario: # TODO: Pendiente
+    ...
+
