@@ -6,7 +6,7 @@ from abc import ABC
 from pathlib import Path
 
 # Importaciones de PySinergIA
-from pysinergia.globales import ErrorPersonalizado
+from pysinergia.globales import *
 
 # --------------------------------------------------
 # Clase: ErrorExportador
@@ -27,3 +27,4 @@ class Exportador(ABC):
             return ''
         return ruta.as_posix()
 
+__all__ = ['Exportador', 'ErrorExportador']

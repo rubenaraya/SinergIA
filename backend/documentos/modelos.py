@@ -6,20 +6,11 @@ import secrets
 from typing import Optional
 
 # Importaciones de Pydantic
-from pydantic import (
-    Field,
-    model_validator,
-)
+from pydantic import (Field, model_validator)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes as C,
-    ErrorPersonalizado,
-)
-from pysinergia.modelos import (
-    Validador,
-    Constructor,
-)
+from pysinergia.globales import *
+from pysinergia.modelos import (Validador, Constructor)
 
 """
 PENDIENTES:
@@ -212,8 +203,8 @@ class ValidadorConsultarDocumento(Validador):
         if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
             raise ErrorPersonalizado(
                     mensaje='El-uid-no-es-valido',
-                    codigo=C.ESTADO._400_NO_VALIDO,
-                    nivel_evento=C.REGISTRO.DEBUG
+                    codigo=Constantes.ESTADO._400_NO_VALIDO,
+                    nivel_evento=Constantes.REGISTRO.DEBUG
                 )
         return values
 

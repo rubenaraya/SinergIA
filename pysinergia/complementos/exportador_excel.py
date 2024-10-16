@@ -3,11 +3,8 @@
 # --------------------------------------------------
 
 # Importaciones de PySinergIA
-from pysinergia.complementos.exportador import (
-    Exportador,
-    ErrorExportador,
-)
-from pysinergia.globales import Constantes
+from pysinergia.globales import *
+from pysinergia.complementos.exportador import *
 
 # --------------------------------------------------
 # Clase: ExportadorExcel

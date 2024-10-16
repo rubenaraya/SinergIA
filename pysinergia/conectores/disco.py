@@ -2,11 +2,11 @@
 # pysinergia\conectores\disco.py
 # --------------------------------------------------
 
-from abc import (ABC, ABCMeta, abstractmethod)
+from abc import (ABC, abstractmethod)
 from typing import (BinaryIO, TextIO, List)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import ErrorPersonalizado
+from pysinergia.globales import *
 
 # --------------------------------------------------
 # Clase: ErrorDisco
@@ -71,3 +71,4 @@ class Disco(ABC):
     def convertir_imagen(mi, ruta_imagen:str, dir_destino:str, lista_salidas:list[dict]) -> list[str]:
         ...
 
+__all__ = ['Disco', 'ErrorDisco']

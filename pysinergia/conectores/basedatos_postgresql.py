@@ -2,17 +2,11 @@
 # pysinergia\conectores\basedatos_postgresql.py
 # --------------------------------------------------
 
-from psycopg2 import (
-    connect,
-    Error,
-)
+from psycopg2 import (connect, Error)
 from psycopg2.extras import RealDictCursor
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    ErrorPersonalizado,
-    Constantes
-)
+from pysinergia.globales import *
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------

@@ -17,17 +17,9 @@ from flask import (
 )
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes as C,
-    ErrorPersonalizado,
-)
+from pysinergia.globales import *
+from pysinergia.interfaces.web import *
 from pysinergia.modelos import Presentador
-from pysinergia.interfaces.web import (
-    Comunicador,
-    Autenticador,
-    ErrorAutenticacion,
-    Traductor,
-)
 
 # --------------------------------------------------
 # Clase: ServidorApi
@@ -44,7 +36,7 @@ class ServidorApi:
         @api.after_request
         def procesar_salidas(respuesta:Response):
             respuesta.headers['X-API-Motor'] = 'PySinergIA'
-            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
+            if os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO and respuesta.status_code >= 200:
                 content_type = str(respuesta.headers.get('Content-Type', ''))
                 print(f'respuesta: {content_type} | {respuesta.content_type} | {respuesta.status_code}')
             if respuesta.content_type == 'application/json':
@@ -53,7 +45,7 @@ class ServidorApi:
 
         @api.before_request
         def procesar_entradas():
-            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO:
                 content_type = str(request.headers.get('Content-Type', ''))
                 if content_type:
                     print(f'peticion: {content_type}')
@@ -84,7 +76,7 @@ class ServidorApi:
         return f'{request.method} {url}'
 
     def _crear_respuesta_error(mi, err:ErrorPersonalizado):
-        registrar_detalles = bool(os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO)
+        registrar_detalles = bool(os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO)
         if (err.codigo >= 500) or registrar_detalles:
             err.registrar(texto_pre=mi._obtener_url(), exc_info=registrar_detalles)
         traductor = Traductor({'idiomas_disponibles': os.getenv('IDIOMAS_DISPONIBLES')})
@@ -93,10 +85,7 @@ class ServidorApi:
         return jsonify(respuesta), err.codigo
 
     def _manejar_errores(mi, api:Flask):
-        from werkzeug.exceptions import (
-            HTTPException,
-            InternalServerError,
-        )
+        from werkzeug.exceptions import (HTTPException, InternalServerError)
         from pydantic import ValidationError
 
         @api.errorhandler(ErrorAutenticacion)
@@ -111,22 +100,22 @@ class ServidorApi:
 
         @api.errorhandler(ValidationError)
         def _error_validacion(err:ValidationError):
-            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=C.ESTADO._422_NO_PROCESABLE, nivel_evento=C.REGISTRO.INFO, detalles=err.errors())
+            error = ErrorPersonalizado(mensaje='Los-datos-recibidos-son-invalidos', codigo=Constantes.ESTADO._422_NO_PROCESABLE, nivel_evento=Constantes.REGISTRO.INFO, detalles=err.errors())
             return mi._crear_respuesta_error(error)
 
         @api.errorhandler(HTTPException)
         def _error_http(err:HTTPException):
-            error = ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=C.REGISTRO.DEBUG if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO else C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje=err.description, codigo=err.code, nivel_evento=Constantes.REGISTRO.DEBUG if os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO else Constantes.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error)
 
         @api.errorhandler(InternalServerError)
         def _error_interno(err:InternalServerError):
-            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error)
  
         @api.errorhandler(Exception)
         def _error_nomanejado(err:Exception):
-            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.ERROR)
+            error = ErrorPersonalizado(mensaje='Error-no-manejado', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.ERROR)
             return mi._crear_respuesta_error(error)
 
     # Métodos públicos
@@ -138,7 +127,7 @@ class ServidorApi:
             static_url_path=f"{str(os.getenv('RAIZ_GLOBAL',''))}/{str(os.getenv('ALIAS_FRONTEND',''))}",
             static_folder=mi.dir_frontend.as_posix(),
         )
-        api.config['MAX_CONTENT_LENGTH'] = 50 * C.PESO.MB
+        api.config['MAX_CONTENT_LENGTH'] = 50 * Constantes.PESO.MB
         mi._configurar_cors(api)
         mi._configurar_encabezados(api)
         mi._configurar_endpoints(api)
@@ -159,14 +148,14 @@ class ServidorApi:
                     enrutador = importlib.import_module(modulo)
                     api.register_blueprint(getattr(enrutador, 'enrutador'))
             except Exception:
-                ErrorPersonalizado(mensaje='No-se-pudo-registrar-el-microservicio', codigo=C.ESTADO._500_ERROR, nivel_evento=C.REGISTRO.WARNING, recurso=str(directorio)).registrar()
+                ErrorPersonalizado(mensaje='No-se-pudo-registrar-el-microservicio', codigo=Constantes.ESTADO._500_ERROR, nivel_evento=Constantes.REGISTRO.WARNING, recurso=str(directorio)).registrar()
                 continue
 
     def iniciar_servicio_web(mi, app:Flask, puerto:int, host:str=None):
-        if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == C.ENTORNO.LOCAL:
+        if os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO or os.getenv('ENTORNO') == Constantes.ENTORNO.LOCAL:
             ssl_cert=str(Path(os.getenv('SSL_CERT')))
             ssl_key=str(Path(os.getenv('SSL_KEY')))
-            if os.getenv('ENTORNO') == C.ENTORNO.DESARROLLO:
+            if os.getenv('ENTORNO') == Constantes.ENTORNO.DESARROLLO:
                 app.config['TEMPLATES_AUTO_RELOAD'] = True
                 app.config['EXPLAIN_TEMPLATE_LOADING'] = True
                 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -265,7 +254,7 @@ class AutenticadorWeb(Autenticador):
         mensaje = 'API-key-invalida'
         raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=C.ESTADO._403_NO_AUTORIZADO,
+            codigo=Constantes.ESTADO._403_NO_AUTORIZADO,
         )
     
     def _validar_token(mi) -> str:
@@ -280,7 +269,7 @@ class AutenticadorWeb(Autenticador):
                     return mi.token
         raise ErrorAutenticacion(
             mensaje=mensaje,
-            codigo=C.ESTADO._401_NO_AUTENTICADO,
+            codigo=Constantes.ESTADO._401_NO_AUTENTICADO,
             url_login=mi.url_login
         )
 
@@ -308,3 +297,4 @@ class AutenticadorWeb(Autenticador):
             return f(*args, **kwargs)
         return decorador
 
+__all__ = ['ComunicadorWeb', 'AutenticadorWeb']

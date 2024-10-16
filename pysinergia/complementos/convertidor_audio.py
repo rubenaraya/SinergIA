@@ -7,8 +7,8 @@ from pathlib import Path
 from pydub import AudioSegment
 
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes
-from pysinergia.complementos.exportador import ErrorExportador
+from pysinergia.globales import *
+from pysinergia.complementos.exportador import *
 
 # --------------------------------------------------
 # Clase: ConvertidorAudio

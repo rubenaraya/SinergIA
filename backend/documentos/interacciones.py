@@ -3,20 +3,10 @@
 # --------------------------------------------------
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes as C,
-)
-from pysinergia.modelos import (
-    Validador,
-    Presentador,
-)
+from pysinergia.globales import *
+from pysinergia.modelos import (Validador, Presentador)
 from pysinergia.conectores.sql import InstructorSQL
-from pysinergia.interacciones import (
-    Controlador,
-    Repositorio,
-    CasosDeUso,
-    preparar_datos,
-)
+from pysinergia.interacciones import *
 
 # Importaciones del Microservicio
 from .modelos import (
@@ -45,7 +35,7 @@ class ControladorDocumentos(Controlador):
         datos['mensaje'] = 'Hay-{total}-casos.-Lista-del-{primero}-al-{ultimo}' if resultado.get('total', 0) > 0 else 'No-hay-casos'
 
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        codigo = respuesta.get('codigo', Constantes.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
     def ver_documento(mi, peticion:Validador) -> tuple:
@@ -63,7 +53,7 @@ class ControladorDocumentos(Controlador):
             datos['mensaje'] = 'Recurso-no-encontrado'
 
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._200_EXITO)
+        codigo = respuesta.get('codigo', Constantes.ESTADO._200_EXITO)
         return (respuesta, codigo)
 
     def agregar_documento(mi, peticion:Validador) -> tuple:
@@ -72,7 +62,7 @@ class ControladorDocumentos(Controlador):
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._201_CREADO)
+        codigo = respuesta.get('codigo', Constantes.ESTADO._201_CREADO)
         return (respuesta, codigo)
 
     def actualizar_documento(mi, peticion:Validador) -> tuple:
@@ -81,7 +71,7 @@ class ControladorDocumentos(Controlador):
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._204_VACIO)
+        codigo = respuesta.get('codigo', Constantes.ESTADO._204_VACIO)
         return (respuesta, codigo)
 
     def eliminar_documento(mi, peticion:Validador) -> tuple:
@@ -90,7 +80,7 @@ class ControladorDocumentos(Controlador):
         casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        codigo = respuesta.get('codigo', C.ESTADO._204_VACIO)
+        codigo = respuesta.get('codigo', Constantes.ESTADO._204_VACIO)
         return (respuesta, codigo)
 
     def crear_tabla(mi) -> tuple:
@@ -100,7 +90,7 @@ class ControladorDocumentos(Controlador):
         datos = {'resultado': repositorio.basedatos.crear_tabla('catalogo', constructor)}
         repositorio.basedatos.desconectar()
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
-        return (respuesta, C.ESTADO._200_EXITO)
+        return (respuesta, Constantes.ESTADO._200_EXITO)
 
     # TODO: Pendiente
     def exportar_documentos(mi, peticion:Validador) -> tuple:

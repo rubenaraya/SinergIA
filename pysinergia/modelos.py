@@ -2,28 +2,14 @@
 # pysinergia\modelos.py
 # --------------------------------------------------
 
-from typing import (
-    Optional,
-    Self,
-    Union,
-    get_args,
-    get_origin,
-)
 from datetime import (date, datetime)
+from typing import (Optional, Self, Union, get_args, get_origin)
 
 # Importaciones de Pydantic
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    model_validator,
-)
+from pydantic import (BaseModel, ConfigDict, model_validator)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes,
-    autorizar_acceso,
-    concluir_estado,
-)
+from pysinergia.globales import (Constantes, autorizar_acceso, concluir_estado)
 
 # --------------------------------------------------
 # Modelo: Validador

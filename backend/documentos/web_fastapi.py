@@ -11,29 +11,19 @@ from fastapi import (
     Path,
     Query,
 )
-from fastapi.responses import (
-    JSONResponse,
-)
+from fastapi.responses import (JSONResponse)
 
 # Importaciones de PySinergIA
-from pysinergia.config import (
-    Configuracion,
-    configurar_microservicio,
-)
-from pysinergia.interfaces.fastapi import (
-    ComunicadorWeb,
-    AutenticadorWeb,
-)
+from pysinergia.config import *
+from pysinergia.interfaces.fastapi import *
 
 # Importaciones del Microservicio
+from .interacciones import ControladorDocumentos
 from .modelos import (
     ValidadorBuscarDocumentos,
     ValidadorConsultarDocumento,
     ValidadorAgregarDocumento,
     ValidadorActualizarDocumento,
-)
-from .interacciones import (
-    ControladorDocumentos,
 )
 
 # --------------------------------------------------

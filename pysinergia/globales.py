@@ -3,10 +3,7 @@
 # --------------------------------------------------
 
 import os
-from typing import (
-    Tuple,
-    Union,
-)
+from typing import (Tuple, Union)
 
 # --------------------------------------------------
 # Clase estática: Constantes
@@ -310,3 +307,4 @@ def concluir_estado(estado:int) -> str:
         return Constantes.CONCLUSION.ALERTA
     return Constantes.CONCLUSION.ERROR
 
+__all__ = ['Constantes', 'ErrorPersonalizado', 'autorizar_acceso']

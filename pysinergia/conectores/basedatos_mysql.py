@@ -2,17 +2,10 @@
 # pysinergia\conectores\basedatos_mysql.py
 # --------------------------------------------------
 
-from mysql.connector import (
-    connect,
-    MySQLConnection,
-    Error,
-)
+from mysql.connector import (MySQLConnection, Error, connect)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    ErrorPersonalizado,
-    Constantes
-)
+from pysinergia.globales import *
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------

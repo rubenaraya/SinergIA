@@ -2,16 +2,12 @@
 # pysinergia\conectores\basedatos_sqlite.py
 # --------------------------------------------------
 
-import os
-import sqlite3
+import os, sqlite3
 from sqlite3 import Error
 from pathlib import Path
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    ErrorPersonalizado,
-    Constantes
-)
+from pysinergia.globales import *
 from pysinergia.conectores.basedatos import Basedatos
 
 # --------------------------------------------------

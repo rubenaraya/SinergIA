@@ -1,23 +1,14 @@
 # --------------------------------------------------
-# pysinergia\archivos.py
+# pysinergia\conectores\archivos.py
 # --------------------------------------------------
 
-from typing import (
-    List,
-    Optional,
-    Self,
-)
+from typing import (List, Optional, Self)
 
 # Importaciones de Pydantic
-from pydantic import (
-    BaseModel,
-    model_validator,
-)
+from pydantic import (BaseModel, model_validator)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (
-    Constantes,
-)
+from pysinergia.globales import *
 
 # --------------------------------------------------
 # Modelo: Archivo

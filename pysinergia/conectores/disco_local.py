@@ -7,10 +7,7 @@ from typing import (BinaryIO, TextIO, List)
 
 # Importaciones de PySinergIA
 from pysinergia.conectores.archivos import Archivo
-from pysinergia.conectores.disco import (
-    Disco as Disco,
-    ErrorDisco,
-)
+from pysinergia.conectores.disco import *
 
 # --------------------------------------------------
 # Clase: DiscoLocal
