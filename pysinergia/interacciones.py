@@ -21,6 +21,23 @@ def preparar_datos(solicitud:dict=None) -> dict:
     return datos
 
 # --------------------------------------------------
+# Interface: I_ArchivoCargado
+class I_ArchivoCargado(metaclass=ABCMeta):
+
+    nombre:str
+    extension:str
+    carpeta:str
+    mensaje_error:str
+    codigo:str
+    conclusion:str
+    ruta:str
+    tipo_mime:str
+    es_valido:bool
+    RENOMBRAR:str
+    RECHAZAR:str
+    SOBREESCRIBIR:str
+
+# --------------------------------------------------
 # Interface: I_Comunicador
 class I_Comunicador(metaclass=ABCMeta):
 
