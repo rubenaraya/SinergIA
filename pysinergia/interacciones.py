@@ -114,8 +114,7 @@ class Controlador(ABC):
         mi.configuracion:Configuracion = configuracion
         mi.comunicador:I_Comunicador = comunicador
         contexto = mi.comunicador.contexto
-        sesion = contexto.get('sesion')
-        mi.sesion:dict = sesion or {}
+        mi.sesion:dict = contexto.get('sesion', {})
 
 # --------------------------------------------------
 # Clase: CasosDeUso
@@ -147,7 +146,7 @@ class CasosDeUso(ABC):
             )
         return autorizacion
 
-    def agregar_metadatos(mi, agregados:dict, metadatos:dict=None) -> dict:
+    def agregar_metadatos(mi, agregados:dict, anteriores:dict=None) -> dict:
         requeridos = {
             'plantilla': 'tabla.html',
             'hoja_estilos': 'tabla.css',
@@ -157,14 +156,14 @@ class CasosDeUso(ABC):
             'nombre_descarga': '',
             'titulo': '',
         }
-        if metadatos is None:
-            metadatos = {}
+        if anteriores is None:
+            anteriores = {}
         for clave, valor in requeridos.items():
-            if clave not in metadatos:
-                metadatos[clave] = valor
+            if clave not in anteriores:
+                anteriores[clave] = valor
         if agregados is not None:
             for clave, valor in agregados.items():
-                metadatos[clave] = valor
-        return metadatos
+                anteriores[clave] = valor
+        return anteriores
 
 __all__ = ['Repositorio', 'Controlador', 'CasosDeUso', 'preparar_datos']

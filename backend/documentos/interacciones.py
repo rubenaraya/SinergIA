@@ -4,6 +4,7 @@
 
 # Importaciones de PySinergIA
 from pysinergia.globales import *
+from pysinergia.config import Configuracion
 from pysinergia.modelos import (Validador, Presentador)
 from pysinergia.conectores.sql import InstructorSQL
 from pysinergia.interacciones import *
@@ -25,7 +26,7 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         """
-        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.BUSCAR, peticion.convertir())
         """
         solicitud = peticion.convertir()
@@ -42,7 +43,7 @@ class ControladorDocumentos(Controlador):
         peticion.adjuntar_contexto(mi.comunicador.contexto)
         repositorio = RepositorioDocumentos(mi.configuracion)
         """
-        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.VER, peticion.convertir())
         """
         solicitud = peticion.convertir()
@@ -58,8 +59,7 @@ class ControladorDocumentos(Controlador):
 
     def agregar_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        repositorio = RepositorioDocumentos(mi.configuracion)
-        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', Constantes.ESTADO._201_CREADO)
@@ -67,8 +67,7 @@ class ControladorDocumentos(Controlador):
 
     def actualizar_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        repositorio = RepositorioDocumentos(mi.configuracion)
-        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', Constantes.ESTADO._204_VACIO)
@@ -76,8 +75,7 @@ class ControladorDocumentos(Controlador):
 
     def eliminar_documento(mi, peticion:Validador) -> tuple:
         peticion.adjuntar_contexto(mi.comunicador.contexto)
-        repositorio = RepositorioDocumentos(mi.configuracion)
-        casosdeuso = CasosDeUsoDocumentos(repositorio, mi.sesion)
+        casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         codigo = respuesta.get('codigo', Constantes.ESTADO._204_VACIO)
@@ -148,8 +146,9 @@ class RepositorioDocumentos(Repositorio):
 # --------------------------------------------------
 # Clase: CasosDeUsoDocumentos
 class CasosDeUsoDocumentos(CasosDeUso):
-    def __init__(mi, repositorio:RepositorioDocumentos, sesion:dict=None):
-        mi.repositorio:RepositorioDocumentos = repositorio
+    def __init__(mi, configuracion:Configuracion, sesion:dict=None):
+        mi.configuracion:Configuracion = configuracion
+        mi.repositorio = RepositorioDocumentos(mi.configuracion)
         mi.sesion:dict = sesion
 
     # Clases de constantes

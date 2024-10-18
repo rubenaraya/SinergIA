@@ -3,11 +3,12 @@
 # --------------------------------------------------
 
 import os
+from abc import ABC
 from typing import (Tuple, Union)
 
 # --------------------------------------------------
 # Clase estática: Constantes
-class Constantes:
+class Constantes(ABC):
 
     def __new__(cls):
         raise TypeError('No-se-puede-instanciar-una-clase-estatica')
@@ -161,7 +162,7 @@ class Constantes:
 
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
-class RegistradorLogs:
+class RegistradorLogs(ABC):
 
     def __new__(cls):
         raise TypeError('No-se-puede-instanciar-una-clase-estatica')
@@ -191,7 +192,7 @@ class RegistradorLogs:
 
 # --------------------------------------------------
 # Clase: ErrorPersonalizado
-class ErrorPersonalizado(Exception):
+class ErrorPersonalizado(ABC, Exception):
     def __init__(mi,
                 mensaje:str,
                 codigo:int=Constantes.ESTADO._500_ERROR,
