@@ -10,7 +10,7 @@ from pydantic import (Field, model_validator)
 
 # Importaciones de PySinergIA
 from pysinergia.globales import *
-from pysinergia.modelos import (Validador, Constructor)
+from pysinergia.modelos import (Validador, Constructor, Formulario)
 
 """
 PENDIENTES:
@@ -225,5 +225,13 @@ class ValidadorAgregarDocumento(ValidadorBaseDocumento):
 # --------------------------------------------------
 # Modelo: ValidadorActualizarDocumento (TODO: Pendiente)
 class ValidadorActualizarDocumento(ValidadorBaseDocumento):
+    ...
+
+# --------------------------------------------------
+# MODELOS FORMULARIOS
+
+# --------------------------------------------------
+# Modelo: FormActualizarDocumento
+class FormActualizarDocumento(Formulario):
     ...
 

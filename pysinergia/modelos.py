@@ -190,7 +190,7 @@ class Presentador(ABC, BaseModel):
 
 # --------------------------------------------------
 # Modelo: Diccionario
-class Diccionario(BaseModel):
+class Diccionario(ABC, BaseModel):
     dto_roles: Optional[str] = ''
     t: Optional[object] = None
 
@@ -236,7 +236,7 @@ class Formulario(Validador):
     def generar(mi) -> dict:
         modelo = mi.model_dump(mode='json', warnings=False, exclude=('T','D','dto_grupos','dto_acciones'))
         _ = mi.T._ if mi.T else mi._
-        D = mi.D(dto_roles=mi.dto_roles, t=_).generar() if mi.D else None
+        D:dict = mi.D(dto_roles=mi.dto_roles, t=_).generar() if mi.D else None
         formulario:dict = {
             'id': mi.__class__.__name__,
             'icono': mi.dto_icono or '',
@@ -287,7 +287,6 @@ class Formulario(Validador):
                             'maximo': maximo,
                             'error': error,
                             'diccionario': diccionario
-
                         }
         for clave, valores in mi.dto_grupos.items():
             if isinstance(valores, dict):
@@ -311,12 +310,12 @@ class Formulario(Validador):
         return formulario
 
     #TODO: Pendiente
-    def validar(mi, formulario:dict) -> dict:
+    def verificar(mi, formulario:dict) -> dict:
         ...
 
 # --------------------------------------------------
-# Clase: VerificadorFormulario
-class VerificadorFormulario:
+# Clase: VerificadorCampos
+class VerificadorCampos(ABC):
     def __init__(mi):
         mi.validaciones = {
             Constantes.VALIDACION.TEXTO: mi._validar_texto,
@@ -404,7 +403,7 @@ class VerificadorFormulario:
 
     # Métodos públicos
 
-    def verificar_campo(mi, criterios:dict, valor:Any) -> bool:
+    def verificar(mi, criterios:dict, valor:Any) -> bool:
         if criterios.get('validacion') == 'novalidar':
             return True
         estado = False

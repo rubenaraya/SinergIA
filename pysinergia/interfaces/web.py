@@ -304,6 +304,12 @@ class Comunicador(ABC, I_Comunicador):
                 return Constantes.CONVERSION.JSON
         return Constantes.CONVERSION.HTML
 
+    def agregar_contexto(mi, datos:dict=None) -> dict:
+        if isinstance(datos, dict):
+            for clave, valor in datos.items():
+                mi.contexto[clave] = valor
+        return mi.contexto
+
 # --------------------------------------------------
 # Clase: Autenticador
 class Autenticador(ABC):

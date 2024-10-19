@@ -72,6 +72,10 @@ class I_Comunicador(metaclass=ABCMeta):
     def asignar_cookie(mi, respuesta, nombre:str, valor:str, duracion:int=None):
         ...
 
+    @abstractmethod
+    def agregar_contexto(mi, datos:dict=None) -> dict:
+        ...
+
 # --------------------------------------------------
 # Clase: Repositorio
 class Repositorio(ABC):
