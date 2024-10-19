@@ -10,13 +10,7 @@ from pysinergia.conectores.sql import InstructorSQL
 from pysinergia.interacciones import *
 
 # Importaciones del Microservicio
-from .modelos import (
-    DocumentoBase,
-    ConstructorListarDocumentos,
-    ConstructorAbrirDocumento,
-    ConstructorAgregarDocumento,
-    ConstructorActualizarDocumento,
-)
+from .constructores import *
 
 # --------------------------------------------------
 # Clase: ControladorDocumentos

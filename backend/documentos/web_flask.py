@@ -13,19 +13,13 @@ from flask import (
 from flask_pydantic import validate
 
 # Importaciones de PySinergIA
-from pysinergia.config import *
 from pysinergia.globales import Constantes
+from pysinergia.config import *
 from pysinergia.interfaces.flask import *
 
 # Importaciones del Microservicio
 from .interacciones import ControladorDocumentos
-from .modelos import (
-    ValidadorBuscarDocumentos,
-    ValidadorConsultarDocumento,
-    ValidadorAgregarDocumento,
-    ValidadorActualizarDocumento,
-    FormActualizarDocumento,
-)
+from .validadores import *
 
 # --------------------------------------------------
 # Configuración del Microservicio

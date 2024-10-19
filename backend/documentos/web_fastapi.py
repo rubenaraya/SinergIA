@@ -19,16 +19,12 @@ from pysinergia.interfaces.fastapi import *
 
 # Importaciones del Microservicio
 from .interacciones import ControladorDocumentos
-from .modelos import (
-    ValidadorBuscarDocumentos,
-    ValidadorConsultarDocumento,
-    ValidadorAgregarDocumento,
-    ValidadorActualizarDocumento,
-)
+from .validadores import *
 
 # --------------------------------------------------
 # Configuración del Microservicio
 app_pwa = 'sinergia'
+microservicio = 'documentos'
 configuracion = configurar_microservicio(Configuracion, __file__, app_pwa, None)
 autenticador = AutenticadorWeb(configuracion, url_login=f'{configuracion.URL_MICROSERVICIO}/login')
 comunicador = ComunicadorWeb(configuracion)

@@ -309,9 +309,18 @@ class Formulario(Validador):
                     }
         return formulario
 
-    #TODO: Pendiente
     def verificar(mi, formulario:dict) -> dict:
-        ...
+        estado = True
+        definicion:dict
+        verificador = VerificadorCampos()
+        for definicion in formulario:
+            valor = definicion.get('valor', '')
+            if isinstance(valor, list):
+                valor = ','.join(valor)
+            valor = valor.strip()
+            if len(verificador.verificar(definicion=definicion, valor=valor)) > 0:
+                estado = False
+        return estado
 
 # --------------------------------------------------
 # Clase: VerificadorCampos
@@ -403,22 +412,30 @@ class VerificadorCampos(ABC):
 
     # Métodos públicos
 
-    def verificar(mi, criterios:dict, valor:Any) -> bool:
-        if criterios.get('validacion') == 'novalidar':
-            return True
+    def verificar(mi, definicion:dict, valor:Any) -> str:
+        validacion = definicion.get('validacion')
+        mensaje = ''
+        if validacion == 'novalidar':
+            return mensaje
         estado = False
-        minimo = 0 if not criterios.get('minimo') else float(criterios.get('minimo'))
-        maximo = 0 if not criterios.get('maximo') else float(criterios.get('maximo'))
-        estado = mi.validaciones.get(criterios.get('validacion'))(minimo, maximo, valor)
+        minimo = 0 if not definicion.get('minimo') else float(definicion.get('minimo'))
+        maximo = 0 if not definicion.get('maximo') else float(definicion.get('maximo'))
+        estado = mi.validaciones.get(validacion)(minimo, maximo, valor)
         if estado:
-            estado = mi._validar_expreg(criterios.get('patron', ''), valor)
+            estado = mi._validar_expreg(definicion.get('patron', ''), valor)
         if not estado:
-            mensaje = criterios.get('error', '')
+            campo = definicion.get('campo')
+            etiqueta = str(definicion.get('etiqueta', campo))
+            mensaje = str(definicion.get('error', 'ERROR'))
             if len(mensaje) >0:
+                mensaje = mensaje.replace('(minimo)', str(minimo))
+                mensaje = mensaje.replace('(maximo)', str(maximo))
+                mensaje = mensaje.replace('(etiqueta)', etiqueta)
+                mensaje = mensaje.replace('(campo)', campo)
                 mi.errores.append({
-                    'campo': criterios.get('campo'),
+                    'campo': campo,
                     'valor': valor,
                     'mensaje': mensaje,
                 })
-        return estado
+        return mensaje
 
