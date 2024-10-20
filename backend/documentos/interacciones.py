@@ -5,19 +5,20 @@
 # Importaciones de PySinergIA
 from pysinergia.globales import *
 from pysinergia.config import Configuracion
-from pysinergia.modelos import (Validador, Presentador)
+from pysinergia.modelos import (Validador, ValidadorUID, Presentador)
 from pysinergia.conectores.sql import InstructorSQL
 from pysinergia.interacciones import *
 
 # Importaciones del Microservicio
 from .constructores import *
+from .formularios import *
 
 # --------------------------------------------------
 # Clase: ControladorDocumentos
 class ControladorDocumentos(Controlador):
 
     def buscar_documentos(mi, peticion:Validador) -> tuple:
-        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        """peticion.adjuntar_contexto(mi.comunicador.contexto)"""
         repositorio = RepositorioDocumentos(mi.configuracion)
         """
         casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
@@ -34,7 +35,7 @@ class ControladorDocumentos(Controlador):
         return (respuesta, codigo)
 
     def ver_documento(mi, peticion:Validador) -> tuple:
-        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        """peticion.adjuntar_contexto(mi.comunicador.contexto)"""
         repositorio = RepositorioDocumentos(mi.configuracion)
         """
         casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
@@ -52,7 +53,7 @@ class ControladorDocumentos(Controlador):
         return (respuesta, codigo)
 
     def agregar_documento(mi, peticion:Validador) -> tuple:
-        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        """peticion.adjuntar_contexto(mi.comunicador.contexto)"""
         casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.AGREGAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
@@ -60,7 +61,7 @@ class ControladorDocumentos(Controlador):
         return (respuesta, codigo)
 
     def actualizar_documento(mi, peticion:Validador) -> tuple:
-        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        """peticion.adjuntar_contexto(mi.comunicador.contexto)"""
         casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ACTUALIZAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
@@ -68,7 +69,7 @@ class ControladorDocumentos(Controlador):
         return (respuesta, codigo)
 
     def eliminar_documento(mi, peticion:Validador) -> tuple:
-        peticion.adjuntar_contexto(mi.comunicador.contexto)
+        """peticion.adjuntar_contexto(mi.comunicador.contexto)"""
         casosdeuso = CasosDeUsoDocumentos(mi.configuracion, mi.sesion)
         datos = casosdeuso.solicitar_accion(ACCIONES.ELIMINAR, peticion.convertir())
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
@@ -83,6 +84,15 @@ class ControladorDocumentos(Controlador):
         repositorio.basedatos.desconectar()
         respuesta = Presentador(**datos, T=mi.comunicador.traductor).componer()
         return (respuesta, Constantes.ESTADO._200_EXITO)
+
+    def form_actualizar_documentos(mi, uid:str) -> tuple:
+        peticion = ValidadorUID(uid=uid)
+        repositorio = RepositorioDocumentos(mi.configuracion)
+        datos = repositorio.consultar_documento_seleccionado(peticion.convertir(), mi.sesion.get('roles'))
+        formulario = FormActualizarDocumento(**datos.get('caso', {}), dto_contexto=mi.comunicador.contexto, T=mi.comunicador.traductor)
+        mi.comunicador.agregar_contexto({'formulario': formulario.generar()})
+        respuesta = mi.comunicador.transformar_contenido(info=mi.comunicador.contexto, plantilla='form_pagina.html')
+        return (respuesta, Constantes.ESTADO._200_EXITO, Constantes.MIME.HTML)
 
     # TODO: Pendiente
     def exportar_documentos(mi, peticion:Validador) -> tuple:

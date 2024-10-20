@@ -40,3 +40,82 @@ msgstr "El documento no se pudo actualizar"
 msgid "Recurso-no-eliminado"
 msgstr "El documento no se pudo eliminar"
 
+
+msgid "Form-Editar-documento"
+msgstr "Editar documento"
+
+msgid "Datos-basicos"
+msgstr "Datos básicos"
+
+msgid "Datos-avanzados"
+msgstr "Datos avanzados"
+
+msgid "Actualizar-documento"
+msgstr "Actualizar documento"
+
+msgid "Etiqueta-Titulo"
+msgstr "Título"
+
+msgid "Marcador-Titulo"
+msgstr "Título del documento"
+
+msgid "Etiqueta-Autores"
+msgstr "Autor(es)"
+
+msgid "Marcador-Autores"
+msgstr "Autor(es) del documento"
+
+msgid "Etiqueta-Editor"
+msgstr "Editor"
+
+msgid "Marcador-Editor"
+msgstr "Editor del documento"
+
+msgid "Etiqueta-Fecha-publicacion"
+msgstr "Fecha publicación"
+
+msgid "Marcador-Fecha-publicacion"
+msgstr "Fecha publicación"
+
+msgid "Etiqueta-Etiquetas"
+msgstr "Etiquetas"
+
+msgid "Marcador-Etiquetas"
+msgstr "Etiquetas del documento"
+
+msgid "Etiqueta-Palabras-clave"
+msgstr "Palabras clave"
+
+msgid "Marcador-Palabras-clave"
+msgstr "Palabras clave del documento"
+
+msgid "Etiqueta-Tipo"
+msgstr "Tipo documento"
+
+msgid "Marcador-Tipo"
+msgstr "Tipo de documento"
+
+msgid "Etiqueta-Nivel-complejidad"
+msgstr "Nivel complejidad"
+
+msgid "Marcador-Nivel-complejidad"
+msgstr "Nivel de complejidad"
+
+msgid "Etiqueta-Coleccion"
+msgstr "Colección"
+
+msgid "Marcador-Coleccion"
+msgstr "Colección"
+
+msgid "Etiqueta-Alto"
+msgstr "Alto"
+
+msgid "Etiqueta-Medio"
+msgstr "Medio"
+
+msgid "Etiqueta-Bajo"
+msgstr "Bajo"
+
+msgid "Coleccion-Ley-Karin"
+msgstr "Ley Karin"
+

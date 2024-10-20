@@ -36,11 +36,8 @@
 </div>
 {% elif datos_campo.vista == 'textarea' %}
 <div class="col">
-    <div class="form-floating">
-        {% if datos_campo.etiqueta|length > 0 %}<div>{{datos_campo.etiqueta}}</div>{% endif %}
-        <textarea class="form-control-sm w-100 auto-resize" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" placeholder="{{datos_campo.descripcion}}" maxlength="{{datos_campo.maximo}}"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>{{datos_campo.valor}}</textarea>
-        <label for="f_{{datos_campo.campo}}">{{datos_campo.descripcion}}</label>
-    </div>
+    {% if datos_campo.etiqueta|length > 0 %}<div>{{datos_campo.etiqueta}}</div>{% endif %}
+    <textarea class="form-control-sm w-100 auto-resize" id="f_{{datos_campo.campo}}" name="{{datos_campo.campo}}" placeholder="{{datos_campo.descripcion}}" maxlength="{{datos_campo.maximo}}"{% if datos_campo.requerido %} required{% endif %}{% if not datos_campo.editable %} readonly{% endif %}>{{datos_campo.valor}}</textarea>
 </div>
 {% elif datos_campo.vista == 'label' %}
 <div class="col text-dark small mt-2 mb-2 text-center">

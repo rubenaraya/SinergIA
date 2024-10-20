@@ -7,10 +7,47 @@ from datetime import (date, datetime)
 from typing import (Optional, Self, Union, Any, get_args, get_origin)
 
 # Importaciones de Pydantic
-from pydantic import (BaseModel, ConfigDict, model_validator)
+from pydantic import (BaseModel, ConfigDict, Field, model_validator)
 
 # Importaciones de PySinergIA
-from pysinergia.globales import (Constantes, autorizar_acceso, concluir_estado)
+from pysinergia.globales import (autorizar_acceso, concluir_estado)
+
+# --------------------------------------------------
+# Clases de Constantes:
+class VISTA:
+    CHECKBOX = 'checkbox'
+    COLOR = 'color'
+    DATE = 'date'
+    EMAIL = 'email'
+    HIDDEN = 'hidden'
+    IMAGE = 'image'
+    LABEL = 'label'
+    NUMBER = 'number'
+    PASSWORD = 'password'
+    RADIO = 'radio'
+    SEARCH = 'search'
+    SELECT = 'select'
+    SWITCH = 'switch'
+    TEL = 'tel'
+    TEXT = 'text'
+    TEXTAREA = 'textarea'
+    TIME = 'time'
+    URL = 'url'
+
+class VALIDACION:
+    TEXTO = 'texto'
+    ENTERO = 'entero'
+    DECIMAL = 'decimal'
+    RUT = 'rut'
+    OPCIONES = 'opciones'
+    FECHA = 'fecha'
+    NOVALIDAR = 'novalidar'
+
+class COMPOSICION:
+    BASE = 'BASE'
+    API = 'API'
+    WEB = 'WEB'
+    TODO = 'TODO'
 
 # --------------------------------------------------
 # Modelo: Validador
@@ -18,8 +55,10 @@ class Validador(ABC, BaseModel):
     dto_contexto: Optional[dict] = {}
     dto_roles: Optional[str] = ''
 
+    """
     def adjuntar_contexto(mi, contexto:dict={}):
         mi.dto_contexto = contexto
+    """
 
     def convertir(mi) -> dict:
         serializado = {}
@@ -48,6 +87,20 @@ class Validador(ABC, BaseModel):
                 else:
                     serializado[f'_{field_name}'] = modelo.get(field_name)
         return serializado
+
+# --------------------------------------------------
+# Modelo: ValidadorUID
+class ValidadorUID(Validador):
+    uid:str = Field(
+        validation_alias='uid',
+        json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
+    )
+    @model_validator(mode='before')
+    def validar_uid(cls, values):
+        uid = values.get('uid')
+        if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
+            raise Exception('El-uid-no-es-valido')
+        return values
 
 # --------------------------------------------------
 # Modelo: Constructor
@@ -134,13 +187,13 @@ class Presentador(ABC, BaseModel):
             if valores.resultado:
                 total = valores.resultado.get('total', 0)
                 if total == -1:
-                    valores.codigo = Constantes.ESTADO._500_ERROR
+                    valores.codigo = 500
                 elif total == 0:
-                    valores.codigo = Constantes.ESTADO._404_NO_ENCONTRADO
+                    valores.codigo = 404
                 else:
-                    valores.codigo = Constantes.ESTADO._200_EXITO
+                    valores.codigo = 200
             else:
-                valores.codigo = Constantes.ESTADO._404_NO_ENCONTRADO
+                valores.codigo = 404
         if not valores.conclusion:
             valores.conclusion = concluir_estado(valores.codigo)
         if valores.T:
@@ -175,12 +228,12 @@ class Presentador(ABC, BaseModel):
                     print(e)
         return valores
 
-    def componer(mi, tipo:str=Constantes.RESPUESTA.BASE) -> dict:
+    def componer(mi, tipo:str=COMPOSICION.BASE) -> dict:
         filtrar = {
-            Constantes.RESPUESTA.BASE: ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web'),
-            Constantes.RESPUESTA.API: ('T','D','cookies','fecha','sesion','url','web'),
-            Constantes.RESPUESTA.WEB: ('T','D','cookies','web','sesion'),
-            Constantes.RESPUESTA.TODO: ('T','D'),
+            COMPOSICION.BASE: ('T','D','cookies','fecha','fecha_actual','hora_actual','sesion','url','web'),
+            COMPOSICION.API: ('T','D','cookies','fecha','sesion','url','web'),
+            COMPOSICION.WEB: ('T','D','cookies','web','sesion'),
+            COMPOSICION.TODO: ('T','D'),
         }
         excluir = filtrar.get(tipo)
         return mi.model_dump(mode='json', warnings=False, exclude_none=True, exclude_unset=True, exclude=excluir)
@@ -212,8 +265,8 @@ class Diccionario(ABC, BaseModel):
                             diccionario[campo][clave] = {
                                 'valor': valor,
                                 'etiqueta': _(valores.get('etiqueta', '')),
-                                'titulo': _(valores.get('titulo', '')),
                                 'estilo': valores.get('estilo', ''),
+                                'titulo': _(valores.get('titulo', '')),
                                 'icono': valores.get('icono', ''),
                                 'orden': (valores.get('orden', 1)),
                             }
@@ -327,11 +380,11 @@ class Formulario(Validador):
 class VerificadorCampos(ABC):
     def __init__(mi):
         mi.validaciones = {
-            Constantes.VALIDACION.TEXTO: mi._validar_texto,
-            Constantes.VALIDACION.ENTERO: mi._validar_entero,
-            Constantes.VALIDACION.DECIMAL: mi._validar_decimal,
-            Constantes.VALIDACION.FECHA: mi._validar_fecha,
-            Constantes.VALIDACION.RUT: mi._validar_rut,
+            VALIDACION.TEXTO: mi._validar_texto,
+            VALIDACION.ENTERO: mi._validar_entero,
+            VALIDACION.DECIMAL: mi._validar_decimal,
+            VALIDACION.FECHA: mi._validar_fecha,
+            VALIDACION.RUT: mi._validar_rut,
         }
         mi.errores:list = []
 

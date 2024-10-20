@@ -9,7 +9,7 @@ from pydantic import (Field, model_validator)
 
 # Importaciones de PySinergIA
 from pysinergia.globales import *
-from pysinergia.modelos import (Validador, Formulario)
+from pysinergia.modelos import (Validador, ValidadorUID)
 
 # --------------------------------------------------
 # Modelo: ValidadorBuscarDocumentos
@@ -61,24 +61,6 @@ class ValidadorBuscarDocumentos(Validador):
     pagina:int = Field(validation_alias='pagina', default=1)
 
 # --------------------------------------------------
-# Modelo: ValidadorConsultarDocumento
-class ValidadorConsultarDocumento(Validador):
-    uid:str = Field(
-        validation_alias='uid',
-        json_schema_extra={'filtro':'COINCIDE', 'permisos':''}
-    )
-    @model_validator(mode='before')
-    def validar_uid(cls, values):
-        uid = values.get('uid')
-        if not isinstance(uid, str) or len(uid) != 16 or not all(c in '0123456789abcdefABCDEF' for c in uid):
-            raise ErrorPersonalizado(
-                    mensaje='El-uid-no-es-valido',
-                    codigo=Constantes.ESTADO._400_NO_VALIDO,
-                    nivel_evento=Constantes.REGISTRO.DEBUG
-                )
-        return values
-
-# --------------------------------------------------
 # Modelo: ValidadorBaseDocumento (TODO: Pendiente)
 class ValidadorBaseDocumento(Validador):
     titulo:str = Field(
@@ -97,9 +79,4 @@ class ValidadorAgregarDocumento(ValidadorBaseDocumento):
 class ValidadorActualizarDocumento(ValidadorBaseDocumento):
     ...
 
-# --------------------------------------------------
-# Modelo: FormActualizarDocumento (TODO: Pendiente)
-class FormActualizarDocumento(Formulario):
-    ...
-
-__all__ = ['ValidadorBuscarDocumentos', 'ValidadorConsultarDocumento', 'ValidadorAgregarDocumento', 'ValidadorActualizarDocumento', 'FormActualizarDocumento']
+__all__ = ['ValidadorUID', 'ValidadorBuscarDocumentos', 'ValidadorAgregarDocumento', 'ValidadorActualizarDocumento']

@@ -125,41 +125,6 @@ class Constantes(ABC):
         _192KBPS = '192'
         _256KBPS = '256'
 
-    class CAMPO:
-        CHECKBOX = 'checkbox'
-        COLOR = 'color'
-        DATE = 'date'
-        EMAIL = 'email'
-        HIDDEN = 'hidden'
-        IMAGE = 'image'
-        LABEL = 'label'
-        NUMBER = 'number'
-        PASSWORD = 'password'
-        RADIO = 'radio'
-        SEARCH = 'search'
-        SELECT = 'select'
-        SWITCH = 'switch'
-        TEL = 'tel'
-        TEXT = 'text'
-        TEXTAREA = 'textarea'
-        TIME = 'time'
-        URL = 'url'
-
-    class VALIDACION:
-        TEXTO = 'texto'
-        ENTERO = 'entero'
-        DECIMAL = 'decimal'
-        RUT = 'rut'
-        OPCIONES = 'opciones'
-        FECHA = 'fecha'
-        NOVALIDAR = 'novalidar'
-    
-    class RESPUESTA:
-        BASE = 'BASE'
-        API = 'API'
-        WEB = 'WEB'
-        TODO = 'TODO'
-
 # --------------------------------------------------
 # Clase estática: RegistradorLogs
 class RegistradorLogs(ABC):

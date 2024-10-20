@@ -13,7 +13,6 @@ from flask import (
 from flask_pydantic import validate
 
 # Importaciones de PySinergIA
-from pysinergia.globales import Constantes
 from pysinergia.config import *
 from pysinergia.interfaces.flask import *
 
@@ -58,7 +57,7 @@ def agregar_documento(body:ValidadorAgregarDocumento):
 @enrutador.route(f'/{microservicio}/<uid>', methods=['GET'])
 def ver_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = ValidadorConsultarDocumento(uid=uid)
+    peticion = ValidadorUID(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
 
@@ -73,15 +72,9 @@ def actualizar_documento(body:ValidadorActualizarDocumento, uid:str):
 @enrutador.route(f'/{microservicio}/<uid>', methods=['DELETE'])
 def eliminar_documento(uid:str):
     comunicador.procesar_solicitud()
-    peticion = ValidadorConsultarDocumento(uid=uid)
+    peticion = ValidadorUID(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return make_response(jsonify(respuesta), codigo)
-
-# TODO: Pendiente
-@enrutador.route(f'/{microservicio}/exportar/<conversion>', methods=['GET'])
-@validate()
-def exportar_documentos(query:ValidadorBuscarDocumentos):
-    comunicador.procesar_solicitud()
 
 # --------------------------------------------------
 # Rutas de ejemplo y pruebas
@@ -92,17 +85,15 @@ def crear_tabla():
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).crear_tabla()
     return make_response(jsonify(respuesta), codigo)
 
-@enrutador.route(f'/{microservicio}/form', methods=['GET'])
-def form():
+@enrutador.route(f'/{microservicio}/<uid>/form', methods=['GET'])
+def form(uid:str):
     comunicador.procesar_solicitud()
-    formulario = FormActualizarDocumento(
-        dto_contexto=comunicador.contexto,
-        T=comunicador.traductor,
-        #estado='Activo',
-    )
-    respuesta = comunicador.transformar_contenido(
-        comunicador.agregar_contexto({'formulario': formulario.generar()}),
-        plantilla='form_pagina.html',
-    )
-    return Response(respuesta, Constantes.ESTADO._200_EXITO, mimetype=Constantes.MIME.HTML)
+    respuesta, codigo, mimetype = ControladorDocumentos(configuracion, comunicador).form_actualizar_documentos(uid)
+    return Response(respuesta, codigo, mimetype=mimetype)
+
+# TODO: Pendiente
+@enrutador.route(f'/{microservicio}/exportar/<conversion>', methods=['GET'])
+@validate()
+def exportar_documentos(query:ValidadorBuscarDocumentos):
+    comunicador.procesar_solicitud()
 

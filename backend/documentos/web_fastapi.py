@@ -33,35 +33,35 @@ enrutador = APIRouter(prefix=f'{configuracion.PREFIJO_MICROSERVICIO}')
 # --------------------------------------------------
 # Rutas del Microservicio
 
-@enrutador.get('/documentos') #dependencies=[Depends(autenticador.validar_token), Depends(autenticador.validar_apikey)]
+@enrutador.get(f'/{microservicio}') #dependencies=[Depends(autenticador.validar_token), Depends(autenticador.validar_apikey)]
 async def buscar_documentos(request:Request, peticion:ValidadorBuscarDocumentos=Depends()):
     await comunicador.procesar_solicitud(request)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).buscar_documentos(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.post('/documentos')
+@enrutador.post(f'/{microservicio}')
 async def agregar_documento(request:Request, peticion:ValidadorAgregarDocumento=Body()):
     await comunicador.procesar_solicitud(request)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).agregar_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.get('/documentos/{uid}')
+@enrutador.get(f'/{microservicio}' + '/{uid}')
 async def ver_documento(request:Request, uid:str=Path(...)):
     await comunicador.procesar_solicitud(request)
-    peticion = ValidadorConsultarDocumento(uid=uid)
+    peticion = ValidadorUID(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).ver_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.put('/documentos/{uid}')
+@enrutador.put(f'/{microservicio}' + '/{uid}')
 async def actualizar_documento(request:Request, uid:str=Path(...), peticion:ValidadorActualizarDocumento=Body()):
     await comunicador.procesar_solicitud(request)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).actualizar_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 
-@enrutador.delete('/documentos/{uid}')
+@enrutador.delete(f'/{microservicio}' + '/{uid}')
 async def eliminar_documento(request:Request, uid:str=Path(...)):
     await comunicador.procesar_solicitud(request)
-    peticion = ValidadorConsultarDocumento(uid=uid)
+    peticion = ValidadorUID(uid=uid)
     respuesta, codigo = ControladorDocumentos(configuracion, comunicador).eliminar_documento(peticion)
     return JSONResponse(respuesta, status_code=codigo)
 

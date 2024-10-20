@@ -50,11 +50,6 @@ class DocumentoBase(Constructor):
         serialization_alias='palabras',
         json_schema_extra={'permisos':'','indice':'simple','largo':250}
     )
-    temasrel: Optional[str] = Field(
-        default=None,
-        serialization_alias='temasrel',
-        json_schema_extra={'permisos':'','indice':'simple','largo':250}
-    )
     tipodoc: Optional[str] = Field(
         default=None,
         serialization_alias='tipodoc',
@@ -84,6 +79,11 @@ class DocumentoBase(Constructor):
 # --------------------------------------------------
 # Modelo: DocumentoExtra
 class DocumentoExtra(Constructor):
+    temasrel: Optional[str] = Field(
+        default=None,
+        serialization_alias='temasrel',
+        json_schema_extra={'permisos':'','indice':'simple','largo':250}
+    )
     fuente: Optional[str] = Field(
         default=None,
         serialization_alias='fuente',
